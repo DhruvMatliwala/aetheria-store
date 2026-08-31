@@ -15,7 +15,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { Plan } from '@/types/plan';
-import { PLANS, DISCORD_URL, REDDIT_URL } from '@/lib/constants';
+import { PLANS, DISCORD_URL, REDDIT_URL, TELEGRAM_URL } from '@/lib/constants';
 import { triggerParticleBurst } from '@/components/interactive/ParticleBurst';
 import { AmbientMistParticles } from '@/components/interactive/AmbientMistParticles';
 import { cn } from '@/lib/utils';
@@ -635,6 +635,7 @@ export function CinematicScrollExperience({
                   <div className="flex items-center gap-3">
                     <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Discord</a>
                     <a href={REDDIT_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Reddit</a>
+                    <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Telegram</a>
                   </div>
                   <span className="text-emerald-400">Instant Automated Dispatch</span>
                 </div>
@@ -653,12 +654,12 @@ export function CinematicScrollExperience({
 
         {/* 
           ============================================================
-          BOTTOM-RIGHT FLOATING SOCIAL DOCK (Discord, Reddit)
+          BOTTOM-RIGHT FLOATING SOCIAL DOCK (Discord, Reddit, Telegram)
           ============================================================
         */}
         <div className="fixed bottom-6 right-6 md:right-10 z-30 flex items-center pointer-events-auto">
           {/* Frosted Translucent Dark Social Capsule */}
-          <div className="px-3.5 py-1.5 rounded-full bg-neutral-950/70 backdrop-blur-xl border border-white/15 shadow-[0_4px_25px_rgba(0,0,0,0.6)] flex items-center gap-3.5 text-neutral-300 transition-all hover:border-cyan-500/40">
+          <div className="px-3.5 py-1.5 rounded-full bg-neutral-950/70 backdrop-blur-xl border border-white/15 shadow-[0_4px_25px_rgba(0,0,0,0.6)] flex items-center gap-3 text-neutral-300 transition-all hover:border-cyan-500/40">
             {/* Discord */}
             <a
               href={DISCORD_URL}
@@ -673,7 +674,7 @@ export function CinematicScrollExperience({
               </svg>
             </a>
 
-            <span className="w-px h-3.5 bg-white/15" />
+            <span className="w-px h-3 bg-white/15" />
 
             {/* Reddit */}
             <a
@@ -686,6 +687,22 @@ export function CinematicScrollExperience({
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.56 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.56 12 8 12.56 8 13.25c0 .688.56 1.25 1.25 1.25.688 0 1.25-.562 1.25-1.25 0-.69-.562-1.25-1.25-1.25zm5.5 0c-.688 0-1.25.56-1.25 1.25 0 .688.562 1.25 1.25 1.25.69 0 1.25-.562 1.25-1.25 0-.69-.56-1.25-1.25-1.25zm-5.465 4.01a.342.342 0 0 0-.252.578c.846.85 2.148 1.157 2.967 1.157.82 0 2.122-.307 2.968-1.157a.342.342 0 1 0-.484-.484c-.66.662-1.72.899-2.484.899-.763 0-1.824-.237-2.484-.899a.338.338 0 0 0-.235-.094z"/>
+              </svg>
+            </a>
+
+            <span className="w-px h-3 bg-white/15" />
+
+            {/* Telegram */}
+            <a
+              href={TELEGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1 text-neutral-400 hover:text-[#229ED9] hover:scale-110 transition-all duration-200"
+              title="Telegram: @sleekfx3"
+              aria-label="Telegram: @sleekfx3"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-1.97 9.28c-.15.65-.53.81-1.08.51l-3-2.21-1.45 1.39c-.16.16-.3.3-.61.3l.22-3.05 5.56-5.02c.24-.22-.05-.34-.38-.13l-6.87 4.33-2.96-.92c-.64-.2-.66-.64.13-.95l11.57-4.46c.54-.19 1.01.13.86.93z" />
               </svg>
             </a>
           </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { DISCORD_URL, REDDIT_URL } from '@/lib/constants';
+import { DISCORD_URL, REDDIT_URL, TELEGRAM_URL } from '@/lib/constants';
 
 const FOOTER_LINKS = [
   { label: 'Terms of Service', href: '/terms' },
@@ -87,6 +87,16 @@ export function Footer() {
                   className="text-xs font-mono text-neutral-400 hover:text-cyan-300 transition-colors"
                 >
                   Reddit Profile
+                </a>
+              </li>
+              <li>
+                <a
+                  href={TELEGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-mono text-neutral-400 hover:text-cyan-300 transition-colors flex items-center gap-2"
+                >
+                  <span>Telegram (@sleekfx3)</span>
                 </a>
               </li>
             </ul>

@@ -27,7 +27,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { DISCORD_URL, REDDIT_URL, PLAN_MAP } from '@/lib/constants';
+import { DISCORD_URL, REDDIT_URL, TELEGRAM_URL, PLAN_MAP } from '@/lib/constants';
 
 interface CustomerKeyItem {
   order_id: string;
@@ -408,7 +408,7 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
                   <p className="text-xs text-neutral-400 font-mono max-w-md mx-auto leading-relaxed">
                     We didn&apos;t find any paid orders under <span className="text-cyan-300">{user.email}</span>. If you used a different email during checkout, please sign in with that email, or contact us with your payment screenshot / Transaction ID.
                   </p>
-                  <div className="pt-2 flex items-center justify-center gap-3">
+                  <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
                     <a
                       href={DISCORD_URL}
                       target="_blank"
@@ -425,6 +425,15 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
                       className="px-4 py-2 rounded-xl bg-[#FF4500]/20 border border-[#FF4500]/40 text-[#FF4500] hover:bg-[#FF4500]/30 text-xs font-mono flex items-center gap-1.5"
                     >
                       <span>Reddit Support</span>
+                      <ExternalLink size={12} />
+                    </a>
+                    <a
+                      href={TELEGRAM_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 rounded-xl bg-[#229ED9]/20 border border-[#229ED9]/40 text-[#229ED9] hover:bg-[#229ED9]/30 text-xs font-mono flex items-center gap-1.5"
+                    >
+                      <span>Telegram (@sleekfx3)</span>
                       <ExternalLink size={12} />
                     </a>
                   </div>
@@ -543,7 +552,7 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
               rel="noopener noreferrer"
               className="text-cyan-400 hover:text-cyan-300 transition-colors"
             >
-              Discord 24/7
+              Discord
             </a>
             <span>•</span>
             <a
@@ -552,7 +561,16 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
               rel="noopener noreferrer"
               className="text-cyan-400 hover:text-cyan-300 transition-colors"
             >
-              Reddit Support
+              Reddit
+            </a>
+            <span>•</span>
+            <a
+              href={TELEGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:text-cyan-300 transition-colors"
+            >
+              Telegram
             </a>
           </div>
         </div>

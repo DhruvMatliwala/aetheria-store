@@ -42,11 +42,13 @@ export const PLAN_MAP = Object.fromEntries(PLANS.map((p) => [p.id, p]));
 
 export const LOW_STOCK_THRESHOLD = 5;
 
-// Direct Support Channels (Discord & Reddit)
+// Direct Support Channels (Discord, Reddit & Telegram)
 export const DISCORD_URL =
   process.env.NEXT_PUBLIC_DISCORD_URL || 'https://discord.com/users/503233296134832149';
 export const REDDIT_URL =
   process.env.NEXT_PUBLIC_REDDIT_URL || 'https://www.reddit.com/user/dhruv_emperor/';
+export const TELEGRAM_URL =
+  process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/sleekfx3';
 
 // Razorpay / PayPal modes
 export const PAYPAL_BASE_URL =

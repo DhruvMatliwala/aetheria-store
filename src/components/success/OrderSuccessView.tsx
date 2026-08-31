@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { KeyReveal } from '@/components/success/KeyReveal';
 import { ActivationGuide } from '@/components/success/ActivationGuide';
 import { OrderPublic } from '@/types/order';
-import { DISCORD_URL, REDDIT_URL, PLANS } from '@/lib/constants';
+import { DISCORD_URL, REDDIT_URL, TELEGRAM_URL, PLANS } from '@/lib/constants';
 import {
   ExternalLink,
   HelpCircle,
@@ -249,6 +249,15 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
                   <MessageSquare size={13} />
                   <span>Reddit Profile</span>
                 </a>
+                <a
+                  href={TELEGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-full bg-[#229ED9]/20 hover:bg-[#229ED9]/30 border border-[#229ED9]/40 text-xs font-mono text-white transition-all flex items-center gap-1.5"
+                >
+                  <MessageSquare size={13} />
+                  <span>Telegram (@sleekfx3)</span>
+                </a>
               </div>
             </div>
           </div>
@@ -411,6 +420,17 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
               className="flex-1 sm:flex-initial px-4 py-2 rounded-full bg-[#FF4500]/20 hover:bg-[#FF4500]/30 border border-[#FF4500]/40 text-xs font-mono text-white transition-all flex items-center justify-center gap-1.5 shadow-md"
             >
               <span>Reddit Profile</span>
+              <ExternalLink size={12} />
+            </a>
+
+            {/* Telegram */}
+            <a
+              href={TELEGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 sm:flex-initial px-4 py-2 rounded-full bg-[#229ED9]/20 hover:bg-[#229ED9]/30 border border-[#229ED9]/40 text-xs font-mono text-white transition-all flex items-center justify-center gap-1.5 shadow-md"
+            >
+              <span>Telegram (@sleekfx3)</span>
               <ExternalLink size={12} />
             </a>
           </div>

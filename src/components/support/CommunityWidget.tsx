@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { MessageSquare, X, ExternalLink, Users, Sparkles } from 'lucide-react';
-import { DISCORD_URL, REDDIT_URL } from '@/lib/constants';
+import { DISCORD_URL, REDDIT_URL, TELEGRAM_URL } from '@/lib/constants';
 
 export function CommunityWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -108,6 +108,32 @@ export function CommunityWidget() {
                       </h3>
                       <p className="text-gray-400 text-xs">
                         Direct communication for queries, verification, and support.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </a>
+              {/* Telegram */}
+              <a
+                href={TELEGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block p-4 bg-[#229ED9]/10 hover:bg-[#229ED9]/20 border border-[#229ED9]/30 hover:border-[#229ED9] rounded-xl transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#229ED9] flex items-center justify-center text-white flex-shrink-0 shadow-md">
+                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-1.97 9.28c-.15.65-.53.81-1.08.51l-3-2.21-1.45 1.39c-.16.16-.3.3-.61.3l.22-3.05 5.56-5.02c.24-.22-.05-.34-.38-.13l-6.87 4.33-2.96-.92c-.64-.2-.66-.64.13-.95l11.57-4.46c.54-.19 1.01.13.86.93z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-white font-bold text-sm group-hover:text-[#229ED9] transition-colors flex items-center gap-1.5">
+                        <span>Message on Telegram</span>
+                        <ExternalLink size={13} />
+                      </h3>
+                      <p className="text-gray-400 text-xs">
+                        Direct support with @sleekfx3 for instant key verification.
                       </p>
                     </div>
                   </div>
