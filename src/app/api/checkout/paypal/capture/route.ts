@@ -3,6 +3,7 @@ import { getOrderById, toOrderPublic } from '@/lib/firestore/orders';
 import { capturePayPalOrder } from '@/lib/payments/paypal';
 import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
+import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -69,6 +70,21 @@ export async function POST(request: NextRequest) {
     } catch (emailErr) {
       console.error('[paypal/capture] Failed to schedule email delivery:', emailErr);
     }
+
+    // ── 4B. Dispatch real-time Admin Discord backup alert ────────────────────
+    sendAdminOrderAlert({
+      orderId: existingOrder.order_id,
+      customerEmail: existingOrder.customer_email,
+      customerPhone: existingOrder.customer_phone,
+      planType: existingOrder.plan_type,
+      amount: existingOrder.amount,
+      currency: existingOrder.currency,
+      gateway: 'paypal',
+      transactionId: paypalOrderId,
+      deliveredKey: allocation.decryptedKey,
+    }).catch((alertErr) => {
+      console.error('[paypal/capture] Discord admin alert error:', alertErr);
+    });
 
     // ── 5. Fetch and return fulfilled order details ──────────────────────────
     const updatedOrder = await getOrderById(orderId);

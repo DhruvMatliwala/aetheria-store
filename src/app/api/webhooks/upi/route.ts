@@ -3,6 +3,7 @@ import { verifyRazorpayWebhookSignature } from '@/lib/payments/razorpay';
 import { getOrderByGatewayId } from '@/lib/firestore/orders';
 import { assignKeyToOrder } from '@/lib/firestore/transaction';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
+import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 
 export const runtime = 'nodejs';
 
@@ -86,6 +87,21 @@ export async function POST(request: NextRequest) {
       licenseKey: decryptedKey,
     }).catch((err) => {
       console.error('[webhook/upi] Email delivery failed (non-fatal):', err);
+    });
+
+    // ── Send Admin Discord Backup Alert ─────────────────────────────────────
+    sendAdminOrderAlert({
+      orderId: order.order_id,
+      customerEmail: order.customer_email,
+      customerPhone: order.customer_phone,
+      planType: order.plan_type,
+      amount: order.amount,
+      currency: order.currency,
+      gateway: 'upi_webhook',
+      transactionId: razorpayOrderId,
+      deliveredKey: decryptedKey,
+    }).catch((err) => {
+      console.error('[webhook/upi] Discord admin alert error:', err);
     });
 
     console.log('[webhook/upi] Key delivered for order:', order.order_id);

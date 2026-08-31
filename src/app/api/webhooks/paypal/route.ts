@@ -3,6 +3,7 @@ import { verifyPayPalWebhookSignature } from '@/lib/payments/paypal';
 import { getOrderById } from '@/lib/firestore/orders';
 import { assignKeyToOrder } from '@/lib/firestore/transaction';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
+import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 
 export const runtime = 'nodejs';
 
@@ -107,6 +108,21 @@ export async function POST(request: NextRequest) {
       licenseKey: decryptedKey,
     }).catch((err) => {
       console.error('[webhook/paypal] Email failed (non-fatal):', err);
+    });
+
+    // ── Send Admin Discord Backup Alert ─────────────────────────────────────
+    sendAdminOrderAlert({
+      orderId: order.order_id,
+      customerEmail: order.customer_email,
+      customerPhone: order.customer_phone,
+      planType: order.plan_type,
+      amount: order.amount,
+      currency: order.currency,
+      gateway: 'paypal_webhook',
+      transactionId: event.resource?.id || internalOrderId,
+      deliveredKey: decryptedKey,
+    }).catch((err) => {
+      console.error('[webhook/paypal] Discord admin alert error:', err);
     });
 
     console.log('[webhook/paypal] Key delivered for order:', order.order_id);
