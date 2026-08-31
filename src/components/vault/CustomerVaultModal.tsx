@@ -221,28 +221,33 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
         <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
           {!user ? (
             /* ─────────────────────────────────────────────────────────── */
-            /* LOGGED OUT STATE                                            */
+            /* LOGGED OUT STATE (Suggestion 1: Clean & Friendly)          */
             /* ─────────────────────────────────────────────────────────── */
             <div className="space-y-6 py-2">
+              {/* Friendly Header */}
               <div className="text-center max-w-md mx-auto space-y-2">
-                <div className="inline-flex p-3 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 mb-2">
-                  <Shield size={28} />
+                <div className="inline-flex p-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 mb-1 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+                  <Key size={26} className="animate-pulse" />
                 </div>
-                <h3 className="text-lg font-bold text-white tracking-wide">
-                  Retrieve Your License Keys
+                <h3 className="text-xl font-bold text-white tracking-wide">
+                  Find Your License Keys
                 </h3>
-                <p className="text-xs text-neutral-400 leading-relaxed font-mono">
-                  Sign in with the email you used during checkout to view all active PGSharp license keys, days remaining, and device slots.
+                <p className="text-xs text-neutral-400 leading-relaxed font-sans">
+                  Instantly access all your active PGSharp keys, device slots, and remaining days in one place.
                 </p>
               </div>
 
-              {/* 1-Click Google Sign In */}
-              <div className="max-w-md mx-auto">
+              {/* 1-Click Google Sign In (Primary Action) */}
+              <div className="max-w-md mx-auto space-y-2">
+                <div className="flex items-center justify-between px-1">
+                  <span className="text-[11px] font-mono text-cyan-400 font-medium">⚡ FASTEST METHOD</span>
+                  <span className="text-[10px] font-mono text-neutral-500">1-CLICK LOGIN</span>
+                </div>
                 <button
                   type="button"
                   onClick={handleGoogleSignIn}
                   disabled={authLoading}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-white text-black font-semibold text-sm flex items-center justify-center gap-3 hover:bg-neutral-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] active:scale-[0.98] disabled:opacity-50"
+                  className="w-full py-3.5 px-4 rounded-2xl bg-white text-black font-semibold text-sm flex items-center justify-center gap-3 hover:bg-neutral-100 transition-all shadow-[0_0_25px_rgba(255,255,255,0.15)] active:scale-[0.98] disabled:opacity-50"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -270,40 +275,15 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
               <div className="relative max-w-md mx-auto flex items-center justify-center">
                 <div className="w-full border-t border-white/10"></div>
                 <span className="absolute px-3 bg-[#090605] text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
-                  OR USE EMAIL
+                  OR SIGN IN WITH EMAIL
                 </span>
               </div>
 
-              {/* Email / Password Form */}
+              {/* Clean Email Form */}
               <form onSubmit={handleEmailAuth} className="max-w-md mx-auto space-y-3.5">
-                <div className="flex rounded-xl bg-white/5 p-1 border border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setActiveAuthTab('signin')}
-                    className={`flex-1 py-1.5 text-xs font-mono rounded-lg transition-all ${
-                      activeAuthTab === 'signin'
-                        ? 'bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-500/30'
-                        : 'text-neutral-400 hover:text-white'
-                    }`}
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveAuthTab('register')}
-                    className={`flex-1 py-1.5 text-xs font-mono rounded-lg transition-all ${
-                      activeAuthTab === 'register'
-                        ? 'bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-500/30'
-                        : 'text-neutral-400 hover:text-white'
-                    }`}
-                  >
-                    Register New Account
-                  </button>
-                </div>
-
                 <div>
                   <label className="block text-[11px] font-mono text-neutral-400 uppercase tracking-wider mb-1">
-                    Email Address
+                    Checkout Email
                   </label>
                   <div className="relative">
                     <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500" />
@@ -319,9 +299,18 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-mono text-neutral-400 uppercase tracking-wider mb-1">
-                    Password
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-mono text-neutral-400 uppercase tracking-wider">
+                      Password
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setActiveAuthTab(activeAuthTab === 'signin' ? 'register' : 'signin')}
+                      className="text-[11px] font-mono text-cyan-400 hover:text-cyan-300 transition-colors"
+                    >
+                      {activeAuthTab === 'signin' ? 'Need an account? Register' : 'Have an account? Sign In'}
+                    </button>
+                  </div>
                   <input
                     type="password"
                     required
@@ -335,19 +324,16 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
                 <button
                   type="submit"
                   disabled={authLoading}
-                  className="w-full py-2.5 rounded-xl bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 hover:bg-cyan-500/30 font-semibold text-xs tracking-wider uppercase transition-all shadow-[0_0_15px_rgba(6,182,212,0.2)] active:scale-[0.98] disabled:opacity-50"
+                  className="w-full py-3 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-neutral-950 font-bold text-xs tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(6,182,212,0.25)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {authLoading
-                    ? 'Processing...'
-                    : activeAuthTab === 'signin'
-                    ? 'Access Vault →'
-                    : 'Create Account & Sync →'}
+                  <span>{authLoading ? 'Verifying...' : activeAuthTab === 'signin' ? 'Unlock My Keys →' : 'Create Account & Unlock Keys →'}</span>
                 </button>
               </form>
 
-              <div className="text-center pt-2">
-                <p className="text-[11px] font-mono text-neutral-500">
-                  ⚡ All past guest purchases matching your email will automatically synchronize.
+              {/* Help & Auto-sync Note */}
+              <div className="max-w-md mx-auto p-3 rounded-xl bg-white/[0.03] border border-white/5 text-center">
+                <p className="text-[11px] font-mono text-neutral-400">
+                  💡 <span className="text-white font-medium">Automatic Key Sync:</span> All past guest purchases matching your email will appear automatically.
                 </p>
               </div>
             </div>
