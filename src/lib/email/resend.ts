@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { PLAN_MAP, DISCORD_URL, REDDIT_URL } from '@/lib/constants';
+import { PLAN_MAP } from '@/lib/constants';
 
 function getResendClient(): Resend {
   const apiKey = process.env.RESEND_API_KEY || 're_placeholder_key';
@@ -11,11 +11,84 @@ export interface KeyDeliveryEmailParams {
   orderId: string;
   planType: string;
   licenseKey: string;
+  customerName?: string;
+}
+
+function getDueDateString(): string {
+  const date = new Date();
+  date.setDate(date.getDate() + 30);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function getDeviceCount(planType: string): number {
+  const plan = PLAN_MAP[planType];
+  if (plan && plan.device_slots) {
+    return plan.device_slots;
+  }
+  if (planType.includes('2_device')) return 2;
+  if (planType.includes('3_device')) return 3;
+  return 1;
+}
+
+function extractName(email: string, customerName?: string): string {
+  if (customerName && customerName.trim()) {
+    return customerName.trim();
+  }
+  const prefix = email.split('@')[0];
+  if (!prefix) return 'trainer';
+  return prefix.replace(/[._\-0-9]/g, ' ').trim() || prefix;
+}
+
+function buildPlainText(params: KeyDeliveryEmailParams): string {
+  const name = extractName(params.to, params.customerName);
+  const dueDate = getDueDateString();
+  const devices = getDeviceCount(params.planType);
+
+  return `Dear ${name},
+
+Thank you for donating PGSharp, this is your license details.
+
+----------------------------------------------------------------
+
+License:
+
+
+
+${params.licenseKey}
+
+Due Date:
+
+
+
+${dueDate}
+
+----------------------------------------------------------------
+
+Notes:
+
+
+
+This license allows you to activate the full features on ${devices} device${devices > 1 ? 's' : ''}.
+
+This service cannot give you ability to bypass the 2 hours cooldown. Please always respect the cooldown rules to avoid strikes.
+
+IMPORTANT: Please do not share your license key with others, this may lead to your license being terminated without notice.
+
+If you find any difficulties, please feel free to contact us.
+
+Regards,
+
+Aetheria-store
+`.trim();
 }
 
 function buildEmailHtml(params: KeyDeliveryEmailParams): string {
-  const plan = PLAN_MAP[params.planType];
-  const planName = plan ? `${plan.name} (${plan.device_slots} Device${plan.device_slots > 1 ? 's' : ''})` : params.planType;
+  const name = extractName(params.to, params.customerName);
+  const dueDate = getDueDateString();
+  const devices = getDeviceCount(params.planType);
 
   return `
 <!DOCTYPE html>
@@ -23,103 +96,51 @@ function buildEmailHtml(params: KeyDeliveryEmailParams): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your PGSharp License Key</title>
+  <title>Your PGSharp Standard Patron is activated!</title>
 </head>
-<body style="margin:0;padding:0;background:#0f0f1a;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0f1a;padding:40px 20px;">
-    <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<body style="margin:0;padding:24px;background:#ffffff;color:#222222;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;">
+  <div style="max-width:620px;margin:0 auto;padding:12px;">
+    <p style="margin:0 0 18px;color:#222222;">Dear ${name},</p>
+    
+    <p style="margin:0 0 20px;color:#222222;">Thank you for donating PGSharp, this is your license details.</p>
 
-          <!-- Header -->
-          <tr>
-            <td style="background:linear-gradient(135deg,#4f46e5,#6366f1);border-radius:16px 16px 0 0;padding:32px;text-align:center;">
-              <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:800;letter-spacing:-0.5px;">🎮 PGSharp Keys</h1>
-              <p style="margin:8px 0 0;color:#c7d2fe;font-size:15px;">Your license key is ready!</p>
-            </td>
-          </tr>
+    <div style="border-top:1px dashed #cccccc;margin:20px 0;"></div>
 
-          <!-- Body -->
-          <tr>
-            <td style="background:#16162a;padding:32px;">
-              <p style="color:#a5b4fc;margin:0 0 24px;font-size:15px;">
-                Hi there! Thank you for your purchase. Your <strong style="color:#e0e7ff;">${planName}</strong> PGSharp license key is below.
-              </p>
+    <p style="margin:0 0 6px;color:#555555;font-weight:600;font-size:14px;">License:</p>
+    <p style="margin:0 0 22px;font-family:'Courier New',Courier,monospace;font-size:18px;font-weight:700;color:#000000;letter-spacing:1px;background:#f8f9fa;padding:12px 14px;border:1px solid #e5e7eb;border-radius:6px;word-break:break-all;">${params.licenseKey}</p>
 
-              <!-- Key Box -->
-              <div style="background:#0f0f1a;border:1.5px solid #4f46e5;border-radius:12px;padding:20px 24px;margin:0 0 28px;text-align:center;">
-                <p style="margin:0 0 8px;color:#818cf8;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Your License Key</p>
-                <p style="margin:0;color:#ffffff;font-family:'Courier New',monospace;font-size:18px;font-weight:700;letter-spacing:2px;word-break:break-all;">${params.licenseKey}</p>
-              </div>
+    <p style="margin:0 0 6px;color:#555555;font-weight:600;font-size:14px;">Due Date:</p>
+    <p style="margin:0 0 20px;font-family:'Courier New',Courier,monospace;font-size:16px;font-weight:600;color:#000000;">${dueDate}</p>
 
-              <!-- Order ID -->
-              <p style="color:#6b7280;font-size:13px;text-align:center;margin:0 0 28px;">
-                Order ID: <span style="color:#818cf8;">${params.orderId}</span>
-              </p>
+    <div style="border-top:1px dashed #cccccc;margin:20px 0;"></div>
 
-              <!-- Activation Steps -->
-              <h2 style="color:#e0e7ff;font-size:18px;font-weight:700;margin:0 0 16px;">🚀 Activation Guide</h2>
-              <table width="100%" cellpadding="0" cellspacing="0">
-                ${[
-                  ['1', 'Install PGSharp APK', 'Download the latest PGSharp APK from the official site (pgsharp.com) and install it on your Android device.'],
-                  ['2', 'Open PGSharp', 'Launch PGSharp. On the activation screen, tap on the key icon or navigate to Settings → License Key.'],
-                  ['3', 'Enter Your Key', 'Paste or type your license key exactly as shown above. Tap Activate.'],
-                  ['4', 'Start Playing!', 'Your PGSharp features are now unlocked with joystick, teleport, IV checker, and enhanced throw!'],
-                ].map(([num, title, desc]) => `
-                <tr>
-                  <td style="padding:0 0 16px;">
-                    <table cellpadding="0" cellspacing="0" width="100%">
-                      <tr>
-                        <td width="36" valign="top">
-                          <div style="width:28px;height:28px;background:#4f46e5;border-radius:50%;text-align:center;line-height:28px;color:#fff;font-weight:700;font-size:13px;">${num}</div>
-                        </td>
-                        <td style="padding-left:12px;">
-                          <strong style="color:#e0e7ff;display:block;margin-bottom:4px;">${title}</strong>
-                          <span style="color:#9ca3af;font-size:14px;">${desc}</span>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                `).join('')}
-              </table>
+    <p style="margin:0 0 10px;font-weight:600;color:#222222;">Notes:</p>
 
-              <!-- Community Support Box -->
-              <div style="background:#1e1e35;border-radius:12px;padding:20px;margin:12px 0 28px;text-align:center;">
-                <p style="margin:0 0 8px;color:#e0e7ff;font-size:14px;font-weight:700;">Need Help or Coordinates?</p>
-                <p style="margin:0 0 16px;color:#9ca3af;font-size:13px;">Join our official Discord Server and Reddit Community for 24/7 support.</p>
-                <div style="text-align:center;">
-                  <a href="${DISCORD_URL}" target="_blank" style="display:inline-block;background:#5865F2;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:bold;font-size:12px;margin-right:8px;">Discord Server</a>
-                  <a href="${REDDIT_URL}" target="_blank" style="display:inline-block;background:#FF4500;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:bold;font-size:12px;">Reddit Subreddit</a>
-                </div>
-              </div>
-            </td>
-          </tr>
+    <p style="margin:0 0 14px;color:#333333;">This license allows you to activate the full features on ${devices} device${devices > 1 ? 's' : ''}.</p>
 
-          <!-- Footer -->
-          <tr>
-            <td style="background:#0f0f1a;border-radius:0 0 16px 16px;padding:24px;text-align:center;border-top:1px solid #1e1e35;">
-              <p style="margin:0;color:#6b7280;font-size:12px;">© 2026 PGSharp Keys Storefront. All rights reserved.</p>
-            </td>
-          </tr>
+    <p style="margin:0 0 14px;color:#333333;">This service cannot give you ability to bypass the 2 hours cooldown. Please always respect the cooldown rules to avoid strikes.</p>
 
-        </table>
-      </td>
-    </tr>
-  </table>
+    <p style="margin:0 0 14px;color:#b91c1c;font-weight:600;">IMPORTANT: <span style="font-weight:normal;color:#333333;">Please do not share your license key with others, this may lead to your license being terminated without notice.</span></p>
+
+    <p style="margin:0 0 20px;color:#333333;">If you find any difficulties, please feel free to contact us.</p>
+
+    <p style="margin:0 0 4px;color:#222222;">Regards,</p>
+    <p style="margin:0;font-weight:600;color:#0e7490;">Aetheria-store</p>
+  </div>
 </body>
 </html>
   `.trim();
 }
 
 export async function sendKeyDeliveryEmail(params: KeyDeliveryEmailParams): Promise<void> {
-  const from = process.env.EMAIL_FROM ?? 'PGSharp Keys <orders@pgsharpkeys.com>';
+  const from = process.env.EMAIL_FROM ?? 'PGSharp Team <noreply@pgsharp.com>';
   const resend = getResendClient();
 
   const { error } = await resend.emails.send({
     from,
     to: params.to,
-    subject: `🎮 Your PGSharp License Key — Order #${params.orderId}`,
+    subject: 'Your PGSharp Standard Patron is activated!',
+    text: buildPlainText(params),
     html: buildEmailHtml(params),
   });
 
