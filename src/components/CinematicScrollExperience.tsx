@@ -418,7 +418,7 @@ export function CinematicScrollExperience({
           Clean Cyber-Cyan / Emerald Palette with High Contrast
           ============================================================
         */}
-        <div className="absolute bottom-10 sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
+        <div className="absolute bottom-20 sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
           {SCENE_OVERLAYS.map((overlay, idx) => (
             <div
               key={idx}
@@ -506,7 +506,7 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={pricingRef}
-          className="absolute bottom-8 sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 pointer-events-none will-change-transform transform-gpu"
+          className="absolute bottom-10 sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 pointer-events-none will-change-transform transform-gpu"
           id="plans-box"
         >
           {/* Side-by-Side Symmetrical Grid on All Devices */}

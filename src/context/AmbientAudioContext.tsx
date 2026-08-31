@@ -21,22 +21,7 @@ export function AmbientAudioProvider({ children }: { children: React.ReactNode }
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    // Instantiate persistent HTML5 Audio
-    const audio = new Audio('/audio/ambient.mp3');
-    audio.loop = true;
-    audio.preload = 'auto';
-    audio.volume = 0;
-    audioRef.current = audio;
-
-    return () => {
-      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-      audio.pause();
-      audio.src = '';
-      audioRef.current = null;
-    };
-  }, []);
+  const userMutedRef = useRef<boolean>(false);
 
   const fadeVolume = (targetVol: number, onComplete?: () => void) => {
     if (!audioRef.current) return;
@@ -63,24 +48,67 @@ export function AmbientAudioProvider({ children }: { children: React.ReactNode }
     }, stepTime);
   };
 
+  const startPlayback = () => {
+    if (!audioRef.current || userMutedRef.current) return;
+    const audio = audioRef.current;
+    audio
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+        fadeVolume(TARGET_VOLUME);
+      })
+      .catch(() => {
+        // Handled via user interaction fallback
+      });
+  };
+
+  useEffect(() => {
+    // Instantiate persistent HTML5 Audio
+    const audio = new Audio('/audio/ambient.mp3');
+    audio.loop = true;
+    audio.preload = 'auto';
+    audio.volume = 0;
+    audioRef.current = audio;
+
+    // 1. Direct autoplay attempt
+    startPlayback();
+
+    // 2. Browser interaction fallback (first tap or scroll)
+    const handleFirstInteraction = () => {
+      if (!userMutedRef.current && audioRef.current && audioRef.current.paused) {
+        startPlayback();
+      }
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('scroll', handleFirstInteraction);
+      window.removeEventListener('click', handleFirstInteraction);
+    };
+
+    window.addEventListener('pointerdown', handleFirstInteraction, { passive: true });
+    window.addEventListener('touchstart', handleFirstInteraction, { passive: true });
+    window.addEventListener('scroll', handleFirstInteraction, { passive: true });
+    window.addEventListener('click', handleFirstInteraction, { passive: true });
+
+    return () => {
+      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('scroll', handleFirstInteraction);
+      window.removeEventListener('click', handleFirstInteraction);
+      audio.pause();
+      audio.src = '';
+      audioRef.current = null;
+    };
+  }, []);
+
   const togglePlay = () => {
     if (!audioRef.current) return;
 
     if (!isPlaying) {
-      // Start Playing with 300ms fade-in to 0.25
-      const audio = audioRef.current;
-      audio.volume = 0;
-      audio
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-          fadeVolume(TARGET_VOLUME);
-        })
-        .catch((err) => {
-          console.warn('[AmbientAudio] Autoplay / user interaction required:', err);
-        });
+      userMutedRef.current = false;
+      startPlayback();
     } else {
-      // Fade out to 0 over 300ms then pause
+      userMutedRef.current = true;
       fadeVolume(0, () => {
         if (audioRef.current) {
           audioRef.current.pause();
