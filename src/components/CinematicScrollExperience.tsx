@@ -506,98 +506,84 @@ export function CinematicScrollExperience({
           className="absolute bottom-16 right-6 md:right-20 z-20 w-full max-w-md lg:max-w-lg space-y-4 pointer-events-none will-change-transform transform-gpu"
           id="plans-box"
         >
-          {/* 2 Frosted Obsidian Glass Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {PLANS.map((plan) => {
-              const isPopular = plan.badge === 'Most Popular' || plan.badge === 'Popular';
               const count = (stockCounts && stockCounts[plan.id]) ?? 0;
               const isOutOfStock = count === 0;
               const isWaitlisted = Boolean(waitlistedPlans && waitlistedPlans[plan.id]);
 
               return (
-                <div
-                  key={plan.id}
-                  className={cn(
-                    'relative p-6 rounded-2xl bg-neutral-950/85 backdrop-blur-md border transition-all duration-200 flex flex-col justify-between space-y-4 shadow-2xl pointer-events-auto transform-gpu',
-                    isPopular
-                      ? 'border-cyan-500/50 shadow-[0_0_25px_rgba(56,189,248,0.15)] hover:border-cyan-400'
-                      : 'border-white/10 hover:border-cyan-500/40'
-                  )}
-                >
-                  {/* Single Clean Top Badge */}
-                  {plan.discount_badge ? (
-                    <div className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-emerald-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)]">
-                      🔥 {plan.discount_badge}
-                    </div>
-                  ) : isPopular ? (
-                    <div className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[10px] font-mono uppercase tracking-wider">
-                      POPULAR
-                    </div>
-                  ) : null}
-
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base font-medium text-white font-sans">{plan.name}</h3>
-                      <span className="text-[10px] font-mono text-neutral-400">
-                        {plan.device_slots} Device{plan.device_slots > 1 ? 's' : ''}
+                <div key={plan.id} className="flex flex-col justify-end">
+                  {/* Tag strictly above the box */}
+                  <div className="h-6 flex items-center justify-end px-2 mb-1.5">
+                    {plan.discount_badge && (
+                      <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-emerald-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                        🔥 {plan.discount_badge}
                       </span>
-                    </div>
-
-                    <div className="mt-2 flex items-baseline">
-                      <span className="text-3xl font-bold text-white font-sans">
-                        ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
-                      </span>
-                      <span className="text-xs text-cyan-400 font-mono ml-2">
-                        (${(plan.price_usd / 100).toFixed(2)})
-                      </span>
-                    </div>
-
-                    <div className="mt-2 text-xs font-mono">
-                      {isOutOfStock ? (
-                        <span className="text-red-400">● Sold Out</span>
-                      ) : (
-                        <span className="text-emerald-400">● {count} in vault</span>
-                      )}
-                    </div>
+                    )}
                   </div>
 
-                  {/* Action Button */}
-                  {isOutOfStock ? (
-                    isWaitlisted ? (
-                      <button
-                        type="button"
-                        onClick={() => onNotifyClick?.(plan)}
-                        className="w-full py-2 text-center text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-full border border-emerald-500/30 transition-colors"
-                        title="Click to update or re-register notification email"
-                      >
-                        ✓ Waitlisted (Update)
-                      </button>
+                  {/* 100% Symmetrical Identical Box Format */}
+                  <div className="p-6 rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 transition-all duration-200 flex flex-col justify-between space-y-4 shadow-2xl pointer-events-auto transform-gpu">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-base font-medium text-white font-sans">{plan.name}</h3>
+                        <span className="text-[10px] font-mono text-neutral-400">
+                          {plan.device_slots} Device{plan.device_slots > 1 ? 's' : ''}
+                        </span>
+                      </div>
+
+                      <div className="mt-2 flex items-baseline">
+                        <span className="text-3xl font-bold text-white font-sans">
+                          ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
+                        </span>
+                        <span className="text-xs text-cyan-400 font-mono ml-2">
+                          (${(plan.price_usd / 100).toFixed(2)})
+                        </span>
+                      </div>
+
+                      <div className="mt-2 text-xs font-mono">
+                        {isOutOfStock ? (
+                          <span className="text-red-400">● Sold Out</span>
+                        ) : (
+                          <span className="text-emerald-400">● {count} in vault</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    {isOutOfStock ? (
+                      isWaitlisted ? (
+                        <button
+                          type="button"
+                          onClick={() => onNotifyClick?.(plan)}
+                          className="w-full py-2 text-center text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-full border border-emerald-500/30 transition-colors"
+                          title="Click to update or re-register notification email"
+                        >
+                          ✓ Waitlisted (Update)
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => onNotifyClick?.(plan)}
+                          className="w-full py-2 text-center text-xs font-mono text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full border border-white/10 transition-colors"
+                        >
+                          NOTIFY ME
+                        </button>
+                      )
                     ) : (
                       <button
                         type="button"
-                        onClick={() => onNotifyClick?.(plan)}
-                        className="w-full py-2 rounded-full bg-white/10 hover:bg-white/20 text-xs font-mono font-medium text-cyan-300 uppercase transition-all"
+                        onClick={(e) => {
+                          triggerParticleBurst(e, 25);
+                          onBuyClick?.(plan);
+                        }}
+                        className="w-full py-2.5 rounded-full font-medium text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
                       >
-                        Notify Me
+                        Buy Key
                       </button>
-                    )
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        triggerParticleBurst(e, 25);
-                        onBuyClick?.(plan);
-                      }}
-                      className={cn(
-                        'w-full py-2.5 rounded-full font-medium text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95',
-                        isPopular
-                          ? 'bg-cyan-400 hover:bg-cyan-300 text-black shadow-[0_0_20px_rgba(56,189,248,0.3)] font-semibold'
-                          : 'bg-white text-black hover:bg-cyan-400 hover:text-black'
-                      )}
-                    >
-                      Buy Key
-                    </button>
-                  )}
+                    )}
+                  </div>
                 </div>
               );
             })}
