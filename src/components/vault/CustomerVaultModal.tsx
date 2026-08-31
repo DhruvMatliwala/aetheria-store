@@ -112,7 +112,13 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
       toast.success('Successfully logged into Customer Vault!');
     } catch (err: any) {
       console.error('[CustomerVault] Google Sign-In error:', err);
-      if (err.code !== 'auth/popup-closed-by-user') {
+      if (err.code === 'auth/operation-not-allowed') {
+        toast.error('Google Sign-In is not enabled yet in Firebase Console. Enable it under Authentication > Sign-in method.');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        toast.error('This domain is not authorized in Firebase. Add it in Firebase Console > Authentication > Settings > Authorized domains.');
+      } else if (err.code === 'auth/popup-blocked') {
+        toast.error('Popup blocked by browser. Please allow popups for this site.');
+      } else if (err.code !== 'auth/popup-closed-by-user') {
         toast.error(err.message || 'Google sign-in failed.');
       }
     } finally {
