@@ -196,7 +196,7 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-sans font-bold text-base tracking-wider text-white uppercase">
-                  AETHERIA // CUSTOMER VAULT
+                  CUSTOMER VAULT
                 </h2>
                 <span className="px-2 py-0.5 text-[10px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-full">
                   LIVE SYNC
