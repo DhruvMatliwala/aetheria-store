@@ -7,7 +7,7 @@ export interface Plan {
   original_price_inr?: number;  // original/strikethrough price in paise
   original_price_usd?: number;  // original/strikethrough price in cents
   features: string[];
-  badge?: string;               // e.g. "Most Popular"
-  discount_badge?: string;      // e.g. "SAVE 12%"
+  badge?: string;               // e.g. "Popular"
+  discount_badge?: string;      // e.g. "BEST VALUE"
   device_slots: number;
 }

@@ -27,7 +27,7 @@ export const PLANS: Plan[] = [
     original_price_inr: 36000,  // ₹360 (2x ₹180) in paise
     original_price_usd: 399,    // $3.99 in cents
     badge: 'Popular',
-    discount_badge: 'SAVE 12%',
+    discount_badge: 'BEST VALUE',
     device_slots: 2,
     features: [
       'Full PGSharp Standard Features',
