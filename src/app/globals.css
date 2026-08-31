@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto+Mono:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════
+   SAFFRON LUXURY DESIGN TOKENS
+   ═══════════════════════════════════════════════════════ */
+:root {
+  --color-void: #080403;
+  --color-deep: #0e0605;
+  --color-base: #140806;
+  --color-surface: #1b0b08;
+  --color-raised: #240e0b;
+  --color-line: #33140e;
+  --color-muted: #4a1c14;
+
+  --color-gold: #ffbc09;
+  --color-gold-bright: #ffd053;
+  --color-gold-dim: rgba(255, 188, 9, 0.15);
+  --color-amber: #f59e0b;
+  --color-terracotta: #712011;
+  --color-emerald: #10b981;
+
+  --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono', 'JetBrains Mono', monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE LAYER
+   ═══════════════════════════════════════════════════════ */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: #ece7e0;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--color-void); }
+  ::-webkit-scrollbar-thumb { background: #33140e; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #ffbc09; }
+
+  ::selection {
+    background: rgba(255, 188, 9, 0.35);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid #ffbc09;
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    .terrain-particles,
+    .creature-float,
+    .ambient-drift,
+    .radar-sweep {
+      display: none !important;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════════════════ */
+@layer utilities {
+  /* Saffron terrain contour grid */
+  .bg-contour {
+    background-image:
+      radial-gradient(ellipse 900px 650px at 30% 20%, rgba(255,188,9,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 700px 450px at 70% 80%, rgba(113,32,17,0.15) 0%, transparent 70%);
+  }
+
+  .bg-topo-lines {
+    background-size: 60px 60px;
+    background-image:
+      linear-gradient(to right, rgba(255,188,9,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,188,9,0.04) 1px, transparent 1px);
+  }
+
+  .bg-dot-field {
+    background-size: 20px 20px;
+    background-image: radial-gradient(rgba(255,188,9,0.1) 1px, transparent 1px);
+  }
+
+  /* Glass */
+  .glass-nav {
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    background: rgba(8, 4, 3, 0.85);
+  }
+
+  .glass-panel {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    background: rgba(20, 8, 6, 0.7);
+  }
+
+  /* Text gradients */
+  .text-glow {
+    background: linear-gradient(135deg, #ffffff 15%, #ffd053 50%, #ffbc09 85%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-glow-warm {
+    background: linear-gradient(135deg, #fde68a 0%, #ffbc09 50%, #ea580c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Shimmer loading */
+  .shimmer {
+    background: linear-gradient(90deg, #140806 0%, #240e0b 50%, #140806 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* Journey path drawing */
+  .journey-line {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    transition: stroke-dashoffset 1.5s var(--ease-out-expo);
+  }
+  .journey-line.drawn {
+    stroke-dashoffset: 0;
+  }
+
+  /* Waypoint pulse */
+  .waypoint-ring {
+    animation: waypoint-pulse 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  /* Device frame glow */
+  .device-glow {
+    box-shadow:
+      0 0 60px -15px rgba(255,188,9,0.25),
+      0 0 30px -10px rgba(113,32,17,0.4),
+      0 25px 50px -12px rgba(0,0,0,0.8);
+  }
+
+  /* Product card depth */
+  .product-lift {
+    transition: transform 0.35s var(--ease-out-expo), box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+  .product-lift:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 20px 60px -15px rgba(0,0,0,0.8),
+      0 0 40px -10px rgba(255,188,9,0.2);
+  }
+
+  /* Button press */
+  .btn-press {
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  }
+  .btn-press:active {
+    transform: scale(0.96) translateY(1px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   KEYFRAMES
+   ═══════════════════════════════════════════════════════ */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes waypoint-pulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  70% { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes float-idle {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-6px) rotate(0.5deg); }
+  75% { transform: translateY(4px) rotate(-0.5deg); }
+}
+
+@keyframes drift-across {
+  0% { transform: translateX(-100px) translateY(0); opacity: 0; }
+  10% { opacity: 0.2; }
+  90% { opacity: 0.2; }
+  100% { transform: translateX(calc(100vw + 100px)) translateY(-30px); opacity: 0; }
+}
+
+@keyframes radar-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes ambientPulse {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.06) translate(1%, -1%);
+  }
+}
+
+.animate-ambient-pulse {
+  animation: ambientPulse 8s ease-in-out infinite;
+}

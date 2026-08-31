@@ -1,0 +1,33 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ────────────────────────────────────────────────────
+
+    // No one can write to keys from the client — only Firebase Admin SDK (server).
+    // Reads are also blocked from the client.
+    match /keys/{keyId} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    // ── Orders ───────────────────────────────────────────────────────────────
+    // Clients can read their own order (using the orderId they have).
+    // This is acceptable because the orderId is a random UUID — it acts as a
+    // bearer token. Production apps should additionally require Firebase Auth.
+    //
+    // No client writes are allowed — orders are only created/updated by the
+    // Firebase Admin SDK in serverless API routes.
+    match /orders/{orderId} {
+      allow get: if true;   // Any client with the orderId can read it
+      allow list: if false; // Never allow listing all orders
+      allow write: if false;
+    }
+
+    // ── Everything else ──────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,55 @@
+import { Plan } from '@/types/plan';
+
+export const PLANS: Plan[] = [
+  {
+    id: '1_month_1_device',
+    name: '1 Device',
+    duration: '30 Days',
+    price_inr: 18000,   // ₹180 in paise
+    price_usd: 199,     // $1.99 in cents
+    device_slots: 1,
+    features: [
+      'Full PGSharp Standard Features',
+      'Auto Walk / Joystick / Teleport',
+      '100% IV Checker & Quick Catch',
+      'Enhanced Throw (100% Hit & Curve)',
+      '1 Android Device Slot',
+      'Instant On-Screen & Email Delivery',
+      'Discord & Reddit Direct Support',
+    ],
+  },
+  {
+    id: '1_month_2_device',
+    name: '2 Devices',
+    duration: '30 Days',
+    price_inr: 34000,   // ₹340 in paise
+    price_usd: 399,     // $3.99 in cents
+    badge: 'Most Popular',
+    device_slots: 2,
+    features: [
+      'Full PGSharp Standard Features',
+      'Auto Walk / Joystick / Teleport',
+      '100% IV Checker & Quick Catch',
+      'Enhanced Throw & Spawn Booster',
+      '2 Android Device Slots',
+      'Instant On-Screen & Email Delivery',
+      'Priority Discord Direct Support',
+    ],
+  },
+];
+
+export const PLAN_MAP = Object.fromEntries(PLANS.map((p) => [p.id, p]));
+
+export const LOW_STOCK_THRESHOLD = 5;
+
+// Direct Support Channels (Discord & Reddit)
+export const DISCORD_URL =
+  process.env.NEXT_PUBLIC_DISCORD_URL || 'https://discord.com/users/503233296134832149';
+export const REDDIT_URL =
+  process.env.NEXT_PUBLIC_REDDIT_URL || 'https://www.reddit.com/user/dhruv_emperor/';
+
+// Razorpay / PayPal modes
+export const PAYPAL_BASE_URL =
+  process.env.PAYPAL_MODE === 'live'
+    ? 'https://api-m.paypal.com'
+    : 'https://api-m.sandbox.paypal.com';
