@@ -509,7 +509,7 @@ export function CinematicScrollExperience({
           {/* 2 Frosted Obsidian Glass Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {PLANS.map((plan) => {
-              const isPopular = plan.badge === 'Most Popular';
+              const isPopular = plan.badge === 'Most Popular' || plan.badge === 'Popular';
               const count = (stockCounts && stockCounts[plan.id]) ?? 0;
               const isOutOfStock = count === 0;
               const isWaitlisted = Boolean(waitlistedPlans && waitlistedPlans[plan.id]);
@@ -524,11 +524,19 @@ export function CinematicScrollExperience({
                       : 'border-white/10 hover:border-cyan-500/40'
                   )}
                 >
-                  {isPopular && (
-                    <div className="absolute -top-2.5 right-3 px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[10px] font-mono uppercase tracking-wider">
-                      POPULAR
-                    </div>
-                  )}
+                  {/* Top Badges */}
+                  <div className="absolute -top-2.5 right-3 flex items-center gap-1.5">
+                    {plan.discount_badge && (
+                      <div className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/25 to-emerald-500/25 text-amber-300 border border-amber-400/40 text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                        🔥 {plan.discount_badge}
+                      </div>
+                    )}
+                    {isPopular && (
+                      <div className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-[10px] font-mono uppercase tracking-wider font-bold">
+                        POPULAR
+                      </div>
+                    )}
+                  </div>
 
                   <div>
                     <div className="flex items-center justify-between">
@@ -538,14 +546,31 @@ export function CinematicScrollExperience({
                       </span>
                     </div>
 
-                    <div className="mt-2 flex items-baseline">
-                      <span className="text-3xl font-bold text-white font-sans">
+                    <div className="mt-2 flex items-baseline flex-wrap gap-x-2">
+                      {plan.original_price_inr && (
+                        <span className="text-sm font-mono text-rose-400/70 line-through decoration-rose-500/90 decoration-1">
+                          ₹{(plan.original_price_inr / 100).toLocaleString('en-IN')}
+                        </span>
+                      )}
+                      <span className="text-3xl font-bold text-white font-sans tracking-tight">
                         ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
                       </span>
-                      <span className="text-xs text-cyan-400 font-mono ml-2">
-                        (${(plan.price_usd / 100).toFixed(2)})
+                      <span className="text-xs text-cyan-400 font-mono flex items-center gap-1">
+                        {plan.original_price_usd && (
+                          <span className="text-rose-400/60 line-through decoration-rose-500/80">
+                            ${(plan.original_price_usd / 100).toFixed(2)}
+                          </span>
+                        )}
+                        <span>(${(plan.price_usd / 100).toFixed(2)})</span>
                       </span>
                     </div>
+
+                    {/* Per-device savings subtext */}
+                    {plan.device_slots > 1 && (
+                      <div className="mt-1 text-[11px] font-mono text-emerald-400/90 font-medium">
+                        ⚡ ₹{((plan.price_inr / plan.device_slots) / 100).toFixed(0)} / device
+                      </div>
+                    )}
 
                     <div className="mt-2 text-xs font-mono">
                       {isOutOfStock ? (

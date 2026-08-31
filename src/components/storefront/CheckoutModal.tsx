@@ -145,7 +145,14 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
         <div className="bg-surface-900 rounded-xl p-4 border border-surface-600">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-white font-bold text-base">{plan.name} Key</p>
+              <div className="flex items-center gap-2">
+                <p className="text-white font-bold text-base">{plan.name} Key</p>
+                {plan.discount_badge && (
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+                    🔥 {plan.discount_badge}
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
                 <span>{plan.duration} Validity</span>
                 <span>•</span>
@@ -155,6 +162,16 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               </div>
             </div>
             <div className="text-right">
+              {method === 'upi' && plan.original_price_inr && (
+                <p className="text-xs font-mono text-rose-400/70 line-through">
+                  ₹{(plan.original_price_inr / 100).toLocaleString('en-IN')}
+                </p>
+              )}
+              {method === 'paypal' && plan.original_price_usd && (
+                <p className="text-xs font-mono text-rose-400/70 line-through">
+                  ${(plan.original_price_usd / 100).toFixed(2)} USD
+                </p>
+              )}
               <p className="text-2xl font-black text-white">{priceDisplay}</p>
             </div>
           </div>

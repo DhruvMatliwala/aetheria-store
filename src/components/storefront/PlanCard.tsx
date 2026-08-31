@@ -63,10 +63,15 @@ export function PlanCard({
         <div className="flex items-start justify-between gap-3 mb-5">
           <div>
             {/* Plan name */}
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 flex-wrap">
               <h3 className="text-xl sm:text-2xl font-black text-[#ece7e0] font-display tracking-tight">
                 {plan.name}
               </h3>
+              {plan.discount_badge && (
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+                  🔥 {plan.discount_badge}
+                </span>
+              )}
               {isPopular && (
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-[#ffbc09]/15 text-[#ffbc09] border border-[#ffbc09]/40 flex items-center gap-1">
                   <Sparkles size={10} className="text-[#ffbc09] animate-spin" />
@@ -94,13 +99,23 @@ export function PlanCard({
 
         {/* Price */}
         <div className="mb-5">
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2.5 flex-wrap">
+            {plan.original_price_inr && (
+              <span className="text-xl sm:text-2xl font-mono text-rose-400/70 line-through decoration-rose-500/90">
+                ₹{(plan.original_price_inr / 100).toLocaleString('en-IN')}
+              </span>
+            )}
             <span className="text-4xl sm:text-5xl font-black text-[#ece7e0] font-display tracking-tight">
               ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
             </span>
           </div>
-          <p className="text-xs font-mono text-[#bfb8ae] mt-1">
-            ${(plan.price_usd / 100).toFixed(2)} USD via PayPal
+          <p className="text-xs font-mono text-[#bfb8ae] mt-1 flex items-center gap-1">
+            {plan.original_price_usd && (
+              <span className="line-through text-rose-400/60 mr-1">
+                ${(plan.original_price_usd / 100).toFixed(2)}
+              </span>
+            )}
+            <span>${(plan.price_usd / 100).toFixed(2)} USD via PayPal</span>
           </p>
         </div>
 
