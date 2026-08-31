@@ -406,7 +406,7 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
                   <AlertCircle size={32} className="text-neutral-500 mx-auto" />
                   <h4 className="text-sm font-semibold text-white">No License Keys Found for this Email</h4>
                   <p className="text-xs text-neutral-400 font-mono max-w-md mx-auto leading-relaxed">
-                    We didn&apos;t find any paid orders under <span className="text-cyan-300">{user.email}</span>. If you used a different email during UPI or PayPal checkout, please contact us with your payment receipt.
+                    We didn&apos;t find any paid orders under <span className="text-cyan-300">{user.email}</span>. If you used a different email during checkout, please sign in with that email, or contact us with your payment screenshot / Transaction ID.
                   </p>
                   <div className="pt-2 flex items-center justify-center gap-3">
                     <a
