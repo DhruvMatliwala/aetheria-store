@@ -343,7 +343,7 @@ export function CinematicScrollExperience({
         PINNED FULL-SCREEN 1440P HARDWARE-ACCELERATED VIDEO VIEWPORT
         ============================================================
       */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden z-10 flex items-center justify-center will-change-transform transform-gpu">
+      <div className="sticky top-0 h-screen h-[100dvh] w-full overflow-hidden z-10 flex items-center justify-center will-change-transform transform-gpu">
         {/* Layer 1: Seamless Optical Dissolve Video Scenes (Scene 1, Scene 2, Scene 3) */}
         <div className="absolute inset-0 w-full h-full bg-black">
           {SCENE_VIDEOS.map((item, idx) => (
@@ -418,7 +418,7 @@ export function CinematicScrollExperience({
           Clean Cyber-Cyan / Emerald Palette with High Contrast
           ============================================================
         */}
-        <div className="absolute bottom-4 sm:bottom-12 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
+        <div className="absolute bottom-10 sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
           {SCENE_OVERLAYS.map((overlay, idx) => (
             <div
               key={idx}
@@ -506,7 +506,7 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={pricingRef}
-          className="absolute bottom-6 sm:bottom-10 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 pointer-events-none will-change-transform transform-gpu"
+          className="absolute bottom-8 sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 pointer-events-none will-change-transform transform-gpu"
           id="plans-box"
         >
           {/* Side-by-Side Symmetrical Grid on All Devices */}
