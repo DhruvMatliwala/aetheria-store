@@ -517,7 +517,7 @@ export function CinematicScrollExperience({
                   {/* Tag sitting directly on top edge of the box */}
                   <div className="h-6 flex items-end justify-end px-3 -mb-[1px] z-10">
                     {plan.discount_badge && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-neutral-950/95 text-amber-300 border border-amber-400/50 text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(245,158,11,0.25)] backdrop-blur-md">
+                      <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-emerald-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)] backdrop-blur-md">
                         🔥 {plan.discount_badge}
                       </span>
                     )}
