@@ -563,19 +563,16 @@ export function CinematicHeroExperience({
                         : 'bg-black/60 border-white/10 hover:border-white/20'
                     )}
                   >
-                    {/* Badges */}
-                    <div className="absolute -top-2.5 right-4 flex items-center gap-1.5">
-                      {plan.discount_badge && (
-                        <div className="px-2.5 py-0.5 rounded-full bg-emerald-500 text-black text-[10px] font-mono font-bold uppercase tracking-wider">
-                          🔥 {plan.discount_badge}
-                        </div>
-                      )}
-                      {isPopular && (
-                        <div className="px-2.5 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-mono font-bold uppercase tracking-wider">
-                          POPULAR
-                        </div>
-                      )}
-                    </div>
+                    {/* Single Clean Badge */}
+                    {plan.discount_badge ? (
+                      <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-emerald-500 text-black text-[10px] font-mono font-bold uppercase tracking-wider">
+                        🔥 {plan.discount_badge}
+                      </div>
+                    ) : isPopular ? (
+                      <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-mono font-bold uppercase tracking-wider">
+                        POPULAR
+                      </div>
+                    ) : null}
 
                     <div>
                       <div className="flex items-center justify-between">
@@ -585,22 +582,12 @@ export function CinematicHeroExperience({
                         </span>
                       </div>
 
-                      <div className="mt-2 flex items-baseline gap-2 flex-wrap">
-                        {plan.original_price_inr && (
-                          <span className="text-sm font-mono text-rose-400/70 line-through">
-                            ₹{(plan.original_price_inr / 100).toLocaleString('en-IN')}
-                          </span>
-                        )}
+                      <div className="mt-2">
                         <span className="text-3xl font-extrabold text-white font-sans">
                           ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
                         </span>
-                        <span className="text-xs text-neutral-400 font-mono flex items-center gap-1">
-                          {plan.original_price_usd && (
-                            <span className="line-through text-rose-400/60">
-                              ${(plan.original_price_usd / 100).toFixed(2)}
-                            </span>
-                          )}
-                          <span>(${(plan.price_usd / 100).toFixed(2)} USD)</span>
+                        <span className="text-xs text-neutral-400 font-mono ml-2">
+                          (${(plan.price_usd / 100).toFixed(2)} USD)
                         </span>
                       </div>
 
