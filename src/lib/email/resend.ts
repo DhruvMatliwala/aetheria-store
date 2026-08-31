@@ -49,7 +49,7 @@ function buildPlainText(params: KeyDeliveryEmailParams): string {
 
   return `Dear ${name},
 
-Thank you for donating PGSharp, this is your license details.
+Thank you for buying from aetheria-store, this is your license details.
 
 ----------------------------------------------------------------
 
@@ -98,34 +98,34 @@ function buildEmailHtml(params: KeyDeliveryEmailParams): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Your PGSharp Standard Patron is activated!</title>
 </head>
-<body style="margin:0;padding:24px;background:#ffffff;color:#222222;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.6;">
-  <div style="max-width:620px;margin:0 auto;padding:12px;">
-    <p style="margin:0 0 18px;color:#222222;">Dear ${name},</p>
+<body style="margin:0;padding:24px;background:#ffffff;color:#222222;font-family:'Times New Roman', Times, serif;font-size:16px;line-height:1.6;">
+  <div style="max-width:620px;margin:0 auto;padding:12px;font-family:'Times New Roman', Times, serif;">
+    <p style="margin:0 0 18px;color:#222222;font-family:'Times New Roman', Times, serif;">Dear ${name},</p>
     
-    <p style="margin:0 0 20px;color:#222222;">Thank you for donating PGSharp, this is your license details.</p>
+    <p style="margin:0 0 20px;color:#222222;font-family:'Times New Roman', Times, serif;">Thank you for buying from aetheria-store, this is your license details.</p>
 
     <div style="border-top:1px dashed #cccccc;margin:20px 0;"></div>
 
-    <p style="margin:0 0 6px;color:#555555;font-weight:600;font-size:14px;">License:</p>
+    <p style="margin:0 0 6px;color:#333333;font-weight:bold;font-size:15px;font-family:'Times New Roman', Times, serif;">License:</p>
     <p style="margin:0 0 22px;font-family:'Courier New',Courier,monospace;font-size:18px;font-weight:700;color:#000000;letter-spacing:1px;background:#f8f9fa;padding:12px 14px;border:1px solid #e5e7eb;border-radius:6px;word-break:break-all;">${params.licenseKey}</p>
 
-    <p style="margin:0 0 6px;color:#555555;font-weight:600;font-size:14px;">Due Date:</p>
+    <p style="margin:0 0 6px;color:#333333;font-weight:bold;font-size:15px;font-family:'Times New Roman', Times, serif;">Due Date:</p>
     <p style="margin:0 0 20px;font-family:'Courier New',Courier,monospace;font-size:16px;font-weight:600;color:#000000;">${dueDate}</p>
 
     <div style="border-top:1px dashed #cccccc;margin:20px 0;"></div>
 
-    <p style="margin:0 0 10px;font-weight:600;color:#222222;">Notes:</p>
+    <p style="margin:0 0 10px;font-weight:bold;color:#222222;font-family:'Times New Roman', Times, serif;">Notes:</p>
 
-    <p style="margin:0 0 14px;color:#333333;">This license allows you to activate the full features on ${devices} device${devices > 1 ? 's' : ''}.</p>
+    <p style="margin:0 0 14px;color:#333333;font-family:'Times New Roman', Times, serif;">This license allows you to activate the full features on ${devices} device${devices > 1 ? 's' : ''}.</p>
 
-    <p style="margin:0 0 14px;color:#333333;">This service cannot give you ability to bypass the 2 hours cooldown. Please always respect the cooldown rules to avoid strikes.</p>
+    <p style="margin:0 0 14px;color:#333333;font-family:'Times New Roman', Times, serif;">This service cannot give you ability to bypass the 2 hours cooldown. Please always respect the cooldown rules to avoid strikes.</p>
 
-    <p style="margin:0 0 14px;color:#b91c1c;font-weight:600;">IMPORTANT: <span style="font-weight:normal;color:#333333;">Please do not share your license key with others, this may lead to your license being terminated without notice.</span></p>
+    <p style="margin:0 0 14px;color:#b91c1c;font-weight:bold;font-family:'Times New Roman', Times, serif;">IMPORTANT: <span style="font-weight:normal;color:#333333;">Please do not share your license key with others, this may lead to your license being terminated without notice.</span></p>
 
-    <p style="margin:0 0 20px;color:#333333;">If you find any difficulties, please feel free to contact us.</p>
+    <p style="margin:0 0 20px;color:#333333;font-family:'Times New Roman', Times, serif;">If you find any difficulties, please feel free to contact us.</p>
 
-    <p style="margin:0 0 4px;color:#222222;">Regards,</p>
-    <p style="margin:0;font-weight:600;color:#0e7490;">Aetheria-store</p>
+    <p style="margin:0 0 4px;color:#222222;font-family:'Times New Roman', Times, serif;">Regards,</p>
+    <p style="margin:0;font-weight:bold;color:#0e7490;font-family:'Times New Roman', Times, serif;">Aetheria-store</p>
   </div>
 </body>
 </html>
