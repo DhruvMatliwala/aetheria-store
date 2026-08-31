@@ -133,7 +133,7 @@ function buildEmailHtml(params: KeyDeliveryEmailParams): string {
 }
 
 export async function sendKeyDeliveryEmail(params: KeyDeliveryEmailParams): Promise<void> {
-  const from = process.env.EMAIL_FROM || 'PGSharp Team <onboarding@resend.dev>';
+  const from = process.env.EMAIL_FROM || 'Aetheria Store <onboarding@resend.dev>';
   const resend = getResendClient();
 
   const { error } = await resend.emails.send({
