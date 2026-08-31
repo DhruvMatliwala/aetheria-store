@@ -44,7 +44,7 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed top-5 left-0 right-0 z-50 pointer-events-none px-6 md:px-12 flex items-center justify-between">
+      <header className="fixed top-3 sm:top-5 left-0 right-0 z-50 pointer-events-none px-3.5 sm:px-6 md:px-12 flex items-center justify-between">
         {/* 
           ============================================================
           LEFT: FLOATING CLEAN BRAND BADGE (SpaceX Minimalist Style)
@@ -54,28 +54,28 @@ export function Header() {
           <Link
             href="/"
             onClick={handleLogoClick}
-            className="flex items-center gap-3 group transition-transform active:scale-95"
+            className="flex items-center gap-2 sm:gap-3 group transition-transform active:scale-95"
           >
             {/* Frosted Rounded Emblem Badge */}
-            <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 backdrop-blur-2xl flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300 group-hover:border-cyan-400/50 group-hover:scale-105">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white/10 border border-white/20 backdrop-blur-2xl flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300 group-hover:border-cyan-400/50 group-hover:scale-105">
               <Image
                 src="/logo.png"
                 alt="AETHERIA"
                 width={26}
                 height={26}
-                className="w-5 h-5 object-contain filter drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]"
+                className="w-4 h-4 sm:w-5 sm:h-5 object-contain filter drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]"
               />
             </div>
 
             {/* Clean Sans Wordmark */}
-            <span className="font-sans font-bold text-sm tracking-[0.2em] text-white uppercase group-hover:text-cyan-300 transition-colors drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            <span className="font-sans font-bold text-xs sm:text-sm tracking-[0.15em] sm:tracking-[0.2em] text-white uppercase group-hover:text-cyan-300 transition-colors drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
               AETHERIA
             </span>
           </Link>
 
           {/* Secret +100 XP Reward Toast */}
           {showReward && (
-            <div className="absolute top-12 left-0 z-50 animate-slide-up flex items-center gap-1.5 px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-mono rounded-full shadow-lg border border-cyan-400/40 backdrop-blur-md pointer-events-none whitespace-nowrap">
+            <div className="absolute top-11 sm:top-12 left-0 z-50 animate-slide-up flex items-center gap-1.5 px-3 py-1 bg-cyan-500/20 text-cyan-300 text-xs font-mono rounded-full shadow-lg border border-cyan-400/40 backdrop-blur-md pointer-events-none whitespace-nowrap">
               <Sparkles size={12} className="animate-spin text-cyan-400" />
               <span>+100 XP VAULT SYNCED! ⚡</span>
             </div>
@@ -85,11 +85,10 @@ export function Header() {
         {/* 
           ============================================================
           RIGHT: COMPACT FLOATING FROSTED CAPSULE (SpaceX Style Tabs)
-          Center is 100% open so no part of the scene is hidden
           ============================================================
         */}
         <div className="pointer-events-auto flex items-center gap-2">
-          <nav className="px-2 py-1.5 rounded-full bg-white/[0.08] backdrop-blur-2xl border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex items-center gap-1 transition-all duration-300 hover:border-white/25">
+          <nav className="px-1.5 sm:px-2 py-1 sm:py-1.5 rounded-full bg-white/[0.08] backdrop-blur-2xl border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex items-center gap-1 transition-all duration-300 hover:border-white/25">
             {/* Desktop Capsule Tabs */}
             <div className="hidden md:flex items-center gap-1">
               {NAV_LINKS.map((link) => {
@@ -115,18 +114,18 @@ export function Header() {
             <button
               type="button"
               onClick={() => setVaultOpen(true)}
-              className="rounded-full bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white px-3.5 sm:px-4 py-1 text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center gap-1.5 active:scale-95 whitespace-nowrap ml-1 group"
+              className="rounded-full bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white px-2.5 sm:px-4 py-1 text-[11px] sm:text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center gap-1.5 active:scale-95 whitespace-nowrap ml-0.5 sm:ml-1 group"
               title="View your purchased license keys"
             >
-              <Key size={13} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
+              <Key size={12} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
               <span>My Keys</span>
               {user && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>}
             </button>
 
-            {/* Buy Key CTA Pill Button */}
+            {/* Buy Key CTA Pill Button (Hidden on very narrow mobile to prevent header crowding) */}
             <a
               href="#plans"
-              className="rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black px-4 sm:px-5 py-1 text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] flex items-center gap-1.5 active:scale-95 whitespace-nowrap ml-1"
+              className="hidden sm:inline-flex rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black px-4 sm:px-5 py-1 text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] items-center gap-1.5 active:scale-95 whitespace-nowrap ml-1"
             >
               <span>Buy Key</span>
               <span className="text-[10px]">→</span>
@@ -138,11 +137,11 @@ export function Header() {
               onClick={togglePlay}
               aria-label={isPlaying ? 'Mute ambient audio' : 'Play ambient audio'}
               title={isPlaying ? 'Mute ambient audio' : 'Play ambient audio'}
-              className="h-7 w-7 rounded-full bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-center text-cyan-300 hover:text-white hover:border-cyan-400 transition-all backdrop-blur-md shadow-[0_0_10px_rgba(6,182,212,0.15)] ml-1 flex-shrink-0 active:scale-90 group"
+              className="h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-center text-cyan-300 hover:text-white hover:border-cyan-400 transition-all backdrop-blur-md shadow-[0_0_10px_rgba(6,182,212,0.15)] ml-0.5 sm:ml-1 flex-shrink-0 active:scale-90 group"
             >
               {isPlaying ? (
                 <svg
-                  className="w-3.5 h-3.5 text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse"
+                  className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -156,7 +155,7 @@ export function Header() {
                 </svg>
               ) : (
                 <svg
-                  className="w-3.5 h-3.5 opacity-60 text-neutral-300 group-hover:text-white"
+                  className="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-60 text-neutral-300 group-hover:text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -172,20 +171,22 @@ export function Header() {
               )}
             </button>
 
-            {/* Mobile hamburger */}
+            {/* Mobile Hamburger Drawer Toggle */}
             <button
               type="button"
-              className="md:hidden p-1.5 text-neutral-300 hover:text-white transition-colors ml-1"
               onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 hover:text-white ml-0.5"
               aria-label="Toggle navigation"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                {mobileOpen ? (
-                  <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
-                ) : (
-                  <><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></>
-                )}
-              </svg>
+              {mobileOpen ? (
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
             </button>
           </nav>
         </div>

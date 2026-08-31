@@ -418,34 +418,37 @@ export function CinematicScrollExperience({
           Clean Cyber-Cyan / Emerald Palette with High Contrast
           ============================================================
         */}
-        <div className="absolute bottom-12 md:bottom-16 left-6 md:left-20 w-[94vw] max-w-2xl z-20 pointer-events-none">
+        <div className="absolute bottom-10 sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
           {SCENE_OVERLAYS.map((overlay, idx) => (
             <div
               key={idx}
               ref={(el) => {
                 overlayRefs.current[idx] = el;
               }}
-              className="absolute bottom-0 left-0 w-full pointer-events-auto"
+              className={cn(
+                'absolute bottom-0 left-0 w-full pointer-events-auto',
+                idx === 2 ? 'hidden md:block' : ''
+              )}
               style={{
                 opacity: idx === 0 ? 1 : 0,
               }}
             >
               {/* Line 1: Index Number + Section Subtitle Rule */}
-              <div className={cn('hud-tag flex items-center gap-3 mb-2.5', `hud-tag-${idx}`)}>
-                <span className="text-xs font-mono uppercase tracking-[0.3em] text-cyan-400 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2.5', `hud-tag-${idx}`)}>
+                <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] sm:tracking-[0.3em] text-cyan-400 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.idx}
                 </span>
-                <span className="w-6 h-px bg-white/30" />
-                <span className="text-xs font-sans uppercase tracking-[0.25em] text-neutral-300/90 font-light drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                <span className="w-4 sm:w-6 h-px bg-white/30" />
+                <span className="text-[10px] sm:text-xs font-sans uppercase tracking-[0.15em] sm:tracking-[0.25em] text-neutral-300/90 font-light drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.subtitle}
                 </span>
               </div>
 
-              {/* Line 2: Large Majestic Editorial Serif Title (with overflow-hidden mask for slide-up reveal) */}
-              <div className="overflow-hidden mb-4">
+              {/* Line 2: Large Majestic Editorial Serif Title */}
+              <div className="overflow-hidden mb-2 sm:mb-4">
                 <h2
                   className={cn(
-                    'hud-title text-5xl sm:text-6xl md:text-7xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.04] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
+                    'hud-title text-3xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.08] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
                     `hud-title-${idx}`
                   )}
                 >
@@ -456,7 +459,7 @@ export function CinematicScrollExperience({
               {/* Line 3: Editorial Prose Description */}
               <p
                 className={cn(
-                  'hud-desc text-base sm:text-lg md:text-xl text-neutral-200/95 font-light leading-relaxed mb-6 max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
+                  'hud-desc text-xs sm:text-base md:text-xl text-neutral-200/95 font-light leading-relaxed mb-3 sm:mb-6 max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
                   `hud-desc-${idx}`
                 )}
               >
@@ -464,12 +467,12 @@ export function CinematicScrollExperience({
               </p>
 
               {/* Line 4: Row of Capsule Tag Pills */}
-              <div className={cn('hud-badges flex flex-wrap items-center gap-2.5 mb-6', `hud-badges-${idx}`)}>
+              <div className={cn('hud-badges flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-3 sm:mb-6', `hud-badges-${idx}`)}>
                 {overlay.badges.map((badge, bIdx) => (
                   <span
                     key={bIdx}
                     className={cn(
-                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 text-xs md:text-sm text-white font-sans tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
+                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-2.5 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm text-white font-sans tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
                       `hud-badge-${idx}`
                     )}
                   >
@@ -484,7 +487,7 @@ export function CinematicScrollExperience({
                   type="button"
                   onClick={() => scrollToSection('plans')}
                   className={cn(
-                    'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-medium transition-all duration-200 px-7 py-2.5 text-xs md:text-sm shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-2 active:scale-95 whitespace-nowrap pointer-events-auto',
+                    'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-medium transition-all duration-200 px-5 sm:px-7 py-2 sm:py-2.5 text-xs md:text-sm shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-2 active:scale-95 whitespace-nowrap pointer-events-auto',
                     `hud-cta-${idx}`
                   )}
                 >
@@ -503,10 +506,11 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={pricingRef}
-          className="absolute bottom-16 right-6 md:right-20 z-20 w-full max-w-md lg:max-w-lg space-y-4 pointer-events-none will-change-transform transform-gpu"
+          className="absolute bottom-6 sm:bottom-10 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 pointer-events-none will-change-transform transform-gpu"
           id="plans-box"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {/* Side-by-Side Symmetrical Grid on All Devices */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3.5">
             {PLANS.map((plan) => {
               const count = (stockCounts && stockCounts[plan.id]) ?? 0;
               const isOutOfStock = count === 0;
@@ -515,34 +519,34 @@ export function CinematicScrollExperience({
               return (
                 <div key={plan.id} className="flex flex-col justify-end">
                   {/* Tag sitting directly on top edge of the box */}
-                  <div className="h-6 flex items-end justify-end px-3 -mb-[1px] z-10">
+                  <div className="h-5 sm:h-6 flex items-end justify-end px-2 sm:px-3 -mb-[1px] z-10">
                     {plan.discount_badge && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-emerald-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)] backdrop-blur-md">
+                      <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-emerald-500/20 text-amber-300 border border-amber-400/40 text-[8px] sm:text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)] backdrop-blur-md">
                         🔥 {plan.discount_badge}
                       </span>
                     )}
                   </div>
 
                   {/* 100% Symmetrical Identical Box Format */}
-                  <div className="p-6 rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 transition-all duration-200 flex flex-col justify-between space-y-4 shadow-2xl pointer-events-auto transform-gpu">
+                  <div className="p-3.5 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 transition-all duration-200 flex flex-col justify-between space-y-2.5 sm:space-y-4 shadow-2xl pointer-events-auto transform-gpu">
                     <div>
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-base font-medium text-white font-sans">{plan.name}</h3>
-                        <span className="text-[10px] font-mono text-neutral-400">
-                          {plan.device_slots} Device{plan.device_slots > 1 ? 's' : ''}
+                      <div className="flex items-center justify-between gap-1">
+                        <h3 className="text-xs sm:text-base font-medium text-white font-sans truncate">{plan.name}</h3>
+                        <span className="text-[9px] sm:text-[10px] font-mono text-neutral-400 shrink-0">
+                          {plan.device_slots} Slot{plan.device_slots > 1 ? 's' : ''}
                         </span>
                       </div>
 
-                      <div className="mt-2 flex items-baseline">
-                        <span className="text-3xl font-bold text-white font-sans">
+                      <div className="mt-1 sm:mt-2 flex items-baseline">
+                        <span className="text-xl sm:text-2xl md:text-3xl font-bold text-white font-sans tracking-tight">
                           ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
                         </span>
-                        <span className="text-xs text-cyan-400 font-mono ml-2">
+                        <span className="text-[10px] sm:text-xs text-cyan-400 font-mono ml-1 sm:ml-2">
                           (${(plan.price_usd / 100).toFixed(2)})
                         </span>
                       </div>
 
-                      <div className="mt-2 text-xs font-mono">
+                      <div className="mt-1 sm:mt-2 text-[10px] sm:text-xs font-mono">
                         {isOutOfStock ? (
                           <span className="text-red-400">● Sold Out</span>
                         ) : (
@@ -557,16 +561,16 @@ export function CinematicScrollExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-2 text-center text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-full border border-emerald-500/30 transition-colors"
+                          className="w-full py-1.5 sm:py-2 text-center text-[10px] sm:text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg sm:rounded-full border border-emerald-500/30 transition-colors"
                           title="Click to update or re-register notification email"
                         >
-                          ✓ Waitlisted (Update)
+                          ✓ Waitlisted
                         </button>
                       ) : (
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-2 text-center text-xs font-mono text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full border border-white/10 transition-colors"
+                          className="w-full py-1.5 sm:py-2 text-center text-[10px] sm:text-xs font-mono text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-full border border-white/10 transition-colors"
                         >
                           NOTIFY ME
                         </button>
@@ -578,7 +582,7 @@ export function CinematicScrollExperience({
                           triggerParticleBurst(e, 25);
                           onBuyClick?.(plan);
                         }}
-                        className="w-full py-2.5 rounded-full font-medium text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
+                        className="w-full py-1.5 sm:py-2.5 rounded-lg sm:rounded-full font-medium text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
                       >
                         Buy Key
                       </button>
@@ -594,18 +598,18 @@ export function CinematicScrollExperience({
             <button
               type="button"
               onClick={() => setFaqDrawerOpen(!faqDrawerOpen)}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-950/80 border border-white/10 backdrop-blur-md text-xs font-mono text-neutral-300 hover:text-cyan-300 transition-colors shadow-lg"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-neutral-950/80 border border-white/10 backdrop-blur-md text-[10px] sm:text-xs font-mono text-neutral-300 hover:text-cyan-300 transition-colors shadow-lg"
             >
-              <HelpCircle size={12} className="text-cyan-400" />
+              <HelpCircle size={11} className="text-cyan-400" />
               <span>Trainer FAQ & Support ({FAQS.length})</span>
-              {faqDrawerOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+              {faqDrawerOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
             </button>
 
             {/* Collapsible FAQ Content */}
             {faqDrawerOpen && (
-              <div className="mt-3 p-4 rounded-2xl bg-neutral-950/95 border border-white/10 shadow-2xl w-full text-left space-y-2.5 animate-in fade-in duration-200">
+              <div className="mt-2 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-neutral-950/95 border border-white/10 shadow-2xl w-full text-left space-y-2 animate-in fade-in duration-200 max-h-48 sm:max-h-60 overflow-y-auto custom-scrollbar">
                 {FAQS.map((faq, idx) => (
-                  <div key={idx} className="border-b border-white/5 pb-2">
+                  <div key={idx} className="border-b border-white/5 pb-1.5">
                     <button
                       type="button"
                       onClick={() => setOpenFaqIdx(openFaqIdx === idx ? null : idx)}
@@ -615,27 +619,27 @@ export function CinematicScrollExperience({
                       <ChevronDown size={11} className={`transition-transform ${openFaqIdx === idx ? 'rotate-180 text-cyan-400' : ''}`} />
                     </button>
                     {openFaqIdx === idx && (
-                      <p className="text-[11px] font-mono text-neutral-400 pt-1 leading-relaxed">
+                      <p className="text-[10px] sm:text-[11px] font-mono text-neutral-400 pt-1 leading-relaxed">
                         {faq.a}
                       </p>
                     )}
                   </div>
                 ))}
 
-                <div className="pt-2 flex items-center justify-between text-[10px] font-mono text-neutral-400 border-t border-white/5">
-                  <div className="flex items-center gap-3">
+                <div className="pt-2 flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-neutral-400 border-t border-white/5">
+                  <div className="flex items-center gap-2.5">
                     <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Discord</a>
                     <a href={REDDIT_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Reddit</a>
                     <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Telegram</a>
                   </div>
-                  <span className="text-emerald-400">Instant Automated Dispatch</span>
+                  <span className="text-emerald-400">Instant Dispatch</span>
                 </div>
               </div>
             )}
           </div>
 
           {/* Minimal Clean Legal Disclaimer */}
-          <div className="text-center text-[10px] font-mono text-neutral-500 space-x-3 pointer-events-auto">
+          <div className="text-center text-[9px] sm:text-[10px] font-mono text-neutral-500 space-x-2 sm:space-x-3 pointer-events-auto">
             <span>© {new Date().getFullYear()} AETHERIA</span>
             <a href="/terms" className="hover:text-neutral-300">Terms</a>
             <a href="/privacy" className="hover:text-neutral-300">Privacy</a>
@@ -648,15 +652,15 @@ export function CinematicScrollExperience({
           BOTTOM-RIGHT FLOATING SOCIAL DOCK (Discord, Reddit, Telegram)
           ============================================================
         */}
-        <div className="fixed bottom-6 right-6 md:right-10 z-30 flex items-center pointer-events-auto">
+        <div className="fixed bottom-4 right-3 sm:bottom-6 sm:right-6 md:right-10 z-30 hidden xs:flex items-center pointer-events-auto">
           {/* Frosted Translucent Dark Social Capsule */}
-          <div className="px-3.5 py-1.5 rounded-full bg-neutral-950/70 backdrop-blur-xl border border-white/15 shadow-[0_4px_25px_rgba(0,0,0,0.6)] flex items-center gap-3 text-neutral-300 transition-all hover:border-cyan-500/40">
+          <div className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-neutral-950/80 backdrop-blur-xl border border-white/15 shadow-[0_4px_25px_rgba(0,0,0,0.6)] flex items-center gap-2 sm:gap-3 text-neutral-300 transition-all hover:border-cyan-500/40">
             {/* Discord */}
             <a
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 text-neutral-400 hover:text-[#5865F2] hover:scale-110 transition-all duration-200"
+              className="p-0.5 sm:p-1 text-neutral-400 hover:text-[#5865F2] hover:scale-110 transition-all duration-200"
               title="Discord Profile"
               aria-label="Discord Profile"
             >
