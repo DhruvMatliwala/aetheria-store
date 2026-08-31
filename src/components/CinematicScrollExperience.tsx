@@ -155,7 +155,7 @@ function DissolveSceneVideo({ src, fallbackSrc, isActive, preload = 'auto' }: Di
         disableRemotePlayback
         preload={preload}
         onTimeUpdate={handleTimeUpdateA}
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
+        className="absolute inset-0 w-full h-full object-contain sm:object-cover pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
         style={{
           opacity: activePlayer === 'A' ? 1 : 0,
           zIndex: activePlayer === 'A' ? 2 : 1,
@@ -175,7 +175,7 @@ function DissolveSceneVideo({ src, fallbackSrc, isActive, preload = 'auto' }: Di
         disableRemotePlayback
         preload={preload}
         onTimeUpdate={handleTimeUpdateB}
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
+        className="absolute inset-0 w-full h-full object-contain sm:object-cover pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
         style={{
           opacity: activePlayer === 'B' ? 1 : 0,
           zIndex: activePlayer === 'B' ? 2 : 1,
@@ -418,7 +418,7 @@ export function CinematicScrollExperience({
           Clean Cyber-Cyan / Emerald Palette with High Contrast
           ============================================================
         */}
-        <div className="absolute bottom-10 sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
+        <div className="absolute bottom-4 sm:bottom-12 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
           {SCENE_OVERLAYS.map((overlay, idx) => (
             <div
               key={idx}
@@ -434,7 +434,7 @@ export function CinematicScrollExperience({
               }}
             >
               {/* Line 1: Index Number + Section Subtitle Rule */}
-              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2.5', `hud-tag-${idx}`)}>
+              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2.5', `hud-tag-${idx}`)}>
                 <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] sm:tracking-[0.3em] text-cyan-400 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.idx}
                 </span>
@@ -445,10 +445,10 @@ export function CinematicScrollExperience({
               </div>
 
               {/* Line 2: Large Majestic Editorial Serif Title */}
-              <div className="overflow-hidden mb-2 sm:mb-4">
+              <div className="overflow-hidden mb-1 sm:mb-4">
                 <h2
                   className={cn(
-                    'hud-title text-3xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.08] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
+                    'hud-title text-2xl sm:text-4xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.1] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
                     `hud-title-${idx}`
                   )}
                 >
@@ -459,7 +459,7 @@ export function CinematicScrollExperience({
               {/* Line 3: Editorial Prose Description */}
               <p
                 className={cn(
-                  'hud-desc text-xs sm:text-base md:text-xl text-neutral-200/95 font-light leading-relaxed mb-3 sm:mb-6 max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
+                  'hud-desc text-[11px] sm:text-base md:text-xl text-neutral-200/95 font-light leading-snug sm:leading-relaxed mb-2 sm:mb-6 max-w-sm sm:max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
                   `hud-desc-${idx}`
                 )}
               >
@@ -467,12 +467,12 @@ export function CinematicScrollExperience({
               </p>
 
               {/* Line 4: Row of Capsule Tag Pills */}
-              <div className={cn('hud-badges flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-3 sm:mb-6', `hud-badges-${idx}`)}>
+              <div className={cn('hud-badges flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-2.5 sm:mb-6', `hud-badges-${idx}`)}>
                 {overlay.badges.map((badge, bIdx) => (
                   <span
                     key={bIdx}
                     className={cn(
-                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-2.5 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-xs md:text-sm text-white font-sans tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
+                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-2.5 sm:px-4 py-0.5 sm:py-1.5 text-[9px] sm:text-xs md:text-sm text-white font-sans tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
                       `hud-badge-${idx}`
                     )}
                   >
@@ -487,7 +487,7 @@ export function CinematicScrollExperience({
                   type="button"
                   onClick={() => scrollToSection('plans')}
                   className={cn(
-                    'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-medium transition-all duration-200 px-5 sm:px-7 py-2 sm:py-2.5 text-xs md:text-sm shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-2 active:scale-95 whitespace-nowrap pointer-events-auto',
+                    'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-medium transition-all duration-200 px-4 sm:px-7 py-1.5 sm:py-2.5 text-xs md:text-sm shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap pointer-events-auto',
                     `hud-cta-${idx}`
                   )}
                 >

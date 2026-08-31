@@ -110,11 +110,11 @@ export function Header() {
               })}
             </div>
 
-            {/* My Keys Customer Vault Pill Button */}
+            {/* My Keys Customer Vault Button (Desktop visible, on Mobile moved to 3-line drawer) */}
             <button
               type="button"
               onClick={() => setVaultOpen(true)}
-              className="rounded-full bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white px-2.5 sm:px-4 py-1 text-[11px] sm:text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] flex items-center gap-1.5 active:scale-95 whitespace-nowrap ml-0.5 sm:ml-1 group"
+              className="hidden sm:inline-flex rounded-full bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white px-3.5 sm:px-4 py-1 text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] items-center gap-1.5 active:scale-95 whitespace-nowrap ml-1 group"
               title="View your purchased license keys"
             >
               <Key size={12} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
@@ -122,10 +122,10 @@ export function Header() {
               {user && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>}
             </button>
 
-            {/* Buy Key CTA Pill Button (Hidden on very narrow mobile to prevent header crowding) */}
+            {/* Buy Key CTA Pill Button (Always visible on all screen sizes) */}
             <a
               href="#plans"
-              className="hidden sm:inline-flex rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black px-4 sm:px-5 py-1 text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] items-center gap-1.5 active:scale-95 whitespace-nowrap ml-1"
+              className="rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black px-3.5 sm:px-5 py-1 text-[11px] sm:text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] flex items-center gap-1 active:scale-95 whitespace-nowrap ml-0.5 sm:ml-1"
             >
               <span>Buy Key</span>
               <span className="text-[10px]">→</span>
@@ -193,8 +193,22 @@ export function Header() {
 
         {/* Mobile Drawer */}
         {mobileOpen && (
-          <div className="absolute top-16 right-6 w-56 p-4 rounded-3xl bg-neutral-950/95 backdrop-blur-2xl border border-white/15 shadow-2xl pointer-events-auto animate-fade-in-up md:hidden">
-            <div className="space-y-1">
+          <div className="absolute top-14 right-4 w-60 p-4 rounded-3xl bg-neutral-950/95 backdrop-blur-2xl border border-white/15 shadow-2xl pointer-events-auto animate-fade-in-up md:hidden">
+            {/* Primary Mobile Action: Customer Vault / My Keys */}
+            <button
+              type="button"
+              onClick={() => {
+                setVaultOpen(true);
+                setMobileOpen(false);
+              }}
+              className="w-full text-center py-2.5 mb-3 rounded-2xl bg-cyan-950/70 border border-cyan-500/50 text-cyan-300 font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.25)] active:scale-95"
+            >
+              <Key size={14} className="text-cyan-400" />
+              <span>Customer Vault (My Keys)</span>
+              {user && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>}
+            </button>
+
+            <div className="space-y-1 border-t border-white/10 pt-2">
               {NAV_LINKS.map((link) => (
                 <a
                   key={link.href}
@@ -203,30 +217,18 @@ export function Header() {
                     setActiveTab(link.label);
                     setMobileOpen(false);
                   }}
-                  className="block px-4 py-2.5 rounded-xl text-xs font-mono uppercase tracking-wider text-neutral-300 hover:text-cyan-300 hover:bg-white/5 transition-colors"
+                  className="block px-4 py-2 rounded-xl text-xs font-mono uppercase tracking-wider text-neutral-300 hover:text-cyan-300 hover:bg-white/5 transition-colors"
                 >
                   {link.label}
                 </a>
               ))}
-              <div className="pt-2 border-t border-white/10 mt-2 space-y-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setVaultOpen(true);
-                    setMobileOpen(false);
-                  }}
-                  className="w-full text-center py-2 rounded-full bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 font-semibold text-xs tracking-wider uppercase flex items-center justify-center gap-1.5"
-                >
-                  <Key size={13} />
-                  <span>My Keys</span>
-                  {user && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>}
-                </button>
+              <div className="pt-2 border-t border-white/10 mt-2">
                 <a
                   href="#plans"
                   onClick={() => setMobileOpen(false)}
                   className="block w-full text-center py-2 rounded-full bg-cyan-400 text-black font-semibold text-xs tracking-wider uppercase shadow-[0_0_15px_rgba(56,189,248,0.3)]"
                 >
-                  Buy Key →
+                  Buy License Key →
                 </a>
               </div>
             </div>
