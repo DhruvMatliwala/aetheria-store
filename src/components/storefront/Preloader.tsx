@@ -58,7 +58,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
         } else if (next >= 75 && next < 95) {
           setStatusText('SYNCING ENCRYPTED LICENSE VAULT...');
         } else if (next >= 95) {
-          setStatusText('ALL SYSTEMS OPERATIONAL (100%)');
+          setStatusText('ALL SYSTEMS OPERATIONAL');
         }
         return Math.min(100, next);
       });
@@ -225,7 +225,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
           </div>
         </div>
 
-        {/* Dynamic Status Tag & Percentage */}
+        {/* Dynamic Status Tag & Single Clean Percentage */}
         <div ref={subtitleRef} className="opacity-0 mb-4 flex flex-col items-center gap-1">
           <p className="text-[9px] sm:text-[11px] font-mono text-cyan-400 font-medium tracking-[0.25em] sm:tracking-[0.35em] uppercase">
             {statusText}
@@ -243,6 +243,11 @@ export function Preloader({ onComplete }: PreloaderProps) {
             style={{ transform: 'scaleX(0)' }}
           />
         </div>
+
+        {/* Subtle Tap to Enter Prompt */}
+        <p className="mt-6 text-[10px] font-mono text-neutral-500 uppercase tracking-widest animate-pulse">
+          Tap anywhere to enter with sound ⚡
+        </p>
       </div>
     </div>
   );

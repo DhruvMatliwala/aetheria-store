@@ -22,18 +22,21 @@ export function AmbientAudioProvider({ children }: { children: React.ReactNode }
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const userMutedRef = useRef<boolean>(false);
 
-  const startPlayback = () => {
+  const startPlayback = (onSuccess?: () => void) => {
     if (!audioRef.current || userMutedRef.current) return;
     const audio = audioRef.current;
     audio.volume = TARGET_VOLUME;
-    audio
-      .play()
-      .then(() => {
-        setIsPlaying(true);
-      })
-      .catch(() => {
-        // Autoplay policy pending user gesture
-      });
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+          if (onSuccess) onSuccess();
+        })
+        .catch(() => {
+          // Autoplay blocked: will trigger on next user tap/interaction
+        });
+    }
   };
 
   useEffect(() => {
@@ -47,29 +50,33 @@ export function AmbientAudioProvider({ children }: { children: React.ReactNode }
     // 1. Direct attempt
     startPlayback();
 
-    // 2. Global browser interaction triggers
+    // 2. Global browser interaction triggers that stay active until audio starts
+    let unlocked = false;
     const handleFirstInteraction = () => {
-      if (!userMutedRef.current && audioRef.current) {
-        startPlayback();
-      }
-      cleanupListeners();
+      if (unlocked || userMutedRef.current || !audioRef.current) return;
+      startPlayback(() => {
+        unlocked = true;
+        cleanupListeners();
+      });
     };
 
     const cleanupListeners = () => {
       window.removeEventListener('pointerdown', handleFirstInteraction);
       window.removeEventListener('touchstart', handleFirstInteraction);
+      window.removeEventListener('touchend', handleFirstInteraction);
       window.removeEventListener('scroll', handleFirstInteraction);
       window.removeEventListener('click', handleFirstInteraction);
       document.removeEventListener('touchstart', handleFirstInteraction);
       document.removeEventListener('click', handleFirstInteraction);
     };
 
-    window.addEventListener('pointerdown', handleFirstInteraction, { passive: true });
-    window.addEventListener('touchstart', handleFirstInteraction, { passive: true });
-    window.addEventListener('scroll', handleFirstInteraction, { passive: true });
-    window.addEventListener('click', handleFirstInteraction, { passive: true });
-    document.addEventListener('touchstart', handleFirstInteraction, { passive: true });
-    document.addEventListener('click', handleFirstInteraction, { passive: true });
+    window.addEventListener('pointerdown', handleFirstInteraction);
+    window.addEventListener('touchstart', handleFirstInteraction);
+    window.addEventListener('touchend', handleFirstInteraction);
+    window.addEventListener('scroll', handleFirstInteraction);
+    window.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('touchstart', handleFirstInteraction);
+    document.addEventListener('click', handleFirstInteraction);
 
     return () => {
       cleanupListeners();

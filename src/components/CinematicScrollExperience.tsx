@@ -489,19 +489,33 @@ export function CinematicScrollExperience({
                 ))}
               </div>
 
-              {/* Optional Scene 1 Action CTA */}
+              {/* Optional Scene 1 Action CTA & Swipe Down Guidance */}
               {overlay.showCta && (
-                <button
-                  type="button"
-                  onClick={() => scrollToSection('plans')}
-                  className={cn(
-                    'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-medium transition-all duration-200 px-4 sm:px-7 py-1.5 sm:py-2.5 text-xs md:text-sm shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap pointer-events-auto',
-                    `hud-cta-${idx}`
-                  )}
-                >
-                  <span>Buy License Key</span>
-                  <span className="text-xs">→</span>
-                </button>
+                <div className="flex items-center gap-2.5 sm:gap-3.5 flex-wrap pointer-events-auto">
+                  <button
+                    type="button"
+                    onClick={() => scrollToSection('plans')}
+                    className={cn(
+                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-medium transition-all duration-200 px-4 sm:px-7 py-1.5 sm:py-2.5 text-xs md:text-sm shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
+                      `hud-cta-${idx}`
+                    )}
+                  >
+                    <span>Buy License Key</span>
+                    <span className="text-xs">→</span>
+                  </button>
+
+                  {/* Swipe / Scroll Guidance Pill sitting right next to Buy Key */}
+                  <div
+                    ref={scrollIndicatorRef}
+                    className="px-3 sm:px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 backdrop-blur-xl flex items-center gap-1.5 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.25)] animate-pulse will-change-transform transform-gpu"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                    <span className="text-[10px] sm:text-xs font-mono uppercase tracking-wider font-semibold">
+                      Swipe Down
+                    </span>
+                    <ChevronDown size={13} className="text-cyan-400 animate-bounce" />
+                  </div>
+                </div>
               )}
             </div>
           ))}
@@ -708,20 +722,6 @@ export function CinematicScrollExperience({
                 <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-1.97 9.28c-.15.65-.53.81-1.08.51l-3-2.21-1.45 1.39c-.16.16-.3.3-.61.3l.22-3.05 5.56-5.02c.24-.22-.05-.34-.38-.13l-6.87 4.33-2.96-.92c-.64-.2-.66-.64.13-.95l11.57-4.46c.54-.19 1.01.13.86.93z" />
               </svg>
             </a>
-          </div>
-        </div>
-
-        {/* Floating Dynamic Scroll & Swipe Guidance Indicator (Universal Mobile + Desktop) */}
-        <div
-          ref={scrollIndicatorRef}
-          className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex items-center justify-center will-change-transform transform-gpu opacity-0"
-        >
-          <div className="px-3.5 sm:px-4 py-1.5 rounded-full bg-neutral-950/85 border border-cyan-500/40 backdrop-blur-xl flex items-center gap-2 shadow-[0_0_25px_rgba(6,182,212,0.35)] animate-pulse">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-            <span className="text-[10px] sm:text-xs font-mono tracking-[0.2em] text-cyan-300 font-bold uppercase">
-              Swipe Down to Explore
-            </span>
-            <ChevronDown size={14} className="text-cyan-400 animate-bounce" />
           </div>
         </div>
       </div>
