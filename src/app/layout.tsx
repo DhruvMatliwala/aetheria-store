@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/react';
 import { AmbientAudioProvider } from '@/context/AmbientAudioContext';
 import './globals.css';
 
@@ -386,6 +387,7 @@ export default function RootLayout({
             error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
           }}
         />
+        <Analytics />
       </body>
     </html>
   );
