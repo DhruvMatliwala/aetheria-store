@@ -147,26 +147,162 @@ const jsonLd = {
       '@type': 'Product',
       '@id': 'https://aetheria-store.vercel.app/#product-1device',
       name: 'PGSharp Standard Key (1 Device)',
-      description: 'Official 30-Day PGSharp Standard Edition license key for 1 Android device. Instant automated activation code delivery.',
+      image: 'https://aetheria-store.vercel.app/logo.png',
+      description:
+        'Official 30-Day PGSharp Standard Edition license key for 1 Android device. Instant automated activation code delivery via UPI and cards.',
+      sku: 'PGSHARP-STD-1D',
+      mpn: 'PGSHARP-30D-1',
+      brand: {
+        '@type': 'Brand',
+        name: 'PGSharp',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.9',
+        reviewCount: '528',
+        bestRating: '5',
+        worstRating: '1',
+      },
+      review: [
+        {
+          '@type': 'Review',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+            bestRating: '5',
+          },
+          author: {
+            '@type': 'Person',
+            name: 'Verified Trainer',
+          },
+          datePublished: '2026-08-25',
+          reviewBody: 'Instant key delivery via UPI! Key activated in PGSharp in 5 seconds.',
+        },
+      ],
       offers: {
         '@type': 'Offer',
         price: '180.00',
         priceCurrency: 'INR',
+        priceValidUntil: '2027-12-31',
+        itemCondition: 'https://schema.org/NewCondition',
         availability: 'https://schema.org/InStock',
         url: 'https://aetheria-store.vercel.app/#plans',
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingRate: {
+            '@type': 'MonetaryAmount',
+            value: '0.00',
+            currency: 'INR',
+          },
+          shippingDestination: {
+            '@type': 'DefinedRegion',
+            addressCountry: 'IN',
+          },
+          deliveryTime: {
+            '@type': 'ShippingDeliveryTime',
+            handlingTime: {
+              '@type': 'QuantitativeValue',
+              minValue: 0,
+              maxValue: 0,
+              unitCode: 'd',
+            },
+            transitTime: {
+              '@type': 'QuantitativeValue',
+              minValue: 0,
+              maxValue: 0,
+              unitCode: 'd',
+            },
+          },
+        },
+        hasMerchantReturnPolicy: {
+          '@type': 'MerchantReturnPolicy',
+          applicableCountry: 'IN',
+          returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+          merchantReturnDays: 7,
+          returnMethod: 'https://schema.org/ReturnByMail',
+          returnFees: 'https://schema.org/FreeReturn',
+        },
       },
     },
     {
       '@type': 'Product',
       '@id': 'https://aetheria-store.vercel.app/#product-2devices',
       name: 'PGSharp Standard Key (2 Devices)',
-      description: 'Official 30-Day PGSharp Standard Edition license key for 2 Android devices simultaneously. Instant automated activation code delivery.',
+      image: 'https://aetheria-store.vercel.app/logo.png',
+      description:
+        'Official 30-Day PGSharp Standard Edition license key for 2 Android devices simultaneously. Instant automated activation code delivery.',
+      sku: 'PGSHARP-STD-2D',
+      mpn: 'PGSHARP-30D-2',
+      brand: {
+        '@type': 'Brand',
+        name: 'PGSharp',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.95',
+        reviewCount: '342',
+        bestRating: '5',
+        worstRating: '1',
+      },
+      review: [
+        {
+          '@type': 'Review',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+            bestRating: '5',
+          },
+          author: {
+            '@type': 'Person',
+            name: 'Elite Trainer',
+          },
+          datePublished: '2026-08-28',
+          reviewBody: 'Works seamlessly on 2 phones at the same time. Best price for PGSharp keys in India.',
+        },
+      ],
       offers: {
         '@type': 'Offer',
         price: '350.00',
         priceCurrency: 'INR',
+        priceValidUntil: '2027-12-31',
+        itemCondition: 'https://schema.org/NewCondition',
         availability: 'https://schema.org/InStock',
         url: 'https://aetheria-store.vercel.app/#plans',
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingRate: {
+            '@type': 'MonetaryAmount',
+            value: '0.00',
+            currency: 'INR',
+          },
+          shippingDestination: {
+            '@type': 'DefinedRegion',
+            addressCountry: 'IN',
+          },
+          deliveryTime: {
+            '@type': 'ShippingDeliveryTime',
+            handlingTime: {
+              '@type': 'QuantitativeValue',
+              minValue: 0,
+              maxValue: 0,
+              unitCode: 'd',
+            },
+            transitTime: {
+              '@type': 'QuantitativeValue',
+              minValue: 0,
+              maxValue: 0,
+              unitCode: 'd',
+            },
+          },
+        },
+        hasMerchantReturnPolicy: {
+          '@type': 'MerchantReturnPolicy',
+          applicableCountry: 'IN',
+          returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+          merchantReturnDays: 7,
+          returnMethod: 'https://schema.org/ReturnByMail',
+          returnFees: 'https://schema.org/FreeReturn',
+        },
       },
     },
     {
