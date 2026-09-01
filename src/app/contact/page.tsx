@@ -31,7 +31,7 @@ export default function ContactPage() {
                 alt="AETHERIA"
                 width={36}
                 height={36}
-                className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(6,182,212,0.9)]"
+                className="w-full h-full object-contain"
               />
             </div>
             <div className="flex flex-col">

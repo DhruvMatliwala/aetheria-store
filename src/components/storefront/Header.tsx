@@ -57,14 +57,14 @@ export function Header() {
             className="flex items-center gap-2 sm:gap-3 group active:scale-95 transition-transform"
             aria-label="AETHERIA Home"
           >
-            {/* Pure Floating Holographic Emblem */}
+            {/* Pure Floating Emblem */}
             <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
               <Image
                 src="/logo.png"
                 alt="AETHERIA"
                 width={40}
                 height={40}
-                className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(6,182,212,0.9)] drop-shadow-[0_0_22px_rgba(168,85,247,0.55)]"
+                className="w-full h-full object-contain"
               />
             </div>
 

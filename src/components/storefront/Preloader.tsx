@@ -208,7 +208,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
               width={240}
               height={240}
               priority
-              className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(6,182,212,0.35)] drop-shadow-[0_0_25px_rgba(168,85,247,0.35)]"
+              className="w-full h-full object-contain"
             />
           </div>
         </div>

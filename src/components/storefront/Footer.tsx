@@ -33,7 +33,7 @@ export function Footer() {
                   alt="AETHERIA"
                   width={36}
                   height={36}
-                  className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div className="flex items-baseline gap-1">
