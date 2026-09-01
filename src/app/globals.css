@@ -253,3 +253,21 @@
 .animate-ambient-pulse {
   animation: ambientPulse 8s ease-in-out infinite;
 }
+
+@keyframes scrollGlowPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 20px rgba(6, 182, 212, 0.6));
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.96);
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.1));
+  }
+}
+
+.scroll-indicator-pulse {
+  animation: scrollGlowPulse 1.8s ease-in-out infinite !important;
+  -webkit-animation: scrollGlowPulse 1.8s ease-in-out infinite !important;
+}

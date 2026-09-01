@@ -442,21 +442,21 @@ export function CinematicScrollExperience({
               }}
             >
               {/* Line 1: Index Number + Section Subtitle Rule */}
-              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2.5', `hud-tag-${idx}`)}>
-                <span className="text-xs sm:text-sm font-mono uppercase tracking-[0.22em] sm:tracking-[0.3em] text-cyan-400 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2.5', `hud-tag-${idx}`)}>
+                <span className="text-sm sm:text-base font-mono uppercase tracking-[0.24em] sm:tracking-[0.3em] text-cyan-400 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.idx}
                 </span>
                 <span className="w-4 sm:w-6 h-px bg-white/30" />
-                <span className="text-xs sm:text-sm font-sans uppercase tracking-[0.18em] sm:tracking-[0.25em] text-neutral-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                <span className="text-sm sm:text-base font-sans uppercase tracking-[0.2em] sm:tracking-[0.25em] text-neutral-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.subtitle}
                 </span>
               </div>
 
               {/* Line 2: Large Majestic Editorial Serif Title */}
-              <div className="overflow-hidden mb-1.5 sm:mb-4">
+              <div className="overflow-hidden mb-2 sm:mb-4">
                 <h2
                   className={cn(
-                    'hud-title text-3xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.12] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
+                    'hud-title text-4xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.1] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
                     `hud-title-${idx}`
                   )}
                 >
@@ -467,7 +467,7 @@ export function CinematicScrollExperience({
               {/* Line 3: Editorial Prose Description */}
               <p
                 className={cn(
-                  'hud-desc text-sm sm:text-base md:text-xl text-neutral-100 font-normal leading-snug sm:leading-relaxed mb-3 sm:mb-6 max-w-sm sm:max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
+                  'hud-desc text-base sm:text-lg md:text-xl text-neutral-100 font-normal leading-relaxed mb-3.5 sm:mb-6 max-w-sm sm:max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
                   `hud-desc-${idx}`
                 )}
               >
@@ -475,12 +475,12 @@ export function CinematicScrollExperience({
               </p>
 
               {/* Line 4: Row of Capsule Tag Pills */}
-              <div className={cn('hud-badges flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-3 sm:mb-6', `hud-badges-${idx}`)}>
+              <div className={cn('hud-badges flex flex-wrap items-center gap-2 sm:gap-2.5 mb-3.5 sm:mb-6', `hud-badges-${idx}`)}>
                 {overlay.badges.map((badge, bIdx) => (
                   <span
                     key={bIdx}
                     className={cn(
-                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/25 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm md:text-sm text-white font-sans font-medium tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
+                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/25 px-4 sm:px-4 py-1.5 sm:py-1.5 text-xs sm:text-sm md:text-sm text-white font-sans font-medium tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
                       `hud-badge-${idx}`
                     )}
                   >
@@ -489,33 +489,20 @@ export function CinematicScrollExperience({
                 ))}
               </div>
 
-              {/* Optional Scene 1 Action CTA & White Blinking Swipe Down Guidance */}
+              {/* Optional Scene 1 Action CTA */}
               {overlay.showCta && (
                 <div className="flex items-center gap-3 sm:gap-4 flex-wrap pointer-events-auto">
                   <button
                     type="button"
                     onClick={() => scrollToSection('plans')}
                     className={cn(
-                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-semibold transition-all duration-200 px-5 sm:px-7 py-2 sm:py-2.5 text-xs sm:text-sm md:text-base shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
+                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-bold transition-all duration-200 px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base md:text-lg shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-2 active:scale-95 whitespace-nowrap',
                       `hud-cta-${idx}`
                     )}
                   >
                     <span>Buy License Key</span>
-                    <span className="text-xs">→</span>
+                    <span className="text-sm">→</span>
                   </button>
-
-                  {/* White Blinking Swipe Down Guidance with Minimalist Mouse Scroll Icon */}
-                  <div
-                    ref={scrollIndicatorRef}
-                    className="flex flex-col items-center justify-center gap-1 pl-1 opacity-90 will-change-transform transform-gpu select-none"
-                  >
-                    <span className="text-[9px] sm:text-[10px] font-mono font-bold tracking-[0.25em] text-white uppercase animate-pulse drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-                      SWIPE DOWN
-                    </span>
-                    <div className="w-3.5 h-5 sm:w-4 sm:h-5.5 rounded-full border-[1.5px] border-white/80 flex items-start justify-center p-[2px] shadow-[0_0_8px_rgba(255,255,255,0.4)]">
-                      <div className="w-1 h-1.5 rounded-full bg-white animate-bounce" />
-                    </div>
-                  </div>
                 </div>
               )}
             </div>
@@ -731,6 +718,25 @@ export function CinematicScrollExperience({
                 <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-1.97 9.28c-.15.65-.53.81-1.08.51l-3-2.21-1.45 1.39c-.16.16-.3.3-.61.3l.22-3.05 5.56-5.02c.24-.22-.05-.34-.38-.13l-6.87 4.33-2.96-.92c-.64-.2-.66-.64.13-.95l11.57-4.46c.54-.19 1.01.13.86.93z" />
               </svg>
             </a>
+          </div>
+        </div>
+
+        {/* 
+          ============================================================
+          UNIVERSAL CENTERED SCROLL / SWIPE GUIDANCE INDICATOR
+          Centered on PC, Tablet, and Mobile with Hardware Pulse
+          ============================================================
+        */}
+        <div
+          ref={scrollIndicatorRef}
+          className="fixed bottom-5 sm:bottom-7 md:bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center justify-center gap-1.5 opacity-0 will-change-transform transform-gpu select-none"
+        >
+          <span className="scroll-indicator-pulse text-[9px] sm:text-[10px] md:text-[11px] font-mono font-bold tracking-[0.28em] text-white uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
+            <span className="md:hidden">SWIPE DOWN</span>
+            <span className="hidden md:inline">SCROLL TO EXPLORE</span>
+          </span>
+          <div className="scroll-indicator-pulse w-3.5 h-5 sm:w-4 sm:h-5.5 rounded-full border-[1.5px] border-white/85 flex items-start justify-center p-[2px] shadow-[0_0_12px_rgba(255,255,255,0.5)]">
+            <div className="w-1 h-1.5 rounded-full bg-white animate-bounce" />
           </div>
         </div>
       </div>
