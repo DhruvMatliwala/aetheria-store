@@ -78,13 +78,41 @@ export function AmbientAudioProvider({ children }: { children: React.ReactNode }
     document.addEventListener('touchstart', handleFirstInteraction);
     document.addEventListener('click', handleFirstInteraction);
 
+    // 3. Page Visibility Lifecycle: Automatically pause when tab is switched, minimized, or screen locked
+    const handleVisibilityChange = () => {
+      if (!audioRef.current) return;
+      if (document.hidden) {
+        // Tab backgrounded / screen off -> pause immediately
+        audioRef.current.pause();
+      } else {
+        // Tab returned to foreground -> resume only if active and not user muted
+        if (!userMutedRef.current && isPlaying) {
+          audioRef.current.play().catch(() => {});
+        }
+      }
+    };
+
+    // 4. Page Unload Lifecycle: Stop audio immediately on tab close or navigation
+    const handlePageHide = () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('beforeunload', handlePageHide);
+
     return () => {
       cleanupListeners();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('beforeunload', handlePageHide);
       audio.pause();
       audio.src = '';
       audioRef.current = null;
     };
-  }, []);
+  }, [isPlaying]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
