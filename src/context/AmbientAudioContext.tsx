@@ -18,47 +18,21 @@ const TARGET_VOLUME = 0.25;
 const FADE_DURATION_MS = 300;
 
 export function AmbientAudioProvider({ children }: { children: React.ReactNode }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const userMutedRef = useRef<boolean>(false);
-
-  const fadeVolume = (targetVol: number, onComplete?: () => void) => {
-    if (!audioRef.current) return;
-    if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-
-    const audio = audioRef.current;
-    const startVol = audio.volume;
-    const diff = targetVol - startVol;
-    const steps = 20;
-    const stepTime = FADE_DURATION_MS / steps;
-    let stepCount = 0;
-
-    fadeIntervalRef.current = setInterval(() => {
-      stepCount += 1;
-      const progress = stepCount / steps;
-      const newVol = Math.max(0, Math.min(1, startVol + diff * progress));
-      audio.volume = newVol;
-
-      if (stepCount >= steps) {
-        if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-        audio.volume = targetVol;
-        if (onComplete) onComplete();
-      }
-    }, stepTime);
-  };
 
   const startPlayback = () => {
     if (!audioRef.current || userMutedRef.current) return;
     const audio = audioRef.current;
+    audio.volume = TARGET_VOLUME;
     audio
       .play()
       .then(() => {
         setIsPlaying(true);
-        fadeVolume(TARGET_VOLUME);
       })
       .catch(() => {
-        // Handled via user interaction fallback
+        // Autoplay policy pending user gesture
       });
   };
 
@@ -67,34 +41,38 @@ export function AmbientAudioProvider({ children }: { children: React.ReactNode }
     const audio = new Audio('/audio/ambient.mp3');
     audio.loop = true;
     audio.preload = 'auto';
-    audio.volume = 0;
+    audio.volume = TARGET_VOLUME;
     audioRef.current = audio;
 
-    // 1. Direct autoplay attempt
+    // 1. Direct attempt
     startPlayback();
 
-    // 2. Browser interaction fallback (first tap or scroll)
+    // 2. Global browser interaction triggers
     const handleFirstInteraction = () => {
-      if (!userMutedRef.current && audioRef.current && audioRef.current.paused) {
+      if (!userMutedRef.current && audioRef.current) {
         startPlayback();
       }
+      cleanupListeners();
+    };
+
+    const cleanupListeners = () => {
       window.removeEventListener('pointerdown', handleFirstInteraction);
       window.removeEventListener('touchstart', handleFirstInteraction);
       window.removeEventListener('scroll', handleFirstInteraction);
       window.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+      document.removeEventListener('click', handleFirstInteraction);
     };
 
     window.addEventListener('pointerdown', handleFirstInteraction, { passive: true });
     window.addEventListener('touchstart', handleFirstInteraction, { passive: true });
     window.addEventListener('scroll', handleFirstInteraction, { passive: true });
     window.addEventListener('click', handleFirstInteraction, { passive: true });
+    document.addEventListener('touchstart', handleFirstInteraction, { passive: true });
+    document.addEventListener('click', handleFirstInteraction, { passive: true });
 
     return () => {
-      if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-      window.removeEventListener('pointerdown', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-      window.removeEventListener('scroll', handleFirstInteraction);
-      window.removeEventListener('click', handleFirstInteraction);
+      cleanupListeners();
       audio.pause();
       audio.src = '';
       audioRef.current = null;
@@ -107,13 +85,12 @@ export function AmbientAudioProvider({ children }: { children: React.ReactNode }
     if (!isPlaying) {
       userMutedRef.current = false;
       startPlayback();
+      setIsPlaying(true);
     } else {
       userMutedRef.current = true;
-      fadeVolume(0, () => {
-        if (audioRef.current) {
-          audioRef.current.pause();
-        }
-      });
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
       setIsPlaying(false);
     }
   };
