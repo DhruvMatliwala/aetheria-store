@@ -54,21 +54,22 @@ export function Header() {
           <Link
             href="/"
             onClick={handleLogoClick}
-            className="flex items-center gap-2.5 sm:gap-3 group transition-transform active:scale-95"
+            className="flex items-center gap-2 sm:gap-3 group active:scale-95 transition-transform"
+            aria-label="AETHERIA Home"
           >
-            {/* Frosted Rounded Emblem Badge */}
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/10 border border-white/20 backdrop-blur-2xl flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300 group-hover:border-cyan-400/50 group-hover:scale-105">
+            {/* Ultra-Luxe Frosted Glass Emblem Badge */}
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white/10 border border-white/20 backdrop-blur-2xl flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300 group-hover:border-cyan-400/50 group-hover:scale-105">
               <Image
                 src="/logo.png"
                 alt="AETHERIA"
-                width={28}
-                height={28}
-                className="w-5 h-5 sm:w-5.5 sm:h-5.5 object-contain filter drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]"
+                width={32}
+                height={32}
+                className="w-5.5 h-5.5 sm:w-6 sm:h-6 object-contain filter drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]"
               />
             </div>
 
-            {/* Clean Sans Wordmark */}
-            <span className="font-sans font-bold text-sm sm:text-base tracking-[0.18em] sm:tracking-[0.22em] text-white uppercase group-hover:text-cyan-300 transition-colors drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            {/* Clean Bold Wordmark */}
+            <span className="font-sans font-bold text-base sm:text-lg tracking-[0.2em] sm:tracking-[0.24em] text-white uppercase group-hover:text-cyan-300 transition-colors drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
               AETHERIA
             </span>
           </Link>
@@ -88,7 +89,7 @@ export function Header() {
           ============================================================
         */}
         <div className="pointer-events-auto flex items-center gap-2">
-          <nav className="px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-full bg-white/[0.08] backdrop-blur-2xl border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex items-center gap-1.5 transition-all duration-300 hover:border-white/25">
+          <nav className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-white/[0.08] backdrop-blur-2xl border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex items-center gap-1.5 transition-all duration-300 hover:border-white/25">
             {/* Desktop Capsule Tabs */}
             <div className="hidden md:flex items-center gap-1">
               {NAV_LINKS.map((link) => {
@@ -125,10 +126,10 @@ export function Header() {
             {/* Buy Key CTA Pill Button (Always visible on all screen sizes) */}
             <a
               href="#plans"
-              className="rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black px-4 sm:px-5 py-1.5 text-xs font-mono font-bold transition-all duration-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] flex items-center gap-1 active:scale-95 whitespace-nowrap ml-0.5 sm:ml-1"
+              className="rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black px-4.5 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-mono font-bold transition-all duration-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] flex items-center gap-1 active:scale-95 whitespace-nowrap ml-0.5 sm:ml-1"
             >
               <span>Buy Key</span>
-              <span className="text-[11px]">→</span>
+              <span className="text-[11px] sm:text-xs">→</span>
             </a>
 
             {/* Ambient Background Audio Toggle Button */}
@@ -137,11 +138,11 @@ export function Header() {
               onClick={togglePlay}
               aria-label={isPlaying ? 'Mute ambient audio' : 'Play ambient audio'}
               title={isPlaying ? 'Mute ambient audio' : 'Play ambient audio'}
-              className="h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-center text-cyan-300 hover:text-white hover:border-cyan-400 transition-all backdrop-blur-md shadow-[0_0_10px_rgba(6,182,212,0.15)] ml-0.5 sm:ml-1 flex-shrink-0 active:scale-90 group"
+              className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-center text-cyan-300 hover:text-white hover:border-cyan-400 transition-all backdrop-blur-md shadow-[0_0_10px_rgba(6,182,212,0.15)] ml-0.5 sm:ml-1 flex-shrink-0 active:scale-90 group"
             >
               {isPlaying ? (
                 <svg
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse"
+                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-cyan-300 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -155,7 +156,7 @@ export function Header() {
                 </svg>
               ) : (
                 <svg
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-60 text-neutral-300 group-hover:text-white"
+                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 opacity-60 text-neutral-300 group-hover:text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -175,15 +176,15 @@ export function Header() {
             <button
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 hover:text-white ml-0.5"
+              className="md:hidden h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 hover:text-white ml-0.5"
               aria-label="Toggle navigation"
             >
               {mobileOpen ? (
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}

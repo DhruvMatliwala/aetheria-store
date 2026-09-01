@@ -206,7 +206,8 @@ export function CinematicScrollExperience({
   const overlayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pricingRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
-  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const mobileScrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const desktopScrollIndicatorRef = useRef<HTMLDivElement>(null);
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
   const [activeSceneIdx, setActiveSceneIdx] = useState<number>(0);
@@ -234,9 +235,8 @@ export function CinematicScrollExperience({
       gsap.set('.hud-desc-0', { opacity: 0, x: -20 });
       gsap.set('.hud-badge-0', { opacity: 0, scale: 0.9, x: -15 });
       gsap.set('.hud-cta-0', { opacity: 0, scale: 0.95 });
-      if (scrollIndicatorRef.current) {
-        gsap.set(scrollIndicatorRef.current, { opacity: 0, y: 15 });
-      }
+      if (mobileScrollIndicatorRef.current) gsap.set(mobileScrollIndicatorRef.current, { opacity: 0, y: 15 });
+      if (desktopScrollIndicatorRef.current) gsap.set(desktopScrollIndicatorRef.current, { opacity: 0, y: 15 });
 
       const hasSeenIntro = typeof window !== 'undefined' && sessionStorage.getItem('hasSeenIntro') === 'true';
       const introDelay = hasSeenIntro ? 0.3 : 1.8;
@@ -260,7 +260,11 @@ export function CinematicScrollExperience({
           0.7
         )
         .to('.hud-cta-0', { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' }, 0.9)
-        .to(scrollIndicatorRef.current, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 1.0);
+        .to(
+          [mobileScrollIndicatorRef.current, desktopScrollIndicatorRef.current].filter(Boolean),
+          { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' },
+          1.0
+        );
 
       // 2. Set initial off-screen states for Scene 2 & Scene 3 HUD elements
       gsap.set(sceneLayersRef.current[0], { opacity: 1 });
@@ -297,7 +301,11 @@ export function CinematicScrollExperience({
       // Build 3-Scene Scrubbed Timeline Sequence
       tl
         // ── Scroll Indicator Fade Out on Initial Scroll ──
-        .to(scrollIndicatorRef.current, { opacity: 0, y: 20, duration: 0.3, ease: 'power2.in', pointerEvents: 'none' }, 0)
+        .to(
+          [mobileScrollIndicatorRef.current, desktopScrollIndicatorRef.current].filter(Boolean),
+          { opacity: 0, y: 20, duration: 0.3, ease: 'power2.in', pointerEvents: 'none' },
+          0
+        )
 
         // ── Scene 1: Mewtwo Cryo-Awakening Hold ──
         .to({}, { duration: 2 })
@@ -489,9 +497,9 @@ export function CinematicScrollExperience({
                 ))}
               </div>
 
-              {/* Optional Scene 1 Action CTA */}
+              {/* Optional Scene 1 Action CTA & Mobile Row Scroll Indicator */}
               {overlay.showCta && (
-                <div className="flex items-center gap-3 sm:gap-4 flex-wrap pointer-events-auto">
+                <div className="flex items-center gap-3.5 sm:gap-4 flex-wrap pointer-events-auto">
                   <button
                     type="button"
                     onClick={() => scrollToSection('plans')}
@@ -503,6 +511,19 @@ export function CinematicScrollExperience({
                     <span>Buy License Key</span>
                     <span className="text-sm">→</span>
                   </button>
+
+                  {/* Mobile-Only Row-Aligned Blinking Swipe Down Indicator */}
+                  <div
+                    ref={mobileScrollIndicatorRef}
+                    className="md:hidden flex flex-col items-center justify-center gap-1 pl-1 opacity-0 select-none will-change-transform transform-gpu"
+                  >
+                    <span className="scroll-indicator-pulse text-[10px] font-mono font-bold tracking-[0.22em] text-white uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                      SWIPE DOWN
+                    </span>
+                    <div className="scroll-indicator-pulse w-3.5 h-5 rounded-full border-[1.5px] border-white/85 flex items-start justify-center p-[2px] shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+                      <div className="w-1 h-1.5 rounded-full bg-white animate-bounce" />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -723,19 +744,17 @@ export function CinematicScrollExperience({
 
         {/* 
           ============================================================
-          UNIVERSAL CENTERED SCROLL / SWIPE GUIDANCE INDICATOR
-          Centered on PC, Tablet, and Mobile with Hardware Pulse
+          DESKTOP CENTERED SCROLL GUIDANCE INDICATOR (PC / Wide Screens)
           ============================================================
         */}
         <div
-          ref={scrollIndicatorRef}
-          className="fixed bottom-5 sm:bottom-7 md:bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex flex-col items-center justify-center gap-1.5 opacity-0 will-change-transform transform-gpu select-none"
+          ref={desktopScrollIndicatorRef}
+          className="hidden md:flex fixed bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex-col items-center justify-center gap-1.5 opacity-0 will-change-transform transform-gpu select-none"
         >
-          <span className="scroll-indicator-pulse text-[9px] sm:text-[10px] md:text-[11px] font-mono font-bold tracking-[0.28em] text-white uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
-            <span className="md:hidden">SWIPE DOWN</span>
-            <span className="hidden md:inline">SCROLL TO EXPLORE</span>
+          <span className="scroll-indicator-pulse text-xs font-mono font-bold tracking-[0.28em] text-white uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
+            SCROLL TO EXPLORE
           </span>
-          <div className="scroll-indicator-pulse w-3.5 h-5 sm:w-4 sm:h-5.5 rounded-full border-[1.5px] border-white/85 flex items-start justify-center p-[2px] shadow-[0_0_12px_rgba(255,255,255,0.5)]">
+          <div className="scroll-indicator-pulse w-4 h-5.5 rounded-full border-[1.5px] border-white/85 flex items-start justify-center p-[2px] shadow-[0_0_12px_rgba(255,255,255,0.5)]">
             <div className="w-1 h-1.5 rounded-full bg-white animate-bounce" />
           </div>
         </div>
