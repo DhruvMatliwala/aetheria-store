@@ -14,7 +14,7 @@ const BRAND_CHARS = ['A', 'E', 'T', 'H', 'E', 'R', 'I', 'A'];
 export function Preloader({ onComplete }: PreloaderProps) {
   const [shouldRender, setShouldRender] = useState(true);
   const [progress, setProgress] = useState(0);
-  const [statusText, setStatusText] = useState('INITIALIZING NEURAL PROTOCOL...');
+  const [statusText, setStatusText] = useState('CONNECTING TO SECURE VAULT...');
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
@@ -45,7 +45,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
     // Lock body scrolling while preloader is active
     document.body.style.overflow = 'hidden';
 
-    // Simulate steady background asset prebuffering progress
+    // Simulate steady background asset prebuffering progress with sci-fi steps
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 98) {
@@ -54,9 +54,9 @@ export function Preloader({ onComplete }: PreloaderProps) {
         }
         const next = prev + Math.floor(Math.random() * 5) + 3;
         if (next >= 35 && next < 70) {
-          setStatusText('BUFFERING 1440P CINEMATIC RUNWAY...');
+          setStatusText('SYNCING PGSHARP LICENSE PIPELINE...');
         } else if (next >= 70 && next < 95) {
-          setStatusText('SYNCING ENCRYPTED LICENSE VAULT...');
+          setStatusText('PGSHARP STANDARD KEYS READY...');
         } else if (next >= 95) {
           setStatusText('ALL SYSTEMS OPERATIONAL');
         }
@@ -212,7 +212,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
         </div>
 
         {/* Character-Split Brand Wordmark */}
-        <div className="overflow-hidden mb-2">
+        <div className="overflow-hidden mb-1">
           <div className="flex items-center justify-center tracking-[0.25em] sm:tracking-[0.3em]">
             {BRAND_CHARS.map((char, index) => (
               <span
@@ -223,6 +223,13 @@ export function Preloader({ onComplete }: PreloaderProps) {
               </span>
             ))}
           </div>
+        </div>
+
+        {/* Permanent PGSharp Key Vault Sub-Tagline */}
+        <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase shadow-[0_0_15px_rgba(6,182,212,0.25)] mb-3">
+          <span className="text-cyan-400">⚡</span>
+          <span>PGSHARP KEY VAULT</span>
+          <span className="text-cyan-400">⚡</span>
         </div>
 
         {/* Dynamic Status Tag & Single Clean Percentage */}
@@ -243,11 +250,6 @@ export function Preloader({ onComplete }: PreloaderProps) {
             style={{ transform: 'scaleX(0)' }}
           />
         </div>
-
-        {/* Subtle Tap to Enter Prompt */}
-        <p className="mt-6 text-[10px] font-mono text-neutral-500 uppercase tracking-widest animate-pulse">
-          Tap anywhere to enter with sound ⚡
-        </p>
       </div>
     </div>
   );
