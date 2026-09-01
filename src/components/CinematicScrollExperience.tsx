@@ -394,7 +394,7 @@ export function CinematicScrollExperience({
                 preload={idx === 0 ? 'auto' : 'metadata'}
                 videoClassName={
                   idx === 2
-                    ? 'object-contain object-center scale-100 sm:scale-100 sm:object-cover sm:object-center'
+                    ? 'object-contain object-[center_34%] scale-100 sm:scale-100 sm:object-cover sm:object-center'
                     : 'object-contain object-[center_38%] scale-[1.38] sm:scale-100 sm:object-cover sm:object-center'
                 }
               />
@@ -566,10 +566,10 @@ export function CinematicScrollExperience({
                     )}
                   </div>
 
-                  {/* 100% Symmetrical Identical Large Obsidian Box Format */}
+                  {/* 100% Symmetrical Vertically Long Obsidian Box Format */}
                   <div
                     className={cn(
-                      'p-4 sm:p-5 md:p-6 rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between space-y-3 sm:space-y-4 shadow-2xl transform-gpu',
+                      'p-4 py-5 sm:p-5 md:p-6 rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between min-h-[210px] sm:min-h-[200px] space-y-4 shadow-2xl transform-gpu',
                       activeSceneIdx === 2 ? 'pointer-events-auto' : 'pointer-events-none'
                     )}
                   >
@@ -581,7 +581,7 @@ export function CinematicScrollExperience({
                         </span>
                       </div>
 
-                      <div className="mt-1.5 sm:mt-2 flex items-baseline">
+                      <div className="mt-2 flex items-baseline">
                         <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white font-sans tracking-tight">
                           ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
                         </span>
@@ -590,13 +590,17 @@ export function CinematicScrollExperience({
                         </span>
                       </div>
 
-                      <div className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs font-mono">
+                      <div className="mt-2 text-[10px] sm:text-xs font-mono">
                         {isOutOfStock ? (
                           <span className="text-red-400 font-medium">● Sold Out</span>
                         ) : (
                           <span className="text-emerald-400 font-medium">● Instant Auto-Dispatch</span>
                         )}
                       </div>
+
+                      <p className="mt-1 text-[10px] sm:text-[11px] text-neutral-400/90 font-sans">
+                        Full 30-Day Key Access
+                      </p>
                     </div>
 
                     {/* Action Button */}
@@ -605,7 +609,7 @@ export function CinematicScrollExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-2 sm:py-2.5 text-center text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl border border-emerald-500/30 transition-colors font-semibold"
+                          className="w-full py-2.5 sm:py-3 text-center text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl border border-emerald-500/30 transition-colors font-semibold"
                           title="Click to update or re-register notification email"
                         >
                           ✓ Waitlisted
@@ -614,7 +618,7 @@ export function CinematicScrollExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-2 sm:py-2.5 text-center text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors font-semibold"
+                          className="w-full py-2.5 sm:py-3 text-center text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors font-semibold"
                         >
                           NOTIFY ME
                         </button>
@@ -626,7 +630,7 @@ export function CinematicScrollExperience({
                           triggerParticleBurst(e, 25);
                           onBuyClick?.(plan);
                         }}
-                        className="w-full py-2 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
+                        className="w-full py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
                       >
                         Buy Key
                       </button>
