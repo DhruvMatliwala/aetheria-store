@@ -88,14 +88,21 @@ interface DissolveSceneVideoProps {
   src: string;
   fallbackSrc?: string;
   isActive: boolean;
-  preload?: 'auto' | 'metadata';
+  preload?: 'auto' | 'metadata' | 'none';
+  videoClassName?: string;
 }
 
 /**
  * Dual-Player Optical Dissolve Video Loop Engine
  * Seamlessly dissolves between the end frame and start frame over 700ms with zero hard cut.
  */
-function DissolveSceneVideo({ src, fallbackSrc, isActive, preload = 'auto' }: DissolveSceneVideoProps) {
+function DissolveSceneVideo({
+  src,
+  fallbackSrc,
+  isActive,
+  preload = 'metadata',
+  videoClassName = 'object-contain object-[center_38%] scale-[1.22] sm:scale-100 sm:object-cover sm:object-center',
+}: DissolveSceneVideoProps) {
   const vidARef = useRef<HTMLVideoElement>(null);
   const vidBRef = useRef<HTMLVideoElement>(null);
   const [activePlayer, setActivePlayer] = useState<'A' | 'B'>('A');
@@ -155,7 +162,10 @@ function DissolveSceneVideo({ src, fallbackSrc, isActive, preload = 'auto' }: Di
         disableRemotePlayback
         preload={preload}
         onTimeUpdate={handleTimeUpdateA}
-        className="absolute inset-0 w-full h-full object-contain object-[center_38%] scale-[1.22] sm:scale-100 sm:object-cover sm:object-center pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
+        className={cn(
+          'absolute inset-0 w-full h-full pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out',
+          videoClassName
+        )}
         style={{
           opacity: activePlayer === 'A' ? 1 : 0,
           zIndex: activePlayer === 'A' ? 2 : 1,
@@ -175,7 +185,10 @@ function DissolveSceneVideo({ src, fallbackSrc, isActive, preload = 'auto' }: Di
         disableRemotePlayback
         preload={preload}
         onTimeUpdate={handleTimeUpdateB}
-        className="absolute inset-0 w-full h-full object-contain object-[center_38%] scale-[1.22] sm:scale-100 sm:object-cover sm:object-center pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
+        className={cn(
+          'absolute inset-0 w-full h-full pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out',
+          videoClassName
+        )}
         style={{
           opacity: activePlayer === 'B' ? 1 : 0,
           zIndex: activePlayer === 'B' ? 2 : 1,
@@ -379,6 +392,11 @@ export function CinematicScrollExperience({
                 fallbackSrc={item.fallbackSrc}
                 isActive={activeSceneIdx === idx}
                 preload={idx === 0 ? 'auto' : 'metadata'}
+                videoClassName={
+                  idx === 2
+                    ? 'object-contain object-center scale-100 sm:scale-100 sm:object-cover sm:object-center'
+                    : 'object-contain object-[center_38%] scale-[1.38] sm:scale-100 sm:object-cover sm:object-center'
+                }
               />
             </div>
           ))}
@@ -531,7 +549,7 @@ export function CinematicScrollExperience({
           id="plans-box"
         >
           {/* Side-by-Side Symmetrical Grid on All Devices */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3.5">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
             {PLANS.map((plan) => {
               const count = (stockCounts && stockCounts[plan.id]) ?? 0;
               const isOutOfStock = count === 0;
@@ -548,35 +566,35 @@ export function CinematicScrollExperience({
                     )}
                   </div>
 
-                  {/* 100% Symmetrical Identical Box Format */}
+                  {/* 100% Symmetrical Identical Large Obsidian Box Format */}
                   <div
                     className={cn(
-                      'p-3.5 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 transition-all duration-200 flex flex-col justify-between space-y-2.5 sm:space-y-4 shadow-2xl transform-gpu',
+                      'p-4 sm:p-5 md:p-6 rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between space-y-3 sm:space-y-4 shadow-2xl transform-gpu',
                       activeSceneIdx === 2 ? 'pointer-events-auto' : 'pointer-events-none'
                     )}
                   >
                     <div>
                       <div className="flex items-center justify-between gap-1">
-                        <h3 className="text-xs sm:text-base font-medium text-white font-sans truncate">{plan.name}</h3>
-                        <span className="text-[9px] sm:text-[10px] font-mono text-neutral-400 shrink-0">
+                        <h3 className="text-sm sm:text-base font-bold text-white font-sans truncate">{plan.name}</h3>
+                        <span className="text-[10px] sm:text-xs font-mono text-neutral-300 font-medium shrink-0">
                           {plan.device_slots} Slot{plan.device_slots > 1 ? 's' : ''}
                         </span>
                       </div>
 
-                      <div className="mt-1 sm:mt-2 flex items-baseline">
-                        <span className="text-xl sm:text-2xl md:text-3xl font-bold text-white font-sans tracking-tight">
+                      <div className="mt-1.5 sm:mt-2 flex items-baseline">
+                        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white font-sans tracking-tight">
                           ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
                         </span>
-                        <span className="text-[10px] sm:text-xs text-cyan-400 font-mono ml-1 sm:ml-2">
+                        <span className="text-[11px] sm:text-xs md:text-sm text-cyan-400 font-mono ml-1.5 sm:ml-2">
                           (${(plan.price_usd / 100).toFixed(2)})
                         </span>
                       </div>
 
-                      <div className="mt-1 sm:mt-2 text-[10px] sm:text-xs font-mono">
+                      <div className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs font-mono">
                         {isOutOfStock ? (
-                          <span className="text-red-400">● Sold Out</span>
+                          <span className="text-red-400 font-medium">● Sold Out</span>
                         ) : (
-                          <span className="text-emerald-400">● {count} in vault</span>
+                          <span className="text-emerald-400 font-medium">● Instant Auto-Dispatch</span>
                         )}
                       </div>
                     </div>
@@ -587,7 +605,7 @@ export function CinematicScrollExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-1.5 sm:py-2 text-center text-[10px] sm:text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg sm:rounded-full border border-emerald-500/30 transition-colors"
+                          className="w-full py-2 sm:py-2.5 text-center text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl border border-emerald-500/30 transition-colors font-semibold"
                           title="Click to update or re-register notification email"
                         >
                           ✓ Waitlisted
@@ -596,7 +614,7 @@ export function CinematicScrollExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-1.5 sm:py-2 text-center text-[10px] sm:text-xs font-mono text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-full border border-white/10 transition-colors"
+                          className="w-full py-2 sm:py-2.5 text-center text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors font-semibold"
                         >
                           NOTIFY ME
                         </button>
@@ -608,7 +626,7 @@ export function CinematicScrollExperience({
                           triggerParticleBurst(e, 25);
                           onBuyClick?.(plan);
                         }}
-                        className="w-full py-1.5 sm:py-2.5 rounded-lg sm:rounded-full font-medium text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
+                        className="w-full py-2 sm:py-2.5 rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
                       >
                         Buy Key
                       </button>
