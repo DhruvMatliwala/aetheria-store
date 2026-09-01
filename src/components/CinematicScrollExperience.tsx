@@ -569,11 +569,11 @@ export function CinematicScrollExperience({
                   {/* 100% Symmetrical Vertically Long Obsidian Box Format */}
                   <div
                     className={cn(
-                      'p-4 py-5 sm:p-5 md:p-6 rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between min-h-[210px] sm:min-h-[200px] space-y-4 shadow-2xl transform-gpu',
+                      'p-4 py-6 sm:p-5 sm:py-7 md:p-6 md:py-8 rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between min-h-[255px] sm:min-h-[245px] space-y-4 sm:space-y-5 shadow-2xl transform-gpu',
                       activeSceneIdx === 2 ? 'pointer-events-auto' : 'pointer-events-none'
                     )}
                   >
-                    <div>
+                    <div className="space-y-2 sm:space-y-2.5">
                       <div className="flex items-center justify-between gap-1">
                         <h3 className="text-sm sm:text-base font-bold text-white font-sans truncate">{plan.name}</h3>
                         <span className="text-[10px] sm:text-xs font-mono text-neutral-300 font-medium shrink-0">
@@ -581,7 +581,7 @@ export function CinematicScrollExperience({
                         </span>
                       </div>
 
-                      <div className="mt-2 flex items-baseline">
+                      <div className="flex items-baseline">
                         <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white font-sans tracking-tight">
                           ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
                         </span>
@@ -590,7 +590,7 @@ export function CinematicScrollExperience({
                         </span>
                       </div>
 
-                      <div className="mt-2 text-[10px] sm:text-xs font-mono">
+                      <div className="text-[10px] sm:text-xs font-mono">
                         {isOutOfStock ? (
                           <span className="text-red-400 font-medium">● Sold Out</span>
                         ) : (
@@ -598,9 +598,16 @@ export function CinematicScrollExperience({
                         )}
                       </div>
 
-                      <p className="mt-1 text-[10px] sm:text-[11px] text-neutral-400/90 font-sans">
-                        Full 30-Day Key Access
-                      </p>
+                      <div className="pt-2 border-t border-white/10 flex flex-col gap-1 text-[10px] sm:text-[11px] text-neutral-300/90 font-sans">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-cyan-400 font-bold">✓</span>
+                          <span>30 Days Full Access</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-cyan-400 font-bold">✓</span>
+                          <span>Teleport & Auto-Walk</span>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Action Button */}
