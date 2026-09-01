@@ -499,25 +499,25 @@ export function CinematicScrollExperience({
 
               {/* Optional Scene 1 Action CTA & Mobile Row Scroll Indicator */}
               {overlay.showCta && (
-                <div className="flex items-center gap-3.5 sm:gap-4 flex-wrap pointer-events-auto">
+                <div className="flex items-center gap-3 sm:gap-6 flex-nowrap pointer-events-auto max-w-sm">
                   <button
                     type="button"
                     onClick={() => scrollToSection('plans')}
                     className={cn(
-                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-bold transition-all duration-200 px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base md:text-lg shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-2 active:scale-95 whitespace-nowrap',
+                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-semibold transition-all duration-200 px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm md:text-base shadow-[0_0_20px_rgba(56,189,248,0.25)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap shrink-0',
                       `hud-cta-${idx}`
                     )}
                   >
                     <span>Buy License Key</span>
-                    <span className="text-sm">→</span>
+                    <span className="text-xs sm:text-sm">→</span>
                   </button>
 
-                  {/* Mobile-Only Row-Aligned Blinking Swipe Down Indicator */}
+                  {/* Mobile-Only Row-Aligned Blinking Swipe Down Indicator (Centered) */}
                   <div
                     ref={mobileScrollIndicatorRef}
-                    className="md:hidden flex flex-col items-center justify-center gap-1 pl-1 opacity-0 select-none will-change-transform transform-gpu"
+                    className="md:hidden flex flex-col items-center justify-center gap-0.5 select-none will-change-transform transform-gpu"
                   >
-                    <span className="scroll-indicator-pulse text-[10px] font-mono font-bold tracking-[0.22em] text-white uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                    <span className="scroll-indicator-pulse text-[9px] font-mono font-bold tracking-[0.22em] text-white uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] whitespace-nowrap">
                       SWIPE DOWN
                     </span>
                     <div className="scroll-indicator-pulse w-3.5 h-5 rounded-full border-[1.5px] border-white/85 flex items-start justify-center p-[2px] shadow-[0_0_10px_rgba(255,255,255,0.5)]">

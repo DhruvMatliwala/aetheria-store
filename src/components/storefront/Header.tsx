@@ -126,10 +126,10 @@ export function Header() {
             {/* Buy Key CTA Pill Button (Always visible on all screen sizes) */}
             <a
               href="#plans"
-              className="rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black px-4.5 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-mono font-bold transition-all duration-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] flex items-center gap-1 active:scale-95 whitespace-nowrap ml-0.5 sm:ml-1"
+              className="rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black px-3.5 sm:px-4 py-1 sm:py-1.5 text-[11px] sm:text-xs font-sans font-bold transition-all duration-200 shadow-[0_0_15px_rgba(56,189,248,0.25)] hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] flex items-center gap-1 active:scale-95 whitespace-nowrap ml-0.5 sm:ml-1"
             >
               <span>Buy Key</span>
-              <span className="text-[11px] sm:text-xs">→</span>
+              <span className="text-[10px] sm:text-[11px]">→</span>
             </a>
 
             {/* Ambient Background Audio Toggle Button */}
