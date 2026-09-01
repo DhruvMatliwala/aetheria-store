@@ -206,6 +206,7 @@ export function CinematicScrollExperience({
   const overlayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pricingRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
   const [activeSceneIdx, setActiveSceneIdx] = useState<number>(0);
@@ -233,6 +234,9 @@ export function CinematicScrollExperience({
       gsap.set('.hud-desc-0', { opacity: 0, x: -20 });
       gsap.set('.hud-badge-0', { opacity: 0, scale: 0.9, x: -15 });
       gsap.set('.hud-cta-0', { opacity: 0, scale: 0.95 });
+      if (scrollIndicatorRef.current) {
+        gsap.set(scrollIndicatorRef.current, { opacity: 0, y: 15 });
+      }
 
       const hasSeenIntro = typeof window !== 'undefined' && sessionStorage.getItem('hasSeenIntro') === 'true';
       const introDelay = hasSeenIntro ? 0.3 : 1.8;
@@ -255,7 +259,8 @@ export function CinematicScrollExperience({
           { opacity: 1, scale: 1, x: 0, duration: 0.5, stagger: 0.08, ease: 'back.out(1.4)' },
           0.7
         )
-        .to('.hud-cta-0', { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' }, 0.9);
+        .to('.hud-cta-0', { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' }, 0.9)
+        .to(scrollIndicatorRef.current, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 1.0);
 
       // 2. Set initial off-screen states for Scene 2 & Scene 3 HUD elements
       gsap.set(sceneLayersRef.current[0], { opacity: 1 });
@@ -291,6 +296,9 @@ export function CinematicScrollExperience({
 
       // Build 3-Scene Scrubbed Timeline Sequence
       tl
+        // ── Scroll Indicator Fade Out on Initial Scroll ──
+        .to(scrollIndicatorRef.current, { opacity: 0, y: 20, duration: 0.3, ease: 'power2.in', pointerEvents: 'none' }, 0)
+
         // ── Scene 1: Mewtwo Cryo-Awakening Hold ──
         .to({}, { duration: 2 })
 
@@ -703,10 +711,18 @@ export function CinematicScrollExperience({
           </div>
         </div>
 
-        {/* Minimal Scroll Cue */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 hidden md:flex items-center gap-1.5 text-[10px] font-mono text-neutral-400 opacity-60 pointer-events-none">
-          <span>SCROLL</span>
-          <ChevronDown size={11} />
+        {/* Floating Dynamic Scroll & Swipe Guidance Indicator (Universal Mobile + Desktop) */}
+        <div
+          ref={scrollIndicatorRef}
+          className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-none flex items-center justify-center will-change-transform transform-gpu opacity-0"
+        >
+          <div className="px-3.5 sm:px-4 py-1.5 rounded-full bg-neutral-950/85 border border-cyan-500/40 backdrop-blur-xl flex items-center gap-2 shadow-[0_0_25px_rgba(6,182,212,0.35)] animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+            <span className="text-[10px] sm:text-xs font-mono tracking-[0.2em] text-cyan-300 font-bold uppercase">
+              Swipe Down to Explore
+            </span>
+            <ChevronDown size={14} className="text-cyan-400 animate-bounce" />
+          </div>
         </div>
       </div>
 

@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
+import { useAmbientAudio } from '@/context/AmbientAudioContext';
 
 interface PreloaderProps {
   onComplete?: () => void;
@@ -12,11 +13,21 @@ const BRAND_CHARS = ['A', 'E', 'T', 'H', 'E', 'R', 'I', 'A'];
 
 export function Preloader({ onComplete }: PreloaderProps) {
   const [shouldRender, setShouldRender] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [statusText, setStatusText] = useState('INITIALIZING NEURAL PROTOCOL...');
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
+  const { togglePlay, isPlaying } = useAmbientAudio();
+
+  const handleInteraction = () => {
+    // Attempt audio unlock on touch
+    if (!isPlaying) {
+      togglePlay();
+    }
+  };
 
   useEffect(() => {
     // Check if user has already seen the preloader in this session
@@ -33,6 +44,25 @@ export function Preloader({ onComplete }: PreloaderProps) {
 
     // Lock body scrolling while preloader is active
     document.body.style.overflow = 'hidden';
+
+    // Simulate steady background asset prebuffering progress
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 98) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        const next = prev + Math.floor(Math.random() * 8) + 4;
+        if (next >= 40 && next < 75) {
+          setStatusText('BUFFERING 1440P CINEMATIC RUNWAY...');
+        } else if (next >= 75 && next < 95) {
+          setStatusText('SYNCING ENCRYPTED LICENSE VAULT...');
+        } else if (next >= 95) {
+          setStatusText('ALL SYSTEMS OPERATIONAL (100%)');
+        }
+        return Math.min(100, next);
+      });
+    }, 120);
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
@@ -63,63 +93,63 @@ export function Preloader({ onComplete }: PreloaderProps) {
         transformOrigin: 'center center',
       });
 
-      // ── Phase 1: Brand Mark Glow & Scale (0.0s – 0.6s) ─────────────────────
+      // ── Phase 1: Brand Mark Glow & Scale (0.0s – 0.8s) ─────────────────────
       tl.to(
         logoRef.current,
         {
           scale: 1,
           opacity: 1,
-          filter: 'drop-shadow(0 0 25px rgba(6,182,212,0.85))',
-          duration: 0.6,
+          filter: 'drop-shadow(0 0 28px rgba(6,182,212,0.9))',
+          duration: 0.8,
           ease: 'power3.out',
         },
         0.0
       );
 
-      // ── Phase 2: Staggered Brand Text & Subtitle Reveal (0.35s – 1.1s) ──────
+      // ── Phase 2: Staggered Brand Text & Subtitle Reveal (0.4s – 1.4s) ──────
       tl.to(
         '.preloader-char',
         {
           y: 0,
           opacity: 1,
-          stagger: 0.04,
-          duration: 0.55,
+          stagger: 0.05,
+          duration: 0.7,
           ease: 'power3.out',
         },
-        0.35
+        0.4
       );
 
       tl.to(
         subtitleRef.current,
         {
-          opacity: 0.85,
+          opacity: 0.9,
           y: 0,
-          duration: 0.5,
+          duration: 0.6,
           ease: 'power2.out',
         },
-        0.65
+        0.8
       );
 
       tl.to(
         lineRef.current,
         {
           scaleX: 1,
-          duration: 0.7,
-          ease: 'power2.inOut',
+          duration: 1.6,
+          ease: 'power1.inOut',
         },
-        0.75
+        0.8
       );
 
-      // ── Hold for Dramatic Effect (1.2s – 1.6s) ──────────────────────────────
-      tl.to({}, { duration: 0.4 });
+      // ── Hold for Extended Dramatic Asset Preloading (1.8s – 2.8s) ──────────
+      tl.to({}, { duration: 1.0 });
 
-      // ── Phase 3: Smooth Exit Shutter Transition (1.6s – 2.2s) ───────────────
+      // ── Phase 3: Smooth Exit Shutter Transition (2.8s – 3.6s) ───────────────
       tl.to(
         contentRef.current,
         {
           scale: 1.06,
           opacity: 0,
-          duration: 0.35,
+          duration: 0.4,
           ease: 'power2.in',
         },
         'exit'
@@ -129,7 +159,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
         containerRef.current,
         {
           yPercent: -100,
-          duration: 0.75,
+          duration: 0.8,
           ease: 'power4.inOut',
         },
         'exit+=0.1'
@@ -137,6 +167,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
     }, containerRef);
 
     return () => {
+      clearInterval(progressInterval);
       document.body.style.overflow = '';
       ctx.revert();
     };
@@ -147,14 +178,16 @@ export function Preloader({ onComplete }: PreloaderProps) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black pointer-events-auto select-none will-change-transform transform-gpu overflow-hidden"
+      onClick={handleInteraction}
+      onTouchStart={handleInteraction}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black pointer-events-auto select-none will-change-transform transform-gpu overflow-hidden cursor-pointer"
     >
       {/* Background Subtle Radial Aura */}
       <div
         className="absolute inset-0 pointer-events-none opacity-40"
         style={{
           background:
-            'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(6, 182, 212, 0.15) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 80%)',
+            'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(6, 182, 212, 0.18) 0%, rgba(16, 185, 129, 0.06) 50%, transparent 80%)',
         }}
       />
 
@@ -166,7 +199,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
         {/* Glowing Frosted Emblem Badge */}
         <div
           ref={logoRef}
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-neutral-950 border border-cyan-400/40 backdrop-blur-2xl flex items-center justify-center mb-6 shadow-[0_0_35px_rgba(6,182,212,0.4)] opacity-0 will-change-transform transform-gpu"
+          className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-neutral-950 border border-cyan-400/50 backdrop-blur-2xl flex items-center justify-center mb-6 shadow-[0_0_35px_rgba(6,182,212,0.45)] opacity-0 will-change-transform transform-gpu"
         >
           <Image
             src="/logo.png"
@@ -192,19 +225,21 @@ export function Preloader({ onComplete }: PreloaderProps) {
           </div>
         </div>
 
-        {/* Subtitle Protocol Tag */}
-        <p
-          ref={subtitleRef}
-          className="text-[9px] sm:text-[11px] font-mono text-cyan-400 font-medium tracking-[0.35em] uppercase mb-4 opacity-0 will-change-transform transform-gpu"
-        >
-          VAULT ACCESS PROTOCOL
-        </p>
+        {/* Dynamic Status Tag & Percentage */}
+        <div ref={subtitleRef} className="opacity-0 mb-4 flex flex-col items-center gap-1">
+          <p className="text-[9px] sm:text-[11px] font-mono text-cyan-400 font-medium tracking-[0.25em] sm:tracking-[0.35em] uppercase">
+            {statusText}
+          </p>
+          <span className="text-[10px] sm:text-xs font-mono text-neutral-400">
+            [{progress}%]
+          </span>
+        </div>
 
         {/* Cyber Progress Pulse Line */}
-        <div className="w-28 sm:w-36 h-[1.5px] bg-neutral-900 rounded-full overflow-hidden">
+        <div className="w-32 sm:w-44 h-[2px] bg-neutral-900 rounded-full overflow-hidden">
           <div
             ref={lineRef}
-            className="w-full h-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_10px_rgba(6,182,212,0.8)] will-change-transform transform-gpu"
+            className="w-full h-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_rgba(6,182,212,0.9)] will-change-transform transform-gpu"
             style={{ transform: 'scaleX(0)' }}
           />
         </div>
