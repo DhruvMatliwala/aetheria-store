@@ -27,13 +27,13 @@ export function Footer() {
           {/* Brand column */}
           <div className="md:col-span-4">
             <div className="flex items-center gap-3 mb-3">
-              <div className="h-10 w-10 rounded-xl bg-neutral-950/80 border border-cyan-500/30 flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(56,189,248,0.3)] overflow-hidden p-1.5">
+              <div className="h-9 w-9 flex items-center justify-center">
                 <Image
                   src="/logo.png"
                   alt="AETHERIA"
-                  width={32}
-                  height={32}
-                  className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]"
+                  width={36}
+                  height={36}
+                  className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]"
                 />
               </div>
               <div className="flex items-baseline gap-1">

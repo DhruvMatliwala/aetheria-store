@@ -25,13 +25,13 @@ export default function TermsPage() {
       <nav className="fixed top-0 left-0 right-0 z-40 bg-black/60 backdrop-blur-xl border-b border-cyan-500/10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-neutral-950 border border-cyan-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.35)] group-hover:border-cyan-400 transition-colors">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center transition-transform group-hover:scale-110">
               <Image
                 src="/logo.png"
                 alt="AETHERIA"
-                width={24}
-                height={24}
-                className="w-5 h-5 sm:w-6 sm:h-6 object-contain filter drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(6,182,212,0.9)]"
               />
             </div>
             <div className="flex flex-col">
