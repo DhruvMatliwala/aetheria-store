@@ -196,19 +196,24 @@ export function Preloader({ onComplete }: PreloaderProps) {
         ref={contentRef}
         className="relative z-10 flex flex-col items-center justify-center text-center px-4 will-change-transform transform-gpu"
       >
-        {/* Glowing Frosted Emblem Badge */}
+        {/* Holographic Floating Emblem */}
         <div
           ref={logoRef}
-          className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-neutral-950/90 border border-cyan-400/60 backdrop-blur-2xl flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(6,182,212,0.6)] opacity-0 will-change-transform transform-gpu p-3"
+          className="relative flex items-center justify-center mb-5 opacity-0 will-change-transform transform-gpu"
         >
-          <Image
-            src="/logo.png"
-            alt="AETHERIA"
-            width={80}
-            height={80}
-            priority
-            className="w-full h-full object-contain filter drop-shadow-[0_0_16px_rgba(56,189,248,0.9)]"
-          />
+          {/* Subtle Ambient Radial Glow */}
+          <div className="absolute inset-0 -m-8 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none animate-pulse" />
+
+          <div className="relative w-28 h-28 sm:w-36 sm:h-36 flex items-center justify-center">
+            <Image
+              src="/logo.png"
+              alt="AETHERIA"
+              width={160}
+              height={160}
+              priority
+              className="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(6,182,212,0.95)] drop-shadow-[0_0_35px_rgba(168,85,247,0.5)]"
+            />
+          </div>
         </div>
 
         {/* Character-Split Brand Wordmark */}
