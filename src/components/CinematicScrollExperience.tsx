@@ -38,24 +38,24 @@ const SCENE_OVERLAYS = [
     idx: '01 / 03',
     subtitle: 'AWAKEN ACCESS',
     title: 'Break every limit.',
-    description: 'Standard Android license keys dispatched in under 10 seconds. Zero delay.',
-    badges: ['Instant Dispatch', '30-Day License', 'Android Standard 🔑'],
+    description: 'Official PGSharp Standard Edition 30-day keys dispatched in under 10 seconds. Zero delay.',
+    badges: ['Instant Auto-Dispatch', '30-Day License', 'PGSharp Standard ⚡'],
     showCta: true,
   },
   {
     idx: '02 / 03',
     subtitle: 'GLOBAL EXPEDITION',
     title: 'Roam anywhere.',
-    description: 'Precision GPS joystick and route patrol across Tokyo, Zaragoza, and worldwide.',
-    badges: ['GPS Joystick', 'Auto-Walk', 'Cooldown Radar'],
+    description: 'Precision PGSharp GPS joystick and route patrol across Tokyo, Zaragoza, and worldwide.',
+    badges: ['PGSharp Joystick', 'Auto-Walk', 'Cooldown Radar'],
     showCta: false,
   },
   {
     idx: '03 / 03',
     subtitle: 'COMBAT SHOWDOWN',
     title: 'Master every raid.',
-    description: 'Live 100% IV scanner feed and official 30-day Standard Android licenses. Instant delivery.',
-    badges: ['100% IV Feed', 'Raid Radar', 'Instant Dispatch'],
+    description: 'Live 100% IV scanner feed and official 30-day PGSharp Standard Edition licenses. Instant delivery.',
+    badges: ['100% IV Feed', 'Raid Radar', 'PGSharp Verified'],
     showCta: false,
   },
 ];
@@ -63,12 +63,20 @@ const SCENE_OVERLAYS = [
 // FAQ items for Scene 3 Drawer
 const FAQS = [
   {
+    q: 'What are these keys used for?',
+    a: 'These are official activation keys for the PGSharp Standard Edition Android app. Entering your key inside the PGSharp app instantly unlocks VIP features including teleportation, auto-walking, quick catch, 100 IV feeds, and shiny scanner for 30 days.',
+  },
+  {
+    q: 'Are you the official creator of PGSharp?',
+    a: 'AETHERIA is an independent digital license distributor and reseller. We provide trainers worldwide with instant automated key delivery, local payment methods (UPI, GPay, Paytm, Cards, PayPal), and 24/7 priority customer support.',
+  },
+  {
     q: 'How fast do I receive my PGSharp license key?',
     a: 'Delivery is 100% automated and instant. As soon as your payment completes on UPI or PayPal, your key is revealed directly on your screen and dispatched to your email in under 10 seconds.',
   },
   {
     q: 'How do device slots work across 1-Device and 2-Device plans?',
-    a: '1 Device Plan (₹180 / $1.99) activates 1 Android device for 30 days. 2 Devices Plan (₹340 / $3.99) activates up to 2 Android devices simultaneously. Keys bind to hardware for the 30-day duration.',
+    a: '1 Device Plan (₹180 / $1.99) activates 1 Android device for 30 days. 2 Devices Plan (₹350 / $3.50) activates up to 2 Android devices simultaneously. Keys bind to hardware for the 30-day duration.',
   },
   {
     q: 'What payment methods are supported?',
@@ -76,11 +84,11 @@ const FAQS = [
   },
   {
     q: 'How do I activate my license key in PGSharp?',
-    a: 'Download the PGSharp APK from pgsharp.com, log into Pokémon GO, tap the star/settings icon → Activate, and paste your key. Features unlock immediately.',
+    a: 'Download the official PGSharp APK, open Pokémon GO, tap the PGSharp star/settings icon → Settings → Activate, and paste your key. VIP features unlock immediately.',
   },
   {
     q: 'Where can I reach out for assistance or questions?',
-    a: 'Reach out directly on Discord or Reddit for instant 1-on-1 assistance.',
+    a: 'Reach out directly on Discord, Telegram (@sleekfx3), or our 24/7 support channels for instant 1-on-1 assistance.',
   },
 ];
 
@@ -575,7 +583,7 @@ export function CinematicScrollExperience({
                   >
                     <div className="space-y-2 sm:space-y-2.5">
                       <div className="flex items-center justify-between gap-1">
-                        <h3 className="text-sm sm:text-base font-bold text-white font-sans truncate">{plan.name}</h3>
+                        <h3 className="text-sm sm:text-base font-bold text-white font-sans truncate">PGSharp {plan.name}</h3>
                         <span className="text-[10px] sm:text-xs font-mono text-neutral-300 font-medium shrink-0">
                           {plan.device_slots} Slot{plan.device_slots > 1 ? 's' : ''}
                         </span>
@@ -601,7 +609,7 @@ export function CinematicScrollExperience({
                       <div className="pt-2 border-t border-white/10 flex flex-col gap-1 text-[10px] sm:text-[11px] text-neutral-300/90 font-sans">
                         <div className="flex items-center gap-1.5">
                           <span className="text-cyan-400 font-bold">✓</span>
-                          <span>30 Days Full Access</span>
+                          <span>30-Day PGSharp VIP</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <span className="text-cyan-400 font-bold">✓</span>
@@ -693,12 +701,18 @@ export function CinematicScrollExperience({
             )}
           </div>
 
-          {/* Minimal Clean Legal Disclaimer */}
-          <div className="text-center text-[9px] sm:text-[10px] font-mono text-neutral-500 space-x-2 sm:space-x-3 pointer-events-auto">
-            <span>© {new Date().getFullYear()} AETHERIA</span>
-            <a href="/terms" className="hover:text-neutral-300">Terms</a>
-            <a href="/privacy" className="hover:text-neutral-300">Privacy</a>
-            <a href="/refund" className="hover:text-neutral-300">Refunds</a>
+          {/* Legal Links & Independent Reseller Disclaimer */}
+          <div className="flex flex-col items-center gap-1 text-center font-sans pointer-events-auto">
+            <div className="flex items-center justify-center gap-3 text-[10px] text-neutral-500">
+              <span>© {new Date().getFullYear()} AETHERIA</span>
+              <span>•</span>
+              <a href="/terms" className="hover:text-neutral-300">Terms</a>
+              <a href="/privacy" className="hover:text-neutral-300">Privacy</a>
+              <a href="/refund" className="hover:text-neutral-300">Refunds</a>
+            </div>
+            <p className="text-[8px] sm:text-[9px] text-neutral-500/80 max-w-sm text-center leading-tight">
+              AETHERIA is an independent digital license reseller. Not affiliated with Niantic, Nintendo, Pokémon, or PGSharp.
+            </p>
           </div>
         </div>
 

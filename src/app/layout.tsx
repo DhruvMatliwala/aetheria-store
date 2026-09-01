@@ -4,9 +4,9 @@ import { AmbientAudioProvider } from '@/context/AmbientAudioContext';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AETHERIA — Premium Standard License Keys | Instant Delivery',
+  title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & Cards)',
   description:
-    'Official Standard Android license keys dispatched in under 10 seconds. Secure UPI & PayPal checkout with automated instant key delivery.',
+    'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Secure UPI & PayPal checkout with automated instant key delivery and 24/7 support.',
   keywords: [
     'AETHERIA',
     'PGSharp',
@@ -14,8 +14,10 @@ export const metadata: Metadata = {
     'PGSharp license',
     'buy PGSharp',
     'PGSharp activation key',
+    'PGSharp UPI',
+    'PGSharp India',
     'GPS joystick',
-    'Pokemon GO',
+    'Pokemon GO spoofing',
   ],
   icons: {
     icon: '/icon.svg',
@@ -23,9 +25,9 @@ export const metadata: Metadata = {
     apple: '/icon.svg',
   },
   openGraph: {
-    title: 'AETHERIA — Premium Standard License Keys | Instant Delivery',
+    title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery',
     description:
-      'Official Standard Android license keys dispatched in under 10 seconds. Secure UPI & PayPal checkout with automated instant key delivery.',
+      'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Secure UPI & PayPal checkout with automated instant delivery.',
     type: 'website',
     url: process.env.NEXT_PUBLIC_APP_URL,
   },
