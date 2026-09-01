@@ -37,7 +37,7 @@ export async function sendAdminOrderAlert(params: AdminOrderAlertParams): Promis
 
     const payload = {
       username: 'Aetheria Order Backup',
-      avatar_url: 'https://pgsharp.com/img/logo.png',
+      avatar_url: 'https://aetheria-store.vercel.app/logo.png',
       embeds: [
         {
           title: '🔔 Order Paid & Key Fulfilled',
