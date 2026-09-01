@@ -155,7 +155,7 @@ function DissolveSceneVideo({ src, fallbackSrc, isActive, preload = 'auto' }: Di
         disableRemotePlayback
         preload={preload}
         onTimeUpdate={handleTimeUpdateA}
-        className="absolute inset-0 w-full h-full object-contain sm:object-cover pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
+        className="absolute inset-0 w-full h-full object-contain object-[center_38%] sm:object-cover sm:object-center pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
         style={{
           opacity: activePlayer === 'A' ? 1 : 0,
           zIndex: activePlayer === 'A' ? 2 : 1,
@@ -175,7 +175,7 @@ function DissolveSceneVideo({ src, fallbackSrc, isActive, preload = 'auto' }: Di
         disableRemotePlayback
         preload={preload}
         onTimeUpdate={handleTimeUpdateB}
-        className="absolute inset-0 w-full h-full object-contain sm:object-cover pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
+        className="absolute inset-0 w-full h-full object-contain object-[center_38%] sm:object-cover sm:object-center pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out"
         style={{
           opacity: activePlayer === 'B' ? 1 : 0,
           zIndex: activePlayer === 'B' ? 2 : 1,
