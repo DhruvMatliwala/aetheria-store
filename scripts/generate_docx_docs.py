@@ -260,8 +260,8 @@ def create_document():
     add_bullet("Production Build Command: ", "Execute 'npm run build' (validates all 15 routes, types, and bundle optimizations).")
     add_bullet("Production Server Start: ", "Execute 'npm run start' on port 3000 behind NGINX or deploy seamlessly to Vercel.")
 
-    doc.save("F:/Pgsharp/PGSharp_Storefront_Documentation.docx")
-    print("Successfully generated master documentation at: F:/Pgsharp/PGSharp_Storefront_Documentation.docx")
+    doc.save("F:/Pgsharp/docs/Documentation.docx")
+    print("Successfully generated master documentation at: F:/Pgsharp/docs/Documentation.docx")
 
 if __name__ == "__main__":
     create_document()
