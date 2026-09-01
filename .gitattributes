@@ -1,0 +1,9 @@
+# GitHub Linguist language overrides
+# Keep GitHub language stats focused on the primary Next.js TypeScript application
+
+CLips/* linguist-documentation
+CLips/** linguist-documentation
+*.ipynb linguist-documentation
+scripts/* linguist-documentation
+scripts/** linguist-documentation
+*.docx linguist-documentation
