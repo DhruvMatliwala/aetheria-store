@@ -199,15 +199,15 @@ export function Preloader({ onComplete }: PreloaderProps) {
         {/* Glowing Frosted Emblem Badge */}
         <div
           ref={logoRef}
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-neutral-950 border border-cyan-400/50 backdrop-blur-2xl flex items-center justify-center mb-6 shadow-[0_0_35px_rgba(6,182,212,0.45)] opacity-0 will-change-transform transform-gpu"
+          className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-neutral-950/90 border border-cyan-400/60 backdrop-blur-2xl flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(6,182,212,0.6)] opacity-0 will-change-transform transform-gpu p-3"
         >
           <Image
             src="/logo.png"
             alt="AETHERIA"
-            width={44}
-            height={44}
+            width={80}
+            height={80}
             priority
-            className="w-8 h-8 sm:w-10 sm:h-10 object-contain filter drop-shadow-[0_0_12px_rgba(56,189,248,0.8)]"
+            className="w-full h-full object-contain filter drop-shadow-[0_0_16px_rgba(56,189,248,0.9)]"
           />
         </div>
 

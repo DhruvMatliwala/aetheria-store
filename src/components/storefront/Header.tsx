@@ -58,13 +58,13 @@ export function Header() {
             aria-label="AETHERIA Home"
           >
             {/* Ultra-Luxe Frosted Glass Emblem Badge */}
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white/10 border border-white/20 backdrop-blur-2xl flex items-center justify-center shadow-[0_4px_20px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300 group-hover:border-cyan-400/50 group-hover:scale-105">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-neutral-950/80 border border-cyan-400/40 backdrop-blur-2xl flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.35)] overflow-hidden transition-all duration-300 group-hover:border-cyan-400 group-hover:scale-105 p-1.5">
               <Image
                 src="/logo.png"
                 alt="AETHERIA"
-                width={32}
-                height={32}
-                className="w-5.5 h-5.5 sm:w-6 sm:h-6 object-contain filter drop-shadow-[0_0_8px_rgba(56,189,248,0.6)]"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(56,189,248,0.8)]"
               />
             </div>
 
