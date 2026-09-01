@@ -76,9 +76,8 @@ export function Preloader({ onComplete }: PreloaderProps) {
 
       // ── Initial State Setup ────────────────────────────────────────────────
       gsap.set(logoRef.current, {
-        scale: 0.8,
+        scale: 0.85,
         opacity: 0,
-        filter: 'drop-shadow(0 0 0px rgba(6,182,212,0))',
       });
       gsap.set('.preloader-char', {
         y: 25,
@@ -93,13 +92,12 @@ export function Preloader({ onComplete }: PreloaderProps) {
         transformOrigin: 'center center',
       });
 
-      // ── Phase 1: Brand Mark Glow & Scale (0.0s – 0.9s) ─────────────────────
+      // ── Phase 1: Brand Mark Scale & Fade In (0.0s – 0.9s) ─────────────────
       tl.to(
         logoRef.current,
         {
           scale: 1,
           opacity: 1,
-          filter: 'drop-shadow(0 0 30px rgba(6,182,212,0.95))',
           duration: 0.9,
           ease: 'power3.out',
         },
@@ -182,15 +180,6 @@ export function Preloader({ onComplete }: PreloaderProps) {
       onTouchStart={handleInteraction}
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black pointer-events-auto select-none will-change-transform transform-gpu overflow-hidden cursor-pointer"
     >
-      {/* Background Subtle Radial Aura */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-40"
-        style={{
-          background:
-            'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(6, 182, 212, 0.18) 0%, rgba(16, 185, 129, 0.06) 50%, transparent 80%)',
-        }}
-      />
-
       {/* Center Cinematic Brand Content */}
       <div
         ref={contentRef}
