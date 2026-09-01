@@ -199,19 +199,16 @@ export function Preloader({ onComplete }: PreloaderProps) {
         {/* Holographic Floating Emblem */}
         <div
           ref={logoRef}
-          className="relative flex items-center justify-center mb-5 opacity-0 will-change-transform transform-gpu"
+          className="relative flex items-center justify-center mb-6 opacity-0 will-change-transform transform-gpu"
         >
-          {/* Subtle Ambient Radial Glow */}
-          <div className="absolute inset-0 -m-8 bg-cyan-500/25 rounded-full blur-3xl pointer-events-none animate-pulse" />
-
-          <div className="relative w-28 h-28 sm:w-36 sm:h-36 flex items-center justify-center">
+          <div className="relative w-44 h-44 sm:w-56 sm:h-56 flex items-center justify-center">
             <Image
               src="/logo.png"
               alt="AETHERIA"
-              width={160}
-              height={160}
+              width={240}
+              height={240}
               priority
-              className="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(6,182,212,0.95)] drop-shadow-[0_0_35px_rgba(168,85,247,0.5)]"
+              className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(6,182,212,0.85)] drop-shadow-[0_0_30px_rgba(168,85,247,0.55)]"
             />
           </div>
         </div>
