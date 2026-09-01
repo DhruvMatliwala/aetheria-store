@@ -1,73 +1,118 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Shield } from 'lucide-react';
+import Image from 'next/image';
+import { Shield, Lock, Key, EyeOff, Sparkles } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | AETHERIA',
-  description: 'How customer transactional data, email, and payment references are protected.',
+  title: 'Privacy Policy | AETHERIA — PGSharp Key Vault',
+  description: 'How customer transactional data, email, and payment references are cryptographically protected.',
 };
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-hero-gradient text-white">
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-40 glass border-b border-surface-700/50">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-            <span className="text-2xl">🎮</span>
-            <span className="text-white font-extrabold text-lg">PGSharp Keys</span>
+    <main className="min-h-screen bg-black text-white relative overflow-hidden selection:bg-cyan-500/30">
+      {/* Background Subtle Radial Aura */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-30"
+        style={{
+          background:
+            'radial-gradient(ellipse 70% 50% at 50% 10%, rgba(6, 182, 212, 0.15) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 80%)',
+        }}
+      />
+
+      {/* Floating Cyber Header */}
+      <nav className="fixed top-0 left-0 right-0 z-40 bg-black/60 backdrop-blur-xl border-b border-cyan-500/10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-neutral-950 border border-cyan-500/40 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.35)] group-hover:border-cyan-400 transition-colors">
+              <Image
+                src="/logo.png"
+                alt="AETHERIA"
+                width={24}
+                height={24}
+                className="w-5 h-5 sm:w-6 sm:h-6 object-contain filter drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]"
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-white font-sans font-bold text-sm sm:text-base tracking-[0.2em] uppercase">
+                AETHERIA
+              </span>
+              <span className="text-[9px] font-mono text-cyan-400 font-semibold tracking-widest uppercase">
+                PGSharp Key Vault
+              </span>
+            </div>
           </Link>
           <Link
-            href="/#plans"
-            className="text-xs font-semibold text-brand-400 hover:text-brand-300 transition-colors"
+            href="/"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-full bg-neutral-900/80 border border-neutral-700 hover:border-cyan-400/60 text-xs font-mono text-neutral-300 hover:text-cyan-300 transition-all shadow-sm"
           >
-            ← Back to Storefront
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Return to Vault</span>
           </Link>
         </div>
       </nav>
 
-      <div className="pt-28 pb-20 px-4 max-w-4xl mx-auto">
-        <div className="bg-surface-800 border border-surface-600 rounded-3xl p-8 sm:p-12 shadow-card">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-brand-900/60 border border-brand-700/50 flex items-center justify-center text-brand-400">
-              <Shield size={24} />
+      {/* Main Content Container */}
+      <div className="pt-28 sm:pt-36 pb-20 px-4 max-w-4xl mx-auto relative z-10">
+        <div className="bg-neutral-950/80 border border-cyan-500/20 backdrop-blur-2xl rounded-3xl p-6 sm:p-12 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-cyan-950/50 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+              <Shield size={26} />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-white">Privacy Policy</h1>
-              <p className="text-gray-400 text-xs mt-1">Last Updated: August 2026</p>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-[10px] font-mono tracking-widest uppercase mb-1">
+                <Lock size={11} className="text-cyan-400" />
+                Data Protection
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Privacy Policy</h1>
+              <p className="text-neutral-400 text-xs font-mono mt-1">Last Updated: September 2026 • Version 1.8.8</p>
             </div>
           </div>
 
-          <div className="space-y-6 text-gray-300 text-sm leading-relaxed border-t border-surface-700 pt-6">
-            <section>
-              <h2 className="text-lg font-bold text-white mb-2">1. Data We Collect</h2>
-              <p>
-                We only collect minimal transactional data required to deliver and verify your digital product purchase:
+          <div className="space-y-6 text-neutral-300 text-sm leading-relaxed border-t border-neutral-800/80 pt-6">
+            <section className="bg-neutral-900/40 border border-neutral-800/60 rounded-2xl p-5">
+              <h2 className="text-base font-bold text-cyan-300 mb-2 flex items-center gap-2">
+                <Key size={16} />
+                1. Transactional Data We Collect
+              </h2>
+              <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
+                We strictly collect only minimal, non-sensitive transactional data required to fulfill and deliver your digital product purchase:
               </p>
-              <ul className="list-disc list-inside space-y-1 text-gray-400 mt-2 ml-2">
-                <li><strong>Email Address:</strong> To deliver the license key, activation guide, and purchase receipt.</li>
-                <li><strong>Transaction ID:</strong> Cryptographic reference ID generated by payment gateways (Razorpay / PayPal).</li>
+              <ul className="list-disc list-inside space-y-1.5 text-neutral-400 text-xs sm:text-sm mt-3 ml-1">
+                <li><strong className="text-neutral-200">Email Address:</strong> Used solely to dispatch your PGSharp license key, order invoice, and activation guide.</li>
+                <li><strong className="text-neutral-200">Transaction Reference ID:</strong> Cryptographic reference number generated by payment gateways (Razorpay / PayPal / UPI) for automated key verification.</li>
               </ul>
             </section>
 
-            <section>
-              <h2 className="text-lg font-bold text-white mb-2">2. Payment Security & Zero Card Storage</h2>
-              <p>
-                All payments are processed securely through certified Level-1 PCI-DSS compliant payment gateways (Razorpay and PayPal). We <strong>never store, log, or have access to</strong> your credit card numbers, UPI PINs, CVVs, or banking credentials.
+            <section className="bg-neutral-900/40 border border-neutral-800/60 rounded-2xl p-5">
+              <h2 className="text-base font-bold text-cyan-300 mb-2 flex items-center gap-2">
+                <EyeOff size={16} />
+                2. Payment Security & Zero Financial Storage
+              </h2>
+              <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
+                All checkout transactions are processed through certified Level-1 PCI-DSS compliant payment gateways (Razorpay, UPI, and PayPal). AETHERIA <strong className="text-neutral-200">never stores, logs, intercepts, or has access to</strong> your credit/debit card numbers, UPI PINs, CVVs, bank account credentials, or passwords.
               </p>
             </section>
 
-            <section>
-              <h2 className="text-lg font-bold text-white mb-2">3. Key Encryption & Data Retention</h2>
-              <p>
-                All digital license keys are securely encrypted at rest using authenticated vault encryption in our database. Your data is never sold, shared with advertisers, or used for unsolicited marketing.
+            <section className="bg-neutral-900/40 border border-neutral-800/60 rounded-2xl p-5">
+              <h2 className="text-base font-bold text-cyan-300 mb-2 flex items-center gap-2">
+                <Lock size={16} />
+                3. AES-256 Key Encryption & Zero Marketing Spam
+              </h2>
+              <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
+                All digital license keys are encrypted at rest using industry-standard AES-256 authenticated encryption. Customer emails are never sold, rented, shared with third-party advertisers, or used for promotional spam.
               </p>
             </section>
 
-            <section>
-              <h2 className="text-lg font-bold text-white mb-2">4. Cookies & Local Storage</h2>
-              <p>
-                We only use essential local session storage to temporarily preserve your order reference during the checkout payment redirect.
+            <section className="bg-neutral-900/40 border border-neutral-800/60 rounded-2xl p-5">
+              <h2 className="text-base font-bold text-cyan-300 mb-2 flex items-center gap-2">
+                <Sparkles size={16} />
+                4. Session Storage & Cookies
+              </h2>
+              <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
+                We only utilize essential local storage to preserve your order verification state during payment redirects and anonymous web analytics to ensure fast load times and server uptime.
               </p>
             </section>
           </div>
