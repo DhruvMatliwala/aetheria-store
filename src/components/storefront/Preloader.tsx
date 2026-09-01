@@ -52,17 +52,17 @@ export function Preloader({ onComplete }: PreloaderProps) {
           clearInterval(progressInterval);
           return 100;
         }
-        const next = prev + Math.floor(Math.random() * 8) + 4;
-        if (next >= 40 && next < 75) {
+        const next = prev + Math.floor(Math.random() * 5) + 3;
+        if (next >= 35 && next < 70) {
           setStatusText('BUFFERING 1440P CINEMATIC RUNWAY...');
-        } else if (next >= 75 && next < 95) {
+        } else if (next >= 70 && next < 95) {
           setStatusText('SYNCING ENCRYPTED LICENSE VAULT...');
         } else if (next >= 95) {
           setStatusText('ALL SYSTEMS OPERATIONAL');
         }
         return Math.min(100, next);
       });
-    }, 120);
+    }, 160);
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
@@ -93,63 +93,63 @@ export function Preloader({ onComplete }: PreloaderProps) {
         transformOrigin: 'center center',
       });
 
-      // ── Phase 1: Brand Mark Glow & Scale (0.0s – 0.8s) ─────────────────────
+      // ── Phase 1: Brand Mark Glow & Scale (0.0s – 0.9s) ─────────────────────
       tl.to(
         logoRef.current,
         {
           scale: 1,
           opacity: 1,
-          filter: 'drop-shadow(0 0 28px rgba(6,182,212,0.9))',
-          duration: 0.8,
+          filter: 'drop-shadow(0 0 30px rgba(6,182,212,0.95))',
+          duration: 0.9,
           ease: 'power3.out',
         },
         0.0
       );
 
-      // ── Phase 2: Staggered Brand Text & Subtitle Reveal (0.4s – 1.4s) ──────
+      // ── Phase 2: Staggered Brand Text & Subtitle Reveal (0.5s – 1.8s) ──────
       tl.to(
         '.preloader-char',
         {
           y: 0,
           opacity: 1,
-          stagger: 0.05,
-          duration: 0.7,
+          stagger: 0.06,
+          duration: 0.8,
           ease: 'power3.out',
         },
-        0.4
+        0.5
       );
 
       tl.to(
         subtitleRef.current,
         {
-          opacity: 0.9,
+          opacity: 0.95,
           y: 0,
-          duration: 0.6,
+          duration: 0.7,
           ease: 'power2.out',
         },
-        0.8
+        0.9
       );
 
       tl.to(
         lineRef.current,
         {
           scaleX: 1,
-          duration: 1.6,
+          duration: 2.2,
           ease: 'power1.inOut',
         },
-        0.8
+        0.9
       );
 
-      // ── Hold for Extended Dramatic Asset Preloading (1.8s – 2.8s) ──────────
-      tl.to({}, { duration: 1.0 });
+      // ── Hold for Extended Cinematic Asset Preloading (2.2s – 3.8s) ─────────
+      tl.to({}, { duration: 1.5 });
 
-      // ── Phase 3: Smooth Exit Shutter Transition (2.8s – 3.6s) ───────────────
+      // ── Phase 3: Smooth Exit Shutter Transition (3.8s – 4.8s) ───────────────
       tl.to(
         contentRef.current,
         {
           scale: 1.06,
           opacity: 0,
-          duration: 0.4,
+          duration: 0.45,
           ease: 'power2.in',
         },
         'exit'
@@ -159,7 +159,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
         containerRef.current,
         {
           yPercent: -100,
-          duration: 0.8,
+          duration: 0.85,
           ease: 'power4.inOut',
         },
         'exit+=0.1'

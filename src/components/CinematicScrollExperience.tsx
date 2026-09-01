@@ -272,7 +272,7 @@ export function CinematicScrollExperience({
       gsap.set(['.hud-tag-1', '.hud-desc-1', '.hud-tag-2', '.hud-desc-2'], { opacity: 0, x: -30 });
       gsap.set(['.hud-title-1', '.hud-title-2'], { opacity: 0, x: -50 });
       gsap.set(['.hud-badge-1', '.hud-badge-2'], { opacity: 0, x: -20 });
-      gsap.set(pricingRef.current, { opacity: 0, y: 60, pointerEvents: 'none' });
+      gsap.set(pricingRef.current, { opacity: 0, autoAlpha: 0, y: 60, pointerEvents: 'none' });
 
       // 3. Master Pinned Timeline across 3 scenes (550vh runway)
       const tl = gsap.timeline({
@@ -326,7 +326,7 @@ export function CinematicScrollExperience({
         .to('.hud-badge-2', { opacity: 1, x: 0, duration: 0.5, stagger: 0.08, ease: 'power3.out' }, 't2+=0.4')
         .to(
           pricingRef.current,
-          { opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.8, ease: 'power4.out' },
+          { opacity: 1, autoAlpha: 1, y: 0, pointerEvents: 'auto', duration: 0.8, ease: 'power4.out' },
           't2+=0.35'
         )
 
@@ -426,7 +426,7 @@ export function CinematicScrollExperience({
           Clean Cyber-Cyan / Emerald Palette with High Contrast
           ============================================================
         */}
-        <div className="absolute bottom-20 sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
+        <div className="absolute bottom-24 sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
           {SCENE_OVERLAYS.map((overlay, idx) => (
             <div
               key={idx}
@@ -443,20 +443,20 @@ export function CinematicScrollExperience({
             >
               {/* Line 1: Index Number + Section Subtitle Rule */}
               <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2.5', `hud-tag-${idx}`)}>
-                <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] sm:tracking-[0.3em] text-cyan-400 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                <span className="text-xs sm:text-sm font-mono uppercase tracking-[0.22em] sm:tracking-[0.3em] text-cyan-400 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.idx}
                 </span>
                 <span className="w-4 sm:w-6 h-px bg-white/30" />
-                <span className="text-[10px] sm:text-xs font-sans uppercase tracking-[0.15em] sm:tracking-[0.25em] text-neutral-300/90 font-light drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                <span className="text-xs sm:text-sm font-sans uppercase tracking-[0.18em] sm:tracking-[0.25em] text-neutral-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.subtitle}
                 </span>
               </div>
 
               {/* Line 2: Large Majestic Editorial Serif Title */}
-              <div className="overflow-hidden mb-1 sm:mb-4">
+              <div className="overflow-hidden mb-1.5 sm:mb-4">
                 <h2
                   className={cn(
-                    'hud-title text-2xl sm:text-4xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.1] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
+                    'hud-title text-3xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.12] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
                     `hud-title-${idx}`
                   )}
                 >
@@ -467,7 +467,7 @@ export function CinematicScrollExperience({
               {/* Line 3: Editorial Prose Description */}
               <p
                 className={cn(
-                  'hud-desc text-[11px] sm:text-base md:text-xl text-neutral-200/95 font-light leading-snug sm:leading-relaxed mb-2 sm:mb-6 max-w-sm sm:max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
+                  'hud-desc text-sm sm:text-base md:text-xl text-neutral-100 font-normal leading-snug sm:leading-relaxed mb-3 sm:mb-6 max-w-sm sm:max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
                   `hud-desc-${idx}`
                 )}
               >
@@ -475,12 +475,12 @@ export function CinematicScrollExperience({
               </p>
 
               {/* Line 4: Row of Capsule Tag Pills */}
-              <div className={cn('hud-badges flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-2.5 sm:mb-6', `hud-badges-${idx}`)}>
+              <div className={cn('hud-badges flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-3 sm:mb-6', `hud-badges-${idx}`)}>
                 {overlay.badges.map((badge, bIdx) => (
                   <span
                     key={bIdx}
                     className={cn(
-                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-2.5 sm:px-4 py-0.5 sm:py-1.5 text-[9px] sm:text-xs md:text-sm text-white font-sans tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
+                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/25 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm md:text-sm text-white font-sans font-medium tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
                       `hud-badge-${idx}`
                     )}
                   >
@@ -489,14 +489,14 @@ export function CinematicScrollExperience({
                 ))}
               </div>
 
-              {/* Optional Scene 1 Action CTA & Swipe Down Guidance */}
+              {/* Optional Scene 1 Action CTA & White Blinking Swipe Down Guidance */}
               {overlay.showCta && (
-                <div className="flex items-center gap-2.5 sm:gap-3.5 flex-wrap pointer-events-auto">
+                <div className="flex items-center gap-3 sm:gap-4 flex-wrap pointer-events-auto">
                   <button
                     type="button"
                     onClick={() => scrollToSection('plans')}
                     className={cn(
-                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-medium transition-all duration-200 px-4 sm:px-7 py-1.5 sm:py-2.5 text-xs md:text-sm shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
+                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-semibold transition-all duration-200 px-5 sm:px-7 py-2 sm:py-2.5 text-xs sm:text-sm md:text-base shadow-[0_0_25px_rgba(56,189,248,0.3)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
                       `hud-cta-${idx}`
                     )}
                   >
@@ -504,16 +504,17 @@ export function CinematicScrollExperience({
                     <span className="text-xs">→</span>
                   </button>
 
-                  {/* Swipe / Scroll Guidance Pill sitting right next to Buy Key */}
+                  {/* White Blinking Swipe Down Guidance with Minimalist Mouse Scroll Icon */}
                   <div
                     ref={scrollIndicatorRef}
-                    className="px-3 sm:px-3.5 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 backdrop-blur-xl flex items-center gap-1.5 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.25)] animate-pulse will-change-transform transform-gpu"
+                    className="flex flex-col items-center justify-center gap-1 pl-1 opacity-90 will-change-transform transform-gpu select-none"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-                    <span className="text-[10px] sm:text-xs font-mono uppercase tracking-wider font-semibold">
-                      Swipe Down
+                    <span className="text-[9px] sm:text-[10px] font-mono font-bold tracking-[0.25em] text-white uppercase animate-pulse drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+                      SWIPE DOWN
                     </span>
-                    <ChevronDown size={13} className="text-cyan-400 animate-bounce" />
+                    <div className="w-3.5 h-5 sm:w-4 sm:h-5.5 rounded-full border-[1.5px] border-white/80 flex items-start justify-center p-[2px] shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                      <div className="w-1 h-1.5 rounded-full bg-white animate-bounce" />
+                    </div>
                   </div>
                 </div>
               )}
@@ -528,7 +529,10 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={pricingRef}
-          className="absolute bottom-10 sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 pointer-events-none will-change-transform transform-gpu"
+          className={cn(
+            'absolute bottom-10 sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 will-change-transform transform-gpu',
+            activeSceneIdx === 2 ? 'pointer-events-auto visible' : 'pointer-events-none invisible'
+          )}
           id="plans-box"
         >
           {/* Side-by-Side Symmetrical Grid on All Devices */}
@@ -550,7 +554,12 @@ export function CinematicScrollExperience({
                   </div>
 
                   {/* 100% Symmetrical Identical Box Format */}
-                  <div className="p-3.5 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 transition-all duration-200 flex flex-col justify-between space-y-2.5 sm:space-y-4 shadow-2xl pointer-events-auto transform-gpu">
+                  <div
+                    className={cn(
+                      'p-3.5 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/10 hover:border-cyan-500/40 transition-all duration-200 flex flex-col justify-between space-y-2.5 sm:space-y-4 shadow-2xl transform-gpu',
+                      activeSceneIdx === 2 ? 'pointer-events-auto' : 'pointer-events-none'
+                    )}
+                  >
                     <div>
                       <div className="flex items-center justify-between gap-1">
                         <h3 className="text-xs sm:text-base font-medium text-white font-sans truncate">{plan.name}</h3>
