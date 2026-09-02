@@ -569,7 +569,7 @@ export default function AdminPage() {
                                   <td className="py-3 font-mono font-bold text-cyan-400">{order.order_id}</td>
                                   <td className="py-3 text-slate-300 font-medium">{order.customer_email || 'Anonymous'}</td>
                                   <td className="py-3 text-slate-400 font-mono">
-                                    {order.plan_type === '1_month' ? '1 Device' : '2 Devices'}
+                                    {order.plan_type?.includes('2_device') ? '2 Devices' : '1 Device'}
                                   </td>
                                   <td className="py-3 font-bold text-white font-mono">
                                     {order.currency === 'INR'

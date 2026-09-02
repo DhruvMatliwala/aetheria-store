@@ -211,7 +211,7 @@ export async function bulkInsertKeys(
           createdAt: Date.now(),
           updatedAt: Date.now(),
           // Legacy backward compatibility fields:
-          plan_type: '1_month_standard',
+          plan_type: '1_month_1_device',
           order_id: null,
           created_at: admin.firestore.FieldValue.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,
           sold_at: null,

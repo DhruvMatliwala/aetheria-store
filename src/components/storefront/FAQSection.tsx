@@ -29,7 +29,7 @@ const FAQS: FAQItem[] = [
         </p>
         <ul className="list-disc list-inside space-y-1 text-[#bfb8ae] ml-2 font-mono text-xs">
           <li><strong>1 Device Plan (₹180 / $1.99):</strong> Activates 1 Android phone or tablet at a time.</li>
-          <li><strong>2 Devices Plan (₹340 / $3.99):</strong> Activates up to 2 Android phones or tablets simultaneously.</li>
+          <li><strong>2 Devices Plan (₹350 / $3.50):</strong> Activates up to 2 Android phones or tablets simultaneously.</li>
         </ul>
         <p className="text-cyan-400 text-xs mt-2 font-mono">
           ⚠️ As per PGSharp policy, keys bind to device hardware during their 30-day validity. Make sure to activate on your intended device.

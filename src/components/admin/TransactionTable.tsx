@@ -90,7 +90,11 @@ export function TransactionTable({ orders }: TransactionTableProps) {
                       {order.customer_email || 'Anonymous'}
                     </td>
                     <td className="px-4 py-3 text-slate-400">
-                      {plan ? plan.name : order.plan_type === '1_month' ? '1 Device' : '2 Devices'}
+                      {plan
+                        ? `${plan.name} (${plan.device_slots} Device${plan.device_slots > 1 ? 's' : ''})`
+                        : order.plan_type?.includes('2_device')
+                        ? '2 Devices'
+                        : '1 Device'}
                     </td>
                     <td className="px-4 py-3 font-bold text-white">
                       {amountDisplay}

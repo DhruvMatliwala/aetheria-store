@@ -120,7 +120,7 @@ export function PendingApprovals({ orders, adminToken, onRefresh }: PendingAppro
                   <span className="font-mono text-xs font-bold text-cyan-400">{order.order_id}</span>
                   <span className="text-xs font-semibold text-white">{amountDisplay}</span>
                   <span className="text-[10px] text-slate-400 font-mono">
-                    ({order.plan_type === '1_month' ? '1 Device' : '2 Devices'})
+                    ({order.plan_type?.includes('2_device') ? '2 Devices' : '1 Device'})
                   </span>
                 </div>
                 <p className="text-xs text-slate-300">{order.customer_email || 'No email provided'}</p>

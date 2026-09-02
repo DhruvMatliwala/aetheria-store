@@ -10,7 +10,7 @@ export function getRequiredSlotsForPlan(planId: string): number {
   if (planId === '1_month_1_device' || planId.includes('1_device') || planId.includes('standard')) {
     return 1;
   }
-  if (planId === '1_month_2_device' || planId.includes('2_device')) {
+  if (planId === '1_month_2_device' || planId.includes('2_device') || planId === '3_month') {
     return 2;
   }
   if (planId === '1_month_3_device' || planId.includes('3_device')) {
