@@ -29,11 +29,27 @@ export function StockDashboard({ stockCounts = {}, inventoryStats, revenueStats 
   const totalKeys = inventoryStats?.totalKeys ?? 0;
   const fullyAllocated = inventoryStats?.fullyAllocatedKeys ?? 0;
 
-  const count1 = stockCounts['1_month']?.available ?? 0;
-  const sold1 = stockCounts['1_month']?.sold ?? 0;
+  const count1 =
+    stockCounts['1_month_1_device']?.available ??
+    stockCounts['1_month']?.available ??
+    inventoryStats?.tierStock?.['1_month_1_device'] ??
+    0;
+  const sold1 =
+    stockCounts['1_month_1_device']?.sold ??
+    stockCounts['1_month']?.sold ??
+    revenueStats?.tierSales?.['1_month_1_device'] ??
+    0;
 
-  const count2 = stockCounts['3_month']?.available ?? 0;
-  const sold2 = stockCounts['3_month']?.sold ?? 0;
+  const count2 =
+    stockCounts['1_month_2_device']?.available ??
+    stockCounts['3_month']?.available ??
+    inventoryStats?.tierStock?.['1_month_2_device'] ??
+    0;
+  const sold2 =
+    stockCounts['1_month_2_device']?.sold ??
+    stockCounts['3_month']?.sold ??
+    revenueStats?.tierSales?.['1_month_2_device'] ??
+    0;
 
   const revenueINR = revenueStats?.totalRevenueINR ?? 0;
   const revenueUSD = revenueStats?.totalRevenueUSD ?? 0;
@@ -138,7 +154,7 @@ export function StockDashboard({ stockCounts = {}, inventoryStats, revenueStats 
                   Standard Tier
                 </span>
                 <h4 className="text-base font-bold text-white mt-1.5">1 Android Device Key</h4>
-                <p className="text-xs text-slate-400">1 Device Slot per order • ₹190 / $1.99</p>
+                <p className="text-xs text-slate-400">1 Device Slot per order • ₹180 / $1.99</p>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-black text-cyan-300 font-mono">{count1}</span>
@@ -169,7 +185,7 @@ export function StockDashboard({ stockCounts = {}, inventoryStats, revenueStats 
                   Duo Tier
                 </span>
                 <h4 className="text-base font-bold text-white mt-1.5">2 Android Devices Key</h4>
-                <p className="text-xs text-slate-400">2 Device Slots per order • ₹340 / $3.69</p>
+                <p className="text-xs text-slate-400">2 Device Slots per order • ₹350 / $3.50</p>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-black text-purple-300 font-mono">{count2}</span>

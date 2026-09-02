@@ -29,16 +29,32 @@ export async function GET(request: NextRequest) {
     ]);
 
     // Precise stockCounts map based on actual inventory and real sales
+    const count1 = inventoryStats.tierStock['1_month_1_device'] ?? 0;
+    const sold1 = revenueStats.tierSales['1_month_1_device'] ?? 0;
+    const count2 = inventoryStats.tierStock['1_month_2_device'] ?? 0;
+    const sold2 = revenueStats.tierSales['1_month_2_device'] ?? 0;
+
     const stockCounts = {
       '1_month_1_device': {
-        available: inventoryStats.tierStock['1_month_1_device'] ?? 0,
-        sold: revenueStats.tierSales['1_month_1_device'] ?? 0,
-        total: (inventoryStats.tierStock['1_month_1_device'] ?? 0) + (revenueStats.tierSales['1_month_1_device'] ?? 0),
+        available: count1,
+        sold: sold1,
+        total: count1 + sold1,
       },
       '1_month_2_device': {
-        available: inventoryStats.tierStock['1_month_2_device'] ?? 0,
-        sold: revenueStats.tierSales['1_month_2_device'] ?? 0,
-        total: (inventoryStats.tierStock['1_month_2_device'] ?? 0) + (revenueStats.tierSales['1_month_2_device'] ?? 0),
+        available: count2,
+        sold: sold2,
+        total: count2 + sold2,
+      },
+      // Backward-compatibility aliases
+      '1_month': {
+        available: count1,
+        sold: sold1,
+        total: count1 + sold1,
+      },
+      '3_month': {
+        available: count2,
+        sold: sold2,
+        total: count2 + sold2,
       },
     };
 

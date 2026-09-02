@@ -189,6 +189,29 @@ export default function AdminPage() {
 
   // ── Real Data Calculations ──────────────────────────────────────────────────
   const realStockCounts = stats?.stockCounts || {};
+
+  const plan1Stock =
+    realStockCounts['1_month_1_device']?.available ??
+    realStockCounts['1_month']?.available ??
+    stats?.inventoryStats?.tierStock?.['1_month_1_device'] ??
+    0;
+  const plan1Sold =
+    realStockCounts['1_month_1_device']?.sold ??
+    realStockCounts['1_month']?.sold ??
+    stats?.revenueStats?.tierSales?.['1_month_1_device'] ??
+    0;
+
+  const plan2Stock =
+    realStockCounts['1_month_2_device']?.available ??
+    realStockCounts['3_month']?.available ??
+    stats?.inventoryStats?.tierStock?.['1_month_2_device'] ??
+    0;
+  const plan2Sold =
+    realStockCounts['1_month_2_device']?.sold ??
+    realStockCounts['3_month']?.sold ??
+    stats?.revenueStats?.tierSales?.['1_month_2_device'] ??
+    0;
+
   const totalAvailable = useMemo(() => {
     if (stats?.inventoryStats?.activeKeys !== undefined) {
       return stats.inventoryStats.activeKeys;
@@ -610,21 +633,19 @@ export default function AdminPage() {
                               Standard Key (1 Device)
                             </span>
                             <span className="font-mono text-cyan-300 font-bold text-sm">
-                              {realStockCounts['1_month']?.available ?? 0} In Stock
+                              {plan1Stock} In Stock
                             </span>
                           </div>
                           <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
                             <div
                               className="bg-cyan-500 h-full transition-all duration-500"
                               style={{
-                                width: `${
-                                  (realStockCounts['1_month']?.available || 0) > 0 ? 100 : 0
-                                }%`,
+                                width: `${plan1Stock > 0 ? 100 : 0}%`,
                               }}
                             />
                           </div>
                           <div className="flex justify-between text-[11px] text-slate-500 mt-2 font-mono">
-                            <span>Sold: {realStockCounts['1_month']?.sold ?? 0}</span>
+                            <span>Sold: {plan1Sold}</span>
                             <span>₹180 / $1.99</span>
                           </div>
                         </div>
@@ -637,22 +658,20 @@ export default function AdminPage() {
                               Dual Key (2 Devices)
                             </span>
                             <span className="font-mono text-purple-300 font-bold text-sm">
-                              {realStockCounts['3_month']?.available ?? 0} In Stock
+                              {plan2Stock} In Stock
                             </span>
                           </div>
                           <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
                             <div
                               className="bg-purple-500 h-full transition-all duration-500"
                               style={{
-                                width: `${
-                                  (realStockCounts['3_month']?.available || 0) > 0 ? 100 : 0
-                                }%`,
+                                width: `${plan2Stock > 0 ? 100 : 0}%`,
                               }}
                             />
                           </div>
                           <div className="flex justify-between text-[11px] text-slate-500 mt-2 font-mono">
-                            <span>Sold: {realStockCounts['3_month']?.sold ?? 0}</span>
-                            <span>₹340 / $3.69</span>
+                            <span>Sold: {plan2Sold}</span>
+                            <span>₹350 / $3.50</span>
                           </div>
                         </div>
                       </div>
