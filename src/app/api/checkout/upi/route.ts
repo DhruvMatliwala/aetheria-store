@@ -4,6 +4,7 @@ import { PLAN_MAP, UPI_VPA, UPI_PAYEE_NAME } from '@/lib/constants';
 import { createOrder } from '@/lib/firestore/orders';
 import { getAvailableCount } from '@/lib/firestore/keys';
 import { allocateUniquePaise } from '@/lib/orders/paiseAllocator';
+import { validateAndApplyCoupon, incrementCouponUsage } from '@/lib/firestore/coupons';
 
 export const runtime = 'nodejs';
 
@@ -11,12 +12,13 @@ interface CheckoutBody {
   planId: string;
   email: string;
   phone?: string;
+  couponCode?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as CheckoutBody;
-    const { planId, email, phone = '' } = body;
+    const { planId, email, phone = '', couponCode } = body;
 
     // ── Validate input (Email required) ──────────────────────────────────────
     if (!planId || !email || !email.trim()) {
@@ -40,9 +42,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ── Apply optional promo coupon server-side ──────────────────────────────
+    let basePriceInr = plan.price_inr;
+    let appliedCouponCode: string | undefined;
+    let discountAmountInr: number | undefined;
+
+    if (couponCode && couponCode.trim()) {
+      const couponResult = await validateAndApplyCoupon(couponCode, plan, 'INR');
+      if (!couponResult.valid) {
+        return NextResponse.json(
+          { error: couponResult.error || 'Invalid coupon code.' },
+          { status: 400 }
+        );
+      }
+      basePriceInr = couponResult.newPriceInr!;
+      appliedCouponCode = couponResult.code;
+      discountAmountInr = couponResult.discountAmountInr;
+      await incrementCouponUsage(appliedCouponCode);
+    }
+
     // ── Create internal order ID & unique paise amount for zero-UTR matching ─
     const orderId = `ord_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
-    const { totalPaisa, amountRupees, paiseOffset } = await allocateUniquePaise(plan.price_inr);
+    const { totalPaisa, amountRupees, paiseOffset } = await allocateUniquePaise(basePriceInr);
     const priceRupeesStr = amountRupees.toFixed(2);
     const note = `AETHERIA_${orderId.slice(-8).toUpperCase()}`;
 
@@ -60,6 +81,9 @@ export async function POST(request: NextRequest) {
       currency: 'INR',
       payment_gateway: 'upi_direct',
       gateway_order_id: `upi_${orderId}`,
+      coupon_code: appliedCouponCode,
+      discount_amount: discountAmountInr,
+      original_amount: plan.price_inr,
     });
 
     return NextResponse.json({

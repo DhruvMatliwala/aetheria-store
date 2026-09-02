@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { PLAN_MAP, PAYPAL_ME_URL, PAYPAL_EMAIL, PAYPAL_USERNAME } from '@/lib/constants';
 import { createOrder } from '@/lib/firestore/orders';
 import { getAvailableCount } from '@/lib/firestore/keys';
+import { validateAndApplyCoupon, incrementCouponUsage } from '@/lib/firestore/coupons';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -11,12 +12,13 @@ interface CheckoutBody {
   planId: string;
   email: string;
   phone?: string;
+  couponCode?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as CheckoutBody;
-    const { planId, email, phone = '' } = body;
+    const { planId, email, phone = '', couponCode } = body;
 
     // ── Validate input (Email required) ──────────────────────────────────────
     if (!planId || !email || !email.trim()) {
@@ -40,9 +42,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ── Apply optional promo coupon server-side ──────────────────────────────
+    let finalPriceUsdCents = plan.price_usd;
+    let appliedCouponCode: string | undefined;
+    let discountAmountUsd: number | undefined;
+
+    if (couponCode && couponCode.trim()) {
+      const couponResult = await validateAndApplyCoupon(couponCode, plan, 'USD');
+      if (!couponResult.valid) {
+        return NextResponse.json(
+          { error: couponResult.error || 'Invalid coupon code.' },
+          { status: 400 }
+        );
+      }
+      finalPriceUsdCents = couponResult.newPriceUsd!;
+      appliedCouponCode = couponResult.code;
+      discountAmountUsd = couponResult.discountAmountUsd;
+      await incrementCouponUsage(appliedCouponCode);
+    }
+
     // ── Create internal order ID ─────────────────────────────────────────────
     const orderId = `ord_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
-    const amountUsd = (plan.price_usd / 100).toFixed(2);
+    const amountUsd = (finalPriceUsdCents / 100).toFixed(2);
     const note = `AETHERIA_${orderId.slice(-8).toUpperCase()}`;
 
     // Standard PayPal.me payment link with pre-filled amount:
@@ -56,10 +77,13 @@ export async function POST(request: NextRequest) {
       customer_email: email.toLowerCase().trim(),
       customer_phone: (phone || '').trim(),
       plan_type: planId,
-      amount: plan.price_usd,
+      amount: finalPriceUsdCents,
       currency: 'USD',
       payment_gateway: 'paypal_direct',
       gateway_order_id: `paypal_${orderId}`,
+      coupon_code: appliedCouponCode,
+      discount_amount: discountAmountUsd,
+      original_amount: plan.price_usd,
     });
 
     return NextResponse.json({

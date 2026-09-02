@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
-import { CreditCard, Wallet, AlertCircle, Mail, Shield, Check, Copy, Sparkles, ExternalLink, HelpCircle } from 'lucide-react';
+import { CreditCard, Wallet, AlertCircle, Mail, Shield, Check, Copy, Sparkles, ExternalLink, HelpCircle, CheckCircle } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Plan } from '@/types/plan';
+import { CouponValidationResult } from '@/types/coupon';
 import { cn } from '@/lib/utils';
 
 type PaymentMethod = 'upi' | 'paypal';
@@ -89,12 +90,21 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const [paypalTxId, setPaypalTxId] = useState('');
   const [copiedPaypalEmail, setCopiedPaypalEmail] = useState(false);
 
+  // Promo Coupon states
+  const [couponInput, setCouponInput] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<CouponValidationResult | null>(null);
+
   if (!plan) return null;
+
+  const currentPriceInr = appliedCoupon?.newPriceInr ?? plan.price_inr;
+  const currentPriceUsd = appliedCoupon?.newPriceUsd ?? plan.price_usd;
 
   const priceDisplay =
     method === 'upi'
-      ? `₹${(plan.price_inr / 100).toLocaleString('en-IN')}`
-      : `$${(plan.price_usd / 100).toFixed(2)} USD`;
+      ? `₹${(currentPriceInr / 100).toLocaleString('en-IN')}`
+      : `$${(currentPriceUsd / 100).toFixed(2)} USD`;
 
   const resetModal = () => {
     setStep('details');
@@ -103,7 +113,51 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     setIsVerifying(false);
     setUtrNumber('');
     setPaypalTxId('');
+    setCouponInput('');
+    setCouponError(null);
+    setAppliedCoupon(null);
     onClose();
+  };
+
+  const handleApplyCoupon = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!couponInput.trim() || !plan) return;
+
+    setCouponLoading(true);
+    setCouponError(null);
+
+    try {
+      const res = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: couponInput.trim(),
+          planId: plan.id,
+        }),
+      });
+
+      const data = (await res.json()) as CouponValidationResult;
+      if (!res.ok || !data.valid) {
+        throw new Error(data.error || 'Invalid or expired promo code.');
+      }
+
+      setAppliedCoupon(data);
+      toast.success(
+        `🎉 ${data.code} applied! Saved ${method === 'upi' ? data.discountDisplayInr : data.discountDisplayUsd}`
+      );
+    } catch (err: any) {
+      setCouponError(err.message || 'Invalid promo code.');
+      toast.error(err.message || 'Invalid promo code.');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput('');
+    setCouponError(null);
+    toast.success('Promo code removed.');
   };
 
   const handleCopyUpi = () => {
@@ -132,11 +186,15 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
     try {
       if (method === 'upi') {
-        // ── Direct UPI Session Flow ──────────────────────────────────────────
+        // ── Direct UPI Session Flow with optional Promo Code ─────────────────
         const res = await fetch('/api/checkout/upi', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ planId: plan.id, email: cleanEmail }),
+          body: JSON.stringify({
+            planId: plan.id,
+            email: cleanEmail,
+            couponCode: appliedCoupon?.code,
+          }),
         });
         const data = await res.json();
 
@@ -148,11 +206,15 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
         setStep('upi_qr');
         setIsLoading(false);
       } else {
-        // ── Direct PayPal.Me Flow ───────────────────────────────────────────
+        // ── Direct PayPal.Me Flow with optional Promo Code ──────────────────
         const res = await fetch('/api/checkout/paypal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ planId: plan.id, email: cleanEmail }),
+          body: JSON.stringify({
+            planId: plan.id,
+            email: cleanEmail,
+            couponCode: appliedCoupon?.code,
+          }),
         });
         const data = await res.json();
 
@@ -286,17 +348,33 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                 </div>
               </div>
               <div className="text-right">
-                {method === 'upi' && plan.original_price_inr && (
-                  <p className="text-xs font-mono text-rose-400/70 line-through">
-                    ₹{(plan.original_price_inr / 100).toLocaleString('en-IN')}
-                  </p>
+                {appliedCoupon ? (
+                  <>
+                    <p className="text-xs font-mono text-neutral-400 line-through">
+                      {method === 'upi'
+                        ? `₹${(plan.price_inr / 100).toLocaleString('en-IN')}`
+                        : `$${(plan.price_usd / 100).toFixed(2)} USD`}
+                    </p>
+                    <p className="text-2xl font-black text-emerald-400">{priceDisplay}</p>
+                    <span className="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800/60 inline-block mt-0.5">
+                      SAVED {method === 'upi' ? appliedCoupon.discountDisplayInr : appliedCoupon.discountDisplayUsd}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    {method === 'upi' && plan.original_price_inr && (
+                      <p className="text-xs font-mono text-rose-400/70 line-through">
+                        ₹{(plan.original_price_inr / 100).toLocaleString('en-IN')}
+                      </p>
+                    )}
+                    {method === 'paypal' && plan.original_price_usd && (
+                      <p className="text-xs font-mono text-rose-400/70 line-through">
+                        ${(plan.original_price_usd / 100).toFixed(2)} USD
+                      </p>
+                    )}
+                    <p className="text-2xl font-black text-white">{priceDisplay}</p>
+                  </>
                 )}
-                {method === 'paypal' && plan.original_price_usd && (
-                  <p className="text-xs font-mono text-rose-400/70 line-through">
-                    ${(plan.original_price_usd / 100).toFixed(2)} USD
-                  </p>
-                )}
-                <p className="text-2xl font-black text-white">{priceDisplay}</p>
               </div>
             </div>
           </div>
@@ -319,6 +397,78 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
             <p className="text-[11px] text-gray-500 mt-1">
               Your activation key will be delivered on-screen and to this email.
             </p>
+          </div>
+
+          {/* Promo / Discount Coupon Section */}
+          <div className="bg-surface-900/80 border border-surface-600 rounded-xl p-3">
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5" htmlFor="checkout-promo">
+                <Sparkles size={13} className="text-cyan-400" />
+                <span>Promo Code / Regular Buyer Coupon</span>
+              </label>
+              {appliedCoupon && (
+                <button
+                  type="button"
+                  onClick={handleRemoveCoupon}
+                  className="text-[11px] font-medium text-rose-400 hover:text-rose-300 transition-colors"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs">
+                <div className="flex items-center gap-2">
+                  <CheckCircle size={15} className="text-emerald-400 shrink-0" />
+                  <div>
+                    <span className="font-bold font-mono text-white">{appliedCoupon.code}</span>
+                    <span className="text-emerald-400/90 ml-1.5">
+                      ({method === 'upi' ? appliedCoupon.discountDisplayInr : appliedCoupon.discountDisplayUsd} OFF)
+                    </span>
+                  </div>
+                </div>
+                <span className="text-[10px] font-mono uppercase bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">
+                  APPLIED
+                </span>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  id="checkout-promo"
+                  type="text"
+                  value={couponInput}
+                  onChange={(e) => {
+                    setCouponInput(e.target.value.toUpperCase());
+                    setCouponError(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleApplyCoupon();
+                    }
+                  }}
+                  placeholder="e.g. REGULAR10"
+                  className="flex-1 bg-surface-950 border border-surface-700 rounded-lg px-3 py-1.5 text-white placeholder-gray-500 text-xs font-mono uppercase focus:outline-none focus:border-cyan-500 transition-colors"
+                />
+                <button
+                  type="button"
+                  disabled={couponLoading || !couponInput.trim()}
+                  onClick={() => handleApplyCoupon()}
+                  className="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 disabled:opacity-50 text-white text-xs font-semibold rounded-lg border border-white/20 transition-all flex items-center gap-1 shrink-0"
+                >
+                  {couponLoading ? (
+                    <span className="animate-spin text-xs">⏳</span>
+                  ) : (
+                    <span>Apply</span>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {couponError && (
+              <p className="text-[11px] text-rose-400 mt-1.5">{couponError}</p>
+            )}
           </div>
 
           {/* Payment Method Selector */}

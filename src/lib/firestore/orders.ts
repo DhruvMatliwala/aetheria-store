@@ -12,6 +12,9 @@ export interface CreateOrderInput {
   currency: Currency;
   payment_gateway: PaymentGateway;
   gateway_order_id: string;
+  coupon_code?: string;
+  discount_amount?: number;
+  original_amount?: number;
 }
 
 export interface RevenueStats {
@@ -23,7 +26,7 @@ export interface RevenueStats {
 
 export async function createOrder(input: CreateOrderInput): Promise<void> {
   const db = getAdminFirestore();
-  const doc: Omit<Order, 'id'> = {
+  const doc: Record<string, any> = {
     order_id: input.order_id,
     customer_email: input.customer_email,
     customer_phone: input.customer_phone ?? '',
@@ -34,8 +37,19 @@ export async function createOrder(input: CreateOrderInput): Promise<void> {
     payment_status: 'pending',
     delivered_key: null,
     gateway_order_id: input.gateway_order_id,
-    created_at: admin.firestore.FieldValue.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,
+    created_at: admin.firestore.FieldValue.serverTimestamp(),
   };
+
+  if (input.coupon_code) {
+    doc.coupon_code = input.coupon_code;
+  }
+  if (input.discount_amount !== undefined) {
+    doc.discount_amount = input.discount_amount;
+  }
+  if (input.original_amount !== undefined) {
+    doc.original_amount = input.original_amount;
+  }
+
   await db.collection(COLLECTION).doc(input.order_id).set(doc);
 }
 
