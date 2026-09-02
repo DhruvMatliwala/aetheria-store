@@ -25,6 +25,7 @@ import { StockDashboard } from '@/components/admin/StockDashboard';
 import { WaitlistWidget } from '@/components/admin/WaitlistWidget';
 import { TransactionTable } from '@/components/admin/TransactionTable';
 import { PendingApprovals } from '@/components/admin/PendingApprovals';
+import { SmsBridgeCard } from '@/components/admin/SmsBridgeCard';
 import { CouponManager } from '@/components/admin/CouponManager';
 import { OrderPublic } from '@/types/order';
 import { InventoryStatsSummary } from '@/lib/firestore/keys';
@@ -59,6 +60,7 @@ type AdminTab =
   | 'Inventory'
   | 'Bulk Upload'
   | 'Orders & Deliveries'
+  | 'UPI Bank Bridge'
   | 'Coupons'
   | 'Waitlist & Demand';
 
@@ -315,6 +317,13 @@ export default function AdminPage() {
                 badge={stats?.recentOrders?.length ? `${stats.recentOrders.length}` : undefined}
                 active={activeTab === 'Orders & Deliveries'}
                 onClick={() => setActiveTab('Orders & Deliveries')}
+              />
+              <SidebarNavItem
+                icon={<Smartphone size={17} />}
+                label="UPI Bank Bridge"
+                badge="24/7 Auto"
+                active={activeTab === 'UPI Bank Bridge'}
+                onClick={() => setActiveTab('UPI Bank Bridge')}
               />
               <SidebarNavItem
                 icon={<Tag size={17} />}
@@ -692,7 +701,16 @@ export default function AdminPage() {
             )}
 
             {/* ════════════════════════════════════════════════════════════════
-                VIEW 5: COUPONS & DISCOUNTS
+                VIEW 5: 24/7 UPI BANK BRIDGE (SMS FORWARDER)
+                ════════════════════════════════════════════════════════════════ */}
+            {activeTab === 'UPI Bank Bridge' && (
+              <div className="space-y-6">
+                {adminToken && <SmsBridgeCard adminToken={adminToken} />}
+              </div>
+            )}
+
+            {/* ════════════════════════════════════════════════════════════════
+                VIEW 6: COUPONS & DISCOUNTS
                 ════════════════════════════════════════════════════════════════ */}
             {activeTab === 'Coupons' && (
               <div className="space-y-6">
