@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrderById, toOrderPublic } from '@/lib/firestore/orders';
-import { sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
+import { getPaypalCredit, claimPaypalCredit } from '@/lib/firestore/paypalCredits';
+import { allocateKeySlot } from '@/lib/services/keyAllocator';
+import { sendKeyDeliveryEmail } from '@/lib/email/resend';
+import { sendPaymentVerificationAlert, sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 
 export const runtime = 'nodejs';
@@ -61,7 +64,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── 3. Put order into 'verifying' status & store PayPal Tx ID ────────────
+    // ── 3. Check if PayPal IPN already arrived and verified this transaction ─
+    const paypalCredit = await getPaypalCredit(rawTxId);
+
+    if (paypalCredit && paypalCredit.status === 'unclaimed') {
+      const allocation = await allocateKeySlot(orderId, `AUTO_PAYPAL_IPN_${rawTxId}`);
+
+      await db.collection('orders').doc(orderId).update({
+        payment_status: 'paid',
+        paypal_tx_id: rawTxId,
+        payment_gateway: 'paypal_direct',
+        updated_at: new Date(),
+      });
+
+      await claimPaypalCredit(rawTxId, orderId);
+
+      sendKeyDeliveryEmail({
+        to: existingOrder.customer_email,
+        orderId: existingOrder.order_id,
+        planType: existingOrder.plan_type,
+        licenseKey: allocation.decryptedKey,
+      }).catch((err) => console.error('[checkout/paypal/verify] Email send error:', err));
+
+      sendAdminOrderAlert({
+        orderId: existingOrder.order_id,
+        customerEmail: existingOrder.customer_email,
+        customerPhone: existingOrder.customer_phone,
+        planType: existingOrder.plan_type,
+        amount: existingOrder.amount,
+        currency: 'USD',
+        gateway: 'PayPal IPN (Instant Match)',
+        transactionId: `Verified PayPal Tx: ${rawTxId}`,
+        deliveredKey: allocation.decryptedKey,
+      }).catch((err) => console.error('[checkout/paypal/verify] Discord alert error:', err));
+
+      const updatedOrder = await getOrderById(orderId);
+      return NextResponse.json({
+        success: true,
+        status: 'paid',
+        order: updatedOrder ? toOrderPublic(updatedOrder) : null,
+        message: 'Payment verified with PayPal! Key allocated.',
+      });
+    }
+
+    // ── 4. Fallback: IPN hasn't hit server yet or pending manual approval ────
     await db.collection('orders').doc(orderId).update({
       payment_status: 'verifying',
       paypal_tx_id: rawTxId,
@@ -69,7 +115,7 @@ export async function POST(request: NextRequest) {
       updated_at: new Date(),
     });
 
-    // ── 4. Dispatch instant Admin Discord alert with 1-click action links ─────
+    // Dispatch instant Admin Discord alert with 1-click action links as backup
     sendPaymentVerificationAlert({
       orderId: existingOrder.order_id,
       customerEmail: existingOrder.customer_email,
@@ -83,7 +129,6 @@ export async function POST(request: NextRequest) {
       console.error('[checkout/paypal/verify] Discord admin alert error:', alertErr);
     });
 
-    // ── 5. Fetch updated order and return response ───────────────────────────
     const updatedOrder = await getOrderById(orderId);
     const publicOrder = updatedOrder ? toOrderPublic(updatedOrder) : null;
 
