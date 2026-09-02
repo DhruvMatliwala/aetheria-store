@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Smartphone, Copy, Check, Send, ChevronDown, ChevronUp, Zap } from 'lucide-react';
+import { Smartphone, Copy, Check, Send, Zap, CheckCircle, AlertCircle, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface SmsBridgeCardProps {
@@ -11,11 +11,10 @@ interface SmsBridgeCardProps {
 export function SmsBridgeCard({ adminToken }: SmsBridgeCardProps) {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [copiedSecret, setCopiedSecret] = useState(false);
-  const [showGuide, setShowGuide] = useState(false);
 
   // Simulator states
   const [sampleSms, setSampleSms] = useState(
-    'Dear SBI User, A/C ... credited by Rs 180.00 on 02Sep26 transfer from UPI/423819284719/Payment Ref No. 423819284719.'
+    'Dear SBI User, A/C ... credited by Rs 180.14 on 02Sep26 transfer from UPI/423819284719/Payment Ref No. 423819284719.'
   );
   const [simulating, setSimulating] = useState(false);
   const [simResult, setSimResult] = useState<any | null>(null);
@@ -37,7 +36,7 @@ export function SmsBridgeCard({ adminToken }: SmsBridgeCardProps) {
   const handleCopySecret = () => {
     navigator.clipboard.writeText(bridgeSecret);
     setCopiedSecret(true);
-    toast.success('Secret copied!');
+    toast.success('Bridge Secret copied!');
     setTimeout(() => setCopiedSecret(false), 2000);
   };
 
@@ -60,140 +59,142 @@ export function SmsBridgeCard({ adminToken }: SmsBridgeCardProps) {
 
       const data = await res.json();
       setSimResult(data);
-
-      if (!res.ok || data.error) {
-        toast.error(data.error || 'Simulation failed.');
+      if (res.ok && data.matched) {
+        toast.success(`Success! Order #${data.order_id} matched and key dispatched.`);
+      } else if (res.ok) {
+        toast('Webhook received (No pending order matched this exact paise amount).');
       } else {
-        toast.success(`Verified UTR: ${data.utr} (Amount: ₹${data.amount || 'N/A'})`);
+        toast.error(data.error || 'Simulation failed.');
       }
     } catch (err: any) {
-      toast.error(err?.message || 'Error executing test.');
+      toast.error(err.message || 'Network error.');
     } finally {
       setSimulating(false);
     }
   };
 
   return (
-    <div className="bg-surface-800 border border-surface-600 rounded-2xl p-5 mb-8 shadow-lg">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-surface-700 mb-4">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+          <div className="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-800/60 flex items-center justify-center text-cyan-400">
             <Smartphone size={20} />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-white font-bold text-base">24/7 Android Bank SMS Bridge</h2>
-              <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/40">
-                ACTIVE
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <span>24/7 Automated UPI Bank Bridge</span>
+              <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800/60 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Active
               </span>
-            </div>
-            <p className="text-xs text-gray-400">
-              Auto-fulfills orders at 3 AM while you sleep using your real incoming bank credit SMS.
+            </h2>
+            <p className="text-xs text-slate-400">
+              Zero-gateway-fee automated payment matching via your personal bank SMS
             </p>
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={() => setShowGuide(!showGuide)}
-          className="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 self-start md:self-auto"
-        >
-          <span>{showGuide ? 'Hide Setup Guide' : 'How to Setup MacroDroid'}</span>
-          {showGuide ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-        </button>
       </div>
 
-      {/* Webhook & Secret Details Strip */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 text-xs font-mono">
-        <div className="p-3 bg-surface-900 border border-surface-700 rounded-xl flex items-center justify-between gap-2">
-          <div className="truncate">
-            <span className="text-gray-500 block text-[10px] uppercase font-sans">Webhook URL</span>
-            <span className="text-cyan-300 font-bold truncate block">{webhookUrl}</span>
+      {/* Connection Endpoints */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Webhook Endpoint */}
+        <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-300">Your Webhook URL</span>
+            <button
+              onClick={handleCopyUrl}
+              className="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+            >
+              {copiedUrl ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+              <span>{copiedUrl ? 'Copied' : 'Copy'}</span>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleCopyUrl}
-            className="p-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 text-gray-300 transition-colors flex-shrink-0"
-            title="Copy URL"
-          >
-            {copiedUrl ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-          </button>
+          <div className="bg-[#080e1a] border border-slate-800 rounded-xl p-3 font-mono text-xs text-cyan-300 break-all select-all">
+            {webhookUrl}
+          </div>
+          <p className="text-[11px] text-slate-500">
+            Enter this URL in your Android SMS Forwarder app target settings.
+          </p>
         </div>
 
-        <div className="p-3 bg-surface-900 border border-surface-700 rounded-xl flex items-center justify-between gap-2">
-          <div className="truncate">
-            <span className="text-gray-500 block text-[10px] uppercase font-sans">Bridge Secret</span>
-            <span className="text-amber-300 font-bold truncate block">{bridgeSecret}</span>
+        {/* Bridge Secret */}
+        <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-300">Bridge Secret Token</span>
+            <button
+              onClick={handleCopySecret}
+              className="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+            >
+              {copiedSecret ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+              <span>{copiedSecret ? 'Copied' : 'Copy'}</span>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleCopySecret}
-            className="p-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 text-gray-300 transition-colors flex-shrink-0"
-            title="Copy Secret"
-          >
-            {copiedSecret ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-          </button>
+          <div className="bg-[#080e1a] border border-slate-800 rounded-xl p-3 font-mono text-xs text-white break-all select-all">
+            {bridgeSecret}
+          </div>
+          <p className="text-[11px] text-slate-500">
+            Pass this secret in your forwarder JSON payload to secure the webhook.
+          </p>
         </div>
       </div>
 
-      {/* MacroDroid Setup Guide (Collapsible) */}
-      {showGuide && (
-        <div className="p-4 bg-cyan-950/20 border border-cyan-500/30 rounded-xl mb-4 text-xs text-gray-300 space-y-2">
-          <p className="font-bold text-cyan-300">📱 2-Minute Setup in MacroDroid (Free on Play Store):</p>
-          <ol className="list-decimal list-inside space-y-1 text-gray-300">
-            <li>Open <strong>MacroDroid</strong> & tap <strong>Add Macro</strong>.</li>
-            <li>
-              <strong>Trigger</strong>: Tap (+), choose <strong>SMS Received</strong> &rarr; Select incoming from your bank (e.g., SBI, HDFC, ICICI, etc.).
-            </li>
-            <li>
-              <strong>Action</strong>: Tap (+), choose <strong>HTTP Request</strong>:
-              <ul className="list-disc list-inside pl-4 pt-1 space-y-0.5 text-gray-400 font-mono text-[11px]">
-                <li>Method: <strong>POST</strong></li>
-                <li>URL: <code className="text-cyan-300">{webhookUrl}</code></li>
-                <li>Content Type: <strong>application/json</strong></li>
-                <li>
-                  Body: <code className="text-amber-300">&#123;&quot;secret&quot;:&quot;{bridgeSecret}&quot;, &quot;message&quot;:&quot;[sms_body]&quot;&#125;</code>
-                </li>
-              </ul>
-            </li>
-            <li>Save the Macro. That’s it! Now every time money enters your bank, your phone tells AETHERIA in 1 second!</li>
-          </ol>
+      {/* Simulator Card */}
+      <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card space-y-4">
+        <div className="flex items-center gap-2">
+          <Zap size={16} className="text-cyan-400" />
+          <h3 className="text-sm font-bold text-white">Live SMS Match Simulator</h3>
         </div>
-      )}
+        <p className="text-xs text-slate-400">
+          Simulate an incoming bank SMS to test your regex parser, paise matching, and automated key delivery.
+        </p>
 
-      {/* Test Simulator */}
-      <form onSubmit={handleSimulate} className="space-y-2 pt-1">
-        <label className="block text-xs font-semibold text-gray-300">
-          <Zap size={13} className="inline mr-1 text-cyan-400" />
-          Test Bank SMS Parser & Matcher
-        </label>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <input
-            type="text"
+        <form onSubmit={handleSimulate} className="space-y-3">
+          <textarea
+            rows={2}
             value={sampleSms}
             onChange={(e) => setSampleSms(e.target.value)}
-            placeholder="Paste raw bank SMS text..."
-            className="flex-1 bg-surface-900 border border-surface-700 rounded-xl px-3.5 py-2 text-white font-mono text-xs focus:outline-none focus:border-cyan-500"
+            className="w-full bg-[#080e1a] border border-[#1b2b48] rounded-xl p-3 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 transition-colors"
           />
-          <button
-            type="submit"
-            disabled={simulating}
-            className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-md flex-shrink-0 disabled:opacity-50"
-          >
-            <Send size={13} />
-            <span>{simulating ? 'Testing...' : 'Simulate SMS'}</span>
-          </button>
-        </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={simulating}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all disabled:opacity-50"
+            >
+              {simulating ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Processing...</span>
+                </>
+              ) : (
+                <>
+                  <Send size={13} />
+                  <span>Test SMS Webhook</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
 
         {simResult && (
-          <div className="p-3 bg-surface-900 border border-surface-700 rounded-xl text-xs font-mono mt-2">
-            <span className="text-gray-400 block text-[10px]">PARSER OUTPUT:</span>
-            <pre className="text-emerald-300 mt-1 whitespace-pre-wrap">
-              {JSON.stringify(simResult, null, 2)}
-            </pre>
+          <div className="p-3.5 bg-[#080e1a] rounded-xl border border-slate-800 text-xs font-mono space-y-1">
+            <div className="flex items-center gap-2 text-cyan-400 font-bold">
+              <span>Status:</span>
+              <span className={simResult.matched ? 'text-emerald-400' : 'text-slate-300'}>
+                {simResult.matched ? 'Order Matched & Key Delivered' : 'Parsed Successfully (No matching pending order)'}
+              </span>
+            </div>
+            {simResult.parsed && (
+              <p className="text-slate-400">
+                Detected Amount: ₹{(simResult.parsed.amount / 100).toFixed(2)} • Ref:{' '}
+                {simResult.parsed.reference || 'N/A'}
+              </p>
+            )}
           </div>
         )}
-      </form>
+      </div>
     </div>
   );
 }

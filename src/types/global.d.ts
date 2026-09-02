@@ -66,4 +66,5 @@ declare module 'lucide-react' {
   export const Tag: LucideIcon;
   export const CheckCircle2: LucideIcon;
   export const Activity: LucideIcon;
+  export const XCircle: LucideIcon;
 }

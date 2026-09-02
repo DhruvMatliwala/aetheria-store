@@ -1,8 +1,7 @@
 'use client';
 
-import { AlertTriangle, Package, TrendingUp, Smartphone, Key, Shield, CheckCircle, RefreshCw } from 'lucide-react';
-import { Badge } from '@/components/ui/Badge';
-import { PLANS, LOW_STOCK_THRESHOLD } from '@/lib/constants';
+import { Package, Smartphone, Key, Shield, CheckCircle, TrendingUp, RefreshCw } from 'lucide-react';
+import { PLANS } from '@/lib/constants';
 import { InventoryStatsSummary } from '@/lib/firestore/keys';
 
 interface StockData {
@@ -25,13 +24,16 @@ interface StockDashboardProps {
 }
 
 export function StockDashboard({ stockCounts = {}, inventoryStats, revenueStats }: StockDashboardProps) {
-  const usableSlots = inventoryStats?.totalUsableSlots ?? 0;
   const activeKeys = inventoryStats?.activeKeys ?? 0;
+  const totalUsableSlots = inventoryStats?.totalUsableSlots ?? 0;
+  const totalKeys = inventoryStats?.totalKeys ?? 0;
   const fullyAllocated = inventoryStats?.fullyAllocatedKeys ?? 0;
-  const partiallyFilled = inventoryStats?.partiallyFilledKeys ?? 0;
-  const untouchedKeys = inventoryStats?.untouchedKeys ?? 0;
 
-  const isLowStock = usableSlots <= LOW_STOCK_THRESHOLD * 2;
+  const count1 = stockCounts['1_month']?.available ?? 0;
+  const sold1 = stockCounts['1_month']?.sold ?? 0;
+
+  const count2 = stockCounts['3_month']?.available ?? 0;
+  const sold2 = stockCounts['3_month']?.sold ?? 0;
 
   const revenueINR = revenueStats?.totalRevenueINR ?? 0;
   const revenueUSD = revenueStats?.totalRevenueUSD ?? 0;
@@ -39,189 +41,197 @@ export function StockDashboard({ stockCounts = {}, inventoryStats, revenueStats 
 
   return (
     <div className="space-y-6">
-      {/* Low stock alert */}
-      {isLowStock && (
-        <div className="flex items-center gap-3 bg-amber-900/30 border border-amber-700/50 rounded-2xl p-4 text-amber-300">
-          <AlertTriangle size={20} className="flex-shrink-0" />
-          <div>
-            <p className="font-semibold">Low Slot Inventory Warning</p>
-            <p className="text-sm text-amber-400/80">
-              Only {usableSlots} usable device slot(s) remaining across active Patreon keys. Please bulk-upload more Patreon keys.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Primary Multi-Slot Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Usable Slots */}
-        <div className="bg-surface-800 border border-brand-500/40 rounded-2xl p-5 shadow-card">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-brand-300 uppercase tracking-wider">Usable Slots</span>
-            <div className="w-8 h-8 rounded-lg bg-brand-900/60 flex items-center justify-center text-brand-400">
-              <Smartphone size={16} />
-            </div>
-          </div>
-          <p className="text-3xl font-black text-white">{usableSlots}</p>
-          <p className="text-[11px] text-gray-400 mt-1">Total simultaneous device capacity</p>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <Package className="w-5 h-5 text-cyan-400" />
+            <span>Inventory & Stock Management</span>
+          </h2>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Real-time key availability, device capacity, and automated order fulfillment stock
+          </p>
         </div>
 
-        {/* Active Keys */}
-        <div className="bg-surface-800 border border-surface-600 rounded-2xl p-5 shadow-card">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono px-3 py-1 rounded-xl bg-cyan-950/80 text-cyan-300 border border-cyan-700/60 font-semibold">
+            {activeKeys} Active Keys in Vault
+          </span>
+        </div>
+      </div>
+
+      {/* Top Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Available Keys */}
+        <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Active Keys</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-900/40 flex items-center justify-center text-emerald-400">
+            <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider font-mono">
+              Available Keys
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400">
               <Key size={16} />
             </div>
           </div>
           <p className="text-3xl font-black text-white">{activeKeys}</p>
-          <p className="text-[11px] text-gray-400 mt-1">
-            {untouchedKeys} untouched · {partiallyFilled} partial
-          </p>
+          <p className="text-[11px] text-slate-400 mt-1">Ready for instant automated delivery</p>
         </div>
 
-        {/* Partially Filled */}
-        <div className="bg-surface-800 border border-surface-600 rounded-2xl p-5 shadow-card">
+        {/* Device Slot Capacity */}
+        <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Partially Used</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-900/40 flex items-center justify-center text-amber-400">
-              <RefreshCw size={16} />
+            <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider font-mono">
+              Usable Device Slots
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-950/60 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
+              <Smartphone size={16} />
             </div>
           </div>
-          <p className="text-3xl font-black text-white">{partiallyFilled}</p>
-          <p className="text-[11px] text-gray-400 mt-1">Packed first for 1-slot orders</p>
+          <p className="text-3xl font-black text-white">{totalUsableSlots}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Simultaneous trainer device access</p>
         </div>
 
-        {/* Fully Allocated Keys */}
-        <div className="bg-surface-800 border border-surface-600 rounded-2xl p-5 shadow-card">
+        {/* Fulfilled Orders */}
+        <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Full Keys</span>
-            <div className="w-8 h-8 rounded-lg bg-surface-700 flex items-center justify-center text-gray-300">
+            <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider font-mono">
+              Delivered Keys
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-purple-950/60 border border-purple-800/60 flex items-center justify-center text-purple-400">
               <CheckCircle size={16} />
             </div>
           </div>
           <p className="text-3xl font-black text-white">{fullyAllocated}</p>
-          <p className="text-[11px] text-gray-400 mt-1">100% device capacity claimed</p>
+          <p className="text-[11px] text-slate-400 mt-1">Successfully claimed by customers</p>
+        </div>
+
+        {/* Total Key Database */}
+        <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">
+              Vault Total
+            </span>
+            <div className="w-8 h-8 rounded-lg bg-slate-800/60 border border-slate-700 flex items-center justify-center text-slate-300">
+              <Shield size={16} />
+            </div>
+          </div>
+          <p className="text-3xl font-black text-white">{totalKeys}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Total lifetime uploaded keys</p>
         </div>
       </div>
 
-      {/* Real Multi-Currency Revenue Summary */}
-      <div className="bg-surface-800 border border-surface-600 rounded-3xl p-6 shadow-card">
+      {/* Real Plan Stock Breakdown */}
+      <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-6 shadow-card">
+        <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
+          <Smartphone size={18} className="text-cyan-400" />
+          <span>Device Edition Stock & Fulfillment</span>
+        </h3>
+        <p className="text-xs text-slate-400 mb-6">
+          Live inventory counts for both customer editions available on your store
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Standard Plan: 1 Device */}
+          <div className="bg-[#080e1a] border border-[#152138] hover:border-cyan-500/40 rounded-2xl p-5 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <span className="text-[10px] font-mono uppercase font-bold text-cyan-400 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-800/60">
+                  Standard Tier
+                </span>
+                <h4 className="text-base font-bold text-white mt-1.5">1 Android Device Key</h4>
+                <p className="text-xs text-slate-400">1 Device Slot per order • ₹190 / $1.99</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-black text-cyan-300 font-mono">{count1}</span>
+                <p className="text-[10px] text-slate-400 uppercase font-semibold">Available</p>
+              </div>
+            </div>
+
+            <div className="w-full bg-slate-800/80 h-2 rounded-full overflow-hidden my-3">
+              <div
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 h-full rounded-full transition-all duration-500"
+                style={{ width: `${count1 > 0 ? 100 : 0}%` }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800/60">
+              <span>Lifetime Sold: {sold1} orders</span>
+              <span className={count1 > 0 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+                {count1 > 0 ? '● In Stock' : '○ Out of Stock'}
+              </span>
+            </div>
+          </div>
+
+          {/* Dual Plan: 2 Devices */}
+          <div className="bg-[#080e1a] border border-[#152138] hover:border-purple-500/40 rounded-2xl p-5 transition-all">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <span className="text-[10px] font-mono uppercase font-bold text-purple-400 bg-purple-950/80 px-2 py-0.5 rounded border border-purple-800/60">
+                  Duo Tier
+                </span>
+                <h4 className="text-base font-bold text-white mt-1.5">2 Android Devices Key</h4>
+                <p className="text-xs text-slate-400">2 Device Slots per order • ₹340 / $3.69</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-black text-purple-300 font-mono">{count2}</span>
+                <p className="text-[10px] text-slate-400 uppercase font-semibold">Available</p>
+              </div>
+            </div>
+
+            <div className="w-full bg-slate-800/80 h-2 rounded-full overflow-hidden my-3">
+              <div
+                className="bg-gradient-to-r from-purple-500 to-pink-600 h-full rounded-full transition-all duration-500"
+                style={{ width: `${count2 > 0 ? 100 : 0}%` }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800/60">
+              <span>Lifetime Sold: {sold2} orders</span>
+              <span className={count2 > 0 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+                {count2 > 0 ? '● In Stock' : '○ Out of Stock'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Revenue & Verified Payments */}
+      <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-6 shadow-card">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">
               Total Actual Revenue ({paidOrdersCount} Paid Order{paidOrdersCount !== 1 ? 's' : ''})
             </p>
             <div className="flex flex-wrap items-baseline gap-4 mt-2">
+              {revenueINR > 0 && (
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-3xl font-black text-cyan-300">
+                    ₹{(revenueINR / 100).toLocaleString('en-IN')}
+                  </span>
+                  <span className="text-xs font-bold text-cyan-400 uppercase font-mono">INR (UPI)</span>
+                </div>
+              )}
               {revenueUSD > 0 && (
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-3xl font-black text-emerald-400">
-                    ${revenueUSD.toFixed(2)}
+                    ${(revenueUSD / 100).toFixed(2)}
                   </span>
-                  <span className="text-xs font-bold text-emerald-500/80 uppercase">USD</span>
-                </div>
-              )}
-              {revenueINR > 0 && (
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-3xl font-black text-brand-300">
-                    ₹{revenueINR.toLocaleString('en-IN')}
-                  </span>
-                  <span className="text-xs font-bold text-brand-400/80 uppercase">INR</span>
+                  <span className="text-xs font-bold text-emerald-400 uppercase font-mono">USD (PayPal)</span>
                 </div>
               )}
               {revenueUSD === 0 && revenueINR === 0 && (
-                <span className="text-3xl font-black text-gray-500">
-                  $0.00 / ₹0
-                </span>
+                <span className="text-2xl font-black text-slate-500">₹0 / $0.00</span>
               )}
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Calculated in real-time from verified completed transactions on Razorpay (UPI) and PayPal (USD).
+            <p className="text-xs text-slate-400 mt-2">
+              Real-time settlement from verified UPI direct transfers and PayPal checkout.
             </p>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-950/60 border border-emerald-800/50 flex items-center justify-center text-emerald-400 flex-shrink-0">
+
+          <div className="w-12 h-12 rounded-2xl bg-cyan-950/60 border border-cyan-800/60 flex items-center justify-center text-cyan-400 shrink-0">
             <TrendingUp size={24} />
           </div>
         </div>
       </div>
-
-      {/* Plan Fulfillment Capacity Cards (2 Tiers: 1 Device & 2 Devices) */}
-      <div className="bg-surface-800 border border-surface-600 rounded-3xl p-6 shadow-card">
-        <h3 className="text-base font-bold text-white mb-1 flex items-center gap-2">
-          <Package size={18} className="text-brand-400" />
-          <span>Real-Time Customer Tier Fulfillment Capacity</span>
-        </h3>
-        <p className="text-xs text-gray-400 mb-5">
-          Calculated dynamically based on available slot packing algorithms across active Patreon keys.
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {PLANS.map((plan) => {
-            const availableCapacity = inventoryStats?.tierStock[plan.id as keyof typeof inventoryStats.tierStock] ?? 0;
-            const isZero = availableCapacity === 0;
-
-            return (
-              <div
-                key={plan.id}
-                className="bg-surface-900 border border-surface-700/80 rounded-2xl p-4 flex flex-col justify-between"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h4 className="text-sm font-bold text-white">{plan.name}</h4>
-                    <p className="text-[11px] text-gray-400">{plan.device_slots} Device Slot{plan.device_slots > 1 ? 's' : ''} / order</p>
-                  </div>
-                  {plan.badge && (
-                    <Badge variant="brand" className="text-[10px]">
-                      {plan.badge}
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="mt-2 flex items-baseline justify-between">
-                  <span className="text-xs text-gray-400">Can fulfill:</span>
-                  <span className={`text-xl font-extrabold ${isZero ? 'text-red-400' : 'text-emerald-400'}`}>
-                    {availableCapacity} order{availableCapacity !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Patreon Inventory Breakdown Card */}
-      {inventoryStats && (
-        <div className="bg-surface-800 border border-surface-600 rounded-3xl p-6 shadow-card">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Shield size={18} className="text-brand-400" />
-              <span>Patreon Key Inventory Breakdown</span>
-            </h3>
-            <span className="text-xs text-brand-300 font-semibold bg-brand-950 px-2.5 py-1 rounded-lg border border-brand-800">
-              {inventoryStats.patreonKeys.total} Total Keys Uploaded
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-surface-900 border border-surface-700 rounded-xl p-3.5">
-              <span className="text-[11px] text-gray-400 block mb-1">Available Keys</span>
-              <span className="text-xl font-bold text-emerald-400">{inventoryStats.patreonKeys.available}</span>
-            </div>
-            <div className="bg-surface-900 border border-surface-700 rounded-xl p-3.5">
-              <span className="text-[11px] text-gray-400 block mb-1">Remaining Usable Slots</span>
-              <span className="text-xl font-bold text-white">{inventoryStats.patreonKeys.remainingSlots}</span>
-            </div>
-            <div className="bg-surface-900 border border-surface-700 rounded-xl p-3.5">
-              <span className="text-[11px] text-gray-400 block mb-1">Claimed Device Slots</span>
-              <span className="text-xl font-bold text-gray-300">{inventoryStats.patreonKeys.usedSlots}</span>
-            </div>
-            <div className="bg-surface-900 border border-surface-700 rounded-xl p-3.5">
-              <span className="text-[11px] text-gray-400 block mb-1">Fully Depleted Keys</span>
-              <span className="text-xl font-bold text-gray-400">{inventoryStats.patreonKeys.full}</span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

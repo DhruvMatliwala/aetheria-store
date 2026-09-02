@@ -1,8 +1,7 @@
 'use client';
 
-import { Flame, Bell, Mail, Clock, Shield, Sparkles } from 'lucide-react';
+import { Users, Bell, Mail, Clock } from 'lucide-react';
 import { RestockStats } from '@/lib/firestore/restock';
-import { Badge } from '@/components/ui/Badge';
 
 interface WaitlistWidgetProps {
   waitlistStats?: RestockStats;
@@ -13,32 +12,27 @@ export function WaitlistWidget({ waitlistStats }: WaitlistWidgetProps) {
   const count2 = waitlistStats?.counts?.['1_month_2_device'] ?? 0;
   const totalWaitlist = waitlistStats?.totalRequests ?? count1 + count2;
 
-  // Calculate Patreon keys needed to satisfy waitlist demand
-  // 1-Device needs 1 slot each, 2-Device needs 2 slots each. Total slots / 2 = Patreon keys
-  const totalSlotsNeeded = count1 * 1 + count2 * 2;
-  const patreonKeysNeeded = Math.ceil(totalSlotsNeeded / 2);
-
   const recentList = waitlistStats?.recentRequests ?? [];
 
   return (
-    <div className="bg-surface-800 border border-surface-600 rounded-3xl p-6 shadow-card space-y-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-orange-950/80 border border-orange-700/50 flex items-center justify-center text-orange-400">
-            <Flame size={20} />
+          <div className="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-800/60 flex items-center justify-center text-cyan-400">
+            <Users size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-black text-white flex items-center gap-2">
-              <span>🔥 Real-Time Customer Demand & Waitlist</span>
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <span>Customer Demand & Waitlist</span>
               {totalWaitlist > 0 && (
-                <span className="text-xs bg-orange-950 text-orange-300 border border-orange-700/60 px-2 py-0.5 rounded-full font-bold">
+                <span className="text-xs bg-cyan-950 text-cyan-300 border border-cyan-700/60 px-2.5 py-0.5 rounded-full font-mono font-bold">
                   {totalWaitlist} Waiting
                 </span>
               )}
             </h2>
-            <p className="text-xs text-gray-400">
-              Customers waiting for out-of-stock keys. Sourcing intelligence for Patreon bulk purchases.
+            <p className="text-xs text-slate-400">
+              Customers who requested email notification when out-of-stock keys are refilled
             </p>
           </div>
         </div>
@@ -46,91 +40,84 @@ export function WaitlistWidget({ waitlistStats }: WaitlistWidgetProps) {
 
       {/* Demand Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* 1-Device Waitlist */}
-        <div className="bg-surface-900 border border-surface-700/80 rounded-2xl p-4">
+        {/* Total Waiting */}
+        <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">1 Device Waitlist</span>
-            <Bell size={14} className="text-brand-400" />
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">
+              Total Waiting Customers
+            </span>
+            <Users size={15} className="text-cyan-400" />
           </div>
-          <p className="text-2xl font-black text-white">{count1}</p>
-          <p className="text-[11px] text-gray-400 mt-1">Requires {count1} device slots</p>
+          <p className="text-3xl font-black text-white">{totalWaitlist}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Pending restock notifications</p>
+        </div>
+
+        {/* 1-Device Waitlist */}
+        <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider font-mono">
+              1 Device Requests
+            </span>
+            <Bell size={15} className="text-cyan-400" />
+          </div>
+          <p className="text-3xl font-black text-cyan-300">{count1}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Trainers requesting Standard Tier</p>
         </div>
 
         {/* 2-Device Waitlist */}
-        <div className="bg-surface-900 border border-surface-700/80 rounded-2xl p-4">
+        <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">2 Devices Waitlist</span>
-            <Bell size={14} className="text-brand-400" />
+            <span className="text-[11px] font-bold text-purple-400 uppercase tracking-wider font-mono">
+              2 Devices Requests
+            </span>
+            <Bell size={15} className="text-purple-400" />
           </div>
-          <p className="text-2xl font-black text-white">{count2}</p>
-          <p className="text-[11px] text-gray-400 mt-1">Requires {count2 * 2} device slots</p>
-        </div>
-
-        {/* Recommended Patreon Keys to Purchase */}
-        <div className="bg-gradient-to-br from-orange-950/40 via-surface-900 to-surface-900 border border-orange-700/50 rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-orange-300 uppercase tracking-wider">Recommended Restock</span>
-            <Sparkles size={14} className="text-orange-400" />
-          </div>
-          <p className="text-2xl font-black text-orange-300">
-            {patreonKeysNeeded} <span className="text-sm font-semibold text-gray-400">Patreon Keys</span>
-          </p>
-          <p className="text-[11px] text-orange-400/80 mt-1">
-            Fulfills all {totalSlotsNeeded} waiting device slots
-          </p>
+          <p className="text-3xl font-black text-purple-300">{count2}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Trainers requesting Duo Tier</p>
         </div>
       </div>
 
-      {/* Recent Waitlist Signups Table */}
-      <div>
-        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
-          Recent Waitlist Submissions
+      {/* Recent Waitlist Requests Table */}
+      <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-5 shadow-card space-y-4">
+        <h3 className="text-sm font-bold text-white flex items-center gap-2">
+          <Mail size={16} className="text-cyan-400" />
+          <span>Recent Restock Alert Requests</span>
         </h3>
 
         {recentList.length === 0 ? (
-          <div className="p-6 bg-surface-900/60 border border-surface-700/60 rounded-xl text-center">
-            <p className="text-xs text-gray-400">
-              No pending customer restock requests. All demand is currently fulfilled or stock is active.
+          <div className="py-12 text-center text-slate-500 text-xs bg-[#080e1a] rounded-xl border border-slate-800/60">
+            <Users size={32} className="mx-auto mb-2 opacity-30 text-cyan-400" />
+            <p className="text-slate-400 font-semibold">No waitlist subscribers yet.</p>
+            <p className="text-slate-500 text-[11px] mt-0.5">
+              When a plan is sold out, visitors can enter their email on the storefront to be notified.
             </p>
           </div>
         ) : (
-          <div className="bg-surface-900 border border-surface-700 rounded-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-surface-800 text-gray-400 border-b border-surface-700 font-semibold uppercase tracking-wider">
-                  <tr>
-                    <th className="py-2.5 px-4">Customer Email</th>
-                    <th className="py-2.5 px-4">Requested Plan</th>
-                    <th className="py-2.5 px-4">Time</th>
-                    <th className="py-2.5 px-4 text-right">Status</th>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-[#16243d] bg-[#080e1a] text-[10px] font-mono text-slate-400 uppercase">
+                  <th className="px-4 py-2.5 font-semibold">Email</th>
+                  <th className="px-4 py-2.5 font-semibold">Requested Plan</th>
+                  <th className="px-4 py-2.5 font-semibold text-right">Requested At</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#16243d]/60 text-[11px]">
+                {recentList.map((req, idx) => (
+                  <tr key={req.id || idx} className="hover:bg-slate-800/30 transition-colors">
+                    <td className="px-4 py-2.5 font-mono text-cyan-300 font-medium">
+                      {req.email}
+                    </td>
+                    <td className="px-4 py-2.5 text-slate-300">
+                      {req.plan_id.includes('2_device') ? '2 Android Devices' : '1 Android Device'}
+                    </td>
+                    <td className="px-4 py-2.5 text-right font-mono text-slate-500 text-[10px]">
+                      {new Date(req.created_at).toLocaleString()}
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-surface-800 text-gray-300">
-                  {recentList.map((req) => (
-                    <tr key={req.id} className="hover:bg-surface-800/50 transition-colors">
-                      <td className="py-2.5 px-4 font-mono font-medium text-white flex items-center gap-1.5">
-                        <Mail size={12} className="text-gray-500" />
-                        <span>{req.email}</span>
-                      </td>
-                      <td className="py-2.5 px-4">
-                        <span className="font-semibold text-brand-300">
-                          {req.plan_id === '1_month_2_device' ? '2 Devices (30 Days)' : '1 Device (30 Days)'}
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-4 text-gray-400 flex items-center gap-1">
-                        <Clock size={11} className="text-gray-500" />
-                        <span>{req.created_at}</span>
-                      </td>
-                      <td className="py-2.5 px-4 text-right">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-950/70 text-amber-300 border border-amber-800/60 font-semibold text-[10px]">
-                          Pending Restock
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
