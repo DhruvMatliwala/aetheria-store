@@ -273,30 +273,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // Authorized Admin View
   return (
-    <div className="min-h-screen bg-surface-900">
-      {/* Admin Navbar */}
-      <nav className="bg-surface-800 border-b border-surface-600 px-6 h-16 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <span className="text-xl">🎮</span>
-          <span className="text-white font-bold">PGSharp Admin</span>
-          <span className="bg-red-900/60 border border-red-700/50 text-red-300 text-xs font-bold px-2.5 py-0.5 rounded-full">
-            ADMIN
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-gray-400 text-xs hidden sm:inline">
-            {user?.email ? user.email : 'Authenticated via Passcode'}
-          </span>
-          <button
-            onClick={handleSignOut}
-            className="text-xs font-medium text-gray-400 hover:text-white bg-surface-700 hover:bg-surface-600 px-3 py-1.5 rounded-lg transition-colors border border-surface-600"
-          >
-            Sign Out
-          </button>
-        </div>
-      </nav>
-
-      <div className="max-w-6xl mx-auto px-4 py-8">{children}</div>
+    <div className="min-h-screen bg-[#070b13] text-white selection:bg-cyan-500/30">
+      {children}
     </div>
   );
 }

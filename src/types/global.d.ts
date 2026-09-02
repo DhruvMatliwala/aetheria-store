@@ -53,4 +53,17 @@ declare module 'lucide-react' {
   export const Bell: LucideIcon;
   export const Flame: LucideIcon;
   export const UserCheck: LucideIcon;
+  export const LayoutDashboard: LucideIcon;
+  export const Grid: LucideIcon;
+  export const Search: LucideIcon;
+  export const Moon: LucideIcon;
+  export const Calendar: LucideIcon;
+  export const Settings: LucideIcon;
+  export const Headphones: LucideIcon;
+  export const Database: LucideIcon;
+  export const Percent: LucideIcon;
+  export const Plus: LucideIcon;
+  export const Tag: LucideIcon;
+  export const CheckCircle2: LucideIcon;
+  export const Activity: LucideIcon;
 }
