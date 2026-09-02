@@ -34,6 +34,7 @@ import { OrderPublic } from '@/types/order';
 import { InventoryStatsSummary } from '@/lib/firestore/keys';
 import { RestockStats } from '@/lib/firestore/restock';
 import { Button } from '@/components/ui/Button';
+import { getClientAuth } from '@/lib/firebase/client';
 import toast from 'react-hot-toast';
 
 interface StockData {
@@ -198,8 +199,65 @@ export default function AdminPage() {
 
   // Donut Arc calculation for Real Data
   const availablePercent = totalKeys > 0 ? Math.round((totalAvailable / totalKeys) * 100) : 100;
-  const soldPercent = totalKeys > 0 ? 100 - availablePercent : 0;
   const strokeDashLength = Math.round((availablePercent / 100) * 251);
+
+  async function handleSignOut() {
+    sessionStorage.removeItem('pgsharp_admin_secret');
+    setAdminToken('');
+    try {
+      const auth = getClientAuth();
+      await auth.signOut();
+    } catch (err) {}
+    window.location.reload();
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#070b13] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!adminToken) {
+    return (
+      <div className="min-h-screen bg-[#070b13] flex items-center justify-center p-4 selection:bg-cyan-500/30">
+        <div className="max-w-md w-full bg-[#0c1424] border border-[#16243d] rounded-2xl p-8 shadow-[0_0_40px_rgba(6,182,212,0.15)] text-center">
+          <div className="w-14 h-14 rounded-2xl bg-cyan-950/80 border border-cyan-700/50 flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+            <Shield size={28} className="text-cyan-400" />
+          </div>
+          <h1 className="text-xl font-black text-white tracking-wider">AETHERIA VAULT LOCKED</h1>
+          <p className="text-xs text-slate-400 mt-1 mb-6">
+            Enter your Admin Passcode to unlock the command center
+          </p>
+
+          <form onSubmit={handleSaveSecret} className="space-y-4 text-left">
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1.5">
+                Admin Passcode (ADMIN_API_SECRET)
+              </label>
+              <input
+                type="password"
+                required
+                placeholder="Enter ADMIN_API_SECRET..."
+                value={secretInput}
+                onChange={(e) => setSecretInput(e.target.value)}
+                className="w-full bg-[#080e1a] border border-[#1b2b48] rounded-xl px-4 py-2.5 text-cyan-300 placeholder-slate-600 text-xs font-mono focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all flex items-center justify-center gap-2"
+            >
+              <Key size={14} />
+              <span>Unlock Command Center</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-[#070b13] text-slate-100 font-sans antialiased">
@@ -297,11 +355,8 @@ export default function AdminPage() {
                 <span className="text-[11px] text-slate-300 font-mono">Passcode Auth</span>
               </div>
               <button
-                onClick={() => {
-                  sessionStorage.removeItem('pgsharp_admin_secret');
-                  window.location.reload();
-                }}
-                className="text-[10px] text-rose-400 hover:text-rose-300 font-semibold"
+                onClick={handleSignOut}
+                className="text-[10px] text-rose-400 hover:text-rose-300 font-semibold cursor-pointer"
               >
                 Sign Out
               </button>
@@ -351,33 +406,8 @@ export default function AdminPage() {
             BODY / CONTENT AREA
             ════════════════════════════════════════════════════════════════════════ */}
         <main className="p-8 space-y-6 flex-1">
-          {/* Secret Login Banner if Needed */}
-          {showSecretModal && (
-            <div className="p-6 bg-[#0c1424] border border-cyan-500/50 rounded-2xl shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-              <div className="flex items-center gap-2 mb-2 text-cyan-400">
-                <Key size={18} />
-                <h2 className="text-base font-bold text-white">Enter Admin Passcode to Authorize</h2>
-              </div>
-              <p className="text-xs text-slate-400 mb-4">
-                Provide your <code className="text-cyan-300">ADMIN_API_SECRET</code> to unlock live inventory & orders:
-              </p>
-              <form onSubmit={handleSaveSecret} className="flex gap-3 max-w-md">
-                <input
-                  type="password"
-                  placeholder="ADMIN_API_SECRET..."
-                  value={secretInput}
-                  onChange={(e) => setSecretInput(e.target.value)}
-                  className="flex-1 bg-[#070b13] border border-slate-700 rounded-xl px-4 py-2 text-white text-xs focus:outline-none focus:border-cyan-500"
-                />
-                <Button type="submit" variant="primary" size="md">
-                  Authorize
-                </Button>
-              </form>
-            </div>
-          )}
-
-          {error && !showSecretModal && (
-            <div className="flex items-center gap-3 bg-red-950/40 border border-red-800/60 rounded-xl p-4 text-red-300 text-xs">
+          {error && (
+            <div className="flex items-center gap-3 bg-rose-950/40 border border-rose-800/60 rounded-xl p-4 text-rose-300 text-xs">
               <AlertCircle size={16} className="flex-shrink-0" />
               <span>{error}</span>
             </div>

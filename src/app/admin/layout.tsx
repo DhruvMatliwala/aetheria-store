@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getClientAuth } from '@/lib/firebase/client';
 import { GoogleAuthProvider, signInWithPopup, User } from 'firebase/auth';
-import { Key, Lock, Copy, Check, AlertCircle, ArrowRight } from 'lucide-react';
+import { Shield, Key, AlertCircle, ArrowRight, Check, Copy } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const ADMIN_UIDS = (process.env.NEXT_PUBLIC_ADMIN_UIDS ?? '')
+const ADMIN_UIDS = (process.env.NEXT_PUBLIC_ADMIN_UIDS || '')
   .split(',')
-  .map((u) => u.trim())
+  .map((s) => s.trim())
   .filter(Boolean);
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -18,7 +18,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true);
   const [signingIn, setSigningIn] = useState(false);
   const [googleError, setGoogleError] = useState<string | null>(null);
-  
+
   // Secret passcode login state
   const [adminSecretInput, setAdminSecretInput] = useState('');
   const [secretLoading, setSecretLoading] = useState(false);
@@ -27,7 +27,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [copiedUid, setCopiedUid] = useState(false);
 
   useEffect(() => {
-    // Check if previously authorized via secret key in sessionStorage
     const savedSecret = typeof window !== 'undefined' ? sessionStorage.getItem('pgsharp_admin_secret') : null;
     if (savedSecret) {
       setSecretAuthorized(true);
@@ -37,15 +36,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       const auth = getClientAuth();
       const unsubscribe = auth.onAuthStateChanged((u: User | null) => {
         setUser(u);
-        if (u) {
-          console.log('[Admin Auth] Logged in Firebase user UID:', u.uid);
-          console.log('[Admin Auth] Configured NEXT_PUBLIC_ADMIN_UIDS:', ADMIN_UIDS);
-        }
         setLoading(false);
       });
       return unsubscribe;
     } catch (err) {
-      console.warn('[Admin Auth] Firebase Auth initialization notice:', err);
       setLoading(false);
     }
   }, []);
@@ -58,10 +52,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       const result = await signInWithPopup(auth, provider);
-      console.log('[Admin Auth] Google sign-in success. User UID:', result.user.uid);
       toast.success('Signed in with Google');
     } catch (err: any) {
-      console.error('[Admin Auth] Google sign-in error:', err);
       const code = err?.code || 'auth/unknown';
       const message = err?.message || 'Failed to sign in with Google.';
       setGoogleError(`${code}: ${message}`);
@@ -102,24 +94,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }
 
-  async function handleSignOut() {
-    sessionStorage.removeItem('pgsharp_admin_secret');
-    setSecretAuthorized(false);
-    try {
-      const auth = getClientAuth();
-      await auth.signOut();
-    } catch (err) {
-      // ignore
-    }
-    setUser(null);
-    router.push('/');
-  }
-
   async function handleCopyUid(uid: string) {
     try {
       await navigator.clipboard.writeText(uid);
       setCopiedUid(true);
-      toast.success('UID copied to clipboard!');
+      toast.success('UID copied!');
       setTimeout(() => setCopiedUid(false), 2500);
     } catch {
       toast.error('Failed to copy UID.');
@@ -128,36 +107,39 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-900 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#070b13] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   const isGoogleAuthorized = Boolean(user && ADMIN_UIDS.includes(user.uid));
-  const isAuthorized = isGoogleAuthorized || secretAuthorized;
+  const isAuthorized = secretAuthorized || isGoogleAuthorized;
 
-  // Render Login Screen if not authorized
+  // Render Cyberpunk Locked Screen if not authorized
   if (!isAuthorized) {
     return (
-      <div className="min-h-screen bg-hero-gradient flex items-center justify-center p-4 py-12">
-        <div className="max-w-md w-full bg-surface-800 border border-surface-600 rounded-2xl p-8 shadow-card">
+      <div className="min-h-screen bg-[#070b13] flex items-center justify-center p-4 py-12 selection:bg-cyan-500/30">
+        <div className="max-w-md w-full bg-[#0c1424] border border-[#16243d] rounded-2xl p-8 shadow-[0_0_40px_rgba(6,182,212,0.15)]">
           <div className="text-center mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-brand-900/60 border border-brand-700/50 flex items-center justify-center mx-auto mb-3">
-              <Lock size={26} className="text-brand-400" />
+            <div className="w-14 h-14 rounded-2xl bg-cyan-950/80 border border-cyan-700/50 flex items-center justify-center mx-auto mb-3 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+              {/* Aetheria Delta Crystal Emblem */}
+              <svg viewBox="0 0 24 24" className="w-7 h-7 text-cyan-400 fill-current">
+                <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13.5h-13L12 6.5z" />
+              </svg>
             </div>
-            <h1 className="text-2xl font-black text-white">Admin Portal</h1>
-            <p className="text-gray-400 text-sm mt-1">
-              Sign in with your authorized Google account or Admin Passcode
+            <h1 className="text-2xl font-black text-white tracking-wider">AETHERIA ADMIN</h1>
+            <p className="text-slate-400 text-xs mt-1">
+              Encrypted vault command center. Enter your passcode to unlock.
             </p>
           </div>
 
-          {/* Option 1: Admin Passcode / Secret Key (Instant & Reliable) */}
-          <div className="mb-6 p-4 bg-surface-900/90 border border-surface-600 rounded-xl">
-            <div className="flex items-center gap-2 mb-3">
-              <Key size={16} className="text-brand-400" />
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">
-                Option 1: Admin Passcode
+          {/* Option 1: Admin Passcode */}
+          <div className="mb-6 p-4 bg-[#080e1a] border border-[#16243d] rounded-xl space-y-3">
+            <div className="flex items-center gap-2">
+              <Key size={16} className="text-cyan-400" />
+              <h2 className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+                Admin Passcode Unlock
               </h2>
             </div>
             <form onSubmit={handleSecretLogin} className="space-y-3">
@@ -167,31 +149,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   placeholder="Enter ADMIN_API_SECRET..."
                   value={adminSecretInput}
                   onChange={(e) => setAdminSecretInput(e.target.value)}
-                  className="w-full bg-surface-800 border border-surface-600 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors"
+                  className="w-full bg-[#0c1424] border border-[#1b2b48] rounded-xl px-4 py-2.5 text-cyan-300 placeholder-slate-600 text-xs font-mono focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Matches <code className="text-brand-300">ADMIN_API_SECRET</code> in your .env.local
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Matches <code className="text-cyan-300">ADMIN_API_SECRET</code> in your environment
                 </p>
               </div>
 
               {secretError && (
-                <div className="flex items-start gap-2 bg-red-900/30 border border-red-700/50 rounded-lg p-2.5 text-xs text-red-300">
+                <div className="flex items-start gap-2 bg-rose-950/40 border border-rose-800/60 rounded-lg p-2.5 text-xs text-rose-300">
                   <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
-                  {secretError}
+                  <span>{secretError}</span>
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={secretLoading || !adminSecretInput.trim()}
-                className="w-full inline-flex items-center justify-center gap-2 bg-brand-600 text-white font-semibold px-4 py-2.5 rounded-xl hover:bg-brand-500 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-glow-sm"
+                className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold px-4 py-2.5 rounded-xl transition-all text-xs disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(6,182,212,0.25)]"
               >
                 {secretLoading ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span>Unlock with Passcode</span>
-                    <ArrowRight size={15} />
+                    <span>Unlock Command Center</span>
+                    <ArrowRight size={14} />
                   </>
                 )}
               </button>
@@ -200,21 +182,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           {/* Divider */}
           <div className="relative flex py-2 items-center mb-6">
-            <div className="flex-grow border-t border-surface-600" />
-            <span className="flex-shrink mx-4 text-gray-500 text-xs uppercase font-medium">
+            <div className="flex-grow border-t border-[#16243d]" />
+            <span className="flex-shrink mx-4 text-slate-500 text-[10px] uppercase font-mono font-semibold">
               Or
             </span>
-            <div className="flex-grow border-t border-surface-600" />
+            <div className="flex-grow border-t border-[#16243d]" />
           </div>
 
           {/* Option 2: Google Sign-in */}
           <div>
-            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5 text-center">
-              Option 2: Google Account
-            </h2>
-
             {googleError && (
-              <div className="mb-3 flex items-start gap-2 bg-red-900/30 border border-red-700/50 rounded-lg p-2.5 text-xs text-red-300">
+              <div className="mb-3 flex items-start gap-2 bg-rose-950/40 border border-rose-800/60 rounded-lg p-2.5 text-xs text-rose-300">
                 <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
                 <span>{googleError}</span>
               </div>
@@ -223,10 +201,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <button
               onClick={handleGoogleSignIn}
               disabled={signingIn}
-              className="w-full flex items-center justify-center gap-3 bg-white text-gray-900 font-semibold px-5 py-3 rounded-xl hover:bg-gray-100 transition-colors disabled:opacity-50 text-sm shadow-md"
+              className="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-900 font-bold px-5 py-2.5 rounded-xl transition-colors disabled:opacity-50 text-xs shadow-md"
             >
               {signingIn ? (
-                <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-slate-600 border-t-transparent rounded-full animate-spin" />
               ) : (
                 <svg viewBox="0 0 24 24" className="w-4 h-4">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -238,30 +216,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Sign in with Google
             </button>
 
-            {/* If user is signed in with Google but not in allowlist, display UID for convenience */}
+            {/* If user is signed in with Google but not in allowlist */}
             {user && !isGoogleAuthorized && (
-              <div className="mt-4 p-3.5 bg-amber-900/30 border border-amber-700/50 rounded-xl text-left">
+              <div className="mt-4 p-3.5 bg-cyan-950/40 border border-cyan-800/60 rounded-xl text-left">
                 <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="text-xs font-bold text-amber-300">
+                  <span className="text-xs font-bold text-cyan-300">
                     Signed In as {user.email}
                   </span>
                   <button
                     onClick={() => handleCopyUid(user.uid)}
-                    className="inline-flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300 font-semibold"
+                    className="inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 font-semibold"
                   >
                     {copiedUid ? <Check size={12} /> : <Copy size={12} />}
                     {copiedUid ? 'Copied' : 'Copy UID'}
                   </button>
                 </div>
-                <p className="text-xs text-gray-300 font-mono break-all bg-black/40 p-1.5 rounded">
+                <p className="text-[11px] text-slate-300 font-mono break-all bg-black/40 p-1.5 rounded">
                   {user.uid}
                 </p>
-                <p className="text-xs text-amber-400/80 mt-2">
+                <p className="text-[10px] text-slate-400 mt-2">
                   To authorize this account, add the UID above to{' '}
-                  <code className="text-white bg-surface-900 px-1 py-0.5 rounded">
+                  <code className="text-white bg-slate-900 px-1 py-0.5 rounded">
                     NEXT_PUBLIC_ADMIN_UIDS
-                  </code>{' '}
-                  in your <code className="text-white">.env.local</code>.
+                  </code>.
                 </p>
               </div>
             )}
