@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { PLAN_MAP, UPI_VPA, UPI_PAYEE_NAME } from '@/lib/constants';
 import { createOrder } from '@/lib/firestore/orders';
 import { getAvailableCount } from '@/lib/firestore/keys';
+import { allocateUniquePaise } from '@/lib/orders/paiseAllocator';
 
 export const runtime = 'nodejs';
 
@@ -39,15 +40,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── Create internal order ID ─────────────────────────────────────────────
+    // ── Create internal order ID & unique paise amount for zero-UTR matching ─
     const orderId = `ord_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
-    const priceRupees = (plan.price_inr / 100).toFixed(2);
-    const amountRupeesNum = plan.price_inr / 100;
+    const { totalPaisa, amountRupees, paiseOffset } = await allocateUniquePaise(plan.price_inr);
+    const priceRupeesStr = amountRupees.toFixed(2);
     const note = `AETHERIA_${orderId.slice(-8).toUpperCase()}`;
 
-    // ── Standard NPCI UPI URI ────────────────────────────────────────────────
+    // ── Standard NPCI UPI URI with exact locked amount ───────────────────────
     // Format: upi://pay?pa=VPA&pn=NAME&am=AMOUNT&cu=INR&tn=NOTE
-    const upiString = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${priceRupees}&cu=INR&tn=${encodeURIComponent(note)}`;
+    const upiString = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${priceRupeesStr}&cu=INR&tn=${encodeURIComponent(note)}`;
 
     // ── Persist pending order to Firestore ───────────────────────────────────
     await createOrder({
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
       customer_email: email.toLowerCase().trim(),
       customer_phone: (phone || '').trim(),
       plan_type: planId,
-      amount: plan.price_inr,
+      amount: totalPaisa,
       currency: 'INR',
       payment_gateway: 'upi_direct',
       gateway_order_id: `upi_${orderId}`,
@@ -63,8 +64,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       orderId,
-      amount: plan.price_inr,
-      amountRupees: amountRupeesNum,
+      amount: totalPaisa,
+      amountRupees,
+      paiseOffset,
       currency: 'INR',
       upiId: UPI_VPA,
       payeeName: UPI_PAYEE_NAME,

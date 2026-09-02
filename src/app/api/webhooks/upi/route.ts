@@ -81,19 +81,47 @@ async function handleIncomingSms(data: Record<string, any>) {
   // ── 1. Record authentic bank credit in Firestore ───────────────────────────
   await recordBankCredit(utr, amount, rawMessage);
 
-  // ── 2. Check for matching order waiting in 'verifying' or 'pending' state ───
+  // ── 2. Dual-Engine Order Matching ─────────────────────────────────────────
   const db = getAdminFirestore();
-  const orderQuery = await db
-    .collection('orders')
-    .where('utr_number', '==', utr)
-    .where('payment_status', 'in', ['verifying', 'pending'])
-    .limit(1)
-    .get();
+  let matchedDoc: FirebaseFirestore.QueryDocumentSnapshot | null = null;
+  let matchMethod = 'UTR';
+
+  // Strategy A: Zero-UTR Exact Amount Match (if amount with paise is present)
+  if (amount && amount > 0) {
+    const targetPaisa = Math.round(amount * 100);
+    // Check if this amount has a unique paise offset (e.g. 180.12 = 18012)
+    const amountQuery = await db
+      .collection('orders')
+      .where('amount', '==', targetPaisa)
+      .where('payment_status', 'in', ['pending', 'verifying'])
+      .limit(1)
+      .get();
+
+    if (!amountQuery.empty) {
+      matchedDoc = amountQuery.docs[0];
+      matchMethod = 'Zero-UTR (Exact Paise)';
+    }
+  }
+
+  // Strategy B: Fallback to UTR Match (if customer entered UTR manually)
+  if (!matchedDoc && utr) {
+    const utrQuery = await db
+      .collection('orders')
+      .where('utr_number', '==', utr)
+      .where('payment_status', 'in', ['verifying', 'pending'])
+      .limit(1)
+      .get();
+
+    if (!utrQuery.empty) {
+      matchedDoc = utrQuery.docs[0];
+      matchMethod = 'UTR';
+    }
+  }
 
   let matchedOrderId: string | null = null;
 
-  if (!orderQuery.empty) {
-    const orderDoc = orderQuery.docs[0];
+  if (matchedDoc) {
+    const orderDoc = matchedDoc;
     const orderData = orderDoc.data() as Order;
     matchedOrderId = orderData.order_id;
 
@@ -101,9 +129,10 @@ async function handleIncomingSms(data: Record<string, any>) {
     try {
       const allocation = await allocateKeySlot(orderData.order_id, `AUTO_BANK_SMS_${utr}`);
 
-      // Mark order as paid
+      // Mark order as paid and record the real bank UTR
       await orderDoc.ref.update({
         payment_status: 'paid',
+        utr_number: utr,
         payment_gateway: 'upi_direct',
         updated_at: new Date(),
       });

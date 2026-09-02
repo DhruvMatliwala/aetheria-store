@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
@@ -56,6 +56,33 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [showUtrHelp, setShowUtrHelp] = useState(false);
+  const [showManualUtr, setShowManualUtr] = useState(false);
+
+  // ── Auto-poll for Zero-UTR instant bank match ──────────────────────────────
+  useEffect(() => {
+    if (step !== 'upi_qr' || !upiSession?.orderId) return;
+
+    let isSubscribed = true;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/order/${upiSession.orderId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.order && data.order.payment_status === 'paid' && isSubscribed) {
+          clearInterval(interval);
+          toast.success('⚡ Payment Verified! Delivering your key...');
+          router.push(`/order-success/${upiSession.orderId}`);
+        }
+      } catch {
+        // silent retry
+      }
+    }, 2500);
+
+    return () => {
+      isSubscribed = false;
+      clearInterval(interval);
+    };
+  }, [step, upiSession?.orderId, router]);
 
   // PayPal Stage 2 states
   const [paypalSession, setPaypalSession] = useState<PaypalSessionData | null>(null);
@@ -471,85 +498,116 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
             )}
           </div>
 
-          {/* UTR Submission Form */}
-          <form onSubmit={handleVerifyUtr} className="space-y-3 pt-1">
-            <div>
-              <label htmlFor="utr-input" className="block text-xs font-bold text-gray-200 mb-1">
-                Enter 12-Digit UPI Reference No. / UTR <span className="text-red-400">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  id="utr-input"
-                  type="text"
-                  maxLength={12}
-                  value={utrNumber}
-                  onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ''))}
-                  placeholder="e.g. 423819284719"
-                  className="w-full bg-surface-900 border border-cyan-500/50 rounded-xl px-3.5 py-2.5 text-white font-mono text-base tracking-widest placeholder-gray-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
-                  required
-                />
-                <span className="absolute right-3 top-3 text-[11px] font-mono text-gray-400">
-                  {utrNumber.length}/12
-                </span>
-              </div>
+          {/* Zero-UTR Live Detection Radar Card */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-surface-900 to-cyan-950/60 border border-emerald-500/40 shadow-lg text-center space-y-2">
+            <div className="flex items-center justify-center gap-2">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              </span>
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">
+                Listening for Bank Deposit...
+              </span>
+            </div>
+            <p className="text-xs text-gray-200 font-medium">
+              Pay the exact <strong className="text-cyan-300 font-bold">₹{upiSession?.amountRupees.toFixed(2)}</strong> via GPay, PhonePe, or Paytm.
+            </p>
+            <p className="text-[11px] text-gray-400">
+              ⚡ <strong className="text-white">Zero UTR Needed!</strong> This window will automatically unlock your license key in 2-3 seconds after payment.
+            </p>
+          </div>
 
-              {/* Where to find helper toggle */}
-              <div className="mt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowUtrHelp(!showUtrHelp)}
-                  className="text-[11px] text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors"
-                >
-                  <HelpCircle size={13} />
-                  <span>Where do I find this 12-digit number?</span>
-                </button>
+          {/* Fallback Manual UTR Accordion */}
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={() => setShowManualUtr(!showManualUtr)}
+              className="w-full text-center text-[11px] text-gray-400 hover:text-gray-300 transition-colors py-1 flex items-center justify-center gap-1"
+            >
+              <span>{showManualUtr ? '▲ Hide manual UTR form' : '▼ Paid with a different amount or want to enter UTR manually?'}</span>
+            </button>
 
-                {showUtrHelp && (
-                  <div className="mt-2 p-3 rounded-xl bg-surface-900/90 border border-cyan-500/30 text-[11px] text-gray-300 space-y-2 animate-in fade-in duration-200">
-                    <p className="font-bold text-cyan-300 text-xs">Look for the 12-digit number on your payment receipt:</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-                      <div className="p-2 rounded-lg bg-black/40 border border-white/5">
-                        <span className="font-bold text-white block">Google Pay (GPay):</span>
-                        <span className="text-gray-400">Listed as <strong className="text-emerald-300">&quot;UPI transaction ID&quot;</strong></span>
+            {showManualUtr && (
+              <form onSubmit={handleVerifyUtr} className="space-y-3 pt-3 border-t border-surface-700 mt-2">
+                <div>
+                  <label htmlFor="utr-input" className="block text-xs font-bold text-gray-200 mb-1">
+                    Enter 12-Digit UPI Reference No. / UTR <span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="utr-input"
+                      type="text"
+                      maxLength={12}
+                      value={utrNumber}
+                      onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ''))}
+                      placeholder="e.g. 423819284719"
+                      className="w-full bg-surface-900 border border-cyan-500/50 rounded-xl px-3.5 py-2.5 text-white font-mono text-base tracking-widest placeholder-gray-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
+                      required
+                    />
+                    <span className="absolute right-3 top-3 text-[11px] font-mono text-gray-400">
+                      {utrNumber.length}/12
+                    </span>
+                  </div>
+
+                  {/* Where to find helper toggle */}
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowUtrHelp(!showUtrHelp)}
+                      className="text-[11px] text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors"
+                    >
+                      <HelpCircle size={13} />
+                      <span>Where do I find this 12-digit number?</span>
+                    </button>
+
+                    {showUtrHelp && (
+                      <div className="mt-2 p-3 rounded-xl bg-surface-900/90 border border-cyan-500/30 text-[11px] text-gray-300 space-y-2 animate-in fade-in duration-200">
+                        <p className="font-bold text-cyan-300 text-xs">Look for the 12-digit number on your payment receipt:</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                          <div className="p-2 rounded-lg bg-black/40 border border-white/5">
+                            <span className="font-bold text-white block">Google Pay (GPay):</span>
+                            <span className="text-gray-400">Listed as <strong className="text-emerald-300">&quot;UPI transaction ID&quot;</strong></span>
+                          </div>
+                          <div className="p-2 rounded-lg bg-black/40 border border-white/5">
+                            <span className="font-bold text-white block">PhonePe:</span>
+                            <span className="text-gray-400">Tap &quot;Transfer Details&quot; ➔ Look for <strong className="text-emerald-300">&quot;UTR&quot;</strong></span>
+                          </div>
+                          <div className="p-2 rounded-lg bg-black/40 border border-white/5">
+                            <span className="font-bold text-white block">Paytm:</span>
+                            <span className="text-gray-400">Listed as <strong className="text-emerald-300">&quot;UPI Ref No.&quot;</strong></span>
+                          </div>
+                          <div className="p-2 rounded-lg bg-black/40 border border-white/5">
+                            <span className="font-bold text-white block">Bank SMS:</span>
+                            <span className="text-gray-400">Look for the 12-digit number in the SMS received right after paying</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="p-2 rounded-lg bg-black/40 border border-white/5">
-                        <span className="font-bold text-white block">PhonePe:</span>
-                        <span className="text-gray-400">Tap &quot;Transfer Details&quot; ➔ Look for <strong className="text-emerald-300">&quot;UTR&quot;</strong></span>
-                      </div>
-                      <div className="p-2 rounded-lg bg-black/40 border border-white/5">
-                        <span className="font-bold text-white block">Paytm:</span>
-                        <span className="text-gray-400">Listed as <strong className="text-emerald-300">&quot;UPI Ref No.&quot;</strong></span>
-                      </div>
-                      <div className="p-2 rounded-lg bg-black/40 border border-white/5">
-                        <span className="font-bold text-white block">Bank SMS:</span>
-                        <span className="text-gray-400">Look for the 12-digit number in the SMS received right after paying</span>
-                      </div>
-                    </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Error Notification */}
+                {error && (
+                  <div className="flex items-start gap-2 bg-red-900/30 border border-red-700/50 rounded-xl p-3 text-xs text-red-300">
+                    <AlertCircle size={15} className="flex-shrink-0 mt-0.5" />
+                    <span>{error}</span>
                   </div>
                 )}
-              </div>
-            </div>
 
-            {/* Error Notification */}
-            {error && (
-              <div className="flex items-start gap-2 bg-red-900/30 border border-red-700/50 rounded-xl p-3 text-xs text-red-300">
-                <AlertCircle size={15} className="flex-shrink-0 mt-0.5" />
-                <span>{error}</span>
-              </div>
+                {/* Submit Verification */}
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  className="w-full font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)]"
+                  isLoading={isVerifying}
+                  disabled={isVerifying || utrNumber.length !== 12}
+                >
+                  {isVerifying ? 'Verifying & Unlocking Key...' : '⚡ Verify & Claim License Key'}
+                </Button>
+              </form>
             )}
-
-            {/* Submit Verification */}
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              className="w-full font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)]"
-              isLoading={isVerifying}
-              disabled={isVerifying || utrNumber.length !== 12}
-            >
-              {isVerifying ? 'Verifying & Unlocking Key...' : '⚡ Verify & Claim License Key'}
-            </Button>
-          </form>
+          </div>
 
           {/* Help Note */}
           <p className="text-[11px] text-center text-gray-500">
