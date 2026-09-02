@@ -362,13 +362,13 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#080403" />
+        <meta name="theme-color" content="#070b13" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-surface-950 text-[#ece7e0] antialiased">
+      <body className="bg-[#070b13] text-[#f1f5f9] antialiased selection:bg-cyan-500/30">
         <AmbientAudioProvider>
           {children}
         </AmbientAudioProvider>
@@ -376,14 +376,15 @@ export default function RootLayout({
           position="top-center"
           toastOptions={{
             style: {
-              background: '#1b0b08',
-              color: '#ece7e0',
-              border: '1px solid #4a1c14',
+              background: '#0c1424',
+              color: '#f1f5f9',
+              border: '1px solid #16243d',
               borderRadius: '16px',
               fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: '14px',
+              boxShadow: '0 0 25px rgba(6, 182, 212, 0.15)',
             },
-            success: { iconTheme: { primary: '#ffbc09', secondary: '#080403' } },
+            success: { iconTheme: { primary: '#06b6d4', secondary: '#070b13' } },
             error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
           }}
         />

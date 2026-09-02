@@ -68,34 +68,34 @@ export function RestockNotifyModal({
     <Modal isOpen={isOpen} onClose={onClose} title="Restock Notification">
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Plan Header Info */}
-        <div className="bg-surface-900 rounded-xl p-4 border border-surface-600">
+        <div className="bg-[#090e1a] rounded-xl p-4 border border-[#16243d]">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-white font-bold text-base">{plan.name} License</span>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-900/60 border border-amber-700/50 text-amber-300">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-700/50 text-cyan-300">
                   Temporarily Sold Out
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 {plan.duration} · {plan.device_slots} Device Slot{plan.device_slots > 1 ? 's' : ''}
               </p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-brand-900/60 border border-brand-700/50 flex items-center justify-center text-brand-400">
+            <div className="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-700/50 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.25)]">
               <Bell size={20} />
             </div>
           </div>
         </div>
 
-        <p className="text-xs text-gray-300 leading-relaxed">
+        <p className="text-xs text-slate-300 leading-relaxed">
           Enter your email address below to join the priority restock queue. We will automatically notify you as soon as new license keys are uploaded.
         </p>
 
         {/* Email Address Input */}
         <div>
-          <label className="block text-xs font-semibold text-gray-300 mb-1" htmlFor="notify-email">
-            <Mail size={12} className="inline mr-1 text-brand-400" />
-            Email Address <span className="text-red-400">*</span>
+          <label className="block text-xs font-semibold text-slate-300 mb-1" htmlFor="notify-email">
+            <Mail size={12} className="inline mr-1 text-cyan-400" />
+            Email Address <span className="text-rose-400">*</span>
           </label>
           <input
             id="notify-email"
@@ -104,14 +104,14 @@ export function RestockNotifyModal({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your-email@example.com"
-            className="w-full bg-surface-900 border border-surface-600 rounded-xl px-3.5 py-2.5 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors"
+            className="w-full bg-[#080e1a] border border-[#1b2b48] rounded-xl px-3.5 py-2.5 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
           />
-          <p className="text-[11px] text-gray-500 mt-1">No spam ever. Strictly 1-time restock alert.</p>
+          <p className="text-[11px] text-slate-500 mt-1">No spam ever. Strictly 1-time restock alert.</p>
         </div>
 
         {/* Error notification */}
         {error && (
-          <div className="flex items-start gap-2 bg-red-900/30 border border-red-700/50 rounded-xl p-3 text-xs text-red-300">
+          <div className="flex items-start gap-2 bg-rose-950/40 border border-rose-800/60 rounded-xl p-3 text-xs text-rose-300">
             <AlertCircle size={15} className="flex-shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
@@ -122,7 +122,7 @@ export function RestockNotifyModal({
           type="submit"
           variant="primary"
           size="lg"
-          className="w-full font-bold shadow-glow-sm"
+          className="w-full font-bold shadow-[0_0_20px_rgba(6,182,212,0.3)]"
           isLoading={isLoading}
           id="submit-restock-notify"
         >
@@ -131,7 +131,7 @@ export function RestockNotifyModal({
         </Button>
 
         {/* Guarantee */}
-        <div className="flex items-center justify-center gap-2 text-[11px] text-gray-500 pt-1">
+        <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1">
           <Shield size={12} className="text-emerald-400" />
           <span>Instant automated email dispatch upon admin restock</span>
         </div>

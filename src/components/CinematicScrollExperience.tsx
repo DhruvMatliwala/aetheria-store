@@ -399,7 +399,7 @@ export function CinematicScrollExperience({
   };
 
   return (
-    <div ref={containerRef} className="relative w-full h-[550vh] bg-[#080403]">
+    <div ref={containerRef} className="relative w-full h-[550vh] bg-[#070b13]">
       {/* 
         ============================================================
         PINNED FULL-SCREEN 1440P HARDWARE-ACCELERATED VIDEO VIEWPORT
@@ -594,7 +594,7 @@ export function CinematicScrollExperience({
                   {/* Tag sitting directly on top edge of the box */}
                   <div className="h-4 sm:h-6 flex items-end justify-end px-1.5 sm:px-3 -mb-[1px] z-10">
                     {plan.discount_badge && (
-                      <span className="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-emerald-500/20 text-amber-300 border border-amber-400/40 text-[7px] sm:text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)] backdrop-blur-md">
+                      <span className="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-300 border border-cyan-400/40 text-[7px] sm:text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(6,182,212,0.3)] backdrop-blur-md">
                         🔥 {plan.discount_badge}
                       </span>
                     )}

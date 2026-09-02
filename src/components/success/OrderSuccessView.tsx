@@ -179,7 +179,7 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
     const txRef = order.utr_number || order.paypal_tx_id;
 
     return (
-      <main className="min-h-screen bg-[#080403] text-[#ece7e0] flex items-center justify-center p-4 selection:bg-cyan-500/30">
+      <main className="min-h-screen bg-[#070b13] text-[#ece7e0] flex items-center justify-center p-4 selection:bg-cyan-500/30">
         <div className="max-w-md w-full text-center bg-neutral-950/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-8 sm:p-10 shadow-[0_0_60px_rgba(6,182,212,0.2)]">
           <div className="relative w-20 h-20 mx-auto mb-6">
             <div className="absolute inset-0 rounded-full bg-cyan-500/20 animate-ping" />
@@ -232,9 +232,9 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
   // ── Render Fallback Timeout State (after 10 attempts) ────────────────────────
   if (status === 'timeout') {
     return (
-      <main className="min-h-screen bg-[#080403] text-[#ece7e0] flex items-center justify-center p-4 selection:bg-cyan-500/30">
-        <div className="max-w-md w-full text-center bg-neutral-950/90 backdrop-blur-2xl border border-amber-500/40 rounded-3xl p-8 sm:p-10 shadow-2xl">
-          <div className="w-16 h-16 rounded-2xl bg-amber-950/50 border border-amber-500/40 flex items-center justify-center mx-auto mb-6 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+      <main className="min-h-screen bg-[#070b13] text-[#ece7e0] flex items-center justify-center p-4 selection:bg-cyan-500/30">
+        <div className="max-w-md w-full text-center bg-[#0c1424]/90 backdrop-blur-2xl border border-cyan-500/40 rounded-3xl p-8 sm:p-10 shadow-[0_0_40px_rgba(6,182,212,0.15)]">
+          <div className="w-16 h-16 rounded-2xl bg-cyan-950/50 border border-cyan-500/40 flex items-center justify-center mx-auto mb-6 text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.25)]">
             <Clock size={28} />
           </div>
 
@@ -301,7 +301,7 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
   // ── Render Failed State ─────────────────────────────────────────────────────
   if (status === 'failed') {
     return (
-      <main className="min-h-screen bg-[#080403] text-[#ece7e0] flex items-center justify-center p-4 selection:bg-cyan-500/30">
+      <main className="min-h-screen bg-[#070b13] text-[#ece7e0] flex items-center justify-center p-4 selection:bg-cyan-500/30">
         <div className="max-w-md w-full text-center bg-neutral-950/90 backdrop-blur-2xl border border-red-500/40 rounded-3xl p-8 sm:p-10 shadow-2xl">
           <div className="w-16 h-16 rounded-2xl bg-red-950/50 border border-red-500/40 flex items-center justify-center mx-auto mb-6 text-red-400">
             <AlertCircle size={28} />
@@ -327,7 +327,7 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
 
   // ── Render Paid / Key Revealed View ─────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-[#080403] text-[#ece7e0] selection:bg-cyan-500/30 relative overflow-x-hidden">
+    <main className="min-h-screen bg-[#070b13] text-[#ece7e0] selection:bg-cyan-500/30 relative overflow-x-hidden">
       {/* Background Ambient Aura */}
       <div
         className="fixed inset-0 pointer-events-none z-0 opacity-40"

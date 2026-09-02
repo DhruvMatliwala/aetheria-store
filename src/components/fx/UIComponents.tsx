@@ -87,8 +87,8 @@ export function Waypoint({
   active?: boolean;
 }) {
   const colors = {
-    gold: { bg: 'bg-[#ffbc09]', ring: 'border-[#ffbc09]/40', text: 'text-[#ffbc09]', glow: 'shadow-glow-gold' },
-    amber: { bg: 'bg-[#f59e0b]', ring: 'border-[#f59e0b]/40', text: 'text-[#fcd34d]', glow: '' },
+    gold: { bg: 'bg-cyan-500', ring: 'border-cyan-500/40', text: 'text-cyan-400', glow: 'shadow-[0_0_20px_rgba(6,182,212,0.4)]' },
+    amber: { bg: 'bg-sky-500', ring: 'border-sky-500/40', text: 'text-sky-300', glow: '' },
     emerald: { bg: 'bg-accent-500', ring: 'border-accent-400/40', text: 'text-accent-300', glow: '' },
   };
   const c = colors[color];
@@ -118,7 +118,7 @@ export function Waypoint({
 }
 
 /**
- * DeviceFrame — Architectural game-UI device mockup in obsidian & gold.
+ * DeviceFrame — Architectural game-UI device mockup in obsidian & cyan.
  */
 export function DeviceFrame({
   children,
@@ -129,16 +129,16 @@ export function DeviceFrame({
 }) {
   return (
     <div className={`relative ${className}`}>
-      {/* Outer subtle gold/terracotta glow */}
-      <div className="absolute -inset-4 bg-[#ffbc09]/[0.08] rounded-[2rem] blur-2xl" />
+      {/* Outer subtle cyan glow */}
+      <div className="absolute -inset-4 bg-cyan-500/[0.08] rounded-[2rem] blur-2xl" />
 
-      {/* Device shell in obsidian with hairline terracotta border */}
+      {/* Device shell in obsidian with hairline cyan border */}
       <div className="relative bg-surface-900 border border-surface-600 rounded-[1.5rem] overflow-hidden device-glow">
         {/* Status bar */}
         <div className="flex items-center justify-between px-5 py-2.5 bg-surface-950 border-b border-surface-700">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#ffbc09] animate-glow-breathe" />
-            <span className="text-[10px] font-mono text-[#ffbc09] font-bold tracking-wider">PGSHARP // v2.4.9</span>
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="text-[10px] font-mono text-cyan-400 font-bold tracking-wider">AETHERIA // v3.0</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[9px] font-mono text-gray-500 tracking-widest">[ ACTIVE ]</span>

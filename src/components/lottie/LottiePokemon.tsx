@@ -16,9 +16,9 @@ export function PokeballLottie({
   variant?: 'gold' | 'classic' | 'ultra';
 }) {
   const topColor =
-    variant === 'gold' ? '#ffbc09' : variant === 'ultra' ? '#1b0b08' : '#ef4444';
+    variant === 'gold' ? '#06b6d4' : variant === 'ultra' ? '#070b13' : '#ef4444';
   const accentStrip =
-    variant === 'ultra' ? '#ffbc09' : variant === 'gold' ? '#ffd053' : '#dc2626';
+    variant === 'ultra' ? '#06b6d4' : variant === 'gold' ? '#38bdf8' : '#dc2626';
 
   return (
     <span
@@ -29,7 +29,7 @@ export function PokeballLottie({
     >
       <svg
         viewBox="0 0 100 100"
-        className="w-full h-full animate-float-idle drop-shadow-[0_0_15px_rgba(255,188,9,0.35)]"
+        className="w-full h-full animate-float-idle drop-shadow-[0_0_15px_rgba(6,182,212,0.35)]"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -37,7 +37,7 @@ export function PokeballLottie({
         <path
           d="M 5 50 A 45 45 0 0 1 95 50 Z"
           fill={topColor}
-          stroke="#1b0b08"
+          stroke="#070b13"
           strokeWidth="5"
         />
 
@@ -81,7 +81,7 @@ export function PokeballLottie({
           cx="50"
           cy="50"
           r="6"
-          fill="#ffbc09"
+          fill="#06b6d4"
           className="animate-pulse"
         />
         <circle cx="48" cy="48" r="1.8" fill="#ffffff" opacity="0.8" />
@@ -179,16 +179,16 @@ export function GengarGhost({ className = '' }: { className?: string }) {
           className="drop-shadow-[0_0_25px_rgba(255,188,9,0.35)]"
         >
           {/* Spikes / Ears */}
-          <path d="M25 25 L15 10 L35 22 Z" fill="#240e0b" stroke="#712011" strokeWidth="2" />
-          <path d="M75 25 L85 10 L65 22 Z" fill="#240e0b" stroke="#712011" strokeWidth="2" />
-          <path d="M45 18 L50 6 L55 18 Z" fill="#240e0b" stroke="#712011" strokeWidth="2" />
+          <path d="M25 25 L15 10 L35 22 Z" fill="#090e1a" stroke="#16243d" strokeWidth="2" />
+          <path d="M75 25 L85 10 L65 22 Z" fill="#090e1a" stroke="#16243d" strokeWidth="2" />
+          <path d="M45 18 L50 6 L55 18 Z" fill="#090e1a" stroke="#16243d" strokeWidth="2" />
 
           {/* Body */}
-          <ellipse cx="50" cy="55" rx="36" ry="32" fill="#1b0b08" stroke="#ffbc09" strokeWidth="2.5" />
+          <ellipse cx="50" cy="55" rx="36" ry="32" fill="#0c1424" stroke="#06b6d4" strokeWidth="2.5" />
 
-          {/* Glowing Red/Amber Eyes */}
-          <polygon points="30,42 42,48 33,52" fill="#ffbc09" />
-          <polygon points="70,42 58,48 67,52" fill="#ffbc09" />
+          {/* Glowing Eyes */}
+          <polygon points="30,42 42,48 33,52" fill="#06b6d4" />
+          <polygon points="70,42 58,48 67,52" fill="#06b6d4" />
           <circle cx="37" cy="47" r="1.5" fill="#fff" />
           <circle cx="63" cy="47" r="1.5" fill="#fff" />
 
@@ -196,23 +196,23 @@ export function GengarGhost({ className = '' }: { className?: string }) {
           <path
             d="M26 58 Q50 82 74 58 Q50 64 26 58 Z"
             fill="#fff"
-            stroke="#ffbc09"
+            stroke="#06b6d4"
             strokeWidth="2"
             strokeLinejoin="round"
           />
           {/* Teeth lines */}
-          <line x1="38" y1="60" x2="40" y2="67" stroke="#1b0b08" strokeWidth="1.5" />
-          <line x1="50" y1="61" x2="50" y2="70" stroke="#1b0b08" strokeWidth="1.5" />
-          <line x1="62" y1="60" x2="60" y2="67" stroke="#1b0b08" strokeWidth="1.5" />
-          <path d="M30 63 Q50 71 70 63" stroke="#1b0b08" strokeWidth="1.5" fill="none" />
+          <line x1="38" y1="60" x2="40" y2="67" stroke="#070b13" strokeWidth="1.5" />
+          <line x1="50" y1="61" x2="50" y2="70" stroke="#070b13" strokeWidth="1.5" />
+          <line x1="62" y1="60" x2="60" y2="67" stroke="#070b13" strokeWidth="1.5" />
+          <path d="M30 63 Q50 71 70 63" stroke="#070b13" strokeWidth="1.5" fill="none" />
 
           {/* Hands */}
-          <path d="M15 52 Q6 58 14 66 Q20 62 20 56" fill="#240e0b" stroke="#ffbc09" strokeWidth="1.5" />
-          <path d="M85 52 Q94 58 86 66 Q80 62 80 56" fill="#240e0b" stroke="#ffbc09" strokeWidth="1.5" />
+          <path d="M15 52 Q6 58 14 66 Q20 62 20 56" fill="#090e1a" stroke="#06b6d4" strokeWidth="1.5" />
+          <path d="M85 52 Q94 58 86 66 Q80 62 80 56" fill="#090e1a" stroke="#06b6d4" strokeWidth="1.5" />
         </svg>
       </div>
       {/* Ghostly Aura */}
-      <div className="absolute inset-0 bg-[#ffbc09]/[0.08] rounded-full blur-xl pointer-events-none" />
+      <div className="absolute inset-0 bg-cyan-500/[0.08] rounded-full blur-xl pointer-events-none" />
     </div>
   );
 }

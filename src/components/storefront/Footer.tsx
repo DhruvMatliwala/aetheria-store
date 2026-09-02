@@ -19,7 +19,7 @@ const NAV_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-white/10 bg-[#080403]">
+    <footer className="relative border-t border-white/10 bg-[#070b13]">
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
 
       <div className="max-w-6xl mx-auto px-5 pt-14 pb-8">

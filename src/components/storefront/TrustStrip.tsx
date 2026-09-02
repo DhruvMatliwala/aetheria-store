@@ -19,9 +19,9 @@ export function TrustStrip() {
             return (
               <div
                 key={i}
-                className="flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl bg-surface-950/60 border border-surface-700/60 hover:border-[#ffbc09]/40 transition-all group"
+                className="flex items-center gap-3.5 p-3.5 sm:p-4 rounded-xl bg-surface-950/60 border border-surface-700/60 hover:border-cyan-500/40 transition-all group"
               >
-                <div className="w-10 h-10 rounded-lg bg-[#ffbc09]/10 border border-[#ffbc09]/25 flex items-center justify-center text-[#ffbc09] flex-shrink-0 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-lg bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center text-cyan-400 flex-shrink-0 group-hover:scale-110 transition-transform shadow-[0_0_12px_rgba(6,182,212,0.15)]">
                   <Icon size={18} />
                 </div>
                 <div className="min-w-0">

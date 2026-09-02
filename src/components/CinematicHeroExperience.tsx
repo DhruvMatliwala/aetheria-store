@@ -295,7 +295,7 @@ export function CinematicHeroExperience({
   const activeFeature = FEATURES[activeFeatureIdx];
 
   return (
-    <div ref={containerRef} className="relative w-full bg-[#080403]">
+    <div ref={containerRef} className="relative w-full bg-[#070b13]">
       {/* 
         ============================================================
         PINNED STICKY VIEWPORT (Hardware Accelerated 60FPS)
@@ -336,18 +336,18 @@ export function CinematicHeroExperience({
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-black/60 pointer-events-none z-10" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/25 to-transparent pointer-events-none z-10" />
 
-        {/* Layer 3: Top Ambient Gold Scrub Progress Line */}
+        {/* Layer 3: Top Ambient Cyan Scrub Progress Line */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/10 z-30">
           <div
             ref={progressBarRef}
-            className="h-full bg-gradient-to-r from-amber-500 to-amber-300 shadow-[0_0_10px_rgba(251,191,36,0.5)] transition-all duration-75"
+            className="h-full bg-gradient-to-r from-cyan-500 to-cyan-300 shadow-[0_0_10px_rgba(6,182,212,0.5)] transition-all duration-75"
             style={{ width: '0%' }}
           />
         </div>
 
         {/* Layer 4: Minimal Scene Index Pill (Top Right) */}
         <div className="absolute top-20 right-6 sm:right-10 z-20 hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/50 border border-white/10 backdrop-blur-md text-[11px] font-mono text-neutral-300">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
           <span>SCENE 0{activeSceneIdx + 1} // 04</span>
         </div>
 
@@ -372,8 +372,8 @@ export function CinematicHeroExperience({
           >
             {/* Minimal Status Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/60 border border-white/15 backdrop-blur-md shadow-lg">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-              <span className="text-[11px] font-mono font-bold tracking-widest text-amber-400 uppercase">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              <span className="text-[11px] font-mono font-bold tracking-widest text-cyan-400 uppercase">
                 01 // ATMOSPHERIC INGRESS
               </span>
             </div>
@@ -381,7 +381,7 @@ export function CinematicHeroExperience({
             {/* Clean Sans Headline */}
             <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.05] font-sans">
               Unlock <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-200">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-cyan-400 to-blue-400">
                 the Map.
               </span>
             </h1>
@@ -396,9 +396,9 @@ export function CinematicHeroExperience({
               <button
                 type="button"
                 onClick={() => scrollToSection('plans')}
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-[0_0_20px_rgba(251,191,36,0.35)] active:scale-95"
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-[0_0_20px_rgba(6,182,212,0.35)] active:scale-95"
               >
-                <Zap size={14} className="fill-black" />
+                <Zap size={14} className="fill-slate-950" />
                 <span>Claim License Key</span>
               </button>
 
@@ -425,15 +425,15 @@ export function CinematicHeroExperience({
             }`}
           >
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/60 border border-white/15 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-              <span className="text-[11px] font-mono font-bold tracking-widest text-amber-400 uppercase">
+              <span className="w-2 h-2 rounded-full bg-cyan-400" />
+              <span className="text-[11px] font-mono font-bold tracking-widest text-cyan-400 uppercase">
                 02 // GLOBAL EXPEDITION
               </span>
             </div>
 
             <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight font-sans">
               Roam <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-200">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-cyan-400 to-blue-400">
                 Anywhere.
               </span>
             </h2>
@@ -453,7 +453,7 @@ export function CinematicHeroExperience({
                     onClick={() => setActiveFeatureIdx(i)}
                     className={`px-3 py-2 rounded-lg text-left text-xs font-mono transition-all ${
                       i === activeFeatureIdx
-                        ? 'bg-amber-400/20 border border-amber-400/60 text-amber-300 font-bold'
+                        ? 'bg-cyan-400/20 border border-cyan-400/60 text-cyan-300 font-bold'
                         : 'bg-white/5 border border-white/5 text-neutral-400 hover:text-white'
                     }`}
                   >
@@ -466,7 +466,7 @@ export function CinematicHeroExperience({
               <div className="p-3 rounded-xl bg-black/50 border border-white/5 flex items-center justify-between text-[11px] font-mono">
                 <div>
                   <span className="text-neutral-500 block text-[9px]">ACTIVE STATUS</span>
-                  <span className="text-amber-400 font-bold">{activeFeature.detail}</span>
+                  <span className="text-cyan-400 font-bold">{activeFeature.detail}</span>
                 </div>
                 <div className="text-right">
                   <span className="text-neutral-500 block text-[9px]">TARGET COORD</span>
@@ -488,15 +488,15 @@ export function CinematicHeroExperience({
             }`}
           >
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/60 border border-white/15 backdrop-blur-md">
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-              <span className="text-[11px] font-mono font-bold tracking-widest text-amber-400 uppercase">
+              <span className="w-2 h-2 rounded-full bg-cyan-400" />
+              <span className="text-[11px] font-mono font-bold tracking-widest text-cyan-400 uppercase">
                 03 // COMBAT & ACTIVATION
               </span>
             </div>
 
             <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight font-sans">
               Dominate <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-200">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-cyan-400 to-blue-400">
                 the League.
               </span>
             </h2>
@@ -512,7 +512,7 @@ export function CinematicHeroExperience({
                   key={step.num}
                   className="p-3 rounded-xl bg-black/60 backdrop-blur-xl border border-white/10 flex flex-col justify-between space-y-1"
                 >
-                  <span className="text-[10px] font-mono font-bold text-amber-400">{step.num}</span>
+                  <span className="text-[10px] font-mono font-bold text-cyan-400">{step.num}</span>
                   <p className="text-xs font-bold text-white font-sans">{step.title}</p>
                   <p className="text-[10px] text-neutral-400 font-mono">{step.desc}</p>
                 </div>
@@ -535,8 +535,8 @@ export function CinematicHeroExperience({
             {/* Header */}
             <div className="text-center space-y-2">
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/60 border border-white/15 backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                <span className="text-[11px] font-mono font-bold tracking-widest text-amber-400 uppercase">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                <span className="text-[11px] font-mono font-bold tracking-widest text-cyan-400 uppercase">
                   04 // ARTIFACT VAULT
                 </span>
               </div>
@@ -559,7 +559,7 @@ export function CinematicHeroExperience({
                     className={cn(
                       'relative p-5 rounded-2xl backdrop-blur-xl border transition-all duration-200 flex flex-col justify-between space-y-4 shadow-2xl',
                       isPopular
-                        ? 'bg-black/75 border-amber-400/80 shadow-[0_0_25px_rgba(251,191,36,0.15)]'
+                        ? 'bg-black/75 border-cyan-400/80 shadow-[0_0_25px_rgba(6,182,212,0.25)]'
                         : 'bg-black/60 border-white/10 hover:border-white/20'
                     )}
                   >
@@ -569,7 +569,7 @@ export function CinematicHeroExperience({
                         🔥 {plan.discount_badge}
                       </div>
                     ) : isPopular ? (
-                      <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-mono font-bold uppercase tracking-wider">
+                      <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full bg-cyan-400 text-black text-[10px] font-mono font-bold uppercase tracking-wider">
                         POPULAR
                       </div>
                     ) : null}
@@ -595,7 +595,7 @@ export function CinematicHeroExperience({
                         {isOutOfStock ? (
                           <span className="text-red-400">● Sold Out</span>
                         ) : (
-                          <span className="text-amber-400">● {count} in vault</span>
+                          <span className="text-cyan-400">● {count} in vault</span>
                         )}
                       </div>
                     </div>
@@ -610,7 +610,7 @@ export function CinematicHeroExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-mono font-bold text-amber-300 uppercase transition-all"
+                          className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-mono font-bold text-cyan-300 uppercase transition-all"
                         >
                           Notify Me
                         </button>
@@ -623,9 +623,9 @@ export function CinematicHeroExperience({
                           onBuyClick?.(plan);
                         }}
                         className={cn(
-                          'w-full py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95',
+                          'w-full py-3 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 cursor-pointer',
                           isPopular
-                            ? 'bg-amber-400 hover:bg-amber-300 text-black shadow-[0_0_15px_rgba(251,191,36,0.3)]'
+                            ? 'bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.4)]'
                             : 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
                         )}
                       >
@@ -644,7 +644,7 @@ export function CinematicHeroExperience({
                 onClick={() => setFaqDrawerOpen(!faqDrawerOpen)}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 border border-white/10 backdrop-blur-md text-xs font-mono text-neutral-300 hover:text-white transition-colors"
               >
-                <HelpCircle size={13} className="text-amber-400" />
+                <HelpCircle size={13} className="text-cyan-400" />
                 <span>Trainer FAQ & Support ({FAQS.length})</span>
                 {faqDrawerOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
               </button>
@@ -657,10 +657,10 @@ export function CinematicHeroExperience({
                       <button
                         type="button"
                         onClick={() => setOpenFaqIdx(openFaqIdx === idx ? null : idx)}
-                        className="w-full py-1.5 flex items-center justify-between text-left text-xs font-bold text-neutral-200 hover:text-amber-400 font-sans"
+                        className="w-full py-1.5 flex items-center justify-between text-left text-xs font-bold text-neutral-200 hover:text-cyan-400 font-sans"
                       >
                         <span>{faq.q}</span>
-                        <ChevronDown size={12} className={`transition-transform ${openFaqIdx === idx ? 'rotate-180 text-amber-400' : ''}`} />
+                        <ChevronDown size={12} className={`transition-transform ${openFaqIdx === idx ? 'rotate-180 text-cyan-400' : ''}`} />
                       </button>
                       {openFaqIdx === idx && (
                         <p className="text-[11px] font-mono text-neutral-400 pt-1.5 leading-relaxed">
@@ -672,8 +672,8 @@ export function CinematicHeroExperience({
 
                   <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-neutral-400 border-t border-white/5">
                     <div className="flex items-center gap-3">
-                      <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-amber-400">Discord Support</a>
-                      <a href={REDDIT_URL} target="_blank" rel="noopener noreferrer" className="hover:text-amber-400">Reddit Forum</a>
+                      <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Discord Support</a>
+                      <a href={REDDIT_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Reddit Forum</a>
                     </div>
                     <span>Instant Automated Delivery</span>
                   </div>

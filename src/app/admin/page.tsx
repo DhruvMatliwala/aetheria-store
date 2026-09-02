@@ -453,12 +453,12 @@ export default function AdminPage() {
 
                 {/* 4. PENDING ORDERS */}
                 <CyberStatCard
-                  icon={<Clock size={16} className="text-amber-400" />}
-                  iconBg="bg-amber-950/60 border-amber-800/60"
+                  icon={<Clock size={16} className="text-cyan-400" />}
+                  iconBg="bg-cyan-950/60 border-cyan-800/60"
                   label="PENDING APPROVALS"
                   value={pendingOrders.length.toString()}
                   subtext={pendingOrders.length > 0 ? 'Awaiting payment/bank match' : 'All orders fulfilled'}
-                  strokeColor="#f59e0b"
+                  strokeColor="#06b6d4"
                 />
 
                 {/* 5. RESTOCK WAITLIST */}
@@ -688,7 +688,7 @@ export default function AdminPage() {
                                   className={`inline-block text-[9px] font-bold px-2 py-0.5 rounded-full border ${
                                     order.payment_status === 'paid'
                                       ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800/60'
-                                      : 'bg-amber-950/60 text-amber-400 border-amber-800/60'
+                                      : 'bg-cyan-950/60 text-cyan-400 border-cyan-800/60'
                                   }`}
                                 >
                                   {order.payment_status === 'paid' ? 'Completed' : 'Pending'}

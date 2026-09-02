@@ -16,31 +16,31 @@ const config: Config = {
       },
       colors: {
         brand: {
-          50:  '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#ffbc09', // Saffron Gold
-          600: '#f59e0b',
-          700: '#d97706',
-          800: '#b45309',
-          900: '#78350f',
-          950: '#451a03',
+          50:  '#ecfeff',
+          100: '#cffafe',
+          200: '#a5f3fc',
+          300: '#67e8f9',
+          400: '#22d3ee',
+          500: '#06b6d4', // Pure Electric Cyan
+          600: '#0891b2',
+          700: '#0e7490',
+          800: '#155e75',
+          900: '#164e63',
+          950: '#082f49',
         },
         gold: {
-          DEFAULT: '#ffbc09',
-          300: '#fde68a',
-          400: '#ffd053',
-          500: '#ffbc09',
-          600: '#e5a500',
+          DEFAULT: '#06b6d4',
+          300: '#67e8f9',
+          400: '#22d3ee',
+          500: '#06b6d4',
+          600: '#0891b2',
         },
         terracotta: {
-          300: '#c25844',
-          400: '#962817',
-          500: '#712011',
-          600: '#47140b',
-          700: '#2f0e09',
+          300: '#67e8f9',
+          400: '#22d3ee',
+          500: '#06b6d4',
+          600: '#0891b2',
+          700: '#0e7490',
         },
         accent: {
           300: '#6ee7b7',
@@ -49,26 +49,26 @@ const config: Config = {
           600: '#059669',
         },
         surface: {
-          950: '#080403', // Deepest Obsidian
-          900: '#0e0605', // Obsidian Base
-          850: '#140806', // Dark Bronze-Charcoal
-          800: '#1b0b08', // Rich Terracotta-Dark
-          750: '#240e0b', // Elevated Terracotta
-          700: '#33140e', // Structural Hairlines
-          600: '#4a1c14', // Borders
-          500: '#6b281d', // Subtle Hover Border
+          950: '#050811', // Deepest Obsidian
+          900: '#070b13', // Obsidian Base
+          850: '#090e1a', // Dark Navy Void
+          800: '#0c1424', // Card Background
+          750: '#101b30', // Elevated Card
+          700: '#142038', // Hairline borders
+          600: '#16243d', // Borders
+          500: '#1f355b', // Subtle Hover Border
         },
         ivory: {
-          DEFAULT: '#ece7e0',
-          dim: '#bfb8ae',
+          DEFAULT: '#f1f5f9',
+          dim: '#94a3b8',
         },
       },
       boxShadow: {
-        'glow-sm': '0 0 20px -5px rgba(255, 188, 9, 0.3)',
-        'glow-brand': '0 0 35px -5px rgba(255, 188, 9, 0.45)',
-        'glow-gold': '0 0 40px -8px rgba(255, 188, 9, 0.5)',
-        'depth': '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 30px -10px rgba(255, 188, 9, 0.08)',
-        'depth-lg': '0 35px 80px -15px rgba(0, 0, 0, 0.9), 0 0 50px -10px rgba(255, 188, 9, 0.12)',
+        'glow-sm': '0 0 20px -5px rgba(6, 182, 212, 0.3)',
+        'glow-brand': '0 0 35px -5px rgba(6, 182, 212, 0.45)',
+        'glow-gold': '0 0 40px -8px rgba(6, 182, 212, 0.5)',
+        'depth': '0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 30px -10px rgba(6, 182, 212, 0.08)',
+        'depth-lg': '0 35px 80px -15px rgba(0, 0, 0, 0.9), 0 0 50px -10px rgba(6, 182, 212, 0.12)',
       },
       animation: {
         'float-idle': 'float-idle 6s ease-in-out infinite',

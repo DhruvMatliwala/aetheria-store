@@ -16,7 +16,7 @@ const FEATURES = [
     icon: Shield,
     title: 'Encrypted Vault Storage',
     description: 'Keys are secured at rest with authenticated encryption. Each customer receives dedicated, untouched slot allocation.',
-    color: '#ffbc09',
+    color: '#06b6d4',
   },
   {
     icon: Smartphone,
@@ -28,7 +28,7 @@ const FEATURES = [
     icon: Globe,
     title: 'Domestic & Global Payments',
     description: 'Pay with zero extra charges using Indian UPI (GPay, PhonePe, Paytm, CRED) or International PayPal worldwide.',
-    color: '#f59e0b',
+    color: '#38bdf8',
   },
   {
     icon: Clock,
@@ -51,9 +51,9 @@ export function FeatureList() {
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-950/80 border border-brand-500/40 text-brand-300 text-xs font-bold uppercase tracking-wider mb-3">
-            <Sparkles size={13} className="text-brand-400" />
-            <span>The PGSharp Keys Difference</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 text-xs font-bold uppercase tracking-wider mb-3 shadow-[0_0_12px_rgba(6,182,212,0.2)]">
+            <Sparkles size={13} className="text-cyan-400" />
+            <span>The Aetheria Difference</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight font-heading">
             Built for Serious Trainers

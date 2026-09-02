@@ -13,9 +13,9 @@ export function VisualBreak() {
       <div className="absolute inset-0 bg-contour opacity-80" />
       <div className="absolute inset-0 bg-topo-lines opacity-50" />
 
-      {/* Saffron Gold & Terracotta ambient radial lights */}
-      <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-[#ffbc09]/[0.08] blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/2 right-[20%] -translate-y-1/2 w-[500px] h-[350px] bg-[#712011]/[0.3] blur-[120px] pointer-events-none" />
+      {/* Cyan & Blue ambient radial lights */}
+      <div className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-cyan-500/[0.08] blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 right-[20%] -translate-y-1/2 w-[500px] h-[350px] bg-blue-600/[0.15] blur-[120px] pointer-events-none" />
 
       {/* Content */}
       <div className="max-w-4xl mx-auto relative z-10 text-center flex flex-col items-center">
@@ -25,7 +25,7 @@ export function VisualBreak() {
         </div>
 
         <ScrollReveal direction="scale">
-          <p className="text-xs font-mono text-[#ffbc09] tracking-widest uppercase mb-4 font-bold">
+          <p className="text-xs font-mono text-cyan-400 tracking-widest uppercase mb-4 font-bold">
             [ 04 // INSTANT AUTOMATION ]
           </p>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#ece7e0] font-display tracking-tight leading-tight">

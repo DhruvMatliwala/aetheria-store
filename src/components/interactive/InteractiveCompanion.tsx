@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, X, MessageSquare, Zap } from 'lucide-react';
+import { Sparkles, X, Zap } from 'lucide-react';
 import { PokeballLottie } from '@/components/lottie/LottiePokemon';
 import { triggerParticleBurst } from '@/components/interactive/ParticleBurst';
 
@@ -30,19 +30,19 @@ export function InteractiveCompanion() {
     <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2.5">
       {/* Speech Bubble Tip */}
       {showTip && (
-        <div className="relative max-w-xs p-3.5 rounded-2xl bg-surface-900 border border-[#ffbc09]/50 shadow-depth text-xs text-[#ece7e0] font-mono leading-relaxed animate-slide-up backdrop-blur-md">
+        <div className="relative max-w-xs p-3.5 rounded-2xl bg-[#0c1424]/90 border border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.2)] text-xs text-[#ece7e0] font-mono leading-relaxed animate-slide-up backdrop-blur-md">
           <button
             onClick={() => setShowTip(false)}
-            className="absolute top-2 right-2 p-1 text-gray-400 hover:text-[#ffbc09] transition-colors"
+            className="absolute top-2 right-2 p-1 text-gray-400 hover:text-cyan-400 transition-colors"
             aria-label="Close tip"
           >
             <X size={12} />
           </button>
           <div className="flex items-start gap-2 pr-4">
-            <Sparkles size={14} className="text-[#ffbc09] flex-shrink-0 mt-0.5" />
+            <Sparkles size={14} className="text-cyan-400 flex-shrink-0 mt-0.5" />
             <p>{TIPS[tipIdx]}</p>
           </div>
-          <div className="mt-2 text-[10px] text-[#ffbc09] font-bold uppercase tracking-wider flex items-center gap-1">
+          <div className="mt-2 text-[10px] text-cyan-400 font-bold uppercase tracking-wider flex items-center gap-1">
             <Zap size={10} />
             <span>Click Pokéball for next tip</span>
           </div>
@@ -58,8 +58,8 @@ export function InteractiveCompanion() {
         }`}
         aria-label="Interactive Companion"
       >
-        <div className="absolute -inset-2 rounded-full bg-[#ffbc09]/20 blur-lg group-hover:bg-[#ffbc09]/40 transition-all" />
-        <div className="relative w-14 h-14 rounded-full bg-surface-950 border-2 border-[#ffbc09] flex items-center justify-center shadow-glow-sm">
+        <div className="absolute -inset-2 rounded-full bg-cyan-500/20 blur-lg group-hover:bg-cyan-500/40 transition-all" />
+        <div className="relative w-14 h-14 rounded-full bg-[#070b13] border-2 border-cyan-400 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.4)]">
           <PokeballLottie size={46} />
         </div>
       </button>

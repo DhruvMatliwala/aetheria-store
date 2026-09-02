@@ -5,23 +5,24 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════
-   SAFFRON LUXURY DESIGN TOKENS
+   AETHERIA CYBERPUNK OBSIDIAN & CYAN DESIGN TOKENS
    ═══════════════════════════════════════════════════════ */
 :root {
-  --color-void: #080403;
-  --color-deep: #0e0605;
-  --color-base: #140806;
-  --color-surface: #1b0b08;
-  --color-raised: #240e0b;
-  --color-line: #33140e;
-  --color-muted: #4a1c14;
+  --color-void: #050811;
+  --color-deep: #070b13;
+  --color-base: #090e1a;
+  --color-surface: #0c1424;
+  --color-raised: #101b30;
+  --color-line: #142038;
+  --color-muted: #16243d;
 
-  --color-gold: #ffbc09;
-  --color-gold-bright: #ffd053;
-  --color-gold-dim: rgba(255, 188, 9, 0.15);
-  --color-amber: #f59e0b;
-  --color-terracotta: #712011;
+  --color-gold: #06b6d4;
+  --color-gold-bright: #38bdf8;
+  --color-gold-dim: rgba(6, 182, 212, 0.15);
+  --color-amber: #06b6d4;
+  --color-terracotta: #0e7490;
   --color-emerald: #10b981;
+  --color-cyan: #06b6d4;
 
   --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -46,8 +47,8 @@
   }
 
   body {
-    background-color: var(--color-void);
-    color: #ece7e0;
+    background-color: var(--color-deep);
+    color: #f1f5f9;
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -61,16 +62,16 @@
   /* Scrollbar */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
   ::-webkit-scrollbar-track { background: var(--color-void); }
-  ::-webkit-scrollbar-thumb { background: #33140e; border-radius: 99px; }
-  ::-webkit-scrollbar-thumb:hover { background: #ffbc09; }
+  ::-webkit-scrollbar-thumb { background: #142038; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
 
   ::selection {
-    background: rgba(255, 188, 9, 0.35);
+    background: rgba(6, 182, 212, 0.35);
     color: #ffffff;
   }
 
   :focus-visible {
-    outline: 2px solid #ffbc09;
+    outline: 2px solid #06b6d4;
     outline-offset: 2px;
   }
 
@@ -95,48 +96,48 @@
    UTILITIES
    ═══════════════════════════════════════════════════════ */
 @layer utilities {
-  /* Saffron terrain contour grid */
+  /* Cyberpunk terrain contour grid */
   .bg-contour {
     background-image:
-      radial-gradient(ellipse 900px 650px at 30% 20%, rgba(255,188,9,0.06) 0%, transparent 70%),
-      radial-gradient(ellipse 700px 450px at 70% 80%, rgba(113,32,17,0.15) 0%, transparent 70%);
+      radial-gradient(ellipse 900px 650px at 30% 20%, rgba(6,182,212,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 700px 450px at 70% 80%, rgba(16,185,129,0.06) 0%, transparent 70%);
   }
 
   .bg-topo-lines {
     background-size: 60px 60px;
     background-image:
-      linear-gradient(to right, rgba(255,188,9,0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,188,9,0.04) 1px, transparent 1px);
+      linear-gradient(to right, rgba(6,182,212,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(6,182,212,0.05) 1px, transparent 1px);
   }
 
   .bg-dot-field {
     background-size: 20px 20px;
-    background-image: radial-gradient(rgba(255,188,9,0.1) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(6,182,212,0.12) 1px, transparent 1px);
   }
 
   /* Glass */
   .glass-nav {
     backdrop-filter: blur(24px) saturate(1.5);
     -webkit-backdrop-filter: blur(24px) saturate(1.5);
-    background: rgba(8, 4, 3, 0.85);
+    background: rgba(7, 11, 19, 0.85);
   }
 
   .glass-panel {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    background: rgba(20, 8, 6, 0.7);
+    background: rgba(12, 20, 36, 0.7);
   }
 
   /* Text gradients */
   .text-glow {
-    background: linear-gradient(135deg, #ffffff 15%, #ffd053 50%, #ffbc09 85%, #f59e0b 100%);
+    background: linear-gradient(135deg, #ffffff 15%, #67e8f9 50%, #06b6d4 85%, #3b82f6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .text-glow-warm {
-    background: linear-gradient(135deg, #fde68a 0%, #ffbc09 50%, #ea580c 100%);
+    background: linear-gradient(135deg, #a5f3fc 0%, #06b6d4 50%, #3b82f6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -144,7 +145,7 @@
 
   /* Shimmer loading */
   .shimmer {
-    background: linear-gradient(90deg, #140806 0%, #240e0b 50%, #140806 100%);
+    background: linear-gradient(90deg, #090e1a 0%, #101b30 50%, #090e1a 100%);
     background-size: 200% 100%;
     animation: shimmer 2s linear infinite;
   }
@@ -167,8 +168,8 @@
   /* Device frame glow */
   .device-glow {
     box-shadow:
-      0 0 60px -15px rgba(255,188,9,0.25),
-      0 0 30px -10px rgba(113,32,17,0.4),
+      0 0 60px -15px rgba(6,182,212,0.25),
+      0 0 30px -10px rgba(16,185,129,0.2),
       0 25px 50px -12px rgba(0,0,0,0.8);
   }
 
@@ -180,7 +181,7 @@
     transform: translateY(-4px);
     box-shadow:
       0 20px 60px -15px rgba(0,0,0,0.8),
-      0 0 40px -10px rgba(255,188,9,0.2);
+      0 0 40px -10px rgba(6,182,212,0.2);
   }
 
   /* Button press */
@@ -248,26 +249,4 @@
     opacity: 0.5;
     transform: scale(1.06) translate(1%, -1%);
   }
-}
-
-.animate-ambient-pulse {
-  animation: ambientPulse 8s ease-in-out infinite;
-}
-
-@keyframes scrollGlowPulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 20px rgba(6, 182, 212, 0.6));
-  }
-  50% {
-    opacity: 0.3;
-    transform: scale(0.96);
-    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.1));
-  }
-}
-
-.scroll-indicator-pulse {
-  animation: scrollGlowPulse 1.8s ease-in-out infinite !important;
-  -webkit-animation: scrollGlowPulse 1.8s ease-in-out infinite !important;
 }

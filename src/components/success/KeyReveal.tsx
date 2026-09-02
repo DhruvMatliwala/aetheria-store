@@ -192,11 +192,11 @@ export function KeyReveal({ licenseKey, orderId, planType, slotsAssigned = 1 }: 
         </div>
       </div>
 
-      {/* ── Device Binding Warning Advisory ─────────────────────────────────── */}
-      <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 flex items-start gap-3 text-left mb-6 shadow-md">
-        <AlertTriangle size={18} className="text-amber-400 flex-shrink-0 mt-0.5" />
-        <div className="text-xs font-sans text-amber-200/90 leading-relaxed">
-          <strong className="text-amber-300 font-semibold">Important Hardware Binding:</strong> Once entered in PGSharp, this key binds to your device ({isMultiDevice ? 'up to 2 devices' : '1 device'}) for the 30-day duration. Keep your key saved in a safe location.
+      {/* ── Device Binding Advisory ─────────────────────────────────── */}
+      <div className="p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 flex items-start gap-3 text-left mb-6 shadow-md">
+        <AlertTriangle size={18} className="text-cyan-400 flex-shrink-0 mt-0.5" />
+        <div className="text-xs font-sans text-cyan-200/90 leading-relaxed">
+          <strong className="text-cyan-300 font-semibold">Important Hardware Binding:</strong> Once entered in PGSharp, this key binds to your device ({isMultiDevice ? 'up to 2 devices' : '1 device'}) for the 30-day duration. Keep your key saved in a safe location.
         </div>
       </div>
     </div>

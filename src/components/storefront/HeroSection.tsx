@@ -20,7 +20,7 @@ export function HeroSection() {
             {/* System Status Pill with Animated Pokéball */}
             <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-surface-900/90 border border-surface-700 backdrop-blur-md shadow-depth">
               <PokeballLottie size={20} />
-              <span className="text-xs font-mono text-[#ffbc09] font-bold tracking-wider uppercase">
+              <span className="text-xs font-mono text-cyan-400 font-bold tracking-wider uppercase">
                 [ SYS // AUTOMATED DISPATCH ACTIVE ]
               </span>
             </div>
@@ -41,14 +41,14 @@ export function HeroSection() {
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <a
                 href="#plans"
-                className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-[#ffbc09] hover:bg-[#ffd053] text-[#080403] font-black text-sm uppercase tracking-wider transition-all btn-press shadow-glow-gold"
+                className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black text-sm uppercase tracking-wider transition-all btn-press shadow-[0_0_25px_rgba(6,182,212,0.4)]"
               >
                 <PokeballLottie size={20} />
                 <span>View License Keys</span>
               </a>
               <a
                 href="#journey"
-                className="inline-flex items-center gap-2 px-6 py-4 rounded-xl border border-surface-600 hover:border-[#ffbc09]/60 text-[#ece7e0] hover:text-[#ffbc09] text-xs font-mono uppercase tracking-wider transition-all bg-surface-900/50 backdrop-blur-sm"
+                className="inline-flex items-center gap-2 px-6 py-4 rounded-xl border border-surface-600 hover:border-cyan-500/60 text-[#f1f5f9] hover:text-cyan-400 text-xs font-mono uppercase tracking-wider transition-all bg-surface-900/50 backdrop-blur-sm"
               >
                 <span>How It Works</span>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -60,15 +60,15 @@ export function HeroSection() {
             {/* Trust micro-badges */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-3 text-xs font-mono text-gray-400">
               <span className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#ffbc09]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
                 Instant on-screen reveal
               </span>
               <span className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#ffbc09]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
                 UPI & PayPal accepted
               </span>
               <span className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#ffbc09]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
                 Encrypted key storage
               </span>
             </div>
@@ -81,7 +81,7 @@ export function HeroSection() {
 
               {/* Coordinate HUD */}
               <div className="mt-4 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-surface-900 border border-surface-700 backdrop-blur-md shadow-depth">
-                <span className="w-2 h-2 rounded-full bg-[#ffbc09] animate-glow-breathe" />
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
                 <span className="text-[11px] font-mono text-[#ece7e0] font-bold">
                   COORD // 37.7749° N, 122.4194° W
                 </span>
