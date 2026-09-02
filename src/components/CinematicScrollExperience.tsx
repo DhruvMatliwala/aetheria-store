@@ -109,7 +109,7 @@ function SceneVideo({
   fallbackSrc,
   isActive,
   preload = 'metadata',
-  videoClassName = 'object-cover object-center',
+  videoClassName = 'object-contain object-[center_24%] sm:object-cover sm:object-center',
 }: SceneVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -396,8 +396,8 @@ export function CinematicScrollExperience({
                 preload={idx === 0 ? 'auto' : 'metadata'}
                 videoClassName={
                   idx === 2
-                    ? 'object-cover object-[center_30%] sm:object-cover sm:object-center'
-                    : 'object-cover object-[center_35%] sm:object-cover sm:object-center'
+                    ? 'object-contain object-[center_24%] sm:object-cover sm:object-center'
+                    : 'object-contain object-[center_24%] sm:object-cover sm:object-center'
                 }
               />
             </div>
