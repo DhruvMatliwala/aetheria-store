@@ -92,7 +92,7 @@ const FAQS = [
   },
 ];
 
-interface DissolveSceneVideoProps {
+interface SceneVideoProps {
   src: string;
   fallbackSrc?: string;
   isActive: boolean;
@@ -101,109 +101,71 @@ interface DissolveSceneVideoProps {
 }
 
 /**
- * Dual-Player Optical Dissolve Video Loop Engine
- * Seamlessly dissolves between the end frame and start frame over 700ms with zero hard cut.
+ * Native Hardware-Accelerated Scene Video Engine
+ * Optimized for iOS Safari, WebKit, and Android with native loop, muted autoplay, and gesture unlocking.
  */
-function DissolveSceneVideo({
+function SceneVideo({
   src,
   fallbackSrc,
   isActive,
   preload = 'metadata',
-  videoClassName = 'object-contain object-[center_38%] scale-[1.22] sm:scale-100 sm:object-cover sm:object-center',
-}: DissolveSceneVideoProps) {
-  const vidARef = useRef<HTMLVideoElement>(null);
-  const vidBRef = useRef<HTMLVideoElement>(null);
-  const [activePlayer, setActivePlayer] = useState<'A' | 'B'>('A');
+  videoClassName = 'object-cover object-center',
+}: SceneVideoProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Play / Pause handling based on active scene status
+  // Enforce iOS WebKit inline autoplay rules directly on DOM element
   useEffect(() => {
-    const vidA = vidARef.current;
-    const vidB = vidBRef.current;
-    if (!vidA || !vidB) return;
+    const video = videoRef.current;
+    if (!video) return;
 
-    vidA.muted = true;
-    vidB.muted = true;
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('muted', '');
+    video.muted = true;
+    video.defaultMuted = true;
+    video.controls = false;
+  }, []);
+
+  // Handle play/pause on active scene change
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
 
     if (isActive) {
-      if (activePlayer === 'A') {
-        if (vidA.paused) vidA.play().catch(() => {});
-        if (!vidB.paused) vidB.pause();
-      } else {
-        if (vidB.paused) vidB.play().catch(() => {});
-        if (!vidA.paused) vidA.pause();
+      video.muted = true;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Handled gracefully if browser requires user gesture
+        });
       }
     } else {
-      if (!vidA.paused) vidA.pause();
-      if (!vidB.paused) vidB.pause();
+      video.pause();
     }
-  }, [isActive, activePlayer]);
-
-  // Native onTimeUpdate handlers (eliminates heavy 60fps requestAnimationFrame polling loops)
-  const handleTimeUpdateA = () => {
-    if (!isActive || activePlayer !== 'A') return;
-    const vidA = vidARef.current;
-    const vidB = vidBRef.current;
-    if (vidA && vidB && vidA.duration && vidA.currentTime >= vidA.duration - 0.35) {
-      vidB.currentTime = 0;
-      vidB.play().catch(() => {});
-      setActivePlayer('B');
-    }
-  };
-
-  const handleTimeUpdateB = () => {
-    if (!isActive || activePlayer !== 'B') return;
-    const vidA = vidARef.current;
-    const vidB = vidBRef.current;
-    if (vidA && vidB && vidB.duration && vidB.currentTime >= vidB.duration - 0.35) {
-      vidA.currentTime = 0;
-      vidA.play().catch(() => {});
-      setActivePlayer('A');
-    }
-  };
+  }, [isActive]);
 
   return (
-    <div className="absolute inset-0 w-full h-full bg-black">
-      {/* Player A */}
+    <div
+      className="absolute inset-0 w-full h-full bg-black pointer-events-auto"
+      onClick={() => {
+        if (videoRef.current && videoRef.current.paused) {
+          videoRef.current.muted = true;
+          videoRef.current.play().catch(() => {});
+        }
+      }}
+    >
       <video
-        ref={vidARef}
+        ref={videoRef}
         muted
         playsInline
-        autoPlay={isActive && activePlayer === 'A'}
-        disablePictureInPicture
-        disableRemotePlayback
+        autoPlay
+        loop
+        controls={false}
         preload={preload}
-        onTimeUpdate={handleTimeUpdateA}
         className={cn(
-          'absolute inset-0 w-full h-full pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out',
+          'absolute inset-0 w-full h-full will-change-transform transform-gpu transition-opacity duration-300',
           videoClassName
         )}
-        style={{
-          opacity: activePlayer === 'A' ? 1 : 0,
-          zIndex: activePlayer === 'A' ? 2 : 1,
-        }}
-      >
-        <source src={src} type="video/mp4" />
-        {fallbackSrc && <source src={fallbackSrc} type="video/mp4" />}
-      </video>
-
-      {/* Player B (Dissolve Receiver) */}
-      <video
-        ref={vidBRef}
-        muted
-        playsInline
-        autoPlay={isActive && activePlayer === 'B'}
-        disablePictureInPicture
-        disableRemotePlayback
-        preload={preload}
-        onTimeUpdate={handleTimeUpdateB}
-        className={cn(
-          'absolute inset-0 w-full h-full pointer-events-none will-change-transform transform-gpu transition-opacity duration-300 ease-in-out',
-          videoClassName
-        )}
-        style={{
-          opacity: activePlayer === 'B' ? 1 : 0,
-          zIndex: activePlayer === 'B' ? 2 : 1,
-        }}
       >
         <source src={src} type="video/mp4" />
         {fallbackSrc && <source src={fallbackSrc} type="video/mp4" />}
@@ -226,6 +188,7 @@ export function CinematicScrollExperience({
   waitlistedPlans = {},
 }: CinematicScrollProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
   const sceneLayersRef = useRef<(HTMLDivElement | null)[]>([]);
   const overlayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pricingRef = useRef<HTMLDivElement>(null);
@@ -235,6 +198,29 @@ export function CinematicScrollExperience({
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
   const [activeSceneIdx, setActiveSceneIdx] = useState<number>(0);
+
+  // Global Mobile Touch & Scroll Gesture Media Unlocker (for iOS Low Power Mode)
+  useEffect(() => {
+    const unlockAllVideos = () => {
+      const videos = document.querySelectorAll('video');
+      videos.forEach((vid) => {
+        vid.muted = true;
+        if (vid.paused) {
+          vid.play().catch(() => {});
+        }
+      });
+    };
+
+    window.addEventListener('touchstart', unlockAllVideos, { passive: true, once: true });
+    window.addEventListener('click', unlockAllVideos, { passive: true, once: true });
+    window.addEventListener('scroll', unlockAllVideos, { passive: true, once: true });
+
+    return () => {
+      window.removeEventListener('touchstart', unlockAllVideos);
+      window.removeEventListener('click', unlockAllVideos);
+      window.removeEventListener('scroll', unlockAllVideos);
+    };
+  }, []);
 
   // Update active scene for GPU video decoding management with exact React bailout guard
   const handleScrollProgress = useCallback((progress: number) => {
@@ -309,6 +295,8 @@ export function CinematicScrollExperience({
           start: 'top top',
           end: 'bottom bottom',
           scrub: 0.35,
+          pin: viewportRef.current,
+          pinSpacing: false,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           fastScrollEnd: true,
@@ -383,7 +371,10 @@ export function CinematicScrollExperience({
         PINNED FULL-SCREEN 1440P HARDWARE-ACCELERATED VIDEO VIEWPORT
         ============================================================
       */}
-      <div className="sticky top-0 h-screen h-[100dvh] w-full overflow-hidden z-10 flex items-center justify-center will-change-transform transform-gpu">
+      <div
+        ref={viewportRef}
+        className="sticky top-0 h-screen h-[100dvh] w-full overflow-hidden z-10 flex items-center justify-center will-change-transform transform-gpu"
+      >
         {/* Layer 1: Seamless Optical Dissolve Video Scenes (Scene 1, Scene 2, Scene 3) */}
         <div className="absolute inset-0 w-full h-full bg-black">
           {SCENE_VIDEOS.map((item, idx) => (
@@ -398,7 +389,7 @@ export function CinematicScrollExperience({
                 zIndex: idx + 1,
               }}
             >
-              <DissolveSceneVideo
+              <SceneVideo
                 src={item.src}
                 fallbackSrc={item.fallbackSrc}
                 isActive={activeSceneIdx === idx}

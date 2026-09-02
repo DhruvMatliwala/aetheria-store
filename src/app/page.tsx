@@ -94,7 +94,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-[#080403] text-[#ece7e0] selection:bg-cyan-500/30 selection:text-white">
+    <main className="min-h-screen w-full max-w-[100vw] overflow-x-clip bg-[#080403] text-[#ece7e0] selection:bg-cyan-500/30 selection:text-white">
       {/* Preloader / Cinematic Splash Screen */}
       <Preloader />
 
