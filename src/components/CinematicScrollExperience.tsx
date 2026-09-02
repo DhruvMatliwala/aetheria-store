@@ -135,7 +135,7 @@ function SceneVideo({
         }}
         muted
         playsInline
-        loop
+        loop={false}
         controls={false}
         preload={preload}
         className={cn(
@@ -188,7 +188,8 @@ export function CinematicScrollExperience({
     }
   }, []);
 
-  // Zero-overhead video decoder switcher: exactly ONE video decodes/plays at any given moment!
+  // Zero-overhead video decoder switcher:
+  // Plays video once, pauses at last frame, and replays fresh from start when returning!
   const switchVideo = useCallback((targetIdx: number) => {
     if (activeSceneRef.current === targetIdx && videoElementsRef.current[targetIdx] && !videoElementsRef.current[targetIdx]?.paused) {
       return;
@@ -198,11 +199,19 @@ export function CinematicScrollExperience({
       if (!video) return;
       if (idx === targetIdx) {
         video.muted = true;
+        // If returning to a scene that ended or paused, replay smoothly from 0.0s
+        if (video.ended || video.currentTime > 0) {
+          video.currentTime = 0;
+        }
         const p = video.play();
         if (p !== undefined) p.catch(() => {});
       } else {
+        // Pause inactive video and reset position so it replays fresh next time
         if (!video.paused) {
           video.pause();
+        }
+        if (video.currentTime > 0) {
+          video.currentTime = 0;
         }
       }
     });
