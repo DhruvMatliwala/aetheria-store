@@ -6,6 +6,7 @@ import { StockDashboard } from '@/components/admin/StockDashboard';
 import { WaitlistWidget } from '@/components/admin/WaitlistWidget';
 import { TransactionTable } from '@/components/admin/TransactionTable';
 import { PendingApprovals } from '@/components/admin/PendingApprovals';
+import { SmsBridgeCard } from '@/components/admin/SmsBridgeCard';
 import { OrderPublic } from '@/types/order';
 import { InventoryStatsSummary } from '@/lib/firestore/keys';
 import { RestockStats } from '@/lib/firestore/restock';
@@ -155,6 +156,9 @@ export default function AdminPage() {
           <span>{error}</span>
         </div>
       )}
+
+      {/* 24/7 Android Bank SMS Bridge Setup & Test Simulator */}
+      {adminToken && <SmsBridgeCard adminToken={adminToken} />}
 
       {/* Actionable Pending Payment Verifications */}
       {stats && stats.recentOrders && (

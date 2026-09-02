@@ -1,114 +1,142 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyRazorpayWebhookSignature } from '@/lib/payments/razorpay';
-import { getOrderByGatewayId } from '@/lib/firestore/orders';
-import { assignKeyToOrder } from '@/lib/firestore/transaction';
+import { parseBankSms } from '@/lib/sms/bankSmsParser';
+import { recordBankCredit, claimBankCredit } from '@/lib/firestore/bankCredits';
+import { getAdminFirestore } from '@/lib/firebase/admin';
+import { Order } from '@/types/order';
+import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
 import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-// Razorpay requires the raw body for signature verification.
-// Next.js App Router provides the raw body via request.text().
+function isValidSecret(providedSecret: string | null): boolean {
+  if (!providedSecret) return false;
+  const expected = (process.env.SMS_BRIDGE_SECRET || process.env.ADMIN_API_SECRET || 'aetheria-sms-bridge-secret').trim();
+  return providedSecret.trim() === expected;
+}
+
+/**
+ * Android Bank SMS Bridge Receiver (POST & GET supported)
+ * Accepts incoming bank SMS notifications from MacroDroid / SMS Forwarder apps.
+ */
 export async function POST(request: NextRequest) {
-  let rawBody: string;
-
   try {
-    rawBody = await request.text();
-  } catch {
-    return NextResponse.json({ error: 'Cannot read request body.' }, { status: 400 });
+    const body = (await request.json().catch(() => ({}))) as Record<string, any>;
+    return handleIncomingSms(body);
+  } catch (err: any) {
+    console.error('[webhooks/upi] Error processing POST webhook:', err);
+    return NextResponse.json({ error: 'Failed to process request.' }, { status: 500 });
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const params: Record<string, any> = {};
+  searchParams.forEach((value, key) => {
+    params[key] = value;
+  });
+  return handleIncomingSms(params);
+}
+
+async function handleIncomingSms(data: Record<string, any>) {
+  const secret = data.secret || data.key || data.token || '';
+  if (!isValidSecret(secret)) {
+    return NextResponse.json({ error: 'Unauthorized. Invalid secret.' }, { status: 401 });
   }
 
-  // ── Verify signature ───────────────────────────────────────────────────────
-  const signature = request.headers.get('x-razorpay-signature') ?? '';
+  // Extract raw message or pre-parsed fields
+  const rawMessage = (data.message || data.body || data.text || data.sms || '').toString();
+  let utr = (data.utr || data.reference || data.ref || '').toString().trim();
+  let amount = data.amount ? parseFloat(data.amount.toString()) : null;
 
-  let isValid: boolean;
-  try {
-    isValid = verifyRazorpayWebhookSignature(rawBody, signature);
-  } catch (err) {
-    console.error('[webhook/upi] Signature verification error:', err);
-    return NextResponse.json({ error: 'Signature verification failed.' }, { status: 401 });
+  // If raw SMS text is provided, parse it
+  if (rawMessage) {
+    const parsed = parseBankSms(rawMessage);
+    if (!utr && parsed.utr) utr = parsed.utr;
+    if (!amount && parsed.amount) amount = parsed.amount;
   }
 
-  if (!isValid) {
-    console.warn('[webhook/upi] Invalid signature received.');
-    return NextResponse.json({ error: 'Invalid signature.' }, { status: 401 });
+  // Clean UTR
+  utr = utr.replace(/\D/g, '').trim();
+
+  if (!utr || utr.length !== 12) {
+    return NextResponse.json(
+      {
+        error: 'No valid 12-digit UTR found in SMS payload.',
+        parsedUtr: utr || null,
+      },
+      { status: 400 }
+    );
   }
 
-  // ── Parse event ────────────────────────────────────────────────────────────
-  let event: {
-    event: string;
-    payload: {
-      payment: {
-        entity: {
-          order_id: string;
-          id: string;
-          status: string;
-        };
-      };
-    };
-  };
+  // ── 1. Record authentic bank credit in Firestore ───────────────────────────
+  await recordBankCredit(utr, amount, rawMessage);
 
-  try {
-    event = JSON.parse(rawBody);
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON payload.' }, { status: 400 });
-  }
+  // ── 2. Check for matching order waiting in 'verifying' or 'pending' state ───
+  const db = getAdminFirestore();
+  const orderQuery = await db
+    .collection('orders')
+    .where('utr_number', '==', utr)
+    .where('payment_status', 'in', ['verifying', 'pending'])
+    .limit(1)
+    .get();
 
-  // ── Process only payment.captured events ──────────────────────────────────
-  if (event.event !== 'payment.captured') {
-    // Acknowledge other events without processing
-    return NextResponse.json({ received: true });
-  }
+  let matchedOrderId: string | null = null;
 
-  const razorpayOrderId = event.payload.payment.entity.order_id;
+  if (!orderQuery.empty) {
+    const orderDoc = orderQuery.docs[0];
+    const orderData = orderDoc.data() as Order;
+    matchedOrderId = orderData.order_id;
 
-  try {
-    // ── Find internal order ────────────────────────────────────────────────
-    const order = await getOrderByGatewayId(razorpayOrderId);
-    if (!order) {
-      console.error('[webhook/upi] Order not found for gateway ID:', razorpayOrderId);
-      return NextResponse.json({ error: 'Order not found.' }, { status: 404 });
+    // ── 3. Auto-allocate key slot instantly ──────────────────────────────────
+    try {
+      const allocation = await allocateKeySlot(orderData.order_id, `AUTO_BANK_SMS_${utr}`);
+
+      // Mark order as paid
+      await orderDoc.ref.update({
+        payment_status: 'paid',
+        payment_gateway: 'upi_direct',
+        updated_at: new Date(),
+      });
+
+      // Mark bank credit as claimed
+      await claimBankCredit(utr, orderData.order_id);
+
+      // Send transactional email
+      sendKeyDeliveryEmail({
+        to: orderData.customer_email,
+        orderId: orderData.order_id,
+        planType: orderData.plan_type,
+        licenseKey: allocation.decryptedKey,
+      }).catch((err) => console.error('[webhooks/upi] Email send error:', err));
+
+      // Dispatch real-time Discord notification
+      sendAdminOrderAlert({
+        orderId: orderData.order_id,
+        customerEmail: orderData.customer_email,
+        customerPhone: orderData.customer_phone,
+        planType: orderData.plan_type,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        gateway: 'Bank SMS Bridge (24/7 Auto)',
+        transactionId: `Verified UTR: ${utr}`,
+        deliveredKey: allocation.decryptedKey,
+      }).catch((err) => console.error('[webhooks/upi] Discord alert error:', err));
+
+      console.log(`[webhooks/upi] ⚡ 24/7 AUTO-FULFILLED Order #${orderData.order_id} via Bank SMS UTR: ${utr}`);
+    } catch (allocErr: any) {
+      console.error('[webhooks/upi] Allocation error for matched order:', allocErr);
     }
-
-    // ── Already processed (idempotency) ───────────────────────────────────
-    if (order.payment_status === 'paid') {
-      console.log('[webhook/upi] Order already processed:', order.order_id);
-      return NextResponse.json({ received: true });
-    }
-
-    // ── Atomic key assignment transaction ─────────────────────────────────
-    const decryptedKey = await assignKeyToOrder(order.order_id);
-
-    // ── Send email (fire-and-forget, don't fail the webhook on email error) ─
-    sendKeyDeliveryEmail({
-      to: order.customer_email,
-      orderId: order.order_id,
-      planType: order.plan_type,
-      licenseKey: decryptedKey,
-    }).catch((err) => {
-      console.error('[webhook/upi] Email delivery failed (non-fatal):', err);
-    });
-
-    // ── Send Admin Discord Backup Alert ─────────────────────────────────────
-    sendAdminOrderAlert({
-      orderId: order.order_id,
-      customerEmail: order.customer_email,
-      customerPhone: order.customer_phone,
-      planType: order.plan_type,
-      amount: order.amount,
-      currency: order.currency,
-      gateway: 'upi_webhook',
-      transactionId: razorpayOrderId,
-      deliveredKey: decryptedKey,
-    }).catch((err) => {
-      console.error('[webhook/upi] Discord admin alert error:', err);
-    });
-
-    console.log('[webhook/upi] Key delivered for order:', order.order_id);
-    return NextResponse.json({ received: true });
-  } catch (err) {
-    console.error('[webhook/upi] Processing error:', err);
-    // Return 500 so Razorpay retries the webhook
-    return NextResponse.json({ error: 'Internal processing error.' }, { status: 500 });
   }
+
+  return NextResponse.json({
+    success: true,
+    message: matchedOrderId
+      ? `Bank credit recorded & Order #${matchedOrderId} auto-fulfilled!`
+      : 'Bank credit recorded. Ready for customer claim.',
+    utr,
+    amount,
+    matchedOrderId,
+  });
 }

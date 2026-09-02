@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrderById, toOrderPublic } from '@/lib/firestore/orders';
-import { sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
+import { getBankCredit, claimBankCredit } from '@/lib/firestore/bankCredits';
+import { allocateKeySlot } from '@/lib/services/keyAllocator';
+import { sendKeyDeliveryEmail } from '@/lib/email/resend';
+import { sendPaymentVerificationAlert, sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 
 export const runtime = 'nodejs';
@@ -63,7 +66,51 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── 3. Put order into 'verifying' status & store UTR ────────────────────
+    // ── 3. Check if Bank SMS was already received by the Bridge ──────────────
+    const bankCredit = await getBankCredit(cleanUtr);
+
+    if (bankCredit && bankCredit.status === 'unclaimed') {
+      // ── Instant Match! Real bank credit verified ──────────────────────────
+      const allocation = await allocateKeySlot(orderId, `AUTO_BANK_SMS_${cleanUtr}`);
+
+      await db.collection('orders').doc(orderId).update({
+        payment_status: 'paid',
+        utr_number: cleanUtr,
+        payment_gateway: 'upi_direct',
+        updated_at: new Date(),
+      });
+
+      await claimBankCredit(cleanUtr, orderId);
+
+      sendKeyDeliveryEmail({
+        to: existingOrder.customer_email,
+        orderId: existingOrder.order_id,
+        planType: existingOrder.plan_type,
+        licenseKey: allocation.decryptedKey,
+      }).catch((err) => console.error('[checkout/upi/verify] Email send error:', err));
+
+      sendAdminOrderAlert({
+        orderId: existingOrder.order_id,
+        customerEmail: existingOrder.customer_email,
+        customerPhone: existingOrder.customer_phone,
+        planType: existingOrder.plan_type,
+        amount: existingOrder.amount,
+        currency: existingOrder.currency,
+        gateway: 'Bank SMS Bridge (Instant Match)',
+        transactionId: `Verified UTR: ${cleanUtr}`,
+        deliveredKey: allocation.decryptedKey,
+      }).catch((err) => console.error('[checkout/upi/verify] Discord alert error:', err));
+
+      const updatedOrder = await getOrderById(orderId);
+      return NextResponse.json({
+        success: true,
+        status: 'paid',
+        order: updatedOrder ? toOrderPublic(updatedOrder) : null,
+        message: 'Payment verified with bank! Key allocated.',
+      });
+    }
+
+    // ── 4. Fallback: SMS hasn't hit server yet or pending manual approval ────
     await db.collection('orders').doc(orderId).update({
       payment_status: 'verifying',
       utr_number: cleanUtr,
@@ -71,7 +118,7 @@ export async function POST(request: NextRequest) {
       updated_at: new Date(),
     });
 
-    // ── 4. Dispatch instant Admin Discord alert with 1-click action links ─────
+    // Dispatch Discord alert with 1-click action links as backup
     sendPaymentVerificationAlert({
       orderId: existingOrder.order_id,
       customerEmail: existingOrder.customer_email,
@@ -85,7 +132,6 @@ export async function POST(request: NextRequest) {
       console.error('[checkout/upi/verify] Discord admin alert error:', alertErr);
     });
 
-    // ── 5. Fetch updated order and return response ───────────────────────────
     const updatedOrder = await getOrderById(orderId);
     const publicOrder = updatedOrder ? toOrderPublic(updatedOrder) : null;
 
