@@ -454,7 +454,7 @@ export function CinematicScrollExperience({
           Clean Cyber-Cyan / Emerald Palette with High Contrast
           ============================================================
         */}
-        <div className="absolute bottom-[max(4.5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 right-4 sm:right-auto max-w-2xl z-20 pointer-events-none">
+        <div className="absolute bottom-[max(4.5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[calc(100vw-2rem)] sm:w-[85vw] md:w-full max-w-2xl z-20 pointer-events-none">
           {SCENE_OVERLAYS.map((overlay, idx) => (
             <div
               key={idx}
@@ -470,21 +470,21 @@ export function CinematicScrollExperience({
               }}
             >
               {/* Line 1: Index Number + Section Subtitle Rule */}
-              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2.5', `hud-tag-${idx}`)}>
+              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2.5', `hud-tag-${idx}`)}>
                 <span className="text-xs sm:text-base font-mono uppercase tracking-[0.2em] sm:tracking-[0.3em] text-cyan-400 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.idx}
                 </span>
-                <span className="w-3 sm:w-6 h-px bg-white/30" />
+                <span className="w-4 sm:w-6 h-px bg-white/30" />
                 <span className="text-xs sm:text-base font-sans uppercase tracking-[0.16em] sm:tracking-[0.25em] text-neutral-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.subtitle}
                 </span>
               </div>
 
               {/* Line 2: Large Majestic Editorial Serif Title */}
-              <div className="overflow-hidden mb-1.5 sm:mb-4">
+              <div className="overflow-hidden mb-2 sm:mb-4">
                 <h2
                   className={cn(
-                    'hud-title text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.15] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
+                    'hud-title text-3xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.1] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
                     `hud-title-${idx}`
                   )}
                 >
@@ -495,7 +495,7 @@ export function CinematicScrollExperience({
               {/* Line 3: Editorial Prose Description */}
               <p
                 className={cn(
-                  'hud-desc text-xs xs:text-sm sm:text-lg md:text-xl text-neutral-100 font-normal leading-relaxed mb-2.5 sm:mb-6 max-w-sm sm:max-w-xl font-sans line-clamp-2 sm:line-clamp-none drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
+                  'hud-desc text-xs sm:text-lg md:text-xl text-neutral-100 font-normal leading-relaxed mb-3 sm:mb-6 max-w-sm sm:max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
                   `hud-desc-${idx}`
                 )}
               >
@@ -503,12 +503,12 @@ export function CinematicScrollExperience({
               </p>
 
               {/* Line 4: Row of Capsule Tag Pills */}
-              <div className={cn('hud-badges flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-2.5 sm:mb-6', `hud-badges-${idx}`)}>
+              <div className={cn('hud-badges flex flex-wrap items-center gap-2 sm:gap-2.5 mb-3.5 sm:mb-6', `hud-badges-${idx}`)}>
                 {overlay.badges.map((badge, bIdx) => (
                   <span
                     key={bIdx}
                     className={cn(
-                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/25 px-2.5 sm:px-4 py-1 sm:py-1.5 text-[10px] xs:text-xs sm:text-sm text-white font-sans font-medium tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
+                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/25 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm md:text-sm text-white font-sans font-medium tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
                       `hud-badge-${idx}`
                     )}
                   >
@@ -524,7 +524,7 @@ export function CinematicScrollExperience({
                     type="button"
                     onClick={() => scrollToSection('plans')}
                     className={cn(
-                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-semibold transition-all duration-200 px-3.5 sm:px-6 py-1.5 sm:py-2.5 text-xs sm:text-sm md:text-base shadow-[0_0_20px_rgba(56,189,248,0.25)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
+                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-semibold transition-all duration-200 px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm md:text-base shadow-[0_0_20px_rgba(56,189,248,0.25)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
                       `hud-cta-${idx}`
                     )}
                   >
