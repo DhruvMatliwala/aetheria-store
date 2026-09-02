@@ -393,7 +393,7 @@ export function CinematicScrollExperience({
                 src={item.src}
                 fallbackSrc={item.fallbackSrc}
                 isActive={activeSceneIdx === idx}
-                preload={idx === 0 ? 'auto' : 'metadata'}
+                preload={activeSceneIdx === idx ? 'auto' : 'none'}
                 videoClassName={
                   idx === 2
                     ? 'object-contain object-[center_24%] sm:object-cover sm:object-center'
@@ -404,14 +404,12 @@ export function CinematicScrollExperience({
           ))}
         </div>
 
-        {/* Layer 2A: Full Cinematic Perimeter Vignette (Darkness around screen boundary for theatrical framing) */}
+        {/* Layer 2A: Full Cinematic Perimeter Vignette (GPU-friendly pure radial gradient) */}
         <div
           className="absolute inset-0 pointer-events-none z-10"
           style={{
             background:
               'radial-gradient(ellipse 85% 75% at center, transparent 35%, rgba(0, 0, 0, 0.55) 68%, rgba(0, 0, 0, 0.94) 100%)',
-            boxShadow:
-              'inset 0 0 100px rgba(0, 0, 0, 0.9), inset 0 0 200px rgba(0, 0, 0, 0.65), inset 0 0 300px rgba(0, 0, 0, 0.35)',
           }}
         />
 
@@ -425,19 +423,21 @@ export function CinematicScrollExperience({
         />
 
         {/* Layer 2C: Subtle Top Header Vignette */}
-        <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
 
-        {/* Layer 2D: Ambient Auroral Glow Layer */}
+        {/* Layer 2D: Ambient Auroral Glow Layer (Desktop only to keep mobile at 60fps) */}
         <div
-          className="pointer-events-none absolute inset-0 z-15 mix-blend-screen animate-ambient-pulse"
+          className="pointer-events-none absolute inset-0 z-15 mix-blend-screen animate-ambient-pulse hidden md:block"
           style={{
             background:
               'radial-gradient(ellipse 70% 50% at 75% 25%, rgba(56, 189, 248, 0.12) 0%, rgba(16, 185, 129, 0.06) 50%, transparent 80%)',
           }}
         />
 
-        {/* Layer 2D: Drifting Glowing Embers & Cosmic Dust Particles (Optimized) */}
-        <AmbientMistParticles />
+        {/* Layer 2E: Drifting Glowing Embers & Cosmic Dust Particles (Desktop only to prevent mobile thermal lag) */}
+        <div className="hidden md:block pointer-events-none">
+          <AmbientMistParticles />
+        </div>
 
         {/* Layer 3: Top Ambient Cyber-Cyan Scrub Line */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/10 z-30">
