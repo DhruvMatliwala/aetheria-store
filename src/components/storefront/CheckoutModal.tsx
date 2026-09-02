@@ -404,7 +404,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5" htmlFor="checkout-promo">
                 <Sparkles size={13} className="text-cyan-400" />
-                <span>Promo Code / Regular Buyer Coupon</span>
+                <span>Have a Promo Code?</span>
               </label>
               {appliedCoupon && (
                 <button
@@ -448,7 +448,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                       handleApplyCoupon();
                     }
                   }}
-                  placeholder="e.g. REGULAR10"
+                  placeholder="Enter promo code"
                   className="flex-1 bg-surface-950 border border-surface-700 rounded-lg px-3 py-1.5 text-white placeholder-gray-500 text-xs font-mono uppercase focus:outline-none focus:border-cyan-500 transition-colors"
                 />
                 <button

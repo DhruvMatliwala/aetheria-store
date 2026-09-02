@@ -5,27 +5,27 @@ import { Coupon, CouponValidationResult } from '@/types/coupon';
 const COUPONS_COLLECTION = 'coupons';
 
 /**
- * Built-in default coupons that work immediately out-of-the-box
- * even before creating documents in Firestore.
+ * Built-in private secret coupons for trusted buyers.
+ * Strangers cannot guess these without being given them directly!
  */
 const DEFAULT_COUPONS: Record<string, Coupon> = {
-  REGULAR10: {
-    code: 'REGULAR10',
+  VIPDHRUV: {
+    code: 'VIPDHRUV',
     discount_type: 'flat',
     discount_value_inr: 1000, // ₹10 (1000 paise)
     discount_value_usd: 15,   // $0.15 (15 cents)
     times_used: 0,
     active: true,
-    description: 'Special Regular Buyer Discount (₹10 OFF)',
+    description: 'Private VIP Trainer Discount (₹10 OFF)',
   },
-  VIP10: {
-    code: 'VIP10',
-    discount_type: 'percentage',
-    discount_value_inr: 0,
-    percentage: 10,           // 10% OFF
+  DISCORDMEMBER: {
+    code: 'DISCORDMEMBER',
+    discount_type: 'flat',
+    discount_value_inr: 1000, // ₹10 (1000 paise)
+    discount_value_usd: 15,   // $0.15 (15 cents)
     times_used: 0,
     active: true,
-    description: 'VIP Trainer Reward (10% OFF)',
+    description: 'Exclusive Discord Member Discount (₹10 OFF)',
   },
 };
 
