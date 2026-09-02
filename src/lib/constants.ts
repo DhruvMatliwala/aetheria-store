@@ -53,6 +53,10 @@ export const REDDIT_URL =
 export const TELEGRAM_URL =
   process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/sleekfx3';
 
+// Direct UPI Configuration (Indian Payments)
+export const UPI_VPA = process.env.NEXT_PUBLIC_UPI_VPA || 'dymatliwal@rapl';
+export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_PAYEE_NAME || 'AETHERIA Vault';
+
 // Razorpay / PayPal modes
 export const PAYPAL_BASE_URL =
   process.env.PAYPAL_MODE === 'live'

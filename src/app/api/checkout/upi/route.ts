@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { PLAN_MAP } from '@/lib/constants';
-import { createRazorpayOrder } from '@/lib/payments/razorpay';
+import { PLAN_MAP, UPI_VPA, UPI_PAYEE_NAME } from '@/lib/constants';
 import { createOrder } from '@/lib/firestore/orders';
 import { getAvailableCount } from '@/lib/firestore/keys';
 
@@ -18,7 +17,7 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as CheckoutBody;
     const { planId, email, phone = '' } = body;
 
-    // ── Validate input (Email only required) ─────────────────────────────────
+    // ── Validate input (Email required) ──────────────────────────────────────
     if (!planId || !email || !email.trim()) {
       return NextResponse.json(
         { error: 'Valid planId and email address are required.' },
@@ -42,9 +41,13 @@ export async function POST(request: NextRequest) {
 
     // ── Create internal order ID ─────────────────────────────────────────────
     const orderId = `ord_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
+    const priceRupees = (plan.price_inr / 100).toFixed(2);
+    const amountRupeesNum = plan.price_inr / 100;
+    const note = `AETHERIA_${orderId.slice(-8).toUpperCase()}`;
 
-    // ── Create Razorpay order ────────────────────────────────────────────────
-    const rzpOrder = await createRazorpayOrder(plan.price_inr, orderId);
+    // ── Standard NPCI UPI URI ────────────────────────────────────────────────
+    // Format: upi://pay?pa=VPA&pn=NAME&am=AMOUNT&cu=INR&tn=NOTE
+    const upiString = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${priceRupees}&cu=INR&tn=${encodeURIComponent(note)}`;
 
     // ── Persist pending order to Firestore ───────────────────────────────────
     await createOrder({
@@ -54,16 +57,19 @@ export async function POST(request: NextRequest) {
       plan_type: planId,
       amount: plan.price_inr,
       currency: 'INR',
-      payment_gateway: 'upi_gateway',
-      gateway_order_id: rzpOrder.id,
+      payment_gateway: 'upi_direct',
+      gateway_order_id: `upi_${orderId}`,
     });
 
     return NextResponse.json({
       orderId,
-      razorpayOrderId: rzpOrder.id,
-      amount: rzpOrder.amount,
-      currency: rzpOrder.currency,
-      keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: plan.price_inr,
+      amountRupees: amountRupeesNum,
+      currency: 'INR',
+      upiId: UPI_VPA,
+      payeeName: UPI_PAYEE_NAME,
+      upiString,
+      note,
     });
   } catch (err) {
     console.error('[checkout/upi]', err);
