@@ -127,15 +127,7 @@ function SceneVideo({
   }, []);
 
   return (
-    <div
-      className="absolute inset-0 w-full h-full bg-black pointer-events-auto"
-      onClick={() => {
-        if (videoRef.current && videoRef.current.paused) {
-          videoRef.current.muted = true;
-          videoRef.current.play().catch(() => {});
-        }
-      }}
-    >
+    <div className="absolute inset-0 w-full h-full bg-black pointer-events-none">
       <video
         ref={(el) => {
           videoRef.current = el;
@@ -147,7 +139,7 @@ function SceneVideo({
         controls={false}
         preload={preload}
         className={cn(
-          'absolute inset-0 w-full h-full will-change-transform transform-gpu',
+          'absolute inset-0 w-full h-full will-change-transform transform-gpu pointer-events-none',
           videoClassName
         )}
       >
