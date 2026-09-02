@@ -5,6 +5,7 @@ import { KeyUploader } from '@/components/admin/KeyUploader';
 import { StockDashboard } from '@/components/admin/StockDashboard';
 import { WaitlistWidget } from '@/components/admin/WaitlistWidget';
 import { TransactionTable } from '@/components/admin/TransactionTable';
+import { PendingApprovals } from '@/components/admin/PendingApprovals';
 import { OrderPublic } from '@/types/order';
 import { InventoryStatsSummary } from '@/lib/firestore/keys';
 import { RestockStats } from '@/lib/firestore/restock';
@@ -153,6 +154,15 @@ export default function AdminPage() {
           <AlertCircle size={18} className="flex-shrink-0" />
           <span>{error}</span>
         </div>
+      )}
+
+      {/* Actionable Pending Payment Verifications */}
+      {stats && stats.recentOrders && (
+        <PendingApprovals
+          orders={stats.recentOrders}
+          adminToken={adminToken}
+          onRefresh={() => fetchStats()}
+        />
       )}
 
       {/* Real-Time Demand & Waitlist Widget */}

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrderById, toOrderPublic } from '@/lib/firestore/orders';
-import { allocateKeySlot } from '@/lib/services/keyAllocator';
-import { sendKeyDeliveryEmail } from '@/lib/email/resend';
-import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
+import { sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 
 export const runtime = 'nodejs';
@@ -63,32 +61,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── 3. Atomically allocate license key slot ──────────────────────────────
-    const allocation = await allocateKeySlot(orderId, `PAYPAL_${rawTxId}`);
-
-    // Update order with PayPal Transaction ID
+    // ── 3. Put order into 'verifying' status & store PayPal Tx ID ────────────
     await db.collection('orders').doc(orderId).update({
+      payment_status: 'verifying',
       paypal_tx_id: rawTxId,
       payment_gateway: 'paypal_direct',
       updated_at: new Date(),
     });
 
-    // ── 4. Send transactional key delivery email asynchronously ──────────────
-    try {
-      sendKeyDeliveryEmail({
-        to: existingOrder.customer_email,
-        orderId: existingOrder.order_id,
-        planType: existingOrder.plan_type,
-        licenseKey: allocation.decryptedKey,
-      }).catch((emailErr) => {
-        console.error('[checkout/paypal/verify] Email delivery background error:', emailErr);
-      });
-    } catch (emailErr) {
-      console.error('[checkout/paypal/verify] Failed to schedule email delivery:', emailErr);
-    }
-
-    // ── 5. Dispatch real-time Admin Discord backup alert with PayPal Ref ──────
-    sendAdminOrderAlert({
+    // ── 4. Dispatch instant Admin Discord alert with 1-click action links ─────
+    sendPaymentVerificationAlert({
       orderId: existingOrder.order_id,
       customerEmail: existingOrder.customer_email,
       customerPhone: existingOrder.customer_phone,
@@ -97,23 +79,24 @@ export async function POST(request: NextRequest) {
       currency: 'USD',
       gateway: 'PayPal (Direct)',
       transactionId: `PayPal: ${rawTxId}`,
-      deliveredKey: allocation.decryptedKey,
     }).catch((alertErr) => {
       console.error('[checkout/paypal/verify] Discord admin alert error:', alertErr);
     });
 
-    // ── 6. Fetch updated order and return response ───────────────────────────
+    // ── 5. Fetch updated order and return response ───────────────────────────
     const updatedOrder = await getOrderById(orderId);
     const publicOrder = updatedOrder ? toOrderPublic(updatedOrder) : null;
 
     return NextResponse.json({
       success: true,
+      status: 'verifying',
       order: publicOrder,
+      message: 'Payment proof submitted. Verifying transaction with PayPal.',
     });
   } catch (err: any) {
     console.error('[checkout/paypal/verify] Unexpected error:', err);
     return NextResponse.json(
-      { error: err?.message || 'Failed to verify PayPal payment.' },
+      { error: err?.message || 'Failed to submit PayPal payment proof.' },
       { status: 500 }
     );
   }

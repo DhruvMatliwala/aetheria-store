@@ -116,11 +116,16 @@ export async function getRevenueStats(): Promise<RevenueStats> {
 export function toOrderPublic(order: Order): OrderPublic {
   return {
     order_id: order.order_id,
+    customer_email: order.customer_email,
+    customer_phone: order.customer_phone,
     plan_type: order.plan_type,
     amount: order.amount,
     currency: order.currency,
+    payment_gateway: order.payment_gateway,
     payment_status: order.payment_status,
     delivered_key: order.payment_status === 'paid' ? order.delivered_key : null,
+    utr_number: order.utr_number,
+    paypal_tx_id: order.paypal_tx_id,
     slots_assigned: order.slots_assigned,
     created_at: (order.created_at as unknown as { toDate: () => Date })?.toDate?.().toISOString() ?? '',
   };

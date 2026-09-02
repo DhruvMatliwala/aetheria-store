@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrderById, toOrderPublic } from '@/lib/firestore/orders';
-import { allocateKeySlot } from '@/lib/services/keyAllocator';
-import { sendKeyDeliveryEmail } from '@/lib/email/resend';
-import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
+import { sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 
 export const runtime = 'nodejs';
@@ -65,32 +63,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── 3. Atomically allocate license key slot ──────────────────────────────
-    const allocation = await allocateKeySlot(orderId, `UTR_${cleanUtr}`);
-
-    // Update order with UTR number
+    // ── 3. Put order into 'verifying' status & store UTR ────────────────────
     await db.collection('orders').doc(orderId).update({
+      payment_status: 'verifying',
       utr_number: cleanUtr,
       payment_gateway: 'upi_direct',
       updated_at: new Date(),
     });
 
-    // ── 4. Send transactional key delivery email asynchronously ──────────────
-    try {
-      sendKeyDeliveryEmail({
-        to: existingOrder.customer_email,
-        orderId: existingOrder.order_id,
-        planType: existingOrder.plan_type,
-        licenseKey: allocation.decryptedKey,
-      }).catch((emailErr) => {
-        console.error('[checkout/upi/verify] Email delivery background error:', emailErr);
-      });
-    } catch (emailErr) {
-      console.error('[checkout/upi/verify] Failed to schedule email delivery:', emailErr);
-    }
-
-    // ── 5. Dispatch real-time Admin Discord backup alert with UTR ─────────────
-    sendAdminOrderAlert({
+    // ── 4. Dispatch instant Admin Discord alert with 1-click action links ─────
+    sendPaymentVerificationAlert({
       orderId: existingOrder.order_id,
       customerEmail: existingOrder.customer_email,
       customerPhone: existingOrder.customer_phone,
@@ -99,23 +81,24 @@ export async function POST(request: NextRequest) {
       currency: existingOrder.currency,
       gateway: 'UPI (Direct QR)',
       transactionId: `UTR: ${cleanUtr}`,
-      deliveredKey: allocation.decryptedKey,
     }).catch((alertErr) => {
       console.error('[checkout/upi/verify] Discord admin alert error:', alertErr);
     });
 
-    // ── 6. Fetch updated order and return response ───────────────────────────
+    // ── 5. Fetch updated order and return response ───────────────────────────
     const updatedOrder = await getOrderById(orderId);
     const publicOrder = updatedOrder ? toOrderPublic(updatedOrder) : null;
 
     return NextResponse.json({
       success: true,
+      status: 'verifying',
       order: publicOrder,
+      message: 'Payment proof submitted. Verifying transaction with your bank.',
     });
   } catch (err: any) {
     console.error('[checkout/upi/verify] Unexpected error:', err);
     return NextResponse.json(
-      { error: err?.message || 'Failed to verify UPI payment.' },
+      { error: err?.message || 'Failed to submit UPI payment proof.' },
       { status: 500 }
     );
   }

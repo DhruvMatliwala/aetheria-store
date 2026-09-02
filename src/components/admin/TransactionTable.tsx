@@ -11,6 +11,7 @@ function StatusBadge({ status }: { status: PaymentStatus }) {
   const map: Record<PaymentStatus, { variant: 'success' | 'warning' | 'error'; label: string }> = {
     paid:      { variant: 'success', label: '✅ Paid' },
     COMPLETED: { variant: 'success', label: '✅ Completed' },
+    verifying: { variant: 'warning', label: '⚡ Verifying' },
     pending:   { variant: 'warning', label: '⏳ Pending' },
     failed:    { variant: 'error',   label: '❌ Failed' },
   };

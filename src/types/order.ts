@@ -1,4 +1,4 @@
-export type PaymentStatus = 'pending' | 'paid' | 'COMPLETED' | 'failed';
+export type PaymentStatus = 'pending' | 'verifying' | 'paid' | 'COMPLETED' | 'failed';
 export type PaymentGateway = 'upi_gateway' | 'upi_direct' | 'paypal' | 'paypal_direct';
 export type Currency = 'INR' | 'USD';
 
@@ -21,14 +21,19 @@ export interface Order {
   updated_at?: FirebaseFirestore.Timestamp;
 }
 
-// Sanitized version returned to client
+// Sanitized version returned to client and admin views
 export interface OrderPublic {
   order_id: string;
+  customer_email?: string;
+  customer_phone?: string;
   plan_type: string;
   amount: number;
   currency: Currency;
+  payment_gateway?: PaymentGateway;
   payment_status: PaymentStatus;
   delivered_key: string | null;
+  utr_number?: string;
+  paypal_tx_id?: string;
   slots_assigned?: number;
   created_at: string;
 }

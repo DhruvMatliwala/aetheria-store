@@ -144,12 +144,13 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
 
       setStatus('polling');
       let currentAttempt = 0;
+      const maxAttempts = 60; // 60 attempts * 3s = 3 minutes of auto-polling
 
       pollIntervalRef.current = setInterval(() => {
         currentAttempt += 1;
         setAttempts(currentAttempt);
 
-        if (currentAttempt >= 10) {
+        if (currentAttempt >= maxAttempts) {
           if (pollIntervalRef.current) {
             clearInterval(pollIntervalRef.current);
             pollIntervalRef.current = null;
@@ -159,7 +160,7 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
         }
 
         checkOrderStatus();
-      }, 1500);
+      }, 3000);
     }
 
     return () => {
@@ -172,26 +173,57 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
 
   const matchedPlan = PLANS.find((p) => p.id === order.plan_type);
 
-  // ── Render Pending / Capturing State ────────────────────────────────────────
+  // ── Render Pending / Verifying / Capturing State ─────────────────────────────
   if (status === 'capturing' || status === 'polling') {
+    const isVerifyingProof = order.payment_status === 'verifying';
+    const txRef = order.utr_number || order.paypal_tx_id;
+
     return (
       <main className="min-h-screen bg-[#080403] text-[#ece7e0] flex items-center justify-center p-4 selection:bg-cyan-500/30">
-        <div className="max-w-md w-full text-center bg-neutral-950/85 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 sm:p-10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
-          <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center mx-auto mb-6 text-cyan-400 shadow-[0_0_20px_rgba(56,189,248,0.2)]">
-            <RefreshCw size={26} className="animate-spin" />
+        <div className="max-w-md w-full text-center bg-neutral-950/90 backdrop-blur-2xl border border-cyan-500/30 rounded-3xl p-8 sm:p-10 shadow-[0_0_60px_rgba(6,182,212,0.2)]">
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full bg-cyan-500/20 animate-ping" />
+            <div className="relative w-20 h-20 rounded-2xl bg-cyan-950/80 border border-cyan-400/40 flex items-center justify-center text-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.3)]">
+              <RefreshCw size={30} className="animate-spin" />
+            </div>
           </div>
 
-          <h1 className="text-2xl font-serif text-white font-normal mb-2">
-            {status === 'capturing' ? 'Capturing Transaction' : 'Verifying Payment'}
+          <h1 className="text-2xl font-bold text-white mb-2">
+            {isVerifyingProof ? 'Payment Proof Received ⚡' : 'Verifying Transaction'}
           </h1>
-          <p className="text-neutral-300 text-xs sm:text-sm mb-6 leading-relaxed font-sans">
-            {progressMessage}
+          <p className="text-gray-300 text-xs sm:text-sm mb-5 leading-relaxed font-sans">
+            {isVerifyingProof
+              ? 'Our vault is confirming settlement with your bank / PayPal. This page will unlock your license key automatically.'
+              : progressMessage}
           </p>
 
-          <div className="p-3 bg-neutral-900 border border-white/10 rounded-xl text-xs text-neutral-400 mb-2 font-mono">
-            Order #{orderId}
+          {txRef && (
+            <div className="p-3 bg-neutral-900/90 border border-cyan-500/30 rounded-xl text-xs mb-3 text-left">
+              <span className="text-gray-400 block text-[10px] uppercase tracking-wider">
+                {order.utr_number ? 'Submitted UPI UTR' : 'Submitted PayPal Reference'}
+              </span>
+              <span className="font-mono text-cyan-300 font-bold text-sm tracking-wider break-all">
+                {txRef}
+              </span>
+            </div>
+          )}
+
+          <div className="p-3 bg-neutral-900 border border-white/10 rounded-xl text-xs text-neutral-400 mb-4 font-mono flex items-center justify-between">
+            <span>Order #{orderId}</span>
+            <span className="text-cyan-400 font-bold animate-pulse">Auto-Verifying...</span>
           </div>
-          <p className="text-[11px] font-mono text-neutral-500">Attempt {attempts} of 10</p>
+
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => checkOrderStatus(true)}
+              disabled={isCheckingManual}
+              className="px-4 py-2 rounded-xl bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 text-xs font-semibold transition-all flex items-center gap-1.5"
+            >
+              <RefreshCw size={13} className={isCheckingManual ? 'animate-spin' : ''} />
+              <span>{isCheckingManual ? 'Checking...' : 'Check Status Now'}</span>
+            </button>
+          </div>
         </div>
       </main>
     );
