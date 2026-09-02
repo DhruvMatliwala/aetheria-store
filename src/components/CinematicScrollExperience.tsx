@@ -95,6 +95,7 @@ const FAQS = [
 interface SceneVideoProps {
   src: string;
   fallbackSrc?: string;
+  preload?: 'auto' | 'metadata' | 'none';
   videoClassName?: string;
   onVideoMount?: (video: HTMLVideoElement | null) => void;
 }
@@ -106,6 +107,7 @@ interface SceneVideoProps {
 function SceneVideo({
   src,
   fallbackSrc,
+  preload = 'none',
   videoClassName = 'object-contain object-[center_24%] sm:object-cover sm:object-center',
   onVideoMount,
 }: SceneVideoProps) {
@@ -143,7 +145,7 @@ function SceneVideo({
         playsInline
         loop
         controls={false}
-        preload="auto"
+        preload={preload}
         className={cn(
           'absolute inset-0 w-full h-full will-change-transform transform-gpu',
           videoClassName
@@ -179,8 +181,20 @@ export function CinematicScrollExperience({
   const desktopScrollIndicatorRef = useRef<HTMLDivElement>(null);
   const videoElementsRef = useRef<(HTMLVideoElement | null)[]>([]);
   const activeSceneRef = useRef<number>(0);
+  const prewarmedRef = useRef<Record<number, boolean>>({ 0: true });
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
+
+  // Anticipatory Lookahead prewarmer: quietly buffers next video in background
+  const prewarmVideo = useCallback((targetIdx: number) => {
+    if (prewarmedRef.current[targetIdx]) return;
+    prewarmedRef.current[targetIdx] = true;
+    const vid = videoElementsRef.current[targetIdx];
+    if (vid) {
+      vid.preload = 'auto';
+      vid.load();
+    }
+  }, []);
 
   // Zero-overhead video decoder switcher: exactly ONE video decodes/plays at any given moment!
   const switchVideo = useCallback((targetIdx: number) => {
@@ -202,7 +216,7 @@ export function CinematicScrollExperience({
     });
   }, []);
 
-  // Safe initial autoplay for Scene 0 only, plus gentle gesture unlocker (unlocks ONLY active video, not all 3)
+  // Safe initial autoplay for Scene 0 only, plus gentle gesture unlocker
   useEffect(() => {
     switchVideo(0);
 
@@ -218,12 +232,18 @@ export function CinematicScrollExperience({
     window.addEventListener('click', unlockFirstVideo, { passive: true, once: true });
     window.addEventListener('scroll', unlockFirstVideo, { passive: true, once: true });
 
+    // Idle Time Preloader: after 1.8s of viewing Scene 1, quietly buffer Scene 2
+    const idleTimer = setTimeout(() => {
+      prewarmVideo(1);
+    }, 1800);
+
     return () => {
+      clearTimeout(idleTimer);
       window.removeEventListener('touchstart', unlockFirstVideo);
       window.removeEventListener('click', unlockFirstVideo);
       window.removeEventListener('scroll', unlockFirstVideo);
     };
-  }, [switchVideo]);
+  }, [switchVideo, prewarmVideo]);
 
   // Update active scene for GPU video decoding management with exact React bailout guard
   const handleScrollProgress = useCallback((progress: number) => {
@@ -308,7 +328,17 @@ export function CinematicScrollExperience({
             if (progressBarRef.current) {
               progressBarRef.current.style.width = `${self.progress * 100}%`;
             }
-            handleScrollProgress(self.progress);
+            const p = self.progress;
+
+            // Anticipatory Lookahead Preloading: buffer next scene 1,000px before user arrives
+            if (p >= 0.05) {
+              prewarmVideo(1);
+            }
+            if (p >= 0.32) {
+              prewarmVideo(2);
+            }
+
+            handleScrollProgress(p);
           },
         },
       });
@@ -394,6 +424,7 @@ export function CinematicScrollExperience({
               <SceneVideo
                 src={item.src}
                 fallbackSrc={item.fallbackSrc}
+                preload={idx === 0 ? 'auto' : 'none'}
                 onVideoMount={(el) => {
                   videoElementsRef.current[idx] = el;
                 }}
