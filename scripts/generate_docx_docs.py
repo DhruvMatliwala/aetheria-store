@@ -260,6 +260,21 @@ def create_document():
     add_bullet("Production Build Command: ", "Execute 'npm run build' (validates all 15 routes, types, and bundle optimizations).")
     add_bullet("Production Server Start: ", "Execute 'npm run start' on port 3000 behind NGINX or deploy seamlessly to Vercel.")
 
+    # ── 10. VIP Private Promo Code & Discount Engine ───────────────────────────
+    add_h1("10. VIP Promo Code & Private Discount Architecture")
+    add_body("To reward trusted repeat buyers without public coupon exploitation, AETHERIA features a private promo engine:")
+    add_bullet("Private Code Distribution: ", "No public hints or auto-fill codes appear on the storefront. The promo input uses an unhinted '[ Enter Promo Code ]' placeholder, allowing admins to distribute private codes (e.g., VIPDHRUV, DISCORD10) via Discord/Telegram DMs.")
+    add_bullet("Real-time Server Validation: ", "Endpoint /api/coupons/validate queries Firestore collection 'coupons' to cryptographically check code validity, minimum cart thresholds, and expiry dates before applying reductions.")
+    add_bullet("Dual Discount Modes: ", "Supports both fixed rupee reductions (e.g. ₹10 OFF) and percentage discounts (e.g. 10% OFF), updating live checkout summaries in INR and converted USD seamlessly.")
+
+    # ── 11. Modernized Cyberpunk Admin Command Center & Cyan Palette Overhaul ───
+    add_h1("11. Modernized Admin Dashboard & Universal Theme Architecture")
+    add_body("The administrative interface and visual design language underwent a complete architectural modernization:")
+    add_bullet("Obsidian & Electric Cyan Theme: ", "Completely eradicated legacy saffron gold and terracotta yellow styling across the entire application. Standardized on Obsidian Deep Navy (#070B13, #0C1424), Electric Cyan (#06B6D4, #22D3EE), and Auroral Emerald (#10B981).")
+    add_bullet("Strict Zero-Leak Auth Lockdown: ", "When signed out or unauthenticated, the admin route /admin returns strictly an encrypted Vault Locked card. Tabs, navigation sidebars, order tables, and coupon management components are completely unmounted from the DOM.")
+    add_bullet("Hard Session Revocation: ", "Sign-out securely clears both sessionStorage ('pgsharp_admin_secret') and Firebase client authentication, guaranteeing reload persistence cannot bypass authentication.")
+    add_bullet("Streamlined Proof Approval Modal: ", "Replaced complex math and cluttered tables with sleek, 1-click quick-approval and quick-reject action cards for UPI manual transaction proofs.")
+
     doc.save("F:/Pgsharp/docs/Documentation.docx")
     print("Successfully generated master documentation at: F:/Pgsharp/docs/Documentation.docx")
 
