@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import {
   LayoutDashboard,
   Package,
@@ -275,10 +276,14 @@ export default function AdminPage() {
         <div className="max-w-md w-full bg-[#0c1424] border border-[#16243d] rounded-3xl p-8 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
           
-          <div className="w-16 h-16 rounded-2xl bg-cyan-950/60 border border-cyan-500/40 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(6,182,212,0.25)]">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 text-cyan-400 fill-current drop-shadow-[0_0_10px_rgba(6,182,212,0.8)]">
-              <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13.5h-13L12 6.5z" />
-            </svg>
+          <div className="w-20 h-20 rounded-2xl bg-cyan-950/60 border border-cyan-500/40 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(6,182,212,0.25)] p-2 overflow-hidden">
+            <Image
+              src="/logo.png"
+              alt="Aetheria Logo"
+              width={64}
+              height={64}
+              className="w-full h-full object-contain"
+            />
           </div>
 
           <h2 className="text-xl font-bold text-white tracking-wide">Aetheria Vault Locked</h2>
@@ -332,11 +337,15 @@ export default function AdminPage() {
           <div className="flex flex-col h-full">
             {/* Brand Header */}
             <div className="p-5 flex items-center gap-3 border-b border-[#152138]/80">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-800 p-[1.5px] shadow-[0_0_20px_rgba(6,182,212,0.45)]">
-                <div className="w-full h-full bg-[#090e1a] rounded-[10px] flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" className="w-5 h-5 text-cyan-400 fill-current drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">
-                    <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13.5h-13L12 6.5z" />
-                  </svg>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-800 p-[1.5px] shadow-[0_0_20px_rgba(6,182,212,0.45)] overflow-hidden flex-shrink-0">
+                <div className="w-full h-full bg-[#090e1a] rounded-[10px] flex items-center justify-center overflow-hidden p-0.5">
+                  <Image
+                    src="/logo.png"
+                    alt="Aetheria Logo"
+                    width={36}
+                    height={36}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
               </div>
               <div>

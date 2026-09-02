@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { getClientAuth } from '@/lib/firebase/client';
 import { GoogleAuthProvider, signInWithPopup, User } from 'firebase/auth';
@@ -152,11 +153,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="min-h-screen bg-[#070b13] flex items-center justify-center p-4 py-12 selection:bg-cyan-500/30">
         <div className="max-w-md w-full bg-[#0c1424] border border-[#16243d] rounded-2xl p-8 shadow-[0_0_40px_rgba(6,182,212,0.15)]">
           <div className="text-center mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-cyan-950/80 border border-cyan-700/50 flex items-center justify-center mx-auto mb-3 shadow-[0_0_20px_rgba(6,182,212,0.3)]">
-              {/* Aetheria Delta Crystal Emblem */}
-              <svg viewBox="0 0 24 24" className="w-7 h-7 text-cyan-400 fill-current">
-                <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13.5h-13L12 6.5z" />
-              </svg>
+            <div className="w-16 h-16 rounded-2xl bg-cyan-950/80 border border-cyan-700/50 flex items-center justify-center mx-auto mb-3 shadow-[0_0_20px_rgba(6,182,212,0.3)] p-2 overflow-hidden">
+              <Image
+                src="/logo.png"
+                alt="Aetheria Logo"
+                width={56}
+                height={56}
+                className="w-full h-full object-contain"
+              />
             </div>
             <h1 className="text-2xl font-black text-white tracking-wider">AETHERIA ADMIN</h1>
             <p className="text-slate-400 text-xs mt-1">

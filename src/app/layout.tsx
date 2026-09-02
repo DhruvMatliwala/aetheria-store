@@ -99,9 +99,13 @@ export const metadata: Metadata = {
     canonical: process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app',
   },
   icons: {
-    icon: '/icon.svg',
-    shortcut: '/icon.svg',
-    apple: '/icon.svg',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
   openGraph: {
     title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & Cards)',
