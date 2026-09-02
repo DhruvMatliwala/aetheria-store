@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
-import { CreditCard, Wallet, AlertCircle, Mail, Shield, Check, Copy, Sparkles, ExternalLink } from 'lucide-react';
+import { CreditCard, Wallet, AlertCircle, Mail, Shield, Check, Copy, Sparkles, ExternalLink, HelpCircle } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Plan } from '@/types/plan';
@@ -55,6 +55,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const [utrNumber, setUtrNumber] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const [showUtrHelp, setShowUtrHelp] = useState(false);
 
   // PayPal Stage 2 states
   const [paypalSession, setPaypalSession] = useState<PaypalSessionData | null>(null);
@@ -491,9 +492,42 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                   {utrNumber.length}/12
                 </span>
               </div>
-              <p className="text-[11px] text-gray-400 mt-1">
-                Found in payment receipt on GPay / PhonePe / Paytm / Bank SMS.
-              </p>
+
+              {/* Where to find helper toggle */}
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowUtrHelp(!showUtrHelp)}
+                  className="text-[11px] text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors"
+                >
+                  <HelpCircle size={13} />
+                  <span>Where do I find this 12-digit number?</span>
+                </button>
+
+                {showUtrHelp && (
+                  <div className="mt-2 p-3 rounded-xl bg-surface-900/90 border border-cyan-500/30 text-[11px] text-gray-300 space-y-2 animate-in fade-in duration-200">
+                    <p className="font-bold text-cyan-300 text-xs">Look for the 12-digit number on your payment receipt:</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                      <div className="p-2 rounded-lg bg-black/40 border border-white/5">
+                        <span className="font-bold text-white block">Google Pay (GPay):</span>
+                        <span className="text-gray-400">Listed as <strong className="text-emerald-300">&quot;UPI transaction ID&quot;</strong></span>
+                      </div>
+                      <div className="p-2 rounded-lg bg-black/40 border border-white/5">
+                        <span className="font-bold text-white block">PhonePe:</span>
+                        <span className="text-gray-400">Tap &quot;Transfer Details&quot; ➔ Look for <strong className="text-emerald-300">&quot;UTR&quot;</strong></span>
+                      </div>
+                      <div className="p-2 rounded-lg bg-black/40 border border-white/5">
+                        <span className="font-bold text-white block">Paytm:</span>
+                        <span className="text-gray-400">Listed as <strong className="text-emerald-300">&quot;UPI Ref No.&quot;</strong></span>
+                      </div>
+                      <div className="p-2 rounded-lg bg-black/40 border border-white/5">
+                        <span className="font-bold text-white block">Bank SMS:</span>
+                        <span className="text-gray-400">Look for the 12-digit number in the SMS received right after paying</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Error Notification */}
