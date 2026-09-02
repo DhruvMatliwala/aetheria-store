@@ -121,6 +121,9 @@ function DissolveSceneVideo({
     const vidB = vidBRef.current;
     if (!vidA || !vidB) return;
 
+    vidA.muted = true;
+    vidB.muted = true;
+
     if (isActive) {
       if (activePlayer === 'A') {
         if (vidA.paused) vidA.play().catch(() => {});
@@ -402,8 +405,8 @@ export function CinematicScrollExperience({
                 preload={idx === 0 ? 'auto' : 'metadata'}
                 videoClassName={
                   idx === 2
-                    ? 'object-contain object-[center_34%] scale-100 sm:scale-100 sm:object-cover sm:object-center'
-                    : 'object-contain object-[center_38%] scale-[1.38] sm:scale-100 sm:object-cover sm:object-center'
+                    ? 'object-cover object-[center_30%] sm:object-cover sm:object-center'
+                    : 'object-cover object-[center_35%] sm:object-cover sm:object-center'
                 }
               />
             </div>
@@ -460,7 +463,7 @@ export function CinematicScrollExperience({
           Clean Cyber-Cyan / Emerald Palette with High Contrast
           ============================================================
         */}
-        <div className="absolute bottom-24 sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[92vw] sm:w-[94vw] max-w-2xl z-20 pointer-events-none">
+        <div className="absolute bottom-[max(4.5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 right-4 sm:right-auto max-w-2xl z-20 pointer-events-none">
           {SCENE_OVERLAYS.map((overlay, idx) => (
             <div
               key={idx}
@@ -476,21 +479,21 @@ export function CinematicScrollExperience({
               }}
             >
               {/* Line 1: Index Number + Section Subtitle Rule */}
-              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2.5', `hud-tag-${idx}`)}>
-                <span className="text-sm sm:text-base font-mono uppercase tracking-[0.24em] sm:tracking-[0.3em] text-cyan-400 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2.5', `hud-tag-${idx}`)}>
+                <span className="text-xs sm:text-base font-mono uppercase tracking-[0.2em] sm:tracking-[0.3em] text-cyan-400 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.idx}
                 </span>
-                <span className="w-4 sm:w-6 h-px bg-white/30" />
-                <span className="text-sm sm:text-base font-sans uppercase tracking-[0.2em] sm:tracking-[0.25em] text-neutral-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                <span className="w-3 sm:w-6 h-px bg-white/30" />
+                <span className="text-xs sm:text-base font-sans uppercase tracking-[0.16em] sm:tracking-[0.25em] text-neutral-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.subtitle}
                 </span>
               </div>
 
               {/* Line 2: Large Majestic Editorial Serif Title */}
-              <div className="overflow-hidden mb-2 sm:mb-4">
+              <div className="overflow-hidden mb-1.5 sm:mb-4">
                 <h2
                   className={cn(
-                    'hud-title text-4xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.1] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
+                    'hud-title text-2xl xs:text-3xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.15] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
                     `hud-title-${idx}`
                   )}
                 >
@@ -501,7 +504,7 @@ export function CinematicScrollExperience({
               {/* Line 3: Editorial Prose Description */}
               <p
                 className={cn(
-                  'hud-desc text-base sm:text-lg md:text-xl text-neutral-100 font-normal leading-relaxed mb-3.5 sm:mb-6 max-w-sm sm:max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
+                  'hud-desc text-xs xs:text-sm sm:text-lg md:text-xl text-neutral-100 font-normal leading-relaxed mb-2.5 sm:mb-6 max-w-sm sm:max-w-xl font-sans line-clamp-2 sm:line-clamp-none drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
                   `hud-desc-${idx}`
                 )}
               >
@@ -509,12 +512,12 @@ export function CinematicScrollExperience({
               </p>
 
               {/* Line 4: Row of Capsule Tag Pills */}
-              <div className={cn('hud-badges flex flex-wrap items-center gap-2 sm:gap-2.5 mb-3.5 sm:mb-6', `hud-badges-${idx}`)}>
+              <div className={cn('hud-badges flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-2.5 sm:mb-6', `hud-badges-${idx}`)}>
                 {overlay.badges.map((badge, bIdx) => (
                   <span
                     key={bIdx}
                     className={cn(
-                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/25 px-4 sm:px-4 py-1.5 sm:py-1.5 text-xs sm:text-sm md:text-sm text-white font-sans font-medium tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
+                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/25 px-2.5 sm:px-4 py-1 sm:py-1.5 text-[10px] xs:text-xs sm:text-sm text-white font-sans font-medium tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
                       `hud-badge-${idx}`
                     )}
                   >
@@ -530,7 +533,7 @@ export function CinematicScrollExperience({
                     type="button"
                     onClick={() => scrollToSection('plans')}
                     className={cn(
-                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-semibold transition-all duration-200 px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm md:text-base shadow-[0_0_20px_rgba(56,189,248,0.25)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
+                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-semibold transition-all duration-200 px-3.5 sm:px-6 py-1.5 sm:py-2.5 text-xs sm:text-sm md:text-base shadow-[0_0_20px_rgba(56,189,248,0.25)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
                       `hud-cta-${idx}`
                     )}
                   >
@@ -551,13 +554,13 @@ export function CinematicScrollExperience({
         <div
           ref={pricingRef}
           className={cn(
-            'absolute bottom-10 sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 will-change-transform transform-gpu',
+            'absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-2.5 right-2.5 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-1.5 sm:space-y-3 will-change-transform transform-gpu',
             activeSceneIdx === 2 ? 'pointer-events-auto visible' : 'pointer-events-none invisible'
           )}
           id="plans-box"
         >
           {/* Side-by-Side Symmetrical Grid on All Devices */}
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4">
             {PLANS.map((plan) => {
               const count = (stockCounts && stockCounts[plan.id]) ?? 0;
               const isOutOfStock = count === 0;
@@ -566,9 +569,9 @@ export function CinematicScrollExperience({
               return (
                 <div key={plan.id} className="flex flex-col justify-end">
                   {/* Tag sitting directly on top edge of the box */}
-                  <div className="h-5 sm:h-6 flex items-end justify-end px-2 sm:px-3 -mb-[1px] z-10">
+                  <div className="h-4 sm:h-6 flex items-end justify-end px-1.5 sm:px-3 -mb-[1px] z-10">
                     {plan.discount_badge && (
-                      <span className="px-2 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-emerald-500/20 text-amber-300 border border-amber-400/40 text-[8px] sm:text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)] backdrop-blur-md">
+                      <span className="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 to-emerald-500/20 text-amber-300 border border-amber-400/40 text-[7px] sm:text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(245,158,11,0.2)] backdrop-blur-md">
                         🔥 {plan.discount_badge}
                       </span>
                     )}
@@ -577,43 +580,43 @@ export function CinematicScrollExperience({
                   {/* 100% Symmetrical Vertically Long Obsidian Box Format */}
                   <div
                     className={cn(
-                      'p-4 py-6 sm:p-5 sm:py-7 md:p-6 md:py-8 rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between min-h-[255px] sm:min-h-[245px] space-y-4 sm:space-y-5 shadow-2xl transform-gpu',
+                      'p-3 py-3.5 sm:p-5 sm:py-7 md:p-6 md:py-8 rounded-xl sm:rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between min-h-[195px] sm:min-h-[245px] space-y-2 sm:space-y-5 shadow-2xl transform-gpu',
                       activeSceneIdx === 2 ? 'pointer-events-auto' : 'pointer-events-none'
                     )}
                   >
-                    <div className="space-y-2 sm:space-y-2.5">
+                    <div className="space-y-1.5 sm:space-y-2.5">
                       <div className="flex items-center justify-between gap-1">
-                        <h3 className="text-sm sm:text-base font-bold text-white font-sans truncate">PGSharp {plan.name}</h3>
-                        <span className="text-[10px] sm:text-xs font-mono text-neutral-300 font-medium shrink-0">
-                          {plan.device_slots} Slot{plan.device_slots > 1 ? 's' : ''}
+                        <h3 className="text-xs sm:text-base font-bold text-white font-sans truncate">{plan.name}</h3>
+                        <span className="text-[9px] sm:text-xs font-mono text-neutral-300 font-medium shrink-0">
+                          {plan.device_slots} Device{plan.device_slots > 1 ? 's' : ''}
                         </span>
                       </div>
 
                       <div className="flex items-baseline">
-                        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white font-sans tracking-tight">
+                        <span className="text-xl sm:text-3xl md:text-4xl font-bold text-white font-sans tracking-tight">
                           ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
                         </span>
-                        <span className="text-[11px] sm:text-xs md:text-sm text-cyan-400 font-mono ml-1.5 sm:ml-2">
+                        <span className="text-[10px] sm:text-xs md:text-sm text-cyan-400 font-mono ml-1 sm:ml-2">
                           (${(plan.price_usd / 100).toFixed(2)})
                         </span>
                       </div>
 
-                      <div className="text-[10px] sm:text-xs font-mono">
+                      <div className="text-[9px] sm:text-xs font-mono">
                         {isOutOfStock ? (
                           <span className="text-red-400 font-medium">● Sold Out</span>
                         ) : (
-                          <span className="text-emerald-400 font-medium">● Instant Auto-Dispatch</span>
+                          <span className="text-emerald-400 font-medium">● Instant Dispatch</span>
                         )}
                       </div>
 
-                      <div className="pt-2 border-t border-white/10 flex flex-col gap-1 text-[10px] sm:text-[11px] text-neutral-300/90 font-sans">
-                        <div className="flex items-center gap-1.5">
+                      <div className="pt-1.5 border-t border-white/10 flex flex-col gap-0.5 sm:gap-1 text-[9px] sm:text-[11px] text-neutral-300/90 font-sans">
+                        <div className="flex items-center gap-1">
                           <span className="text-cyan-400 font-bold">✓</span>
-                          <span>30-Day PGSharp VIP</span>
+                          <span className="truncate">30-Day PGSharp VIP</span>
                         </div>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1">
                           <span className="text-cyan-400 font-bold">✓</span>
-                          <span>Teleport & Auto-Walk</span>
+                          <span className="truncate">Teleport & Auto-Walk</span>
                         </div>
                       </div>
                     </div>
@@ -624,7 +627,7 @@ export function CinematicScrollExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-2.5 sm:py-3 text-center text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-xl border border-emerald-500/30 transition-colors font-semibold"
+                          className="w-full py-2 sm:py-3 text-center text-[10px] sm:text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg sm:rounded-xl border border-emerald-500/30 transition-colors font-semibold"
                           title="Click to update or re-register notification email"
                         >
                           ✓ Waitlisted
@@ -633,7 +636,7 @@ export function CinematicScrollExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-2.5 sm:py-3 text-center text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-colors font-semibold"
+                          className="w-full py-2 sm:py-3 text-center text-[10px] sm:text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl border border-white/10 transition-colors font-semibold"
                         >
                           NOTIFY ME
                         </button>
@@ -645,7 +648,7 @@ export function CinematicScrollExperience({
                           triggerParticleBurst(e, 25);
                           onBuyClick?.(plan);
                         }}
-                        className="w-full py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
+                        className="w-full py-2 sm:py-3 rounded-lg sm:rounded-xl font-bold text-[11px] sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
                       >
                         Buy Key
                       </button>
@@ -661,36 +664,36 @@ export function CinematicScrollExperience({
             <button
               type="button"
               onClick={() => setFaqDrawerOpen(!faqDrawerOpen)}
-              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-neutral-950/80 border border-white/10 backdrop-blur-md text-[10px] sm:text-xs font-mono text-neutral-300 hover:text-cyan-300 transition-colors shadow-lg"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-0.5 sm:py-1.5 rounded-full bg-neutral-950/80 border border-white/10 backdrop-blur-md text-[9px] sm:text-xs font-mono text-neutral-300 hover:text-cyan-300 transition-colors shadow-lg"
             >
-              <HelpCircle size={11} className="text-cyan-400" />
+              <HelpCircle size={10} className="text-cyan-400" />
               <span>Trainer FAQ & Support ({FAQS.length})</span>
-              {faqDrawerOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+              {faqDrawerOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
             </button>
 
             {/* Collapsible FAQ Content */}
             {faqDrawerOpen && (
-              <div className="mt-2 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-neutral-950/95 border border-white/10 shadow-2xl w-full text-left space-y-2 animate-in fade-in duration-200 max-h-48 sm:max-h-60 overflow-y-auto custom-scrollbar">
+              <div className="mt-1.5 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-neutral-950/95 border border-white/10 shadow-2xl w-full text-left space-y-1.5 animate-in fade-in duration-200 max-h-40 sm:max-h-60 overflow-y-auto custom-scrollbar">
                 {FAQS.map((faq, idx) => (
-                  <div key={idx} className="border-b border-white/5 pb-1.5">
+                  <div key={idx} className="border-b border-white/5 pb-1">
                     <button
                       type="button"
                       onClick={() => setOpenFaqIdx(openFaqIdx === idx ? null : idx)}
-                      className="w-full py-1 flex items-center justify-between text-left text-xs font-medium text-neutral-200 hover:text-cyan-300 font-sans"
+                      className="w-full py-1 flex items-center justify-between text-left text-[11px] sm:text-xs font-medium text-neutral-200 hover:text-cyan-300 font-sans"
                     >
                       <span>{faq.q}</span>
-                      <ChevronDown size={11} className={`transition-transform ${openFaqIdx === idx ? 'rotate-180 text-cyan-400' : ''}`} />
+                      <ChevronDown size={10} className={`transition-transform ${openFaqIdx === idx ? 'rotate-180 text-cyan-400' : ''}`} />
                     </button>
                     {openFaqIdx === idx && (
-                      <p className="text-[10px] sm:text-[11px] font-mono text-neutral-400 pt-1 leading-relaxed">
+                      <p className="text-[9px] sm:text-[11px] font-mono text-neutral-400 pt-0.5 leading-relaxed">
                         {faq.a}
                       </p>
                     )}
                   </div>
                 ))}
 
-                <div className="pt-2 flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-neutral-400 border-t border-white/5">
-                  <div className="flex items-center gap-2.5">
+                <div className="pt-1.5 flex items-center justify-between text-[8px] sm:text-[10px] font-mono text-neutral-400 border-t border-white/5">
+                  <div className="flex items-center gap-2">
                     <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Discord</a>
                     <a href={REDDIT_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Reddit</a>
                     <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Telegram</a>
@@ -702,15 +705,15 @@ export function CinematicScrollExperience({
           </div>
 
           {/* Legal Links & Independent Reseller Disclaimer */}
-          <div className="flex flex-col items-center gap-1 text-center font-sans pointer-events-auto">
-            <div className="flex items-center justify-center gap-3 text-[10px] text-neutral-500">
+          <div className="flex flex-col items-center gap-0.5 text-center font-sans pointer-events-auto">
+            <div className="flex items-center justify-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] text-neutral-500">
               <span>© {new Date().getFullYear()} AETHERIA</span>
               <span>•</span>
               <a href="/terms" className="hover:text-neutral-300">Terms</a>
               <a href="/privacy" className="hover:text-neutral-300">Privacy</a>
               <a href="/refund" className="hover:text-neutral-300">Refunds</a>
             </div>
-            <p className="text-[8px] sm:text-[9px] text-neutral-500/80 max-w-sm text-center leading-tight">
+            <p className="text-[7.5px] sm:text-[9px] text-neutral-500/80 max-w-sm text-center leading-tight">
               AETHERIA is an independent digital license reseller. Not affiliated with Niantic, Nintendo, Pokémon, or PGSharp.
             </p>
           </div>

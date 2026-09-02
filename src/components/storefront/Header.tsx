@@ -44,7 +44,7 @@ export function Header() {
 
   return (
     <>
-      <header className="fixed top-3.5 sm:top-5 left-0 right-0 z-50 pointer-events-none px-4 sm:px-6 md:px-12 flex items-center justify-between">
+      <header className="fixed top-2 sm:top-5 left-0 right-0 z-50 pointer-events-none px-3 sm:px-6 md:px-12 flex items-center justify-between pt-[env(safe-area-inset-top,0px)]">
         {/* 
           ============================================================
           LEFT: FLOATING CLEAN BRAND BADGE (SpaceX Minimalist Style)
@@ -54,11 +54,11 @@ export function Header() {
           <Link
             href="/"
             onClick={handleLogoClick}
-            className="flex items-center gap-2 sm:gap-3 group active:scale-95 transition-transform"
+            className="flex items-center gap-1.5 sm:gap-3 group active:scale-95 transition-transform"
             aria-label="AETHERIA Home"
           >
             {/* Pure Floating Emblem */}
-            <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+            <div className="w-7 h-7 sm:w-10 sm:h-10 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
               <Image
                 src="/logo.png"
                 alt="AETHERIA"
@@ -69,7 +69,7 @@ export function Header() {
             </div>
 
             {/* Clean Bold Wordmark */}
-            <span className="font-sans font-bold text-base sm:text-lg tracking-[0.2em] sm:tracking-[0.24em] text-white uppercase group-hover:text-cyan-300 transition-colors drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            <span className="font-sans font-bold text-sm sm:text-lg tracking-[0.16em] sm:tracking-[0.24em] text-white uppercase group-hover:text-cyan-300 transition-colors drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
               AETHERIA
             </span>
           </Link>
