@@ -89,7 +89,7 @@ export function Header() {
           ============================================================
         */}
         <div className="pointer-events-auto flex items-center gap-2">
-          <nav className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-white/[0.08] backdrop-blur-2xl border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex items-center gap-1.5 transition-all duration-300 hover:border-white/25">
+          <nav className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-neutral-950/80 backdrop-blur-md border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.5)] flex items-center gap-1.5 transition-all duration-300 hover:border-white/25">
             {/* Desktop Capsule Tabs */}
             <div className="hidden md:flex items-center gap-1">
               {NAV_LINKS.map((link) => {

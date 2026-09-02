@@ -95,23 +95,21 @@ const FAQS = [
 interface SceneVideoProps {
   src: string;
   fallbackSrc?: string;
-  isActive: boolean;
-  preload?: 'auto' | 'metadata' | 'none';
   videoClassName?: string;
+  onVideoMount?: (video: HTMLVideoElement | null) => void;
 }
 
 /**
- * Native Hardware-Accelerated Scene Video Engine
- * Optimized for iOS Safari, WebKit, and Android with native loop, muted autoplay, and gesture unlocking.
+ * Ultra-Lean Hardware Accelerated Video Node
+ * Runs with 0 React overhead and native WebKit/Blink hardware decoding.
  */
 function SceneVideo({
   src,
   fallbackSrc,
-  isActive,
-  preload = 'metadata',
   videoClassName = 'object-contain object-[center_24%] sm:object-cover sm:object-center',
+  onVideoMount,
 }: SceneVideoProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // Enforce iOS WebKit inline autoplay rules directly on DOM element
   useEffect(() => {
@@ -126,24 +124,6 @@ function SceneVideo({
     video.controls = false;
   }, []);
 
-  // Handle play/pause on active scene change
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isActive) {
-      video.muted = true;
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Handled gracefully if browser requires user gesture
-        });
-      }
-    } else {
-      video.pause();
-    }
-  }, [isActive]);
-
   return (
     <div
       className="absolute inset-0 w-full h-full bg-black pointer-events-auto"
@@ -155,15 +135,17 @@ function SceneVideo({
       }}
     >
       <video
-        ref={videoRef}
+        ref={(el) => {
+          videoRef.current = el;
+          if (onVideoMount) onVideoMount(el);
+        }}
         muted
         playsInline
-        autoPlay
         loop
         controls={false}
-        preload={preload}
+        preload="auto"
         className={cn(
-          'absolute inset-0 w-full h-full will-change-transform transform-gpu transition-opacity duration-300',
+          'absolute inset-0 w-full h-full will-change-transform transform-gpu',
           videoClassName
         )}
       >
@@ -195,32 +177,53 @@ export function CinematicScrollExperience({
   const progressBarRef = useRef<HTMLDivElement>(null);
   const mobileScrollIndicatorRef = useRef<HTMLDivElement>(null);
   const desktopScrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const videoElementsRef = useRef<(HTMLVideoElement | null)[]>([]);
+  const activeSceneRef = useRef<number>(0);
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
-  const [activeSceneIdx, setActiveSceneIdx] = useState<number>(0);
 
-  // Global Mobile Touch & Scroll Gesture Media Unlocker (for iOS Low Power Mode)
-  useEffect(() => {
-    const unlockAllVideos = () => {
-      const videos = document.querySelectorAll('video');
-      videos.forEach((vid) => {
-        vid.muted = true;
-        if (vid.paused) {
-          vid.play().catch(() => {});
+  // Zero-overhead video decoder switcher: exactly ONE video decodes/plays at any given moment!
+  const switchVideo = useCallback((targetIdx: number) => {
+    if (activeSceneRef.current === targetIdx && videoElementsRef.current[targetIdx] && !videoElementsRef.current[targetIdx]?.paused) {
+      return;
+    }
+    activeSceneRef.current = targetIdx;
+    videoElementsRef.current.forEach((video, idx) => {
+      if (!video) return;
+      if (idx === targetIdx) {
+        video.muted = true;
+        const p = video.play();
+        if (p !== undefined) p.catch(() => {});
+      } else {
+        if (!video.paused) {
+          video.pause();
         }
-      });
+      }
+    });
+  }, []);
+
+  // Safe initial autoplay for Scene 0 only, plus gentle gesture unlocker (unlocks ONLY active video, not all 3)
+  useEffect(() => {
+    switchVideo(0);
+
+    const unlockFirstVideo = () => {
+      const v0 = videoElementsRef.current[0];
+      if (v0 && v0.paused) {
+        v0.muted = true;
+        v0.play().catch(() => {});
+      }
     };
 
-    window.addEventListener('touchstart', unlockAllVideos, { passive: true, once: true });
-    window.addEventListener('click', unlockAllVideos, { passive: true, once: true });
-    window.addEventListener('scroll', unlockAllVideos, { passive: true, once: true });
+    window.addEventListener('touchstart', unlockFirstVideo, { passive: true, once: true });
+    window.addEventListener('click', unlockFirstVideo, { passive: true, once: true });
+    window.addEventListener('scroll', unlockFirstVideo, { passive: true, once: true });
 
     return () => {
-      window.removeEventListener('touchstart', unlockAllVideos);
-      window.removeEventListener('click', unlockAllVideos);
-      window.removeEventListener('scroll', unlockAllVideos);
+      window.removeEventListener('touchstart', unlockFirstVideo);
+      window.removeEventListener('click', unlockFirstVideo);
+      window.removeEventListener('scroll', unlockFirstVideo);
     };
-  }, []);
+  }, [switchVideo]);
 
   // Update active scene for GPU video decoding management with exact React bailout guard
   const handleScrollProgress = useCallback((progress: number) => {
@@ -232,8 +235,8 @@ export function CinematicScrollExperience({
     } else {
       newIdx = 2;
     }
-    setActiveSceneIdx((prev) => (prev !== newIdx ? newIdx : prev));
-  }, []);
+    switchVideo(newIdx);
+  }, [switchVideo]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -294,7 +297,7 @@ export function CinematicScrollExperience({
           trigger: containerRef.current,
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.35,
+          scrub: 0.15,
           pin: viewportRef.current,
           pinSpacing: false,
           anticipatePin: 1,
@@ -385,15 +388,15 @@ export function CinematicScrollExperience({
               }}
               className="absolute inset-0 w-full h-full will-change-transform transform-gpu"
               style={{
-                opacity: idx === 0 ? 1 : 0,
                 zIndex: idx + 1,
               }}
             >
               <SceneVideo
                 src={item.src}
                 fallbackSrc={item.fallbackSrc}
-                isActive={activeSceneIdx === idx}
-                preload={activeSceneIdx === idx ? 'auto' : 'none'}
+                onVideoMount={(el) => {
+                  videoElementsRef.current[idx] = el;
+                }}
                 videoClassName={
                   idx === 2
                     ? 'object-contain object-[center_24%] sm:object-cover sm:object-center'
@@ -544,10 +547,7 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={pricingRef}
-          className={cn(
-            'absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-2.5 right-2.5 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-1.5 sm:space-y-3 will-change-transform transform-gpu',
-            activeSceneIdx === 2 ? 'pointer-events-auto visible' : 'pointer-events-none invisible'
-          )}
+          className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-2.5 right-2.5 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-1.5 sm:space-y-3 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="plans-box"
         >
           {/* Side-by-Side Symmetrical Grid on All Devices */}
@@ -570,10 +570,7 @@ export function CinematicScrollExperience({
 
                   {/* 100% Symmetrical Vertically Long Obsidian Box Format */}
                   <div
-                    className={cn(
-                      'p-3 py-3.5 sm:p-5 sm:py-7 md:p-6 md:py-8 rounded-xl sm:rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between min-h-[195px] sm:min-h-[245px] space-y-2 sm:space-y-5 shadow-2xl transform-gpu',
-                      activeSceneIdx === 2 ? 'pointer-events-auto' : 'pointer-events-none'
-                    )}
+                    className="p-3 py-3.5 sm:p-5 sm:py-7 md:p-6 md:py-8 rounded-xl sm:rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between min-h-[195px] sm:min-h-[245px] space-y-2 sm:space-y-5 shadow-2xl transform-gpu pointer-events-auto"
                   >
                     <div className="space-y-1.5 sm:space-y-2.5">
                       <div className="flex items-center justify-between gap-1">
