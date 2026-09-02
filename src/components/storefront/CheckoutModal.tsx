@@ -4,14 +4,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
-import { CreditCard, Wallet, AlertCircle, Mail, Shield, Check, Copy, Sparkles, RefreshCw } from 'lucide-react';
+import { CreditCard, Wallet, AlertCircle, Mail, Shield, Check, Copy, Sparkles, ExternalLink } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Plan } from '@/types/plan';
 import { cn } from '@/lib/utils';
 
 type PaymentMethod = 'upi' | 'paypal';
-type CheckoutStep = 'details' | 'upi_qr';
+type CheckoutStep = 'details' | 'upi_qr' | 'paypal_direct';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -30,6 +30,17 @@ interface UpiSessionData {
   note: string;
 }
 
+interface PaypalSessionData {
+  orderId: string;
+  amount: number;
+  amountUsd: string;
+  currency: string;
+  paypalMeUrl: string;
+  paypalEmail: string;
+  paypalUsername: string;
+  note: string;
+}
+
 export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const router = useRouter();
 
@@ -45,6 +56,11 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
 
+  // PayPal Stage 2 states
+  const [paypalSession, setPaypalSession] = useState<PaypalSessionData | null>(null);
+  const [paypalTxId, setPaypalTxId] = useState('');
+  const [copiedPaypalEmail, setCopiedPaypalEmail] = useState(false);
+
   if (!plan) return null;
 
   const priceDisplay =
@@ -58,6 +74,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     setIsLoading(false);
     setIsVerifying(false);
     setUtrNumber('');
+    setPaypalTxId('');
     onClose();
   };
 
@@ -67,6 +84,14 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     setCopiedUpi(true);
     toast.success('UPI ID copied to clipboard!');
     setTimeout(() => setCopiedUpi(false), 2500);
+  };
+
+  const handleCopyPaypalEmail = () => {
+    if (!paypalSession?.paypalEmail) return;
+    navigator.clipboard.writeText(paypalSession.paypalEmail);
+    setCopiedPaypalEmail(true);
+    toast.success('PayPal Email copied to clipboard!');
+    setTimeout(() => setCopiedPaypalEmail(false), 2500);
   };
 
   async function handleSubmitDetails(e: React.FormEvent) {
@@ -95,28 +120,21 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
         setStep('upi_qr');
         setIsLoading(false);
       } else {
-        // ── PayPal flow ─────────────────────────────────────────────────────
+        // ── Direct PayPal.Me Flow ───────────────────────────────────────────
         const res = await fetch('/api/checkout/paypal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ planId: plan.id, email: cleanEmail }),
         });
-        const data = (await res.json()) as {
-          orderId: string;
-          approvalUrl: string | null;
-          error?: string;
-        };
+        const data = await res.json();
 
         if (!res.ok || data.error) {
-          throw new Error(data.error ?? 'PayPal checkout failed.');
+          throw new Error(data.error ?? 'Failed to initialize PayPal session.');
         }
 
-        if (data.approvalUrl) {
-          sessionStorage.setItem('pgsharp_pending_order', data.orderId);
-          window.location.href = data.approvalUrl;
-        } else {
-          throw new Error('No PayPal approval URL received.');
-        }
+        setPaypalSession(data);
+        setStep('paypal_direct');
+        setIsLoading(false);
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Something went wrong.';
@@ -166,13 +184,55 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     }
   }
 
+  async function handleVerifyPaypal(e: React.FormEvent) {
+    e.preventDefault();
+    if (!paypalSession?.orderId) return;
+
+    const cleanTxId = paypalTxId.trim();
+    if (cleanTxId.length < 4) {
+      setError('Please enter your PayPal Transaction ID or Payer Email address.');
+      toast.error('Please provide your Transaction ID or Payer Email');
+      return;
+    }
+
+    setError(null);
+    setIsVerifying(true);
+
+    try {
+      const res = await fetch('/api/checkout/paypal/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: paypalSession.orderId,
+          transactionId: cleanTxId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to verify PayPal transaction.');
+      }
+
+      toast.success('Payment submitted! Unlocking license key...');
+      window.location.href = `/order-success/${paypalSession.orderId}`;
+    } catch (err: any) {
+      const msg = err?.message || 'Verification issue. Please retry.';
+      setError(msg);
+      toast.error(msg);
+      setIsVerifying(false);
+    }
+  }
+
+  const getModalTitle = () => {
+    if (step === 'upi_qr') return '⚡ Scan UPI QR & Claim Key';
+    if (step === 'paypal_direct') return '⚡ Pay via PayPal & Claim Key';
+    return `Order ${plan.name} License`;
+  };
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={resetModal}
-      title={step === 'upi_qr' ? '⚡ Scan UPI QR & Claim Key' : `Order ${plan.name} License`}
-    >
-      {step === 'details' ? (
+    <Modal isOpen={isOpen} onClose={resetModal} title={getModalTitle()}>
+      {step === 'details' && (
         /* ════════════════════════════════════════════════════════════════════════
            STEP 1: EMAIL & PAYMENT RAIL SELECTION
            ════════════════════════════════════════════════════════════════════════ */
@@ -262,28 +322,28 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                 </p>
               </button>
 
-              {/* PayPal / International */}
+              {/* Direct PayPal / International */}
               <button
                 type="button"
                 onClick={() => setMethod('paypal')}
                 className={cn(
                   'flex flex-col items-start gap-1.5 p-3.5 rounded-xl border text-left transition-all',
                   method === 'paypal'
-                    ? 'bg-cyan-950/50 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.25)]'
+                    ? 'bg-blue-950/50 border-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.25)]'
                     : 'bg-surface-900 border-surface-600 text-gray-400 hover:border-surface-500'
                 )}
               >
                 <div className="flex items-center justify-between w-full">
                   <span className="font-bold text-sm text-white flex items-center gap-1.5">
-                    <CreditCard size={15} className="text-sky-400" />
+                    <CreditCard size={15} className="text-blue-400" />
                     PayPal
                   </span>
-                  <span className="text-[10px] font-bold text-sky-400 bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-800/60">
+                  <span className="text-[10px] font-bold text-blue-400 bg-blue-950/60 px-1.5 py-0.5 rounded border border-blue-800/60">
                     USD $
                   </span>
                 </div>
                 <p className="text-[11px] text-gray-400">
-                  International Cards, Balance
+                  PayPal.Me, Balance, Cards
                 </p>
               </button>
             </div>
@@ -321,7 +381,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
             disabled={isLoading}
             id="checkout-submit"
           >
-            Proceed to {method === 'upi' ? 'UPI QR Payment' : 'PayPal'} ({priceDisplay}) →
+            Proceed to {method === 'upi' ? 'UPI QR Payment' : 'PayPal Payment'} ({priceDisplay}) →
           </Button>
 
           {/* Trust Badges */}
@@ -335,9 +395,11 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
             </span>
           </div>
         </form>
-      ) : (
+      )}
+
+      {step === 'upi_qr' && (
         /* ════════════════════════════════════════════════════════════════════════
-           STEP 2: DYNAMIC UPI QR & 12-DIGIT UTR CLAIM SCREEN
+           STEP 2A: DYNAMIC UPI QR & 12-DIGIT UTR CLAIM SCREEN
            ════════════════════════════════════════════════════════════════════════ */
         <div className="space-y-4">
           {/* Top Amount & Back Button */}
@@ -450,6 +512,123 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               className="w-full font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)]"
               isLoading={isVerifying}
               disabled={isVerifying || utrNumber.length !== 12}
+            >
+              {isVerifying ? 'Verifying & Unlocking Key...' : '⚡ Verify & Claim License Key'}
+            </Button>
+          </form>
+
+          {/* Help Note */}
+          <p className="text-[11px] text-center text-gray-500">
+            Need help? Contact our Discord support from the footer anytime.
+          </p>
+        </div>
+      )}
+
+      {step === 'paypal_direct' && (
+        /* ════════════════════════════════════════════════════════════════════════
+           STEP 2B: DIRECT PAYPAL.ME & TRANSACTION VERIFICATION
+           ════════════════════════════════════════════════════════════════════════ */
+        <div className="space-y-4">
+          {/* Top Amount & Back Button */}
+          <div className="flex items-center justify-between bg-surface-900 rounded-xl p-3 border border-surface-600">
+            <div>
+              <p className="text-[11px] text-gray-400 font-mono">Amount to Pay</p>
+              <p className="text-xl font-black text-white">
+                ${paypalSession?.amountUsd}{' '}
+                <span className="text-xs text-blue-400 font-normal">USD</span>
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setStep('details');
+                setError(null);
+              }}
+              className="text-xs text-blue-400 hover:text-blue-300 font-medium px-2.5 py-1 rounded-lg bg-blue-950/50 border border-blue-500/30 transition-colors"
+            >
+              ← Change Details
+            </button>
+          </div>
+
+          {/* PayPal Action Card */}
+          <div className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border border-blue-500/30 shadow-[0_0_25px_rgba(59,130,246,0.15)]">
+            <div className="w-12 h-12 rounded-2xl bg-blue-950/80 border border-blue-500/40 flex items-center justify-center mb-3 text-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+              <CreditCard size={24} />
+            </div>
+
+            <p className="text-sm font-bold text-white mb-1">Direct PayPal Payment</p>
+            <p className="text-xs text-gray-400 text-center mb-4 max-w-xs">
+              Click the button below to open PayPal.Me with the pre-filled amount:
+            </p>
+
+            {/* Direct PayPal.Me Button */}
+            {paypalSession?.paypalMeUrl && (
+              <a
+                href={paypalSession.paypalMeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full max-w-xs py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 text-white text-sm font-bold text-center shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 mb-4"
+              >
+                <span>Pay ${paypalSession.amountUsd} USD on PayPal.Me</span>
+                <ExternalLink size={15} />
+              </a>
+            )}
+
+            {/* Payee Info / Copy Email Fallback */}
+            <div className="flex items-center justify-between w-full max-w-xs px-3 py-2 rounded-lg bg-neutral-950 border border-neutral-800 text-xs">
+              <div className="truncate pr-2">
+                <span className="text-gray-400 block text-[10px]">PayPal Email (Alternative)</span>
+                <span className="font-mono text-blue-300 font-bold truncate block">
+                  {paypalSession?.paypalEmail}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyPaypalEmail}
+                className="flex items-center gap-1 text-[11px] font-semibold text-white bg-blue-600 hover:bg-blue-500 px-2.5 py-1 rounded-md transition-colors flex-shrink-0"
+              >
+                {copiedPaypalEmail ? <Check size={12} /> : <Copy size={12} />}
+                {copiedPaypalEmail ? 'Copied' : 'Copy'}
+              </button>
+            </div>
+          </div>
+
+          {/* Transaction ID Submission Form */}
+          <form onSubmit={handleVerifyPaypal} className="space-y-3 pt-1">
+            <div>
+              <label htmlFor="paypal-tx-input" className="block text-xs font-bold text-gray-200 mb-1">
+                Enter PayPal Transaction ID or Payer Email <span className="text-red-400">*</span>
+              </label>
+              <input
+                id="paypal-tx-input"
+                type="text"
+                value={paypalTxId}
+                onChange={(e) => setPaypalTxId(e.target.value)}
+                placeholder="e.g. 9AB12345CD67890EF or your-paypal@email.com"
+                className="w-full bg-surface-900 border border-blue-500/50 rounded-xl px-3.5 py-2.5 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-colors"
+                required
+              />
+              <p className="text-[11px] text-gray-400 mt-1">
+                Found on your PayPal receipt screen or payment confirmation email.
+              </p>
+            </div>
+
+            {/* Error Notification */}
+            {error && (
+              <div className="flex items-start gap-2 bg-red-900/30 border border-red-700/50 rounded-xl p-3 text-xs text-red-300">
+                <AlertCircle size={15} className="flex-shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {/* Submit Verification */}
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              className="w-full font-bold shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+              isLoading={isVerifying}
+              disabled={isVerifying || paypalTxId.trim().length < 4}
             >
               {isVerifying ? 'Verifying & Unlocking Key...' : '⚡ Verify & Claim License Key'}
             </Button>

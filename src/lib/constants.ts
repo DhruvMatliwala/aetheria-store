@@ -57,6 +57,11 @@ export const TELEGRAM_URL =
 export const UPI_VPA = process.env.NEXT_PUBLIC_UPI_VPA || 'dymatliwal@rapl';
 export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_PAYEE_NAME || 'AETHERIA Vault';
 
+// Direct PayPal Configuration (International Payments)
+export const PAYPAL_ME_URL = process.env.NEXT_PUBLIC_PAYPAL_ME_URL || 'https://www.paypal.me/MatliwalaYogesh';
+export const PAYPAL_EMAIL = process.env.NEXT_PUBLIC_PAYPAL_EMAIL || 'burnerdhruv9@gmail.com';
+export const PAYPAL_USERNAME = process.env.NEXT_PUBLIC_PAYPAL_USERNAME || '@MatliwalaYogesh';
+
 // Razorpay / PayPal modes
 export const PAYPAL_BASE_URL =
   process.env.PAYPAL_MODE === 'live'

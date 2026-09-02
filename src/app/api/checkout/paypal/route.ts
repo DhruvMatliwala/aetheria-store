@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { PLAN_MAP } from '@/lib/constants';
-import { createPayPalOrder, getPayPalApprovalUrl } from '@/lib/payments/paypal';
+import { PLAN_MAP, PAYPAL_ME_URL, PAYPAL_EMAIL, PAYPAL_USERNAME } from '@/lib/constants';
 import { createOrder } from '@/lib/firestore/orders';
 import { getAvailableCount } from '@/lib/firestore/keys';
 
@@ -19,7 +18,7 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as CheckoutBody;
     const { planId, email, phone = '' } = body;
 
-    // ── Validate input (Email only required) ─────────────────────────────────
+    // ── Validate input (Email required) ──────────────────────────────────────
     if (!planId || !email || !email.trim()) {
       return NextResponse.json(
         { error: 'Valid planId and email address are required.' },
@@ -43,18 +42,13 @@ export async function POST(request: NextRequest) {
 
     // ── Create internal order ID ─────────────────────────────────────────────
     const orderId = `ord_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
+    const amountUsd = (plan.price_usd / 100).toFixed(2);
+    const note = `AETHERIA_${orderId.slice(-8).toUpperCase()}`;
 
-    // ── Create PayPal order in USD (formatted as 2-decimal string) ───────────
-    let paypalOrder;
-    try {
-      paypalOrder = await createPayPalOrder(plan.price_usd, orderId, plan.name);
-    } catch (err: any) {
-      console.error('[checkout/paypal] PayPal API Error:', err?.message || err);
-      return NextResponse.json(
-        { error: err?.message || 'PayPal payment gateway is currently unavailable.' },
-        { status: 502 }
-      );
-    }
+    // Standard PayPal.me payment link with pre-filled amount:
+    // e.g. https://www.paypal.me/MatliwalaYogesh/1.99USD or /3.50USD
+    const cleanBaseUrl = PAYPAL_ME_URL.replace(/\/+$/, '');
+    const prefilledPaypalMeUrl = `${cleanBaseUrl}/${amountUsd}USD`;
 
     // ── Persist pending order to Firestore in USD ────────────────────────────
     await createOrder({
@@ -64,18 +58,19 @@ export async function POST(request: NextRequest) {
       plan_type: planId,
       amount: plan.price_usd,
       currency: 'USD',
-      payment_gateway: 'paypal',
-      gateway_order_id: paypalOrder.id,
+      payment_gateway: 'paypal_direct',
+      gateway_order_id: `paypal_${orderId}`,
     });
-
-    const approvalUrl = getPayPalApprovalUrl(paypalOrder);
 
     return NextResponse.json({
       orderId,
-      paypalOrderId: paypalOrder.id,
+      amount: plan.price_usd,
+      amountUsd,
       currency: 'USD',
-      amountUsd: (plan.price_usd / 100).toFixed(2),
-      approvalUrl,
+      paypalMeUrl: prefilledPaypalMeUrl,
+      paypalEmail: PAYPAL_EMAIL,
+      paypalUsername: PAYPAL_USERNAME,
+      note,
     });
   } catch (err) {
     console.error('[checkout/paypal]', err);
