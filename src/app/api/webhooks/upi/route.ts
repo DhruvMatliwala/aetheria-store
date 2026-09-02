@@ -61,6 +61,14 @@ async function handleIncomingSms(data: Record<string, any>) {
   utr = utr.replace(/\D/g, '').trim();
 
   if (!utr || utr.length !== 12) {
+    if (rawMessage.includes('[sms_body]') || rawMessage.toLowerCase().includes('test') || rawMessage === '') {
+      return NextResponse.json({
+        success: true,
+        isTestPing: true,
+        message: 'MacroDroid Test Ping Received Successfully! Your phone is officially connected to AETHERIA.',
+      });
+    }
+
     return NextResponse.json(
       {
         error: 'No valid 12-digit UTR found in SMS payload.',

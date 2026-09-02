@@ -59,3 +59,23 @@ export async function claimBankCredit(utr: string, orderId: string): Promise<voi
     claimed_at: admin.firestore.FieldValue.serverTimestamp(),
   });
 }
+
+/**
+ * Returns recent verified bank credits for display on the admin dashboard.
+ */
+export async function getRecentBankCredits(limitCount = 10): Promise<BankCredit[]> {
+  const db = getAdminFirestore();
+  try {
+    const snap = await db
+      .collection(COLLECTION)
+      .orderBy('credited_at', 'desc')
+      .limit(limitCount)
+      .get();
+
+    return snap.docs.map((doc) => doc.data() as BankCredit);
+  } catch (err) {
+    // If composite index is pending, fallback without ordering
+    const snap = await db.collection(COLLECTION).limit(limitCount).get();
+    return snap.docs.map((doc) => doc.data() as BankCredit);
+  }
+}
