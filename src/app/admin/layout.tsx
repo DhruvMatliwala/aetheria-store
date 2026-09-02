@@ -27,9 +27,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [copiedUid, setCopiedUid] = useState(false);
 
   useEffect(() => {
-    const savedSecret = typeof window !== 'undefined' ? sessionStorage.getItem('pgsharp_admin_secret') : null;
-    if (savedSecret) {
-      setSecretAuthorized(true);
+    if (typeof window !== 'undefined') {
+      // 1. Check URL query parameter for ?key=... or ?pass=...
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlKey = urlParams.get('key') || urlParams.get('pass');
+      if (urlKey) {
+        fetch('/api/admin/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminSecret: urlKey.trim() }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success || !data.error) {
+              localStorage.setItem('pgsharp_admin_secret', urlKey.trim());
+              sessionStorage.setItem('pgsharp_admin_secret', urlKey.trim());
+              setSecretAuthorized(true);
+              toast.success('Admin device authorized!');
+              const cleanUrl = window.location.pathname;
+              window.history.replaceState({}, document.title, cleanUrl);
+            }
+          })
+          .catch(() => {});
+      }
+
+      // 2. Check persistent localStorage or sessionStorage
+      const savedSecret =
+        localStorage.getItem('pgsharp_admin_secret') ||
+        sessionStorage.getItem('pgsharp_admin_secret');
+      if (savedSecret) {
+        setSecretAuthorized(true);
+      }
     }
 
     try {
@@ -83,9 +111,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         throw new Error(data.error || 'Invalid admin passcode / secret key.');
       }
 
+      // Persist to localStorage so the admin is remembered on this device!
+      localStorage.setItem('pgsharp_admin_secret', adminSecretInput.trim());
       sessionStorage.setItem('pgsharp_admin_secret', adminSecretInput.trim());
       setSecretAuthorized(true);
-      toast.success('Admin access granted!');
+      toast.success('Device remembered! Welcome to Admin Command Center.');
     } catch (err: any) {
       setSecretError(err.message || 'Authentication failed.');
       toast.error('Invalid passcode');

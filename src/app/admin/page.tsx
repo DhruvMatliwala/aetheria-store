@@ -97,7 +97,26 @@ export default function AdminPage() {
   }, []);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('pgsharp_admin_secret') || '';
+    let token = '';
+
+    if (typeof window !== 'undefined') {
+      // 1. Check URL query param ?key=... or ?pass=...
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlKey = urlParams.get('key') || urlParams.get('pass');
+      if (urlKey) {
+        token = urlKey.trim();
+        localStorage.setItem('pgsharp_admin_secret', token);
+        sessionStorage.setItem('pgsharp_admin_secret', token);
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      } else {
+        token =
+          localStorage.getItem('pgsharp_admin_secret') ||
+          sessionStorage.getItem('pgsharp_admin_secret') ||
+          '';
+      }
+    }
+
     setAdminToken(token);
     if (token) {
       fetchStats(token);
@@ -108,7 +127,14 @@ export default function AdminPage() {
   }, []);
 
   async function fetchStats(tokenToUse?: string) {
-    const token = tokenToUse || adminToken || sessionStorage.getItem('pgsharp_admin_secret') || '';
+    const token =
+      tokenToUse ||
+      adminToken ||
+      (typeof window !== 'undefined'
+        ? localStorage.getItem('pgsharp_admin_secret') ||
+          sessionStorage.getItem('pgsharp_admin_secret')
+        : '') ||
+      '';
     if (!token) {
       setShowSecretModal(true);
       setLoading(false);
@@ -125,7 +151,10 @@ export default function AdminPage() {
 
       if (!res.ok) {
         if (res.status === 401) {
-          sessionStorage.removeItem('pgsharp_admin_secret');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('pgsharp_admin_secret');
+            sessionStorage.removeItem('pgsharp_admin_secret');
+          }
           setAdminToken('');
           setShowSecretModal(true);
           throw new Error('Invalid or expired admin secret. Please re-enter.');
@@ -149,7 +178,10 @@ export default function AdminPage() {
     e.preventDefault();
     if (!secretInput.trim()) return;
     const cleanSecret = secretInput.trim();
-    sessionStorage.setItem('pgsharp_admin_secret', cleanSecret);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pgsharp_admin_secret', cleanSecret);
+      sessionStorage.setItem('pgsharp_admin_secret', cleanSecret);
+    }
     setAdminToken(cleanSecret);
     setShowSecretModal(false);
     fetchStats(cleanSecret);
@@ -193,7 +225,10 @@ export default function AdminPage() {
   const waitlistCount = stats?.waitlistStats?.totalRequests ?? 0;
 
   async function handleSignOut() {
-    sessionStorage.removeItem('pgsharp_admin_secret');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('pgsharp_admin_secret');
+      sessionStorage.removeItem('pgsharp_admin_secret');
+    }
     setAdminToken('');
     try {
       const auth = getClientAuth();
