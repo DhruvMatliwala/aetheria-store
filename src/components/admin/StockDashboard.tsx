@@ -221,7 +221,7 @@ export function StockDashboard({ stockCounts = {}, inventoryStats, revenueStats 
               {revenueINR > 0 && (
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-3xl font-black text-cyan-300">
-                    ₹{(revenueINR / 100).toLocaleString('en-IN')}
+                    ₹{revenueINR.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                   <span className="text-xs font-bold text-cyan-400 uppercase font-mono">INR (UPI)</span>
                 </div>
@@ -229,7 +229,7 @@ export function StockDashboard({ stockCounts = {}, inventoryStats, revenueStats 
               {revenueUSD > 0 && (
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-3xl font-black text-emerald-400">
-                    ${(revenueUSD / 100).toFixed(2)}
+                    ${revenueUSD.toFixed(2)}
                   </span>
                   <span className="text-xs font-bold text-emerald-400 uppercase font-mono">USD (PayPal)</span>
                 </div>
