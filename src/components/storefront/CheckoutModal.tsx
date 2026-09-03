@@ -59,20 +59,35 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const [showUtrHelp, setShowUtrHelp] = useState(false);
   const [showManualUtr, setShowManualUtr] = useState(false);
 
-  // ── Auto-poll for Zero-UTR instant bank match ──────────────────────────────
+  // PayPal Stage 2 states
+  const [paypalSession, setPaypalSession] = useState<PaypalSessionData | null>(null);
+  const [paypalTxId, setPaypalTxId] = useState('');
+  const [copiedPaypalEmail, setCopiedPaypalEmail] = useState(false);
+
+  // ── Auto-poll for Zero-UTR & PayPal instant bank/cloud match ───────────────
   useEffect(() => {
-    if (step !== 'upi_qr' || !upiSession?.orderId) return;
+    const targetOrderId =
+      step === 'upi_qr'
+        ? upiSession?.orderId
+        : step === 'paypal_direct'
+        ? paypalSession?.orderId
+        : null;
+
+    if (!targetOrderId) return;
 
     let isSubscribed = true;
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/order/${upiSession.orderId}`);
+        const res = await fetch(`/api/order/${targetOrderId}`);
         if (!res.ok) return;
         const data = await res.json();
-        if (data.order && data.order.payment_status === 'paid' && isSubscribed) {
+        const isPaid =
+          data?.payment_status === 'paid' || data?.order?.payment_status === 'paid';
+
+        if (isPaid && isSubscribed) {
           clearInterval(interval);
           toast.success('⚡ Payment Verified! Delivering your key...');
-          router.push(`/order-success/${upiSession.orderId}`);
+          window.location.href = `/order-success/${targetOrderId}`;
         }
       } catch {
         // silent retry
@@ -83,12 +98,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
       isSubscribed = false;
       clearInterval(interval);
     };
-  }, [step, upiSession?.orderId, router]);
-
-  // PayPal Stage 2 states
-  const [paypalSession, setPaypalSession] = useState<PaypalSessionData | null>(null);
-  const [paypalTxId, setPaypalTxId] = useState('');
-  const [copiedPaypalEmail, setCopiedPaypalEmail] = useState(false);
+  }, [step, upiSession?.orderId, paypalSession?.orderId]);
 
   // Promo Coupon states
   const [couponInput, setCouponInput] = useState('');
