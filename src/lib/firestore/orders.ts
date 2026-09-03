@@ -76,22 +76,16 @@ export async function getRecentOrders(limit = 50): Promise<OrderPublic[]> {
   const db = getAdminFirestore();
   const snap = await db
     .collection(COLLECTION)
-    .orderBy('created_at', 'desc')
-    .limit(limit)
+    .limit(100)
     .get();
 
-  return snap.docs.map((doc) => {
+  const orders = snap.docs.map((doc) => {
     const data = doc.data() as Order;
-    return {
-      order_id: doc.id,
-      plan_type: data.plan_type,
-      amount: data.amount,
-      currency: data.currency,
-      payment_status: data.payment_status,
-      delivered_key: null, // never expose key in admin list
-      created_at: data.created_at?.toDate?.().toISOString() ?? '',
-    };
+    return toOrderPublic({ ...data, order_id: data.order_id || doc.id });
   });
+
+  orders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  return orders.slice(0, limit);
 }
 
 export async function getRevenueStats(): Promise<RevenueStats> {

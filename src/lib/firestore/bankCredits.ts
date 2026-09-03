@@ -74,8 +74,14 @@ export async function getRecentBankCredits(limitCount = 10): Promise<BankCredit[
 
     return snap.docs.map((doc) => doc.data() as BankCredit);
   } catch (err) {
-    // If composite index is pending, fallback without ordering
+    // If index is pending, fallback without remote ordering and sort in memory
     const snap = await db.collection(COLLECTION).limit(limitCount).get();
-    return snap.docs.map((doc) => doc.data() as BankCredit);
+    const list = snap.docs.map((doc) => doc.data() as BankCredit);
+    list.sort((a, b) => {
+      const timeA = (a.credited_at as unknown as { toDate?: () => Date })?.toDate?.()?.getTime() ?? 0;
+      const timeB = (b.credited_at as unknown as { toDate?: () => Date })?.toDate?.()?.getTime() ?? 0;
+      return timeB - timeA;
+    });
+    return list;
   }
 }

@@ -93,11 +93,10 @@ export async function getAllReviewsForAdmin(): Promise<Review[]> {
     const db = getAdminFirestore();
     const snapshot = await db
       .collection(COLLECTION)
-      .orderBy('created_at', 'desc')
       .limit(100)
       .get();
 
-    return snapshot.docs.map((doc) => {
+    const reviews: Review[] = snapshot.docs.map((doc) => {
       const d = doc.data();
       return {
         id: doc.id,
@@ -113,6 +112,9 @@ export async function getAllReviewsForAdmin(): Promise<Review[]> {
         createdAt: d.created_at?.toDate ? d.created_at.toDate().toISOString() : new Date().toISOString(),
       };
     });
+
+    reviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return reviews;
   } catch (err) {
     console.error('[getAllReviewsForAdmin] Error:', err);
     return [];
