@@ -549,8 +549,8 @@ export function CinematicHeroExperience({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
               {PLANS.map((plan) => {
                 const isPopular = plan.badge === 'Most Popular';
-                const count = (stockCounts && stockCounts[plan.id]) ?? 0;
-                const isOutOfStock = count === 0;
+                const count = stockCounts && typeof stockCounts[plan.id] === 'number' ? stockCounts[plan.id] : undefined;
+                const isOutOfStock = count !== undefined && count <= 0;
                 const isWaitlisted = Boolean(waitlistedPlans && waitlistedPlans[plan.id]);
 
                 return (
@@ -594,8 +594,10 @@ export function CinematicHeroExperience({
                       <div className="mt-2 text-[11px] font-mono">
                         {isOutOfStock ? (
                           <span className="text-red-400">● Sold Out</span>
-                        ) : (
+                        ) : count !== undefined ? (
                           <span className="text-cyan-400">● {count} in vault</span>
+                        ) : (
+                          <span className="text-cyan-400">● Available</span>
                         )}
                       </div>
                     </div>
