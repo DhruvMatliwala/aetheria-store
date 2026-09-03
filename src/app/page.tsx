@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { Header } from '@/components/storefront/Header';
 import { Preloader } from '@/components/storefront/Preloader';
 import { CinematicScrollExperience } from '@/components/CinematicScrollExperience';
+import { StaticStorefrontExperience } from '@/components/storefront/StaticStorefrontExperience';
 import { CheckoutModal } from '@/components/storefront/CheckoutModal';
 import { RestockNotifyModal } from '@/components/storefront/RestockNotifyModal';
-import { PLANS } from '@/lib/constants';
+import { PLANS, STOREFRONT_MODE } from '@/lib/constants';
 import { Plan } from '@/types/plan';
 
 function useStockCounts() {
@@ -127,13 +128,29 @@ export default function HomePage() {
       {/* Top Glassmorphic Navigation */}
       <Header />
 
-      {/* High-Performance Canvas Image-Sequence Scrollytelling Experience */}
-      <CinematicScrollExperience
-        stockCounts={counts}
-        onBuyClick={handleBuyClick}
-        onNotifyClick={handleNotifyClick}
-        waitlistedPlans={waitlistedPlans}
-      />
+      {/* Conditionally Render Experience based on STOREFRONT_MODE */}
+      {STOREFRONT_MODE === 'video' ? (
+        <>
+          {/* Preloader / Cinematic Splash Screen */}
+          <Preloader />
+
+          {/* High-Performance Canvas Image-Sequence Scrollytelling Experience */}
+          <CinematicScrollExperience
+            stockCounts={counts}
+            onBuyClick={handleBuyClick}
+            onNotifyClick={handleNotifyClick}
+            waitlistedPlans={waitlistedPlans}
+          />
+        </>
+      ) : (
+        /* Zero-Lag, Instant-Loading 4K Cyberpunk Static Experience */
+        <StaticStorefrontExperience
+          stockCounts={counts}
+          onBuyClick={handleBuyClick}
+          onNotifyClick={handleNotifyClick}
+          waitlistedPlans={waitlistedPlans}
+        />
+      )}
 
       {/* Checkout Modal (100% existing UPI/PayPal & key allocation logic) */}
       <CheckoutModal

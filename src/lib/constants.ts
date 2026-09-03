@@ -1,5 +1,10 @@
 import { Plan } from '@/types/plan';
 
+// Storefront Experience Mode:
+// 'static' = Ultra-fast, zero-lag static 4K cyberpunk background (0% GPU load, instant mobile load, butter-smooth scroll)
+// 'video'  = 3-scene looping video experience with GSAP scroll triggers and video preloader (backed up in branch backup/cinematic-video-experience)
+export const STOREFRONT_MODE: 'static' | 'video' = 'static';
+
 export const PLANS: Plan[] = [
   {
     id: '1_month_1_device',
