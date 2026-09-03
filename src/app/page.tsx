@@ -76,6 +76,32 @@ export default function HomePage() {
         }
       });
       setWaitlistedPlans(waitlistMap);
+
+      // Auto-restore active checkout session if user returned from external UPI app or browser reloaded
+      try {
+        const saved = localStorage.getItem('aetheria_active_checkout');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          const age = Date.now() - (parsed.timestamp || 0);
+          if (age < 30 * 60 * 1000 && parsed.orderId) {
+            fetch(`/api/order/${parsed.orderId}`)
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.payment_status === 'paid') {
+                  localStorage.removeItem('aetheria_active_checkout');
+                  window.location.href = `/order-success/${parsed.orderId}`;
+                } else if (data.payment_status === 'pending' || data.payment_status === 'verifying') {
+                  const matchingPlan = PLANS.find((p) => p.id === parsed.planId) || PLANS[0];
+                  setSelectedPlan(matchingPlan);
+                  setIsCheckoutModalOpen(true);
+                }
+              })
+              .catch(() => {});
+          } else {
+            localStorage.removeItem('aetheria_active_checkout');
+          }
+        }
+      } catch {}
     }
   }, [counts]);
 

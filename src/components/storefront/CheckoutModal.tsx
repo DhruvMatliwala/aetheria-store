@@ -64,6 +64,28 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const [paypalTxId, setPaypalTxId] = useState('');
   const [copiedPaypalEmail, setCopiedPaypalEmail] = useState(false);
 
+  // Restore active session from localStorage if user reloaded or switched back from UPI app
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isOpen) return;
+    try {
+      const saved = localStorage.getItem('aetheria_active_checkout');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.orderId && Date.now() - (parsed.timestamp || 0) < 30 * 60 * 1000) {
+          if (parsed.upiSession && parsed.method === 'upi') {
+            setUpiSession(parsed.upiSession);
+            setMethod('upi');
+            setStep('upi_qr');
+          } else if (parsed.paypalSession && parsed.method === 'paypal') {
+            setPaypalSession(parsed.paypalSession);
+            setMethod('paypal');
+            setStep('paypal_direct');
+          }
+        }
+      }
+    } catch {}
+  }, [isOpen]);
+
   // ── Auto-poll for Zero-UTR & PayPal instant bank/cloud match ───────────────
   useEffect(() => {
     const targetOrderId =
@@ -85,6 +107,9 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
           data?.payment_status === 'paid' || data?.order?.payment_status === 'paid';
 
         if (isPaid && isSubscribed) {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('aetheria_active_checkout');
+          }
           clearInterval(interval);
           toast.success('⚡ Payment Verified! Delivering your key...');
           window.location.href = `/order-success/${targetOrderId}`;
@@ -117,6 +142,9 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
       : `$${(currentPriceUsd / 100).toFixed(2)} USD`;
 
   const resetModal = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('aetheria_active_checkout');
+    }
     setStep('details');
     setError(null);
     setIsLoading(false);
@@ -214,6 +242,18 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
         setUpiSession(data);
         setStep('upi_qr');
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(
+            'aetheria_active_checkout',
+            JSON.stringify({
+              orderId: data.orderId,
+              method: 'upi',
+              planId: plan.id,
+              upiSession: data,
+              timestamp: Date.now(),
+            })
+          );
+        }
         setIsLoading(false);
       } else {
         // ── Direct PayPal.Me Flow with optional Promo Code ──────────────────
@@ -234,6 +274,18 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
         setPaypalSession(data);
         setStep('paypal_direct');
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(
+            'aetheria_active_checkout',
+            JSON.stringify({
+              orderId: data.orderId,
+              method: 'paypal',
+              planId: plan.id,
+              paypalSession: data,
+              timestamp: Date.now(),
+            })
+          );
+        }
         setIsLoading(false);
       }
     } catch (err) {
