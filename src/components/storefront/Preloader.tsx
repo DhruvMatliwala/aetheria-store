@@ -12,7 +12,12 @@ interface PreloaderProps {
 const BRAND_CHARS = ['A', 'E', 'T', 'H', 'E', 'R', 'I', 'A'];
 
 export function Preloader({ onComplete }: PreloaderProps) {
-  const [shouldRender, setShouldRender] = useState(true);
+  const [shouldRender, setShouldRender] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('hasSeenIntro') !== 'true';
+    }
+    return true;
+  });
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState('CONNECTING TO SECURE VAULT...');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,99 +27,98 @@ export function Preloader({ onComplete }: PreloaderProps) {
   const lineRef = useRef<HTMLDivElement>(null);
   const { togglePlay, isPlaying } = useAmbientAudio();
 
+  const dismissPreloader = () => {
+    sessionStorage.setItem('hasSeenIntro', 'true');
+    document.body.style.overflow = '';
+    setShouldRender(false);
+    if (onComplete) onComplete();
+  };
+
   const handleInteraction = () => {
-    // Attempt audio unlock on touch
     if (!isPlaying) {
       togglePlay();
     }
+    dismissPreloader();
   };
 
   useEffect(() => {
-    // Check if user has already seen the preloader in this session
-    if (typeof window !== 'undefined') {
-      const hasSeen = sessionStorage.getItem('hasSeenIntro');
-      if (hasSeen === 'true') {
-        setShouldRender(false);
-        if (onComplete) onComplete();
-        return;
-      }
+    if (!shouldRender) {
+      document.body.style.overflow = '';
+      return;
     }
 
-    if (!containerRef.current) return;
+    // Hard safety timeout: Dismiss preloader after 1.8s guaranteed so black screen can never hang
+    const safetyTimer = setTimeout(() => {
+      dismissPreloader();
+    }, 1800);
 
     // Lock body scrolling while preloader is active
     document.body.style.overflow = 'hidden';
 
-    // Simulate steady background asset prebuffering progress with sci-fi steps
+    // Fast simulated progress
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 98) {
           clearInterval(progressInterval);
           return 100;
         }
-        const next = prev + Math.floor(Math.random() * 5) + 3;
-        if (next >= 35 && next < 70) {
+        const next = prev + Math.floor(Math.random() * 15) + 10;
+        if (next >= 40 && next < 75) {
           setStatusText('SYNCING PGSHARP LICENSE PIPELINE...');
-        } else if (next >= 70 && next < 95) {
-          setStatusText('PGSHARP STANDARD KEYS READY...');
-        } else if (next >= 95) {
+        } else if (next >= 75) {
           setStatusText('ALL SYSTEMS OPERATIONAL');
         }
         return Math.min(100, next);
       });
-    }, 160);
+    }, 80);
 
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         onComplete: () => {
-          sessionStorage.setItem('hasSeenIntro', 'true');
-          document.body.style.overflow = '';
-          setShouldRender(false);
-          if (onComplete) onComplete();
+          dismissPreloader();
         },
       });
 
       // ── Initial State Setup ────────────────────────────────────────────────
       gsap.set(logoRef.current, {
-        scale: 0.85,
+        scale: 0.9,
         opacity: 0,
       });
       gsap.set('.preloader-char', {
-        y: 25,
+        y: 15,
         opacity: 0,
       });
       gsap.set(subtitleRef.current, {
         opacity: 0,
-        y: 10,
+        y: 5,
       });
       gsap.set(lineRef.current, {
         scaleX: 0,
         transformOrigin: 'center center',
       });
 
-      // ── Phase 1: Brand Mark Scale & Fade In (0.0s – 0.9s) ─────────────────
+      // Fast reveal
       tl.to(
         logoRef.current,
         {
           scale: 1,
           opacity: 1,
-          duration: 0.9,
+          duration: 0.5,
           ease: 'power3.out',
         },
         0.0
       );
 
-      // ── Phase 2: Staggered Brand Text & Subtitle Reveal (0.5s – 1.8s) ──────
       tl.to(
         '.preloader-char',
         {
           y: 0,
           opacity: 1,
-          stagger: 0.06,
-          duration: 0.8,
+          stagger: 0.03,
+          duration: 0.4,
           ease: 'power3.out',
         },
-        0.5
+        0.2
       );
 
       tl.to(
@@ -122,54 +126,52 @@ export function Preloader({ onComplete }: PreloaderProps) {
         {
           opacity: 0.95,
           y: 0,
-          duration: 0.7,
+          duration: 0.4,
           ease: 'power2.out',
         },
-        0.9
+        0.3
       );
 
       tl.to(
         lineRef.current,
         {
           scaleX: 1,
-          duration: 2.2,
+          duration: 0.7,
           ease: 'power1.inOut',
         },
-        0.9
+        0.3
       );
 
-      // ── Hold for Extended Cinematic Asset Preloading (2.2s – 3.8s) ─────────
-      tl.to({}, { duration: 1.5 });
-
-      // ── Phase 3: Smooth Exit Shutter Transition (3.8s – 4.8s) ───────────────
+      // Snappy Exit Shutter Transition
       tl.to(
         contentRef.current,
         {
-          scale: 1.06,
+          scale: 1.04,
           opacity: 0,
-          duration: 0.45,
+          duration: 0.3,
           ease: 'power2.in',
         },
-        'exit'
+        '+=0.2'
       );
 
       tl.to(
         containerRef.current,
         {
           yPercent: -100,
-          duration: 0.85,
+          duration: 0.5,
           ease: 'power4.inOut',
         },
-        'exit+=0.1'
+        '-=0.1'
       );
     }, containerRef);
 
     return () => {
+      clearTimeout(safetyTimer);
       clearInterval(progressInterval);
       document.body.style.overflow = '';
       ctx.revert();
     };
-  }, [shouldRender, onComplete]);
+  }, [shouldRender]);
 
   if (!shouldRender) return null;
 

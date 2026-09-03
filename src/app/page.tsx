@@ -16,7 +16,7 @@ function useStockCounts() {
   useEffect(() => {
     async function fetchCounts() {
       try {
-        const res = await fetch('/api/stock');
+        const res = await fetch('/api/stock', { cache: 'no-store' });
         if (res.ok) {
           const data = (await res.json()) as { stock?: Record<string, number> };
           if (data.stock) {

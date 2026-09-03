@@ -3,6 +3,7 @@ import { getInventoryStats } from '@/lib/firestore/keys';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(_req: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function GET(_req: NextRequest) {
       },
       {
         headers: {
-          'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=30',
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
         },
       }
     );

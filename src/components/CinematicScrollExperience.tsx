@@ -634,8 +634,8 @@ export function CinematicScrollExperience({
           {/* Side-by-Side Symmetrical Grid on All Devices */}
           <div className="grid grid-cols-2 gap-2 sm:gap-4">
             {PLANS.map((plan) => {
-              const count = (stockCounts && stockCounts[plan.id]) ?? 0;
-              const isOutOfStock = count === 0;
+              const count = stockCounts && typeof stockCounts[plan.id] === 'number' ? stockCounts[plan.id] : undefined;
+              const isOutOfStock = count !== undefined && count <= 0;
               const isWaitlisted = Boolean(waitlistedPlans && waitlistedPlans[plan.id]);
 
               return (
