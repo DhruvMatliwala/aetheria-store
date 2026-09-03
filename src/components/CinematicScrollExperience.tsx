@@ -735,90 +735,76 @@ export function CinematicScrollExperience({
           className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-2.5 right-2.5 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="trust-box"
         >
-          {/* Frosted Community Trust Card */}
-          <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 shadow-2xl space-y-2.5 sm:space-y-3 pointer-events-auto">
-            {/* Header: Vouches Tag + Star Rating */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[11px] sm:text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider">
-                  COMMUNITY VOUCHES
-                </span>
+          {/* Frosted Community Trust Card — ONLY rendered when REAL approved reviews exist! */}
+          {liveReviews.length > 0 ? (
+            <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 shadow-2xl space-y-2.5 sm:space-y-3 pointer-events-auto">
+              {/* Header: Vouches Tag + Star Rating */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[11px] sm:text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider">
+                    TRAINER REVIEWS
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 text-amber-400 text-xs font-mono">
+                  <Star size={12} className="fill-amber-400 text-amber-400" />
+                  <span className="font-bold">
+                    {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)} / 5.0
+                  </span>
+                  <span className="text-neutral-500 text-[10px] hidden xs:inline">
+                    ({liveReviews.length} Verified)
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-1 text-amber-400 text-xs font-mono">
-                <Star size={12} className="fill-amber-400 text-amber-400" />
-                <span className="font-bold">
-                  {liveReviews.length > 0
-                    ? (liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)
-                    : '4.9'}{' '}
-                  / 5.0
-                </span>
-                <span className="text-neutral-500 text-[10px] hidden xs:inline">
-                  {liveReviews.length > 0 ? `(${liveReviews.length} Verified)` : '(Verified)'}
-                </span>
-              </div>
-            </div>
 
-            {/* Verified Testimonial Quotes */}
-            <div className="space-y-1.5 sm:space-y-2 text-left">
-              {liveReviews.length > 0 ? (
-                liveReviews.slice(0, 2).map((rev, rIdx) => (
+              {/* Verified Testimonial Quotes from Real Database */}
+              <div className="space-y-1.5 sm:space-y-2 text-left">
+                {liveReviews.slice(0, 2).map((rev, rIdx) => (
                   <div key={rev.id || rIdx} className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/5 space-y-0.5">
                     <p className="text-[11px] sm:text-xs text-neutral-200 font-sans italic leading-relaxed">
-                      &ldquo;{rev.comment || 'Fast key delivery, works flawlessly!'}&rdquo;
+                      &ldquo;{rev.comment || 'Instant key delivery, works flawlessly!'}&rdquo;
                     </p>
                     <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-neutral-400">
                       <span>@{rev.trainerName || 'VerifiedTrainer'}</span>
                       <span className="text-emerald-400 font-medium">✔ Verified Delivery</span>
                     </div>
                   </div>
-                ))
-              ) : (
-                <>
-                  <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/5 space-y-0.5">
-                    <p className="text-[11px] sm:text-xs text-neutral-200 font-sans italic leading-relaxed">
-                      &ldquo;Key dispatched in 5 seconds via UPI. Both slots active on our Android phones with zero lag.&rdquo;
-                    </p>
-                    <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-neutral-400">
-                      <span>@KevRaidMaster</span>
-                      <span className="text-emerald-400 font-medium">✔ Verified Delivery</span>
-                    </div>
-                  </div>
+                ))}
+              </div>
 
-                  <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/5 space-y-0.5">
-                    <p className="text-[11px] sm:text-xs text-neutral-200 font-sans italic leading-relaxed">
-                      &ldquo;Auto-walk and 100% IV radar feed unlocked right away. Best PGSharp pricing online.&rdquo;
-                    </p>
-                    <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-neutral-400">
-                      <span>@Alex_POGO</span>
-                      <span className="text-emerald-400 font-medium">✔ Verified Delivery</span>
-                    </div>
-                  </div>
-                </>
-              )}
+              {/* Action Buttons: Community Discord + Smooth Scroll to Buy Key */}
+              <div className="pt-0.5 flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => scrollToSection('plans')}
+                  className="flex-1 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white hover:bg-cyan-400 text-black font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 flex items-center justify-center gap-1.5"
+                >
+                  <span>Select Plan on Scene 2</span>
+                  <span className="text-xs">↑</span>
+                </button>
+                <a
+                  href={DISCORD_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white font-medium text-[11px] sm:text-xs font-mono transition-colors flex items-center gap-1 shrink-0"
+                >
+                  <span>Discord</span>
+                  <ExternalLink size={11} />
+                </a>
+              </div>
             </div>
-
-            {/* Action Buttons: Community Discord + Smooth Scroll to Buy Key */}
-            <div className="pt-0.5 flex items-center gap-2">
+          ) : (
+            <div className="flex items-center justify-center pointer-events-auto mb-1">
               <button
                 type="button"
                 onClick={() => scrollToSection('plans')}
-                className="flex-1 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white hover:bg-cyan-400 text-black font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 flex items-center justify-center gap-1.5"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-lg active:scale-95"
               >
-                <span>Select Plan on Scene 2</span>
+                <span>Buy PGSharp Key (Scene 2)</span>
                 <span className="text-xs">↑</span>
               </button>
-              <a
-                href={DISCORD_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white font-medium text-[11px] sm:text-xs font-mono transition-colors flex items-center gap-1 shrink-0"
-              >
-                <span>Discord Vouches</span>
-                <ExternalLink size={11} />
-              </a>
             </div>
-          </div>
+          )}
 
           {/* Expandable FAQ Drawer Toggle */}
           <div className="flex flex-col items-center pointer-events-auto">
