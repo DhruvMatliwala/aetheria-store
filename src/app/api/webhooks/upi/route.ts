@@ -89,31 +89,38 @@ async function handleIncomingSms(data: Record<string, any>) {
   // Strategy A: Zero-UTR Exact Amount Match (if amount with paise is present)
   if (amount && amount > 0) {
     const targetPaisa = Math.round(amount * 100);
-    // Check if this amount has a unique paise offset (e.g. 180.12 = 18012)
+    // Single-field index on amount, filter status in memory
     const amountQuery = await db
       .collection('orders')
       .where('amount', '==', targetPaisa)
-      .where('payment_status', 'in', ['pending', 'verifying'])
-      .limit(1)
+      .limit(10)
       .get();
 
-    if (!amountQuery.empty) {
-      matchedDoc = amountQuery.docs[0];
+    matchedDoc =
+      amountQuery.docs.find((d) =>
+        ['pending', 'verifying'].includes(d.data().payment_status)
+      ) || null;
+
+    if (matchedDoc) {
       matchMethod = 'Zero-UTR (Exact Paise)';
     }
   }
 
   // Strategy B: Fallback to UTR Match (if customer entered UTR manually)
   if (!matchedDoc && utr) {
+    // Single-field index on utr_number, filter status in memory
     const utrQuery = await db
       .collection('orders')
       .where('utr_number', '==', utr)
-      .where('payment_status', 'in', ['verifying', 'pending'])
-      .limit(1)
+      .limit(5)
       .get();
 
-    if (!utrQuery.empty) {
-      matchedDoc = utrQuery.docs[0];
+    matchedDoc =
+      utrQuery.docs.find((d) =>
+        ['verifying', 'pending'].includes(d.data().payment_status)
+      ) || null;
+
+    if (matchedDoc) {
       matchMethod = 'UTR';
     }
   }

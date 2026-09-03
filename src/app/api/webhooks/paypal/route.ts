@@ -73,13 +73,13 @@ export async function POST(request: NextRequest) {
       const txQuery = await db
         .collection('orders')
         .where('paypal_tx_id', '==', txnId)
-        .where('payment_status', 'in', ['verifying', 'pending'])
-        .limit(1)
+        .limit(5)
         .get();
 
-      if (!txQuery.empty) {
-        matchedDoc = txQuery.docs[0];
-      }
+      matchedDoc =
+        txQuery.docs.find((d) =>
+          ['verifying', 'pending'].includes(d.data().payment_status)
+        ) || null;
     }
 
     // Match Strategy C: match by customer email
@@ -87,14 +87,17 @@ export async function POST(request: NextRequest) {
       const emailQuery = await db
         .collection('orders')
         .where('customer_email', '==', payerEmail)
-        .where('payment_gateway', '==', 'paypal_direct')
-        .where('payment_status', 'in', ['verifying', 'pending'])
-        .limit(1)
+        .limit(10)
         .get();
 
-      if (!emailQuery.empty) {
-        matchedDoc = emailQuery.docs[0];
-      }
+      matchedDoc =
+        emailQuery.docs.find((d) => {
+          const data = d.data();
+          return (
+            data.payment_gateway === 'paypal_direct' &&
+            ['verifying', 'pending'].includes(data.payment_status)
+          );
+        }) || null;
     }
 
     if (matchedDoc) {

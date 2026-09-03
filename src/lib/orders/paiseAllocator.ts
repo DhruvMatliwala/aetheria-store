@@ -18,15 +18,21 @@ export async function allocateUniquePaise(basePriceInrPaisa: number): Promise<{
   const activeOrdersSnap = await db
     .collection('orders')
     .where('payment_status', 'in', ['pending', 'verifying'])
-    .where('created_at', '>=', fifteenMinutesAgo)
+    .limit(100)
     .get()
     .catch(() => null);
 
   const usedOffsets = new Set<number>();
 
   if (activeOrdersSnap && !activeOrdersSnap.empty) {
+    const fifteenMinutesAgoMs = Date.now() - 15 * 60 * 1000;
     for (const doc of activeOrdersSnap.docs) {
       const data = doc.data();
+      const createdAtMs =
+        data.created_at?.toDate?.()?.getTime?.() ??
+        (typeof data.created_at === 'number' ? data.created_at : 0);
+      if (createdAtMs && createdAtMs < fifteenMinutesAgoMs) continue;
+
       if (typeof data.amount === 'number') {
         const offset = data.amount - basePriceInrPaisa;
         if (offset > 0 && offset < 100) {

@@ -61,14 +61,13 @@ export async function GET(request: NextRequest) {
     const snap = await db
       .collection('orders')
       .where('customer_email', '==', userEmail)
-      .where('payment_status', '==', 'paid')
       .get();
 
     const keys: CustomerKeyItem[] = [];
 
     snap.docs.forEach((doc) => {
       const data = doc.data() as Order;
-      if (data.delivered_key) {
+      if (data.payment_status === 'paid' && data.delivered_key) {
         const createdAtIso =
           (data.created_at as unknown as { toDate: () => Date })?.toDate?.().toISOString() ||
           new Date().toISOString();
