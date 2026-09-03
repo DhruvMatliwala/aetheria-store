@@ -61,13 +61,14 @@ export interface SmartRoute {
 }
 
 export const SMART_ROUTING_UPI_IDS: SmartRoute[] = [
+  { id: 'oksbi', vpa: 'dhruvmatliwala123@oksbi', bank: 'SBI', badge: 'Primary' },
   { id: 'okicici', vpa: 'dhruvmatliwala123@okicici', bank: 'ICICI Bank', badge: 'Fastest' },
   { id: 'okaxis', vpa: 'dhruvmatliwala123@okaxis', bank: 'Axis Bank', badge: 'High Uptime' },
   { id: 'okhdfcbank', vpa: 'dhruvmatliwala123@okhdfcbank', bank: 'HDFC Bank', badge: 'Reliable' },
-  { id: 'oksbi', vpa: 'dhruvmatliwala123@oksbi', bank: 'SBI', badge: 'Popular' },
 ];
 
 // Direct UPI Configuration (Indian Payments)
+export const UPI_PHONE_NUMBER = '9773438009';
 export const UPI_VPA = process.env.NEXT_PUBLIC_UPI_VPA || SMART_ROUTING_UPI_IDS[0].vpa;
 export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_PAYEE_NAME || 'Dhruv';
 

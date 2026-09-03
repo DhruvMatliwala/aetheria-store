@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Plan } from '@/types/plan';
 import { CouponValidationResult } from '@/types/coupon';
 import { cn } from '@/lib/utils';
-import { SMART_ROUTING_UPI_IDS, SmartRoute } from '@/lib/constants';
+import { SMART_ROUTING_UPI_IDS, SmartRoute, UPI_PHONE_NUMBER } from '@/lib/constants';
 
 type PaymentMethod = 'upi' | 'paypal';
 type CheckoutStep = 'details' | 'upi_qr' | 'paypal_direct';
@@ -59,6 +59,8 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const [utrNumber, setUtrNumber] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
+  const [copiedAmount, setCopiedAmount] = useState(false);
+  const [copiedPhone, setCopiedPhone] = useState(false);
   const [showUtrHelp, setShowUtrHelp] = useState(false);
   const [showManualUtr, setShowManualUtr] = useState(false);
 
@@ -206,7 +208,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
   const currentUpiId = activeVpa || upiSession?.upiId || SMART_ROUTING_UPI_IDS[0].vpa;
   const currentUpiString = upiSession
-    ? `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(upiSession.payeeName || 'Dhruv')}&am=${Math.round(upiSession.amountRupees)}&cu=INR`
+    ? `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(upiSession.payeeName || 'Dhruv')}&cu=INR`
     : '';
 
   const handleCopyUpi = () => {
@@ -215,6 +217,21 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     setCopiedUpi(true);
     toast.success('UPI ID copied to clipboard!');
     setTimeout(() => setCopiedUpi(false), 2500);
+  };
+
+  const handleCopyAmount = () => {
+    if (!upiSession?.amountRupees) return;
+    navigator.clipboard.writeText(Math.round(upiSession.amountRupees).toString());
+    setCopiedAmount(true);
+    toast.success(`Copied amount: ₹${Math.round(upiSession.amountRupees)}`);
+    setTimeout(() => setCopiedAmount(false), 2500);
+  };
+
+  const handleCopyPhone = () => {
+    navigator.clipboard.writeText(UPI_PHONE_NUMBER);
+    setCopiedPhone(true);
+    toast.success(`UPI Phone Number ${UPI_PHONE_NUMBER} copied!`);
+    setTimeout(() => setCopiedPhone(false), 2500);
   };
 
   const handleCopyPaypalEmail = () => {
@@ -657,24 +674,36 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
            ════════════════════════════════════════════════════════════════════════ */
         <div className="space-y-4">
           {/* Top Amount & Back Button */}
+          {/* Amount Box with 1-Tap Copy */}
           <div className="flex items-center justify-between bg-surface-900 rounded-xl p-3 border border-surface-600">
             <div>
               <p className="text-[11px] text-gray-400 font-mono">Amount to Pay</p>
-              <p className="text-xl font-black text-white">
-                ₹{upiSession?.amountRupees.toLocaleString('en-IN')}{' '}
+              <p className="text-xl font-black text-white flex items-center gap-1.5">
+                ₹{Math.round(upiSession?.amountRupees || 0)}{' '}
                 <span className="text-xs text-emerald-400 font-normal">INR</span>
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                setStep('details');
-                setError(null);
-              }}
-              className="text-xs text-cyan-400 hover:text-cyan-300 font-medium px-2.5 py-1 rounded-lg bg-cyan-950/50 border border-cyan-500/30 transition-colors"
-            >
-              ← Change Details
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleCopyAmount}
+                className="flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 px-2.5 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-500/30 transition-colors"
+                title="Copy exact amount"
+              >
+                {copiedAmount ? <Check size={12} /> : <Copy size={12} />}
+                {copiedAmount ? 'Copied' : `Copy ₹${Math.round(upiSession?.amountRupees || 0)}`}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('details');
+                  setError(null);
+                }}
+                className="text-xs text-cyan-400 hover:text-cyan-300 font-medium px-2 py-1.5 rounded-lg bg-cyan-950/50 border border-cyan-500/30 transition-colors"
+              >
+                ← Back
+              </button>
+            </div>
           </div>
 
           {/* QR Code Card */}
@@ -696,20 +725,55 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               <span className="text-cyan-400 font-bold">Paytm</span>
             </p>
 
-            {/* Payee Info & Copy Button */}
-            <div className="flex items-center justify-between w-full max-w-xs px-3 py-1.5 rounded-lg bg-neutral-950 border border-neutral-800 text-xs">
-              <div className="truncate pr-2">
-                <span className="text-gray-400 block text-[10px]">UPI ID</span>
-                <span className="font-mono text-cyan-300 font-bold">{currentUpiId}</span>
+            {/* Payee Info & Copy Buttons (UPI ID + Phone Number) */}
+            <div className="space-y-1.5 w-full max-w-xs">
+              {/* UPI ID */}
+              <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-neutral-950 border border-neutral-800 text-xs">
+                <div className="truncate pr-2">
+                  <span className="text-gray-400 block text-[10px]">UPI ID</span>
+                  <span className="font-mono text-cyan-300 font-bold">{currentUpiId}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyUpi}
+                  className="flex items-center gap-1 text-[11px] font-semibold text-white bg-cyan-600 hover:bg-cyan-500 px-2.5 py-1 rounded-md transition-colors shrink-0"
+                >
+                  {copiedUpi ? <Check size={12} /> : <Copy size={12} />}
+                  {copiedUpi ? 'Copied' : 'Copy'}
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={handleCopyUpi}
-                className="flex items-center gap-1 text-[11px] font-semibold text-white bg-cyan-600 hover:bg-cyan-500 px-2.5 py-1 rounded-md transition-colors"
-              >
-                {copiedUpi ? <Check size={12} /> : <Copy size={12} />}
-                {copiedUpi ? 'Copied' : 'Copy'}
-              </button>
+
+              {/* Pay Phone Number */}
+              <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-neutral-950 border border-neutral-800 text-xs">
+                <div className="truncate pr-2">
+                  <span className="text-gray-400 block text-[10px]">GPay / PhonePe Number</span>
+                  <span className="font-mono text-emerald-300 font-bold">{UPI_PHONE_NUMBER}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyPhone}
+                  className="flex items-center gap-1 text-[11px] font-semibold text-white bg-emerald-600 hover:bg-emerald-500 px-2.5 py-1 rounded-md transition-colors shrink-0"
+                >
+                  {copiedPhone ? <Check size={12} /> : <Copy size={12} />}
+                  {copiedPhone ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+            </div>
+
+            {/* 3-Step Clear Instructions */}
+            <div className="w-full max-w-xs mt-3 px-3 py-2 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-[11px] text-gray-300 space-y-1 text-left">
+              <div className="flex items-start gap-1.5">
+                <span className="text-cyan-400 font-bold font-mono">1.</span>
+                <span>Scan QR or pay to UPI ID / Phone number above.</span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <span className="text-cyan-400 font-bold font-mono">2.</span>
+                <span>Enter exact amount: <strong className="text-emerald-300 font-bold">₹{Math.round(upiSession?.amountRupees || 0)}</strong></span>
+              </div>
+              <div className="flex items-start gap-1.5">
+                <span className="text-cyan-400 font-bold font-mono">3.</span>
+                <span>⚡ <strong className="text-white">Auto-Unlocks in 2-3s!</strong> No UTR needed.</span>
+              </div>
             </div>
 
             {/* Google Pay Smart Bank Failover Route Switcher */}
@@ -747,9 +811,6 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                   );
                 })}
               </div>
-              <p className="text-[9px] text-neutral-500 text-center font-mono">
-                If your bank app shows limit error, tap another bank route above.
-              </p>
             </div>
 
             {/* Mobile Direct Intent Button */}
@@ -780,6 +841,9 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
             </p>
             <p className="text-[11px] text-gray-400">
               ⚡ <strong className="text-white">Zero UTR Needed!</strong> This window will automatically unlock your license key in 2-3 seconds after payment.
+            </p>
+            <p className="text-[10px] text-amber-400/90 font-mono">
+              ⚠️ Please enter the exact amount (₹{Math.round(upiSession?.amountRupees || 0)}). Less or incorrect amounts cannot unlock your key automatically.
             </p>
           </div>
 

@@ -66,9 +66,9 @@ export async function POST(request: NextRequest) {
     const priceRupeesStr = Math.round(amountRupees).toString();
     const note = '';
 
-    // ── Standard NPCI UPI URI with exact locked whole-rupee amount ────────────
-    // Format: upi://pay?pa=VPA&pn=NAME&am=AMOUNT&cu=INR
-    const upiString = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${priceRupeesStr}&cu=INR`;
+    // ── Standard NPCI P2P UPI URI without locked amount (Prevents SBI U30 limits) ─
+    // Format: upi://pay?pa=VPA&pn=NAME&cu=INR
+    const upiString = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&cu=INR`;
 
     // ── Persist pending order to Firestore ───────────────────────────────────
     await createOrder({

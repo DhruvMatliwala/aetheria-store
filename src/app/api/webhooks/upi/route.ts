@@ -5,7 +5,7 @@ import { getAdminFirestore } from '@/lib/firebase/admin';
 import { Order } from '@/types/order';
 import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
-import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
+import { sendAdminOrderAlert, sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -223,6 +223,24 @@ async function handleIncomingSms(data: Record<string, any>) {
     const orderDoc = matchedDoc;
     const orderData = orderDoc.data() as Order;
     matchedOrderId = orderData.order_id;
+
+    // ── Underpayment Safety Guard: Never deliver key if amount < order.amount ──
+    if (amount && amount > 0 && Math.round(amount * 100) < orderData.amount) {
+      console.warn(`[Webhook UPI] Underpayment detected: Received ₹${amount}, required ₹${(orderData.amount / 100).toFixed(2)}`);
+      try {
+        await sendPaymentVerificationAlert({
+          orderId: orderData.order_id,
+          customerEmail: orderData.customer_email,
+          customerPhone: orderData.customer_phone,
+          planType: orderData.plan_type,
+          amount: Math.round(amount * 100),
+          currency: 'INR',
+          gateway: 'upi_direct',
+          transactionId: utr || creditDocId,
+        });
+      } catch {}
+      return NextResponse.json({ error: 'Underpayment detected. Key withheld.' }, { status: 400 });
+    }
 
     // ── 3. Auto-allocate key slot instantly ──────────────────────────────────
     try {
