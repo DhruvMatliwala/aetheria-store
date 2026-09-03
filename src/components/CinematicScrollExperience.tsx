@@ -535,7 +535,7 @@ export function CinematicScrollExperience({
           Clean Cyber-Cyan / Emerald Palette with High Contrast
           ============================================================
         */}
-        <div className="absolute bottom-[max(4.5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-20 w-[calc(100vw-2rem)] sm:w-[85vw] md:w-full max-w-2xl z-20 pointer-events-none">
+        <div className="absolute bottom-[max(4.5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-12 xl:left-20 w-[calc(100vw-2rem)] sm:w-[85vw] md:w-full max-w-xl xl:max-w-2xl z-20 pointer-events-none">
           {SCENE_OVERLAYS.map((overlay, idx) => (
             <div
               key={idx}
@@ -544,7 +544,7 @@ export function CinematicScrollExperience({
               }}
               className={cn(
                 'absolute bottom-0 left-0 w-full pointer-events-auto',
-                idx > 0 ? 'hidden md:block' : ''
+                idx > 0 ? 'hidden xl:block' : ''
               )}
               style={{
                 opacity: idx === 0 ? 1 : 0,
@@ -628,11 +628,11 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={pricingRef}
-          className="absolute bottom-[max(2.25rem,calc(env(safe-area-inset-bottom,0px)+1.75rem))] sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
+          className="absolute bottom-[max(2.25rem,calc(env(safe-area-inset-bottom,0px)+1.75rem))] sm:bottom-10 md:bottom-12 xl:bottom-16 left-3 right-3 sm:left-0 sm:right-0 sm:mx-auto xl:left-auto xl:right-16 xl:mx-0 z-20 w-auto sm:w-[480px] xl:w-full xl:max-w-md 2xl:max-w-lg space-y-2 sm:space-y-3 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="plans-box"
         >
-          {/* Mobile Scene 2 Eyebrow Header */}
-          <div className="flex items-center justify-between px-1.5 mb-1 sm:hidden">
+          {/* Mobile & Tablet Scene 2 Eyebrow Header */}
+          <div className="flex items-center justify-between px-1.5 mb-1 xl:hidden">
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
               <span className="text-[10px] font-mono font-bold tracking-widest text-cyan-300 uppercase">
@@ -762,11 +762,11 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={scene3TrustRef}
-          className="absolute bottom-[max(2.25rem,calc(env(safe-area-inset-bottom,0px)+1.75rem))] sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-12 lg:right-16 z-20 w-auto sm:w-[420px] md:w-[460px] space-y-2.5 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
+          className="absolute bottom-[max(2.25rem,calc(env(safe-area-inset-bottom,0px)+1.75rem))] sm:bottom-10 md:bottom-12 xl:bottom-16 left-3 right-3 sm:left-0 sm:right-0 sm:mx-auto xl:left-auto xl:right-16 xl:mx-0 z-20 w-auto sm:w-[480px] xl:w-[440px] space-y-2.5 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="trust-box"
         >
-          {/* Mobile Scene 3 Eyebrow Header */}
-          <div className="flex items-center justify-between px-1.5 mb-1 sm:hidden">
+          {/* Mobile & Tablet Scene 3 Eyebrow Header */}
+          <div className="flex items-center justify-between px-1.5 mb-1 xl:hidden">
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[10px] font-mono font-bold tracking-widest text-cyan-300 uppercase">
