@@ -105,9 +105,10 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     if (!targetOrderId) return;
 
     let isSubscribed = true;
-    const interval = setInterval(async () => {
+
+    const checkStatus = async () => {
       try {
-        const res = await fetch(`/api/order/${targetOrderId}`);
+        const res = await fetch(`/api/order/${targetOrderId}`, { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         const isPaid =
@@ -117,18 +118,34 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
           if (typeof window !== 'undefined') {
             localStorage.removeItem('aetheria_active_checkout');
           }
-          clearInterval(interval);
+          isSubscribed = false;
           toast.success('⚡ Payment Verified! Delivering your key...');
-          window.location.href = `/order-success/${targetOrderId}`;
+          const finalOrderId = data.order_id || data?.order?.order_id || targetOrderId;
+          window.location.href = `/order-success/${finalOrderId}`;
         }
       } catch {
         // silent retry
       }
-    }, 2500);
+    };
+
+    // Poll every 2 seconds
+    const interval = setInterval(checkStatus, 2000);
+
+    // Instant check when returning from Google Pay / switching back to Chrome
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkStatus();
+      }
+    };
+
+    window.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('focus', checkStatus);
 
     return () => {
       isSubscribed = false;
       clearInterval(interval);
+      window.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('focus', checkStatus);
     };
   }, [step, upiSession?.orderId, paypalSession?.orderId]);
 

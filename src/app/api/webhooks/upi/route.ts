@@ -183,7 +183,7 @@ async function handleIncomingSms(data: Record<string, any>) {
     });
 
     if (candidates.length > 0) {
-      // Sort by creation time ascending (FIFO: oldest pending order matched first)
+      // Sort by creation time descending (LIFO: newest active checkout matched first)
       candidates.sort((a, b) => {
         const aTime =
           a.data().created_at?.toDate?.()?.getTime?.() ??
@@ -191,10 +191,10 @@ async function handleIncomingSms(data: Record<string, any>) {
         const bTime =
           b.data().created_at?.toDate?.()?.getTime?.() ??
           (typeof b.data().created_at === 'number' ? b.data().created_at : 0);
-        return aTime - bTime;
+        return bTime - aTime;
       });
       matchedDoc = candidates[0];
-      matchMethod = 'Zero-UTR (Whole Rupee FIFO)';
+      matchMethod = 'Zero-UTR (Whole Rupee LIFO)';
     }
   }
 
