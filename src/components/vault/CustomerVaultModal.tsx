@@ -25,6 +25,7 @@ import {
   ExternalLink,
   ChevronDown,
   Sparkles,
+  LogOut,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { DISCORD_URL, REDDIT_URL, TELEGRAM_URL, PLAN_MAP } from '@/lib/constants';
@@ -203,7 +204,7 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
                 </span>
               </div>
               <p className="text-xs text-neutral-400 font-mono">
-                {user ? `Logged in as ${user.email}` : 'Access your purchased license keys & active countdowns'}
+                Access your purchased license keys & active hardware slots
               </p>
             </div>
           </div>
@@ -343,40 +344,38 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
             /* ─────────────────────────────────────────────────────────── */
             <div className="space-y-6">
               {/* Profile Bar */}
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 font-bold font-mono">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-950/70 border border-cyan-500/40 flex items-center justify-center text-cyan-300 font-bold font-mono text-sm flex-shrink-0 shadow-[0_0_12px_rgba(6,182,212,0.2)]">
                     {user.email?.charAt(0).toUpperCase() || 'U'}
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{user.email}</p>
-                    <p className="text-[11px] font-mono text-cyan-400">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-white font-mono truncate">{user.email}</p>
+                    <p className="text-[11px] font-mono text-slate-400">
                       {loading
                         ? 'Synchronizing inventory...'
-                        : `${keys.length} License Key${keys.length === 1 ? '' : 's'} Found`}
+                        : keys.length > 0
+                        ? `${keys.length} License Key${keys.length === 1 ? '' : 's'} Found`
+                        : '0 License Keys Found'}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() => fetchUserKeys(user)}
                     disabled={loading}
                     className="p-2 rounded-xl bg-white/5 border border-white/10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors"
                     title="Refresh Licenses"
                   >
-                    <RefreshCw size={15} className={loading ? 'animate-spin text-cyan-400' : ''} />
+                    <RefreshCw size={14} className={loading ? 'animate-spin text-cyan-400' : ''} />
                   </button>
                   <button
                     onClick={handleSignOut}
-                    className="px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 hover:bg-red-500/20 text-xs font-mono transition-colors flex items-center gap-1.5"
+                    className="px-3 py-1.5 rounded-xl bg-rose-950/40 border border-rose-900/60 hover:bg-rose-900/50 text-rose-300 hover:text-rose-200 text-xs font-mono transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
-                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                      <polyline points="16 17 21 12 16 7" />
-                      <line x1="21" y1="12" x2="9" y2="12" />
-                    </svg>
-                    <span>Sign Out</span>
+                    <LogOut size={13} />
+                    <span className="hidden sm:inline">Sign Out</span>
                   </button>
                 </div>
               </div>
@@ -389,39 +388,21 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
                 </div>
               ) : keys.length === 0 ? (
                 <div className="p-8 rounded-2xl bg-neutral-950/60 border border-dashed border-white/15 text-center space-y-3">
-                  <AlertCircle size={32} className="text-neutral-500 mx-auto" />
-                  <h4 className="text-sm font-semibold text-white">No License Keys Found for this Email</h4>
-                  <p className="text-xs text-neutral-400 font-mono max-w-md mx-auto leading-relaxed">
-                    We didn&apos;t find any paid orders under <span className="text-cyan-300">{user.email}</span>. If you used a different email during checkout, please sign in with that email, or contact us with your payment screenshot / Transaction ID.
+                  <div className="w-12 h-12 rounded-2xl bg-cyan-950/40 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mx-auto mb-2 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
+                    <Key size={20} className="opacity-75" />
+                  </div>
+                  <h4 className="text-sm font-bold text-white tracking-wide">No License Keys Found in this Account</h4>
+                  <p className="text-xs text-neutral-400 font-sans max-w-md mx-auto leading-relaxed">
+                    We didn&apos;t find any completed orders under this account. If you used a different email during checkout, please sign in with that address below.
                   </p>
-                  <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-                    <a
-                      href={DISCORD_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 rounded-xl bg-[#5865F2]/20 border border-[#5865F2]/40 text-[#5865F2] hover:bg-[#5865F2]/30 text-xs font-mono flex items-center gap-1.5"
+                  <div className="pt-2">
+                    <button
+                      onClick={handleSignOut}
+                      className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-medium text-white transition-all inline-flex items-center gap-2 cursor-pointer"
                     >
-                      <span>Discord Support</span>
-                      <ExternalLink size={12} />
-                    </a>
-                    <a
-                      href={REDDIT_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 rounded-xl bg-[#FF4500]/20 border border-[#FF4500]/40 text-[#FF4500] hover:bg-[#FF4500]/30 text-xs font-mono flex items-center gap-1.5"
-                    >
-                      <span>Reddit Support</span>
-                      <ExternalLink size={12} />
-                    </a>
-                    <a
-                      href={TELEGRAM_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 rounded-xl bg-[#229ED9]/20 border border-[#229ED9]/40 text-[#229ED9] hover:bg-[#229ED9]/30 text-xs font-mono flex items-center gap-1.5"
-                    >
-                      <span>Telegram (@sleekfx3)</span>
-                      <ExternalLink size={12} />
-                    </a>
+                      <LogOut size={13} className="text-slate-400" />
+                      <span>Sign In with Different Email</span>
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -526,37 +507,40 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
         </div>
 
         {/* Footer Support Info */}
-        <div className="px-6 py-3.5 border-t border-white/10 bg-black/40 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-neutral-400">
+        <div className="px-6 py-3.5 border-t border-white/10 bg-black/50 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-neutral-400">
           <div className="flex items-center gap-1.5">
-            <Sparkles size={12} className="text-cyan-400" />
-            <span>Need help or bought with another email?</span>
+            <Sparkles size={13} className="text-cyan-400" />
+            <span>Need order assistance or manual sync?</span>
           </div>
           <div className="flex items-center gap-3">
             <a
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
             >
-              Discord
+              <span>Discord</span>
+              <ExternalLink size={11} />
             </a>
-            <span>•</span>
+            <span className="text-white/20">•</span>
             <a
               href={REDDIT_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
             >
-              Reddit
+              <span>Reddit</span>
+              <ExternalLink size={11} />
             </a>
-            <span>•</span>
+            <span className="text-white/20">•</span>
             <a
               href={TELEGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1"
             >
-              Telegram
+              <span>Telegram</span>
+              <ExternalLink size={11} />
             </a>
           </div>
         </div>
