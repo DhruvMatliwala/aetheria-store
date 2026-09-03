@@ -238,6 +238,42 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
   const amountRupeesRound = Math.round(upiSession?.amountRupees || 180);
 
+  const handleDownloadQr = () => {
+    try {
+      const svg = document.getElementById('aetheria-upi-qr-svg') as unknown as SVGElement | null;
+      if (!svg) {
+        toast.error('QR code not ready.');
+        return;
+      }
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        canvas.width = 440;
+        canvas.height = 440;
+        if (ctx) {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, 440, 440);
+          ctx.drawImage(img, 20, 20, 400, 400);
+          const pngFile = canvas.toDataURL('image/png');
+          const downloadLink = document.createElement('a');
+          downloadLink.download = `aetheria-upi-qr-₹${amountRupeesRound}.png`;
+          downloadLink.href = pngFile;
+          downloadLink.click();
+          toast.success('QR saved to Gallery! In GPay: Tap Scan QR ➔ Upload from Gallery', {
+            duration: 4500,
+            icon: '📥',
+          });
+        }
+      };
+      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    } catch (err) {
+      console.error('Download QR failed:', err);
+      toast.error('Could not save QR image.');
+    }
+  };
+
   const handleCopyPaypalEmail = () => {
     if (!paypalSession?.paypalEmail) return;
     navigator.clipboard.writeText(paypalSession.paypalEmail);
@@ -699,9 +735,10 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
           {/* QR Code & Payee Card */}
           <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.15)]">
-            <div className="p-3 bg-white rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.25)] mb-3 flex items-center justify-center">
+            <div className="p-3 bg-white rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.25)] mb-2 flex items-center justify-center">
               {(currentUpiString || upiSession?.upiString) && (
                 <QRCodeSVG
+                  id="aetheria-upi-qr-svg"
                   value={currentUpiString || upiSession!.upiString}
                   size={165}
                   level="H"
@@ -709,6 +746,19 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                 />
               )}
             </div>
+
+            {/* Save QR to Device / Gallery Button */}
+            <button
+              type="button"
+              onClick={handleDownloadQr}
+              className="mb-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-800 hover:bg-surface-700 text-cyan-300 hover:text-white border border-cyan-500/30 text-[11px] font-mono transition-all shadow-sm active:scale-95 group"
+              title="Save QR Code image to device gallery"
+            >
+              <svg className="w-3.5 h-3.5 text-cyan-400 group-hover:translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Save QR to Gallery</span>
+            </button>
 
             <p className="text-xs text-gray-300 font-medium mb-2.5 text-center">
               Scan with <span className="text-cyan-400 font-bold">Google Pay</span>,{' '}

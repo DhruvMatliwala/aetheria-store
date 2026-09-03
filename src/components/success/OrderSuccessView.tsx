@@ -3,8 +3,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { KeyReveal } from '@/components/success/KeyReveal';
-import { ActivationGuide } from '@/components/success/ActivationGuide';
-import { ReviewSubmissionWidget } from '@/components/success/ReviewSubmissionWidget';
 import { OrderPublic } from '@/types/order';
 import { DISCORD_URL, REDDIT_URL, TELEGRAM_URL, PLANS } from '@/lib/constants';
 import {
@@ -420,12 +418,6 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
           </div>
         </div>
 
-        {/* ── Post-Purchase Delivery Feedback Widget ────────────────────────── */}
-        <ReviewSubmissionWidget
-          orderId={orderId}
-          planName={matchedPlan?.name ?? 'Standard License'}
-        />
-
         {/* ── 1-on-1 Direct Support Box ──────────────────────────────────────── */}
         <div className="mt-6 p-6 rounded-3xl bg-neutral-950/80 backdrop-blur-xl border border-cyan-500/30 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 text-center sm:text-left">
@@ -433,9 +425,9 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
               <HelpCircle size={20} />
             </div>
             <div>
-              <h3 className="text-sm font-medium text-white font-sans">1-on-1 Trainer Support</h3>
+              <h3 className="text-sm font-medium text-white font-sans">Need Direct Support?</h3>
               <p className="text-xs text-neutral-400 font-sans mt-0.5">
-                Questions about activation or coords? Reach out directly.
+                Questions about your key or coordinates? Reach out 24/7.
               </p>
             </div>
           </div>
@@ -446,20 +438,9 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 sm:flex-initial px-4 py-2 rounded-full bg-[#5865F2]/20 hover:bg-[#5865F2]/30 border border-[#5865F2]/40 text-xs font-mono text-white transition-all flex items-center justify-center gap-1.5 shadow-md"
+              className="flex-1 sm:flex-initial px-5 py-2.5 rounded-full bg-[#5865F2]/20 hover:bg-[#5865F2]/30 border border-[#5865F2]/40 text-xs font-mono text-white transition-all flex items-center justify-center gap-2 shadow-md"
             >
-              <span>Discord Profile</span>
-              <ExternalLink size={12} />
-            </a>
-
-            {/* Reddit */}
-            <a
-              href={REDDIT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 sm:flex-initial px-4 py-2 rounded-full bg-[#FF4500]/20 hover:bg-[#FF4500]/30 border border-[#FF4500]/40 text-xs font-mono text-white transition-all flex items-center justify-center gap-1.5 shadow-md"
-            >
-              <span>Reddit Profile</span>
+              <span>Discord</span>
               <ExternalLink size={12} />
             </a>
 
@@ -468,16 +449,13 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
               href={TELEGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 sm:flex-initial px-4 py-2 rounded-full bg-[#229ED9]/20 hover:bg-[#229ED9]/30 border border-[#229ED9]/40 text-xs font-mono text-white transition-all flex items-center justify-center gap-1.5 shadow-md"
+              className="flex-1 sm:flex-initial px-5 py-2.5 rounded-full bg-[#229ED9]/20 hover:bg-[#229ED9]/30 border border-[#229ED9]/40 text-xs font-mono text-white transition-all flex items-center justify-center gap-2 shadow-md"
             >
-              <span>Telegram (@sleekfx3)</span>
+              <span>Telegram</span>
               <ExternalLink size={12} />
             </a>
           </div>
         </div>
-
-        {/* 4-Step Activation Guide */}
-        <ActivationGuide />
 
         {/* Minimal Footer */}
         <footer className="mt-14 pt-6 border-t border-white/5 text-center text-xs font-mono text-neutral-500 flex flex-col sm:flex-row items-center justify-between gap-3">
