@@ -221,15 +221,20 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   };
 
   const amountRupeesRound = Math.round(upiSession?.amountRupees || 180);
-  const gpayNativeIntent = `intent://pay?pa=dhruvmatliwala123@oksbi&pn=Dhruv%20-076&am=${amountRupeesRound}&cu=INR&aid=uGICAgMC507CUEg#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
-  const universalUpiIntent = `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=Dhruv%20-076&am=${amountRupeesRound}&cu=INR&aid=uGICAgMC507CUEg`;
 
   const handleOpenGPay = () => {
     if (currentUpiId) {
       navigator.clipboard.writeText(currentUpiId);
+      setCopiedUpi(true);
+      setTimeout(() => setCopiedUpi(false), 3000);
     }
-    toast.success(`Opening Google Pay for ₹${amountRupeesRound}...`, { duration: 2500 });
-    window.location.href = gpayNativeIntent;
+    toast.success('UPI ID copied! Opening Google Pay...', { duration: 3000 });
+    const isAndroid = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent);
+    if (isAndroid) {
+      window.location.href = 'intent://#Intent;package=com.google.android.apps.nbu.paisa.user;scheme=upi;end;';
+    } else {
+      window.location.href = 'gpay://';
+    }
   };
 
   const handleCopyAmount = () => {
@@ -714,24 +719,14 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
           {/* QR Code Card */}
           <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.15)]">
-            <div className="p-2 bg-white rounded-xl shadow-lg mb-3 flex items-center justify-center max-w-[200px]">
-              {currentUpiId === 'dhruvmatliwala123@oksbi' ? (
-                <img
-                  src="/gpay-qr.jpg"
-                  alt="Official Google Pay QR Code"
-                  className="w-44 h-auto rounded-lg object-contain"
+            <div className="p-3 bg-white rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.25)] mb-3 flex items-center justify-center">
+              {(currentUpiString || upiSession?.upiString) && (
+                <QRCodeSVG
+                  value={currentUpiString || upiSession!.upiString}
+                  size={165}
+                  level="H"
+                  includeMargin={false}
                 />
-              ) : (
-                (currentUpiString || upiSession?.upiString) && (
-                  <div className="p-2">
-                    <QRCodeSVG
-                      value={currentUpiString || upiSession!.upiString}
-                      size={160}
-                      level="H"
-                      includeMargin={false}
-                    />
-                  </div>
-                )
               )}
             </div>
 
@@ -813,23 +808,20 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               </div>
             </div>
 
-            {/* Mobile Direct GPay Package Intent & Fallback */}
+            {/* Mobile: Copy UPI ID & Open Google Pay */}
             {(currentUpiString || upiSession?.upiString) && (
-              <div className="mt-2 sm:hidden w-full max-w-xs space-y-1.5">
+              <div className="mt-3 sm:hidden w-full max-w-xs space-y-1.5">
                 <button
                   type="button"
                   onClick={handleOpenGPay}
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white text-xs font-bold text-center shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white text-xs font-bold text-center shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-transform active:scale-95 flex items-center justify-center gap-2"
                 >
-                  <Sparkles size={14} className="text-yellow-300" />
-                  Pay ₹{amountRupeesRound} with Google Pay
+                  <Copy size={14} className="text-cyan-200" />
+                  <span>Copy UPI ID & Open Google Pay</span>
                 </button>
-                <a
-                  href={universalUpiIntent}
-                  className="block text-center text-[11px] text-gray-400 hover:text-cyan-300 transition-colors"
-                >
-                  Or pay with PhonePe, Paytm, or other app →
-                </a>
+                <p className="text-[10px] text-gray-400 text-center">
+                  💡 In GPay: Tap <strong className="text-cyan-300">Pay UPI ID</strong> ➔ Paste & Pay <strong className="text-emerald-300">₹{amountRupeesRound}</strong>
+                </p>
               </div>
             )}
           </div>
