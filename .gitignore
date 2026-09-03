@@ -31,3 +31,6 @@ yarn-error.log*
 .vscode/
 *.tsbuildinfo
 tsconfig.tsbuildinfo
+
+# Test Outputs
+public/test-screenshots/
