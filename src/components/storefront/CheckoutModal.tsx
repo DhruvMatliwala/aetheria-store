@@ -59,7 +59,6 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const [utrNumber, setUtrNumber] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
-  const [copiedAmount, setCopiedAmount] = useState(false);
   const [showUtrHelp, setShowUtrHelp] = useState(false);
   const [showManualUtr, setShowManualUtr] = useState(false);
 
@@ -238,29 +237,6 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   };
 
   const amountRupeesRound = Math.round(upiSession?.amountRupees || 180);
-
-  const handleOpenGPay = () => {
-    if (currentUpiId) {
-      navigator.clipboard.writeText(currentUpiId);
-      setCopiedUpi(true);
-      setTimeout(() => setCopiedUpi(false), 3000);
-    }
-    toast.success('UPI ID copied! Opening Google Pay...', { duration: 3000 });
-    const isAndroid = typeof navigator !== 'undefined' && /android/i.test(navigator.userAgent);
-    if (isAndroid) {
-      window.location.href = 'intent://#Intent;package=com.google.android.apps.nbu.paisa.user;scheme=upi;end;';
-    } else {
-      window.location.href = 'gpay://';
-    }
-  };
-
-  const handleCopyAmount = () => {
-    if (!upiSession?.amountRupees) return;
-    navigator.clipboard.writeText(Math.round(upiSession.amountRupees).toString());
-    setCopiedAmount(true);
-    toast.success(`Copied amount: ₹${Math.round(upiSession.amountRupees)}`);
-    setTimeout(() => setCopiedAmount(false), 2500);
-  };
 
   const handleCopyPaypalEmail = () => {
     if (!paypalSession?.paypalEmail) return;
@@ -702,39 +678,26 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
            ════════════════════════════════════════════════════════════════════════ */
         <div className="space-y-4">
           {/* Top Amount & Back Button */}
-          {/* Amount Box with 1-Tap Copy */}
-          <div className="flex items-center justify-between bg-surface-900 rounded-xl p-3 border border-surface-600">
+          <div className="flex items-center justify-between bg-surface-900 rounded-xl px-4 py-3 border border-surface-700">
             <div>
-              <p className="text-[11px] text-gray-400 font-mono">Amount to Pay</p>
+              <p className="text-[10px] text-gray-400 uppercase tracking-wider font-mono">Amount to Pay</p>
               <p className="text-xl font-black text-white flex items-center gap-1.5">
-                ₹{Math.round(upiSession?.amountRupees || 0)}{' '}
-                <span className="text-xs text-emerald-400 font-normal">INR</span>
+                ₹{amountRupeesRound} <span className="text-xs text-emerald-400 font-medium">INR</span>
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleCopyAmount}
-                className="flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 px-2.5 py-1.5 rounded-lg bg-emerald-950/60 border border-emerald-500/30 transition-colors"
-                title="Copy exact amount"
-              >
-                {copiedAmount ? <Check size={12} /> : <Copy size={12} />}
-                {copiedAmount ? 'Copied' : `Copy ₹${Math.round(upiSession?.amountRupees || 0)}`}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setStep('details');
-                  setError(null);
-                }}
-                className="text-xs text-cyan-400 hover:text-cyan-300 font-medium px-2 py-1.5 rounded-lg bg-cyan-950/50 border border-cyan-500/30 transition-colors"
-              >
-                ← Back
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setStep('details');
+                setError(null);
+              }}
+              className="text-xs text-cyan-400 hover:text-cyan-300 font-medium px-3 py-1.5 rounded-lg bg-cyan-950/50 border border-cyan-500/30 transition-colors"
+            >
+              ← Back
+            </button>
           </div>
 
-          {/* QR Code Card */}
+          {/* QR Code & Payee Card */}
           <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.15)]">
             <div className="p-3 bg-white rounded-2xl shadow-[0_0_25px_rgba(6,182,212,0.25)] mb-3 flex items-center justify-center">
               {(currentUpiString || upiSession?.upiString) && (
@@ -747,16 +710,15 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               )}
             </div>
 
-            <p className="text-xs text-gray-300 font-medium mb-2 text-center">
-              Scan with <span className="text-cyan-400 font-bold">GPay</span>,{' '}
+            <p className="text-xs text-gray-300 font-medium mb-2.5 text-center">
+              Scan with <span className="text-cyan-400 font-bold">Google Pay</span>,{' '}
               <span className="text-cyan-400 font-bold">PhonePe</span>, or{' '}
               <span className="text-cyan-400 font-bold">Paytm</span>
             </p>
 
-            {/* Payee Info & Copy Button */}
+            {/* UPI ID Box with 1-Tap Copy */}
             <div className="w-full max-w-xs">
-              {/* UPI ID */}
-              <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-neutral-950 border border-neutral-800 text-xs">
+              <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs">
                 <div className="truncate pr-2">
                   <span className="text-gray-400 block text-[10px]">UPI ID</span>
                   <span className="font-mono text-cyan-300 font-bold">{currentUpiId}</span>
@@ -764,7 +726,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                 <button
                   type="button"
                   onClick={handleCopyUpi}
-                  className="flex items-center gap-1 text-[11px] font-semibold text-white bg-cyan-600 hover:bg-cyan-500 px-2.5 py-1 rounded-md transition-colors shrink-0"
+                  className="flex items-center gap-1 text-[11px] font-semibold text-white bg-cyan-600 hover:bg-cyan-500 px-3 py-1.5 rounded-lg transition-colors shrink-0 shadow-sm"
                 >
                   {copiedUpi ? <Check size={12} /> : <Copy size={12} />}
                   {copiedUpi ? 'Copied' : 'Copy'}
@@ -772,115 +734,58 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               </div>
             </div>
 
-            {/* 3-Step Clear Instructions */}
-            <div className="w-full max-w-xs mt-3 px-3 py-2 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-[11px] text-gray-300 space-y-1 text-left">
-              <div className="flex items-start gap-1.5">
+            {/* Clean Instructions & Unified Warning */}
+            <div className="w-full max-w-xs mt-3 p-3 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-[11px] text-gray-300 space-y-1.5 text-left">
+              <div className="flex items-start gap-2">
                 <span className="text-cyan-400 font-bold font-mono">1.</span>
                 <span>Scan QR or pay to UPI ID above.</span>
               </div>
-              <div className="flex items-start gap-1.5">
+              <div className="flex items-start gap-2">
                 <span className="text-cyan-400 font-bold font-mono">2.</span>
-                <span>Enter exact amount: <strong className="text-emerald-300 font-bold">₹{Math.round(upiSession?.amountRupees || 0)}</strong></span>
+                <span>Enter exact amount: <strong className="text-emerald-300 font-bold text-xs">₹{amountRupeesRound}</strong></span>
               </div>
-              <div className="flex items-start gap-1.5">
-                <span className="text-cyan-400 font-bold font-mono">3.</span>
-                <span>⚡ <strong className="text-white">Auto-Unlocks in 2-3s!</strong> No UTR needed.</span>
-              </div>
-            </div>
-
-            {/* Google Pay Smart Bank Failover Route Switcher */}
-            <div className="w-full max-w-xs pt-2.5 pb-1 space-y-1.5">
-              <div className="flex items-center justify-between text-[10px] font-mono">
-                <span className="flex items-center gap-1 text-cyan-400 font-semibold">
-                  <Sparkles size={11} /> Smart Bank Routing
-                </span>
-                <span className="text-emerald-400 flex items-center gap-1 font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> 4 Active
-                </span>
-              </div>
-
-              <div className="grid grid-cols-4 gap-1 p-0.5 bg-neutral-950/80 rounded-lg border border-neutral-800">
-                {SMART_ROUTING_UPI_IDS.map((route) => {
-                  const isSelected = currentUpiId === route.vpa;
-                  return (
-                    <button
-                      key={route.id}
-                      type="button"
-                      onClick={() => {
-                        setActiveVpa(route.vpa);
-                        toast.success(`Switched to ${route.bank} route`, { duration: 1500 });
-                      }}
-                      className={cn(
-                        'py-1 px-1 rounded-md text-[10px] font-mono font-medium transition-all text-center truncate',
-                        isSelected
-                          ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-400/60 shadow-[0_0_8px_rgba(6,182,212,0.25)]'
-                          : 'text-neutral-400 hover:text-neutral-200 hover:bg-white/5'
-                      )}
-                      title={`${route.bank} (${route.vpa})`}
-                    >
-                      {route.bank.replace(' Bank', '')}
-                    </button>
-                  );
-                })}
+              <div className="flex items-start gap-2 text-amber-300/90 pt-1 border-t border-cyan-500/20">
+                <span className="text-xs">⚠️</span>
+                <span>Pay exact <strong className="text-white">₹{amountRupeesRound}</strong> so your key unlocks automatically in 2–3s.</span>
               </div>
             </div>
-
-            {/* Mobile: Copy UPI ID & Open Google Pay */}
-            {(currentUpiString || upiSession?.upiString) && (
-              <div className="mt-3 sm:hidden w-full max-w-xs space-y-1.5">
-                <button
-                  type="button"
-                  onClick={handleOpenGPay}
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white text-xs font-bold text-center shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-transform active:scale-95 flex items-center justify-center gap-2"
-                >
-                  <Copy size={14} className="text-cyan-200" />
-                  <span>Copy UPI ID & Open Google Pay</span>
-                </button>
-                <p className="text-[10px] text-gray-400 text-center">
-                  💡 In GPay: Tap <strong className="text-cyan-300">Pay UPI ID</strong> ➔ Paste & Pay <strong className="text-emerald-300">₹{amountRupeesRound}</strong>
-                </p>
-              </div>
-            )}
           </div>
 
-          {/* Zero-UTR Live Detection Radar Card */}
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-surface-900 to-cyan-950/60 border border-emerald-500/40 shadow-lg text-center space-y-2">
+          {/* Live Status Radar Card */}
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-surface-900 to-cyan-950/40 border border-emerald-500/30 shadow-md text-center space-y-1">
             <div className="flex items-center justify-center gap-2">
-              <span className="relative flex h-3 w-3">
+              <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
               </span>
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-300">
-                Listening for Bank Deposit...
+              <span className="text-xs font-bold text-emerald-300 tracking-wide">
+                Waiting for payment...
               </span>
             </div>
-            <p className="text-xs text-gray-200 font-medium">
-              Pay the exact <strong className="text-cyan-300 font-bold">₹{Math.round(upiSession?.amountRupees || 0)}</strong> via GPay, PhonePe, or Paytm.
-            </p>
             <p className="text-[11px] text-gray-400">
-              ⚡ <strong className="text-white">Zero UTR Needed!</strong> This window will automatically unlock your license key in 2-3 seconds after payment.
-            </p>
-            <p className="text-[10px] text-amber-400/90 font-mono">
-              ⚠️ Please enter the exact amount (₹{Math.round(upiSession?.amountRupees || 0)}). Less or incorrect amounts cannot unlock your key automatically.
+              Your license key will appear on screen automatically after transfer.
             </p>
           </div>
 
-          {/* Fallback Manual UTR Accordion */}
+          {/* Fallback Manual Verification Accordion */}
           <div className="pt-1">
             <button
               type="button"
               onClick={() => setShowManualUtr(!showManualUtr)}
-              className="w-full text-center text-[11px] text-gray-400 hover:text-gray-300 transition-colors py-1 flex items-center justify-center gap-1"
+              className="w-full text-center text-[11px] text-gray-400 hover:text-cyan-300 transition-colors py-1 flex items-center justify-center gap-1"
             >
-              <span>{showManualUtr ? '▲ Hide manual UTR form' : '▼ Paid with a different amount or want to enter UTR manually?'}</span>
+              <span>{showManualUtr ? '▲ Hide manual verification' : 'Paid but screen didn’t update? Enter Transaction ID →'}</span>
             </button>
 
             {showManualUtr && (
               <form onSubmit={handleVerifyUtr} className="space-y-3 pt-3 border-t border-surface-700 mt-2">
                 <div>
                   <label htmlFor="utr-input" className="block text-xs font-bold text-gray-200 mb-1">
-                    Enter 12-Digit UPI Reference No. / UTR <span className="text-red-400">*</span>
+                    Enter 12-Digit UPI Reference / Transaction ID <span className="text-red-400">*</span>
                   </label>
+                  <p className="text-[10px] text-gray-400 mb-1.5">
+                    Found on your payment receipt in Google Pay, PhonePe, or Paytm.
+                  </p>
                   <div className="relative">
                     <input
                       id="utr-input"
@@ -888,7 +793,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                       maxLength={12}
                       value={utrNumber}
                       onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, ''))}
-                      placeholder="e.g. 423819284719"
+                      placeholder="e.g. 624760113405"
                       className="w-full bg-surface-900 border border-cyan-500/50 rounded-xl px-3.5 py-2.5 text-white font-mono text-base tracking-widest placeholder-gray-600 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-colors"
                       required
                     />
@@ -905,7 +810,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                       className="text-[11px] text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors"
                     >
                       <HelpCircle size={13} />
-                      <span>Where do I find this 12-digit number?</span>
+                      <span>Where to find this 12-digit number?</span>
                     </button>
 
                     {showUtrHelp && (
@@ -926,7 +831,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                           </div>
                           <div className="p-2 rounded-lg bg-black/40 border border-white/5">
                             <span className="font-bold text-white block">Bank SMS:</span>
-                            <span className="text-gray-400">Look for the 12-digit number in the SMS received right after paying</span>
+                            <span className="text-gray-400">The 12-digit number mentioned in the bank SMS</span>
                           </div>
                         </div>
                       </div>
