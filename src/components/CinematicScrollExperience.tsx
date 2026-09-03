@@ -570,7 +570,9 @@ export function CinematicScrollExperience({
                   )}
                 >
                   <span className="block text-white">{overlay.titleLine1}</span>
-                  <span className="block text-cyan-400">{overlay.titleLine2}</span>
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#00e5ff] via-[#0088cc] to-[#0a3d91] pb-1">
+                    {overlay.titleLine2}
+                  </span>
                 </h2>
               </div>
 
