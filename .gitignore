@@ -34,3 +34,4 @@ tsconfig.tsbuildinfo
 
 # Test Outputs
 public/test-screenshots/
+.playwright-mcp/

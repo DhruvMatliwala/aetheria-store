@@ -129,22 +129,17 @@ export default function HomePage() {
       <Header />
 
       {/* Conditionally Render Experience based on STOREFRONT_MODE */}
-      {STOREFRONT_MODE === 'video' ? (
-        <>
-          {/* Preloader / Cinematic Splash Screen */}
-          <Preloader />
-
-          {/* High-Performance Canvas Image-Sequence Scrollytelling Experience */}
-          <CinematicScrollExperience
-            stockCounts={counts}
-            onBuyClick={handleBuyClick}
-            onNotifyClick={handleNotifyClick}
-            waitlistedPlans={waitlistedPlans}
-          />
-        </>
-      ) : (
+      {STOREFRONT_MODE === 'static' ? (
         /* Zero-Lag, Instant-Loading 4K Cyberpunk Static Experience */
         <StaticStorefrontExperience
+          stockCounts={counts}
+          onBuyClick={handleBuyClick}
+          onNotifyClick={handleNotifyClick}
+          waitlistedPlans={waitlistedPlans}
+        />
+      ) : (
+        /* Crafted Scrollytelling Experience with Pinned Viewport & Docked HUD Capsules */
+        <CinematicScrollExperience
           stockCounts={counts}
           onBuyClick={handleBuyClick}
           onNotifyClick={handleNotifyClick}

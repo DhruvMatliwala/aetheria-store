@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Plan } from '@/types/plan';
 import { Review } from '@/types/review';
-import { PLANS, DISCORD_URL, REDDIT_URL, TELEGRAM_URL } from '@/lib/constants';
+import { PLANS, DISCORD_URL, REDDIT_URL, TELEGRAM_URL, CINEMATIC_MEDIA_MODE } from '@/lib/constants';
 import { triggerParticleBurst } from '@/components/interactive/ParticleBurst';
 import { AmbientMistParticles } from '@/components/interactive/AmbientMistParticles';
 import { cn } from '@/lib/utils';
@@ -30,11 +30,29 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// 3 Core Scene Videos (Scene 1: Mewtwo Awakening, Scene 2: Shibuya, Scene 3: Charizard vs Greninja)
-const SCENE_VIDEOS = [
-  { id: 'scene1', src: '/videos/scene5.mp4', fallbackSrc: '/videos/Scene5.mp4' },
-  { id: 'scene2', src: '/videos/Scene2.mp4', fallbackSrc: '/videos/scene2.mp4' },
-  { id: 'scene3', src: '/videos/Scene3.mp4', fallbackSrc: '/videos/scene3.mp4' },
+// 3 Core Scene Media (Exact Paused Frames from Video Scenes or Live Looping MP4 Videos)
+const SCENE_MEDIA = [
+  {
+    id: 'scene1',
+    src: '/videos/scene5.mp4',
+    fallbackSrc: '/videos/Scene5.mp4',
+    imageSrc: '/images/scenes/scene1-frame.jpg',
+    alt: 'Mewtwo Cryo-Awakening Scene Frame',
+  },
+  {
+    id: 'scene2',
+    src: '/videos/Scene2.mp4',
+    fallbackSrc: '/videos/scene2.mp4',
+    imageSrc: '/images/scenes/scene2-frame.jpg',
+    alt: 'Shibuya Crossing & Pikachu Scene Frame',
+  },
+  {
+    id: 'scene3',
+    src: '/videos/Scene3.mp4',
+    fallbackSrc: '/videos/scene3.mp4',
+    imageSrc: '/images/scenes/scene3-frame.jpg',
+    alt: 'Mega Charizard X vs Ash-Greninja Combat Showdown Scene Frame',
+  },
 ];
 
 // Scene Metadata for Bottom-Left Docked Overlays
@@ -103,29 +121,33 @@ const FAQS = [
   },
 ];
 
-interface SceneVideoProps {
-  src: string;
-  fallbackSrc?: string;
+interface SceneMediaProps {
+  item: (typeof SCENE_MEDIA)[number];
+  mediaMode: 'image' | 'video';
   preload?: 'auto' | 'metadata' | 'none';
-  videoClassName?: string;
+  mediaClassName?: string;
   onVideoMount?: (video: HTMLVideoElement | null) => void;
+  priority?: boolean;
 }
 
 /**
- * Ultra-Lean Hardware Accelerated Video Node
- * Runs with 0 React overhead and native WebKit/Blink hardware decoding.
+ * Ultra-Lean Hardware-Accelerated Scene Media Node
+ * - In 'image' mode: renders the crystal-clear paused frame extracted directly from the video scene (0% GPU video decoding load, 0ms lag, butter-smooth 60fps scrub).
+ * - In 'video' mode: runs native WebKit/Blink video decoding with zero React overhead.
  */
-function SceneVideo({
-  src,
-  fallbackSrc,
+function SceneMedia({
+  item,
+  mediaMode,
   preload = 'none',
-  videoClassName = 'object-contain object-[center_24%] sm:object-cover sm:object-center',
+  mediaClassName = 'object-contain object-[center_24%] sm:object-cover sm:object-center',
   onVideoMount,
-}: SceneVideoProps) {
+  priority = false,
+}: SceneMediaProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // Enforce iOS WebKit inline autoplay rules directly on DOM element
+  // Enforce iOS WebKit inline autoplay rules directly on DOM element when in video mode
   useEffect(() => {
+    if (mediaMode !== 'video') return;
     const video = videoRef.current;
     if (!video) return;
 
@@ -135,28 +157,42 @@ function SceneVideo({
     video.muted = true;
     video.defaultMuted = true;
     video.controls = false;
-  }, []);
+  }, [mediaMode]);
 
   return (
-    <div className="absolute inset-0 w-full h-full bg-black pointer-events-none">
-      <video
-        ref={(el) => {
-          videoRef.current = el;
-          if (onVideoMount) onVideoMount(el);
-        }}
-        muted
-        playsInline
-        loop={false}
-        controls={false}
-        preload={preload}
-        className={cn(
-          'absolute inset-0 w-full h-full will-change-transform transform-gpu pointer-events-none',
-          videoClassName
-        )}
-      >
-        <source src={src} type="video/mp4" />
-        {fallbackSrc && <source src={fallbackSrc} type="video/mp4" />}
-      </video>
+    <div className="absolute inset-0 w-full h-full bg-black pointer-events-none select-none">
+      {mediaMode === 'image' ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={item.imageSrc}
+          alt={item.alt}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          className={cn(
+            'absolute inset-0 w-full h-full will-change-transform transform-gpu pointer-events-none select-none',
+            mediaClassName
+          )}
+        />
+      ) : (
+        <video
+          ref={(el) => {
+            videoRef.current = el;
+            if (onVideoMount) onVideoMount(el);
+          }}
+          muted
+          playsInline
+          loop={false}
+          controls={false}
+          preload={preload}
+          className={cn(
+            'absolute inset-0 w-full h-full will-change-transform transform-gpu pointer-events-none',
+            mediaClassName
+          )}
+        >
+          <source src={item.src} type="video/mp4" />
+          {item.fallbackSrc && <source src={item.fallbackSrc} type="video/mp4" />}
+        </video>
+      )}
     </div>
   );
 }
@@ -207,8 +243,20 @@ export function CinematicScrollExperience({
   const canGoLeft = hasMultiple && activeReviewIdx > 0;
   const canGoRight = hasMultiple && activeReviewIdx < liveReviews.length - 1;
 
-  // Anticipatory Lookahead prewarmer: quietly buffers next video in background
+  // Preload Scene 2 and 3 images into browser cache so scrub cross-dissolve is instantaneous
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (CINEMATIC_MEDIA_MODE === 'image') {
+      const img2 = new window.Image();
+      img2.src = '/images/scenes/scene2-frame.jpg';
+      const img3 = new window.Image();
+      img3.src = '/images/scenes/scene3-frame.jpg';
+    }
+  }, []);
+
+  // Anticipatory Lookahead prewarmer: quietly buffers next video in background (video mode only)
   const prewarmVideo = useCallback((targetIdx: number) => {
+    if (CINEMATIC_MEDIA_MODE !== 'video') return;
     if (prewarmedRef.current[targetIdx]) return;
     prewarmedRef.current[targetIdx] = true;
     const vid = videoElementsRef.current[targetIdx];
@@ -218,9 +266,10 @@ export function CinematicScrollExperience({
     }
   }, []);
 
-  // Zero-overhead video decoder switcher:
+  // Zero-overhead video decoder switcher (video mode only):
   // Plays video once, pauses at last frame, and replays fresh from start when returning!
   const switchVideo = useCallback((targetIdx: number) => {
+    if (CINEMATIC_MEDIA_MODE !== 'video') return;
     if (activeSceneRef.current === targetIdx) {
       return;
     }
@@ -247,8 +296,9 @@ export function CinematicScrollExperience({
     });
   }, []);
 
-  // Safe initial autoplay for Scene 0 only, plus gentle gesture unlocker
+  // Safe initial autoplay for Scene 0 only, plus gentle gesture unlocker (video mode only)
   useEffect(() => {
+    if (CINEMATIC_MEDIA_MODE !== 'video') return;
     switchVideo(0);
 
     const unlockFirstVideo = () => {
@@ -278,6 +328,7 @@ export function CinematicScrollExperience({
 
   // Update active scene for GPU video decoding management with exact React bailout guard
   const handleScrollProgress = useCallback((progress: number) => {
+    if (CINEMATIC_MEDIA_MODE !== 'video') return;
     let newIdx = 0;
     if (progress < 0.28) {
       newIdx = 0;
@@ -457,7 +508,7 @@ export function CinematicScrollExperience({
       >
         {/* Layer 1: Seamless Optical Dissolve Video Scenes (Scene 1, Scene 2, Scene 3) */}
         <div className="absolute inset-0 w-full h-full bg-black">
-          {SCENE_VIDEOS.map((item, idx) => (
+          {SCENE_MEDIA.map((item, idx) => (
             <div
               key={item.id}
               ref={(el) => {
@@ -468,18 +519,15 @@ export function CinematicScrollExperience({
                 zIndex: idx + 1,
               }}
             >
-              <SceneVideo
-                src={item.src}
-                fallbackSrc={item.fallbackSrc}
+              <SceneMedia
+                item={item}
+                mediaMode={CINEMATIC_MEDIA_MODE}
+                priority={idx === 0}
                 preload={idx === 0 ? 'auto' : 'none'}
                 onVideoMount={(el) => {
                   videoElementsRef.current[idx] = el;
                 }}
-                videoClassName={
-                  idx === 2
-                    ? 'object-contain object-[center_24%] sm:object-cover sm:object-center'
-                    : 'object-contain object-[center_24%] sm:object-cover sm:object-center'
-                }
+                mediaClassName="object-contain object-[center_24%] sm:object-cover sm:object-center"
               />
             </div>
           ))}

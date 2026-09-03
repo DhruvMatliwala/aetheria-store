@@ -1,9 +1,10 @@
 import { Plan } from '@/types/plan';
 
-// Storefront Experience Mode:
-// 'static' = Ultra-fast, zero-lag static 4K cyberpunk background (0% GPU load, instant mobile load, butter-smooth scroll)
-// 'video'  = 3-scene looping video experience with GSAP scroll triggers and video preloader (backed up in branch backup/cinematic-video-experience)
-export const STOREFRONT_MODE: 'static' | 'video' = 'static';
+// Storefront Media Engine Mode:
+// 'image' = Zero-lag, crystal-clear paused video frames (0% GPU video decoding load, ultra-smooth 60fps scroll on all mobile and low-end devices)
+// 'video' = Live looping MP4 videos in the 3-scene scrollytelling runway (can be toggled back instantly)
+export const CINEMATIC_MEDIA_MODE: 'image' | 'video' = 'image';
+export const STOREFRONT_MODE: 'scrollytelling' | 'static' = 'scrollytelling';
 
 export const PLANS: Plan[] = [
   {
