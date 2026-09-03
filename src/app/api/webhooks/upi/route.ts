@@ -45,12 +45,22 @@ async function handleIncomingSms(data: Record<string, any>) {
     return NextResponse.json({ error: 'Unauthorized. Invalid secret.' }, { status: 401 });
   }
 
-  // Extract raw message or pre-parsed fields
-  const rawMessage = (data.message || data.body || data.text || data.sms || '').toString();
+  // Extract raw message or pre-parsed fields (supports SMS and notification triggers)
+  const rawMessage = (
+    data.message ||
+    data.body ||
+    data.text ||
+    data.sms ||
+    data.notification ||
+    data.not_text ||
+    data.notification_text ||
+    ''
+  ).toString();
+
   let utr = (data.utr || data.reference || data.ref || '').toString().trim();
   let amount = data.amount ? parseFloat(data.amount.toString()) : null;
 
-  // If raw SMS text is provided, parse it
+  // If raw SMS or notification text is provided, parse it
   if (rawMessage) {
     const parsed = parseBankSms(rawMessage);
     if (!utr && parsed.utr) utr = parsed.utr;
@@ -60,26 +70,43 @@ async function handleIncomingSms(data: Record<string, any>) {
   // Clean UTR
   utr = utr.replace(/\D/g, '').trim();
 
-  if (!utr || utr.length !== 12) {
-    if (rawMessage.includes('[sms_body]') || rawMessage.toLowerCase().includes('test') || rawMessage === '') {
-      return NextResponse.json({
-        success: true,
-        isTestPing: true,
-        message: 'MacroDroid Test Ping Received Successfully! Your phone is officially connected to AETHERIA.',
-      });
-    }
+  console.log('[webhooks/upi] Inbound bridge received:', {
+    rawLength: rawMessage.length,
+    rawPreview: rawMessage.slice(0, 100),
+    parsedAmount: amount,
+    parsedUtr: utr || null,
+  });
 
+  // Handle MacroDroid test pings
+  const isTestPing =
+    rawMessage.includes('[sms_body]') ||
+    rawMessage.includes('[not_text]') ||
+    rawMessage.toLowerCase().includes('test') ||
+    rawMessage === '';
+
+  if (isTestPing && (!amount || amount <= 0)) {
+    return NextResponse.json({
+      success: true,
+      isTestPing: true,
+      message: 'MacroDroid Test Ping Received Successfully! Your phone is officially connected to AETHERIA.',
+    });
+  }
+
+  // Require either a valid 12-digit UTR OR a credited amount for Zero-UTR matching
+  if ((!utr || utr.length !== 12) && (!amount || amount <= 0)) {
     return NextResponse.json(
       {
-        error: 'No valid 12-digit UTR found in SMS payload.',
+        error: 'Neither a valid 12-digit UTR nor a credited amount was found in the SMS/notification payload.',
         parsedUtr: utr || null,
+        parsedAmount: amount || null,
       },
       { status: 400 }
     );
   }
 
   // ── 1. Record authentic bank credit in Firestore ───────────────────────────
-  await recordBankCredit(utr, amount, rawMessage);
+  const creditDocId = utr && utr.length === 12 ? utr : `PAISE_${Math.round((amount || 0) * 100)}_${Date.now()}`;
+  await recordBankCredit(creditDocId, amount, rawMessage);
 
   // ── 2. Dual-Engine Order Matching ─────────────────────────────────────────
   const db = getAdminFirestore();
@@ -107,7 +134,7 @@ async function handleIncomingSms(data: Record<string, any>) {
   }
 
   // Strategy B: Fallback to UTR Match (if customer entered UTR manually)
-  if (!matchedDoc && utr) {
+  if (!matchedDoc && utr && utr.length === 12) {
     // Single-field index on utr_number, filter status in memory
     const utrQuery = await db
       .collection('orders')
@@ -134,18 +161,19 @@ async function handleIncomingSms(data: Record<string, any>) {
 
     // ── 3. Auto-allocate key slot instantly ──────────────────────────────────
     try {
-      const allocation = await allocateKeySlot(orderData.order_id, `AUTO_BANK_SMS_${utr}`);
+      const claimIdentifier = utr && utr.length === 12 ? utr : creditDocId;
+      const allocation = await allocateKeySlot(orderData.order_id, `AUTO_BANK_${claimIdentifier}`);
 
-      // Mark order as paid and record the real bank UTR
+      // Mark order as paid and record the real bank reference
       await orderDoc.ref.update({
         payment_status: 'paid',
-        utr_number: utr,
+        utr_number: utr || claimIdentifier,
         payment_gateway: 'upi_direct',
         updated_at: new Date(),
       });
 
       // Mark bank credit as claimed
-      await claimBankCredit(utr, orderData.order_id);
+      await claimBankCredit(creditDocId, orderData.order_id);
 
       // Send transactional email
       sendKeyDeliveryEmail({

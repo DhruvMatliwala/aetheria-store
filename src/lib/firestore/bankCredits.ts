@@ -15,27 +15,28 @@ const COLLECTION = 'verified_bank_credits';
  * Records an authentic incoming bank credit received via the Android SMS Bridge.
  */
 export async function recordBankCredit(
-  utr: string,
+  utrOrDocId: string,
   amount: number | null,
   rawSms?: string
-): Promise<{ alreadyExisted: boolean }> {
+): Promise<{ alreadyExisted: boolean; docId: string }> {
   const db = getAdminFirestore();
-  const docRef = db.collection(COLLECTION).doc(utr);
+  const docId = utrOrDocId || `CREDIT_${Date.now()}_${Math.round((amount || 0) * 100)}`;
+  const docRef = db.collection(COLLECTION).doc(docId);
   const snap = await docRef.get();
 
   if (snap.exists) {
-    return { alreadyExisted: true };
+    return { alreadyExisted: true, docId };
   }
 
   await docRef.set({
-    utr,
+    utr: utrOrDocId,
     amount: amount || null,
     status: 'unclaimed',
     raw_sms: rawSms || '',
     credited_at: admin.firestore.FieldValue.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,
   });
 
-  return { alreadyExisted: false };
+  return { alreadyExisted: false, docId };
 }
 
 /**
@@ -51,13 +52,17 @@ export async function getBankCredit(utr: string): Promise<BankCredit | null> {
 /**
  * Marks a bank credit as claimed by an order.
  */
-export async function claimBankCredit(utr: string, orderId: string): Promise<void> {
+export async function claimBankCredit(docIdOrUtr: string, orderId: string): Promise<void> {
   const db = getAdminFirestore();
-  await db.collection(COLLECTION).doc(utr).update({
-    status: 'claimed',
-    order_id: orderId,
-    claimed_at: admin.firestore.FieldValue.serverTimestamp(),
-  });
+  const docRef = db.collection(COLLECTION).doc(docIdOrUtr);
+  const snap = await docRef.get();
+  if (snap.exists) {
+    await docRef.update({
+      status: 'claimed',
+      order_id: orderId,
+      claimed_at: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  }
 }
 
 /**
