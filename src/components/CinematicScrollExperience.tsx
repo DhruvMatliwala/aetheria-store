@@ -42,6 +42,8 @@ const SCENE_OVERLAYS = [
   {
     idx: '01 / 03',
     subtitle: 'AWAKEN ACCESS',
+    titleLine1: 'BREAK',
+    titleLine2: 'EVERY LIMIT.',
     title: 'Break every limit.',
     description: 'Official PGSharp Standard Edition 30-day keys with direct digital dispatch upon payment verification.',
     badges: ['Fast Key Delivery', '30-Day License', 'PGSharp Standard ⚡'],
@@ -50,6 +52,8 @@ const SCENE_OVERLAYS = [
   {
     idx: '02 / 03',
     subtitle: 'GLOBAL EXPEDITION',
+    titleLine1: 'ROAM',
+    titleLine2: 'ANYWHERE.',
     title: 'Roam anywhere.',
     description: 'Precision PGSharp GPS joystick and route patrol across Tokyo, Zaragoza, and worldwide.',
     badges: ['PGSharp Joystick', 'Auto-Walk', 'Cooldown Radar'],
@@ -58,6 +62,8 @@ const SCENE_OVERLAYS = [
   {
     idx: '03 / 03',
     subtitle: 'COMBAT SHOWDOWN',
+    titleLine1: 'MASTER',
+    titleLine2: 'EVERY RAID.',
     title: 'Master every raid.',
     description: 'Live 100% IV scanner feed and official 30-day PGSharp Standard Edition licenses. Fast digital delivery.',
     badges: ['100% IV Feed', 'Raid Radar', 'PGSharp Verified'],
@@ -555,15 +561,16 @@ export function CinematicScrollExperience({
                 </span>
               </div>
 
-              {/* Line 2: Large Majestic Editorial Serif Title */}
+              {/* Line 2: Bold Modern Geometric Display Title (Matches Reference Photo) */}
               <div className="overflow-hidden mb-2 sm:mb-4">
                 <h2
                   className={cn(
-                    'hud-title text-3xl sm:text-5xl md:text-6xl lg:text-[4.75rem] font-normal font-serif text-white tracking-tight leading-[1.1] drop-shadow-[0_4px_24px_rgba(0,0,0,0.95)]',
+                    'hud-title text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold uppercase font-display tracking-tight leading-[0.92] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]',
                     `hud-title-${idx}`
                   )}
                 >
-                  {overlay.title}
+                  <span className="block text-white">{overlay.titleLine1}</span>
+                  <span className="block text-cyan-400">{overlay.titleLine2}</span>
                 </h2>
               </div>
 
