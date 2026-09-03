@@ -740,15 +740,15 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={scene3TrustRef}
-          className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-12 lg:right-16 z-20 w-auto sm:w-[460px] md:w-[500px] space-y-2 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
+          className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-12 lg:right-16 z-20 w-auto sm:w-[420px] md:w-[460px] space-y-2 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="trust-box"
         >
-          {/* Reference Match: Verified Review Card with Dynamic Left/Right Navigation */}
+          {/* Reference Match: The EXACT Minimalist 2-Line Capsule (Slightly Bigger) with Conditional Arrows */}
           {liveReviews.length > 0 && (
-            <div className="space-y-1.5 pointer-events-auto">
-              {/* Row with Optional Left Arrow + Main Card + Optional Right Arrow */}
-              <div className="relative flex items-center justify-center gap-2 sm:gap-3">
-                {/* Left Arrow: ONLY appears when there is a previous review to navigate to */}
+            <div className="space-y-2 pointer-events-auto">
+              {/* Flex row with conditional left arrow + exact reference card + conditional right arrow */}
+              <div className="relative flex items-center justify-center gap-2 sm:gap-2.5">
+                {/* Left Arrow: ONLY appears when there is a previous review */}
                 {canGoLeft && (
                   <button
                     type="button"
@@ -762,53 +762,38 @@ export function CinematicScrollExperience({
                   </button>
                 )}
 
-                {/* Main Card (Matches user reference photo) */}
-                <div className="flex-1 min-w-0 p-3.5 sm:p-4 rounded-2xl bg-[#0a0f1d]/85 backdrop-blur-xl border border-cyan-500/30 shadow-[0_12px_40px_rgba(0,0,0,0.8),0_0_25px_rgba(6,182,212,0.15)] space-y-2.5 transition-all duration-300 hover:border-cyan-500/50">
-                  {/* Top Tag: ✦ VERIFIED TRAINER FEEDBACK */}
-                  <div className="flex items-center gap-1.5 text-cyan-400 text-[10px] font-mono font-bold tracking-wider uppercase">
-                    <span className="text-xs">✦</span>
-                    <span>VERIFIED TRAINER FEEDBACK</span>
-                  </div>
-
-                  {/* Two-Column Body: Left Rating Pod + Right Quote/Signature */}
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    {/* Left Rating Pod */}
-                    <div className="shrink-0 w-24 sm:w-28 py-2 px-1.5 rounded-xl bg-cyan-950/40 border border-cyan-500/25 flex flex-col items-center justify-center text-center">
-                      <span className="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-sans tracking-tight leading-none">
-                        {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)}
+                {/* The EXACT Reference Capsule (Slightly bigger padding and dimensions) */}
+                <div className="flex-1 min-w-0 p-4 sm:p-4.5 rounded-2xl bg-neutral-950/70 backdrop-blur-md border border-cyan-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.7)] space-y-2 transition-all duration-300 hover:border-cyan-500/40">
+                  {/* Top Row: Avatar + @Handle + Verified Checkmark (Left) and 5 Gold Stars + 5.0 (Right) */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded-full bg-cyan-950/80 border border-cyan-400/40 flex items-center justify-center font-bold text-cyan-300 text-xs shadow-sm shrink-0">
+                        {(currentReview?.trainerName || 'D').charAt(0).toUpperCase()}
+                      </div>
+                      <span className="text-sm font-semibold text-white tracking-wide truncate">
+                        @{currentReview?.trainerName || 'Dhruv'}
                       </span>
-                      <div className="flex items-center gap-0.5 my-1 text-cyan-400">
+                      <CheckCircle2 size={15} className="text-cyan-400 fill-cyan-400/20 shrink-0" />
+                    </div>
+                    <div className="flex items-center gap-1.5 text-amber-400 font-mono shrink-0">
+                      <div className="flex gap-0.5">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={10} className="fill-cyan-400 text-cyan-400" />
+                          <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
                         ))}
                       </div>
-                      <span className="text-[8px] sm:text-[9px] text-neutral-400 font-mono tracking-tight whitespace-nowrap">
-                        {liveReviews.length > 1 ? `Based on ${liveReviews.length} reviews` : 'Verified review'}
+                      <span className="font-bold text-neutral-200 text-xs sm:text-sm ml-0.5">
+                        {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)}
                       </span>
                     </div>
-
-                    {/* Right Quote & Author Signature */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between space-y-2 text-left">
-                      <p className="text-xs sm:text-[13px] text-neutral-100 font-sans font-medium leading-snug tracking-tight line-clamp-2 sm:line-clamp-3">
-                        &ldquo;{currentReview?.comment || 'Instant delivery and key worked perfectly. Best service!'}&rdquo;
-                      </p>
-
-                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/10 text-xs">
-                        <div className="flex items-center gap-1 text-xs text-neutral-300 truncate">
-                          <span className="font-semibold text-white">@{currentReview?.trainerName || 'Dhruv'}</span>
-                          <span className="text-neutral-500">•</span>
-                          <span className="text-[11px] text-neutral-400 font-mono">{currentReview?.planName || '1 Device'}</span>
-                        </div>
-                        <div className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-[9px] sm:text-[10px] font-mono font-medium">
-                          <ShieldCheck size={10} className="text-cyan-400" />
-                          <span>Verified Key</span>
-                        </div>
-                      </div>
-                    </div>
                   </div>
+
+                  {/* Bottom Row: Quote Text */}
+                  <p className="text-xs sm:text-[13.5px] text-neutral-200 font-sans leading-relaxed pl-0.5">
+                    &ldquo;{currentReview?.comment || 'Instant delivery and key worked perfectly!'}&rdquo;
+                  </p>
                 </div>
 
-                {/* Right Arrow: ONLY appears when there is a next review to navigate to */}
+                {/* Right Arrow: ONLY appears when there is a next review */}
                 {canGoRight && (
                   <button
                     type="button"
@@ -825,7 +810,7 @@ export function CinematicScrollExperience({
 
               {/* Dots Pagination: ONLY appears when multiple reviews exist */}
               {hasMultiple && (
-                <div className="flex items-center justify-center gap-1.5 pt-1">
+                <div className="flex items-center justify-center gap-1.5 pt-0.5">
                   {liveReviews.map((_, idx) => (
                     <button
                       key={idx}
