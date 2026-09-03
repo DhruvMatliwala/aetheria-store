@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!adminSecret || adminSecret.trim() !== expectedSecret.trim()) {
+    if (!adminSecret || typeof adminSecret !== 'string' || adminSecret.trim() !== expectedSecret.trim()) {
       return NextResponse.json(
         { error: 'Invalid admin passcode / secret key.' },
         { status: 401 }

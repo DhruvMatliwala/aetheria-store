@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import { getAdminFirestore, admin } from '@/lib/firebase/admin';
 import { encryptKey } from '@/lib/crypto';
 import { LicenseKeyDoc, KeySource, KeyStatus } from '@/types/key';
@@ -196,9 +197,18 @@ export async function bulkInsertKeys(
 
     for (const rawKey of chunk) {
       try {
-        const encrypted = encryptKey(rawKey);
-        const docRef = db.collection(COLLECTION).doc();
+        const cleanKey = rawKey.trim();
+        // Deterministic document ID based on SHA-256 fingerprint prevents duplicate key entries
+        const keyHash = createHash('sha256').update(cleanKey).digest('hex').slice(0, 32);
+        const docRef = db.collection(COLLECTION).doc(`key_${keyHash}`);
+        
+        const existingSnap = await docRef.get();
+        if (existingSnap.exists) {
+          result.skipped++;
+          continue;
+        }
 
+        const encrypted = encryptKey(cleanKey);
         const newDoc: LicenseKeyDoc = {
           id: docRef.id,
           license_key: encrypted,
