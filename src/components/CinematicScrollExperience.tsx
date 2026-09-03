@@ -36,8 +36,8 @@ const SCENE_MEDIA = [
     id: 'scene1',
     src: '/videos/scene5.mp4',
     fallbackSrc: '/videos/Scene5.mp4',
-    imageSrc: '/images/scenes/scene1-frame.jpg',
-    alt: 'Mewtwo Cryo-Awakening Scene Frame',
+    imageSrc: '/images/scenes/scene1.png',
+    alt: 'Mewtwo Cryo-Awakening with Psychic Eye Flare',
   },
   {
     id: 'scene2',
@@ -50,8 +50,8 @@ const SCENE_MEDIA = [
     id: 'scene3',
     src: '/videos/Scene3.mp4',
     fallbackSrc: '/videos/scene3.mp4',
-    imageSrc: '/images/scenes/scene3-frame.jpg',
-    alt: 'Mega Charizard X vs Ash-Greninja Combat Showdown Scene Frame',
+    imageSrc: '/images/scenes/scene3.png',
+    alt: 'Mega Charizard X vs Ash-Greninja Stadium Showdown',
   },
 ];
 
@@ -250,7 +250,7 @@ export function CinematicScrollExperience({
       const img2 = new window.Image();
       img2.src = '/images/scenes/scene2-frame.jpg';
       const img3 = new window.Image();
-      img3.src = '/images/scenes/scene3-frame.jpg';
+      img3.src = '/images/scenes/scene3.png';
     }
   }, []);
 
