@@ -762,7 +762,7 @@ export function CinematicScrollExperience({
                   <button
                     type="button"
                     onClick={() => setActiveReviewIdx((prev) => Math.max(0, prev - 1))}
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-cyan-500/30 hover:border-cyan-400 text-cyan-400 hover:text-white backdrop-blur-md flex items-center justify-center transition-all shadow-[0_0_15px_rgba(6,182,212,0.25)] active:scale-95 shrink-0"
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#050811]/90 hover:bg-[#091122] border border-cyan-500/30 hover:border-cyan-400 text-cyan-400 hover:text-white backdrop-blur-md flex items-center justify-center transition-all shadow-[0_0_15px_rgba(6,182,212,0.25)] active:scale-95 shrink-0"
                     aria-label="Previous review"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -771,8 +771,8 @@ export function CinematicScrollExperience({
                   </button>
                 )}
 
-                {/* The EXACT Reference Capsule (Slightly bigger padding and dimensions) */}
-                <div className="flex-1 min-w-0 p-4 sm:p-4.5 rounded-2xl bg-neutral-950/70 backdrop-blur-md border border-cyan-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.7)] space-y-2 transition-all duration-300 hover:border-cyan-500/40">
+                {/* The EXACT Reference Capsule (Deep Dark Obsidian Shade matching reference) */}
+                <div className="flex-1 min-w-0 p-4 sm:p-4.5 rounded-2xl bg-[#050811]/92 backdrop-blur-xl border border-cyan-500/25 shadow-[0_12px_40px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.05)] space-y-2 transition-all duration-300 hover:border-cyan-500/40">
                   {/* Top Row: Avatar + @Handle + Verified Checkmark (Left) and 5 Gold Stars + 5.0 (Right) */}
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
@@ -807,7 +807,7 @@ export function CinematicScrollExperience({
                   <button
                     type="button"
                     onClick={() => setActiveReviewIdx((prev) => Math.min(liveReviews.length - 1, prev + 1))}
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-cyan-500/30 hover:border-cyan-400 text-cyan-400 hover:text-white backdrop-blur-md flex items-center justify-center transition-all shadow-[0_0_15px_rgba(6,182,212,0.25)] active:scale-95 shrink-0"
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#050811]/90 hover:bg-[#091122] border border-cyan-500/30 hover:border-cyan-400 text-cyan-400 hover:text-white backdrop-blur-md flex items-center justify-center transition-all shadow-[0_0_15px_rgba(6,182,212,0.25)] active:scale-95 shrink-0"
                     aria-label="Next review"
                   >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
