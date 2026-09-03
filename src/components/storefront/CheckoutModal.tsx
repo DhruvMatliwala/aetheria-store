@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
@@ -205,12 +205,9 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   };
 
   const currentUpiId = activeVpa || upiSession?.upiId || SMART_ROUTING_UPI_IDS[0].vpa;
-  const currentUpiString = useMemo(() => {
-    if (!upiSession) return '';
-    const payeeName = upiSession.payeeName || 'Dhruv';
-    const priceRupeesStr = upiSession.amountRupees.toFixed(2);
-    return `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(payeeName)}&am=${priceRupeesStr}&cu=INR&tn=${encodeURIComponent(upiSession.note)}`;
-  }, [upiSession, currentUpiId]);
+  const currentUpiString = upiSession
+    ? `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(upiSession.payeeName || 'Dhruv')}&am=${upiSession.amountRupees.toFixed(2)}&cu=INR&tn=${encodeURIComponent(upiSession.note)}`
+    : '';
 
   const handleCopyUpi = () => {
     if (!currentUpiId) return;
