@@ -13,13 +13,15 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'AETHERIA — Buy PGSharp Standard Key | Fast Digital Delivery (UPI & PayPal)',
+  title: 'AETHERIA Store — Buy PGSharp Standard Key | Fast Digital Delivery (UPI & PayPal)',
   description:
-    'Official PGSharp Standard Edition 30-Day license keys with direct digital delivery. Buy PGSharp keys via UPI, GPay, Paytm, PhonePe & PayPal with verified key dispatch.',
+    'AETHERIA Store: Official PGSharp Standard Edition 30-Day license keys with direct digital delivery. Buy PGSharp keys via UPI, GPay, Paytm, PhonePe & PayPal with verified key dispatch.',
   keywords: [
     // Core Brand & Store
+    'AETHERIA Store',
+    'aetheria store',
     'AETHERIA',
-    'Aetheria store',
+    'aetheria store pgsharp',
     'aetheria pgsharp',
     'aetheria keys',
     'aetheria store pgsharp',
@@ -116,17 +118,17 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'AETHERIA — Buy PGSharp Standard Key | Fast Digital Delivery (UPI & PayPal)',
+    title: 'AETHERIA Store — Buy PGSharp Standard Key | Fast Digital Delivery (UPI & PayPal)',
     description:
-      'Official PGSharp Standard Edition 30-Day license keys with direct digital delivery. Buy PGSharp via UPI, GPay, Paytm & PayPal.',
+      'AETHERIA Store: Official PGSharp Standard Edition 30-Day license keys with direct digital delivery. Buy PGSharp via UPI, GPay, Paytm & PayPal.',
     type: 'website',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AETHERIA — Buy PGSharp Standard Key | Fast Digital Delivery (UPI & PayPal)',
+    title: 'AETHERIA Store — Buy PGSharp Standard Key | Fast Digital Delivery (UPI & PayPal)',
     description:
-      'Official PGSharp Standard Edition 30-Day license keys with direct digital delivery. Fast UPI & PayPal checkout.',
+      'AETHERIA Store: Official PGSharp Standard Edition 30-Day license keys with direct digital delivery. Fast UPI & PayPal checkout.',
   },
   robots: {
     index: true,
@@ -153,8 +155,8 @@ const jsonLd = {
     {
       '@type': 'OnlineStore',
       '@id': 'https://aetheria-store.vercel.app/#store',
-      name: 'AETHERIA',
-      alternateName: ['Aetheria Store', 'AETHERIA PGSharp Key Store', 'Aetheria Keys', 'Aetheria Storefront'],
+      name: 'AETHERIA Store',
+      alternateName: ['AETHERIA', 'Aetheria Store', 'AETHERIA PGSharp Key Store', 'Aetheria Keys', 'Aetheria Storefront'],
       url: 'https://aetheria-store.vercel.app',
       description:
         'Official PGSharp Standard Edition 30-Day license keys with instant automated delivery. Buy PGSharp keys in India via UPI, GPay, Paytm, Cards, and PayPal.',
