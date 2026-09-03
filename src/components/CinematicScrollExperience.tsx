@@ -80,7 +80,7 @@ const FAQS = [
   },
   {
     q: 'What payment methods are supported?',
-    a: 'India (INR): UPI (GPay, PhonePe, Paytm, BHIM, CRED), NetBanking, and Cards via Razorpay. International (USD): PayPal Balance, Debit/Credit Cards, and Pay in 4.',
+    a: 'India (INR): Direct UPI QR (Google Pay, PhonePe, Paytm, BHIM, CRED). International (USD): PayPal (PayPal Balance, Debit/Credit Cards, and Pay in 4).',
   },
   {
     q: 'How do I activate my license key in PGSharp?',

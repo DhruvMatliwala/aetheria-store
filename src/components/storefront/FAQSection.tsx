@@ -45,8 +45,8 @@ const FAQS: FAQItem[] = [
           We support all major Indian and international payment gateways:
         </p>
         <ul className="list-disc list-inside space-y-1 text-[#bfb8ae] ml-2 font-mono text-xs">
-          <li><strong>India (INR):</strong> UPI (Google Pay, PhonePe, Paytm, BHIM, CRED), NetBanking, Debit/Credit Cards (Visa, Mastercard, RuPay), and Amazon Pay via Razorpay.</li>
-          <li><strong>International (USD):</strong> PayPal Balance, International Credit/Debit Cards, and PayPal Pay in 4 via PayPal.</li>
+          <li><strong>India (INR):</strong> Direct UPI QR (Google Pay, PhonePe, Paytm, BHIM, CRED) with instant automated delivery.</li>
+          <li><strong>International (USD):</strong> PayPal (PayPal Balance, Linked Debit/Credit Cards, and Pay in 4) with 24/7 cloud IPN instant delivery.</li>
         </ul>
       </div>
     ),

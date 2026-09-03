@@ -86,7 +86,7 @@ export default function TermsPage() {
             <section className="bg-neutral-900/40 border border-neutral-800/60 rounded-2xl p-5">
               <h2 className="text-base font-bold text-cyan-300 mb-2">2. Automated Instant Digital Key Delivery</h2>
               <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
-                All PGSharp license keys are dispatched electronically and instantly in under 10 seconds upon payment confirmation via UPI, Google Pay, PhonePe, Paytm, Cards, or PayPal. Keys are revealed on screen and sent to the purchaser&apos;s email address. No physical goods are shipped.
+                All PGSharp license keys are dispatched electronically and instantly upon payment confirmation via Direct UPI (Google Pay, PhonePe, Paytm, BHIM, CRED) or PayPal. Keys are revealed on screen and sent to the purchaser&apos;s email address. No physical goods are shipped.
               </p>
             </section>
 

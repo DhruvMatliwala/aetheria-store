@@ -5,9 +5,9 @@ import { AmbientAudioProvider } from '@/context/AmbientAudioContext';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & Cards)',
+  title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & PayPal)',
   description:
-    'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Buy PGSharp keys in India via UPI, GPay, Paytm, PhonePe, Cards & PayPal with instant automated delivery.',
+    'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Buy PGSharp keys via UPI, GPay, Paytm, PhonePe & PayPal with instant automated delivery.',
   keywords: [
     // Core Brand & Store
     'AETHERIA',
@@ -108,17 +108,17 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & Cards)',
+    title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & PayPal)',
     description:
-      'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Buy PGSharp in India via UPI, GPay, Paytm & Cards.',
+      'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Buy PGSharp via UPI, GPay, Paytm & PayPal.',
     type: 'website',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery',
+    title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & PayPal)',
     description:
-      'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Fast UPI & Card checkout.',
+      'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Fast UPI & PayPal checkout.',
   },
   robots: {
     index: true,
