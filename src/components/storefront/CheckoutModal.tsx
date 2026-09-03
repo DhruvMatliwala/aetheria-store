@@ -220,6 +220,18 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     setTimeout(() => setCopiedUpi(false), 2500);
   };
 
+  const amountRupeesRound = Math.round(upiSession?.amountRupees || 180);
+  const gpayNativeIntent = `intent://pay?pa=dhruvmatliwala123@oksbi&pn=Dhruv%20-076&am=${amountRupeesRound}&cu=INR&aid=uGICAgMC507CUEg#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
+  const universalUpiIntent = `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=Dhruv%20-076&am=${amountRupeesRound}&cu=INR&aid=uGICAgMC507CUEg`;
+
+  const handleOpenGPay = () => {
+    if (currentUpiId) {
+      navigator.clipboard.writeText(currentUpiId);
+    }
+    toast.success(`Opening Google Pay for ₹${amountRupeesRound}...`, { duration: 2500 });
+    window.location.href = gpayNativeIntent;
+  };
+
   const handleCopyAmount = () => {
     if (!upiSession?.amountRupees) return;
     navigator.clipboard.writeText(Math.round(upiSession.amountRupees).toString());
@@ -801,15 +813,24 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               </div>
             </div>
 
-            {/* Mobile Direct Intent Button */}
+            {/* Mobile Direct GPay Package Intent & Fallback */}
             {(currentUpiString || upiSession?.upiString) && (
-              <a
-                href={currentUpiString || upiSession!.upiString}
-                className="mt-2 sm:hidden w-full max-w-xs py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold text-center shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-1.5"
-              >
-                <Sparkles size={13} />
-                Open in Installed UPI App
-              </a>
+              <div className="mt-2 sm:hidden w-full max-w-xs space-y-1.5">
+                <button
+                  type="button"
+                  onClick={handleOpenGPay}
+                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white text-xs font-bold text-center shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <Sparkles size={14} className="text-yellow-300" />
+                  Pay ₹{amountRupeesRound} with Google Pay
+                </button>
+                <a
+                  href={universalUpiIntent}
+                  className="block text-center text-[11px] text-gray-400 hover:text-cyan-300 transition-colors"
+                >
+                  Or pay with PhonePe, Paytm, or other app →
+                </a>
+              </div>
             )}
           </div>
 
