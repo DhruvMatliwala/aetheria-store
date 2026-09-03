@@ -103,40 +103,6 @@ const FAQS = [
   },
 ];
 
-// Curated verified trainer vouches ensuring Scene 3 is never empty
-const DEFAULT_REVIEWS: Review[] = [
-  {
-    id: 'vouch-1',
-    orderId: 'ord_vouch_1',
-    trainerName: 'AshKetchum99',
-    rating: 5,
-    comment: 'Key delivered instantly on screen right after UPI scan. Activated on PGSharp without any issues!',
-    createdAt: '2026-09-02T10:00:00.000Z',
-    verified: true,
-    status: 'approved',
-  },
-  {
-    id: 'vouch-2',
-    orderId: 'ord_vouch_2',
-    trainerName: 'RaidLeader_Go',
-    rating: 5,
-    comment: 'Best price for PGSharp standard key. Fast delivery and smooth auto-walk during community day.',
-    createdAt: '2026-09-01T15:30:00.000Z',
-    verified: true,
-    status: 'approved',
-  },
-  {
-    id: 'vouch-3',
-    orderId: 'ord_vouch_3',
-    trainerName: 'TokyoSniper',
-    rating: 5,
-    comment: 'Genuine 30-day license. 100 IV feed and cooldown radar working 100%. Highly recommend Aetheria.',
-    createdAt: '2026-08-30T18:45:00.000Z',
-    verified: true,
-    status: 'approved',
-  },
-];
-
 interface SceneVideoProps {
   src: string;
   fallbackSrc?: string;
@@ -222,7 +188,7 @@ export function CinematicScrollExperience({
   const prewarmedRef = useRef<Record<number, boolean>>({ 0: true });
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
-  const [liveReviews, setLiveReviews] = useState<Review[]>(DEFAULT_REVIEWS);
+  const [liveReviews, setLiveReviews] = useState<Review[]>([]);
   const [activeReviewIdx, setActiveReviewIdx] = useState<number>(0);
 
   useEffect(() => {
@@ -804,16 +770,16 @@ export function CinematicScrollExperience({
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[10px] font-mono font-bold tracking-widest text-cyan-300 uppercase">
-                03 // TRAINER VOUCHES & TRUST
+                {liveReviews.length > 0 ? '03 // TRAINER VOUCHES & TRUST' : '03 // VAULT DISPATCH & GUARANTEE'}
               </span>
             </div>
             <span className="text-[9px] font-mono text-emerald-400 font-bold">
-              ★ 5.0 Rating Verified
+              {liveReviews.length > 0 ? '★ Verified Reviews' : '⚡ Official Reseller'}
             </span>
           </div>
 
-          {/* Reference Match: The EXACT Minimalist 2-Line Capsule (Slightly Bigger) with Conditional Arrows */}
-          {liveReviews.length > 0 && (
+          {/* Real Customer Reviews Carousel (Active when real reviews are submitted & approved) */}
+          {liveReviews.length > 0 ? (
             <div className="space-y-2 pointer-events-auto">
               {/* Flex row with conditional left arrow + exact reference card + conditional right arrow */}
               <div className="relative flex items-center justify-center gap-2 sm:gap-2.5">
@@ -837,16 +803,16 @@ export function CinematicScrollExperience({
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="w-7 h-7 rounded-full bg-[#0b1329] border border-white/15 flex items-center justify-center font-bold text-cyan-300 text-xs shadow-sm shrink-0">
-                        {(currentReview?.trainerName || 'D').charAt(0).toUpperCase()}
+                        {(currentReview?.trainerName || 'T').charAt(0).toUpperCase()}
                       </div>
                       <span className="text-sm font-semibold text-white tracking-wide truncate">
-                        @{currentReview?.trainerName || 'Dhruv'}
+                        @{currentReview?.trainerName || 'Trainer'}
                       </span>
                       <CheckCircle2 size={15} className="text-cyan-400 fill-cyan-400/20 shrink-0" />
                     </div>
                     <div className="flex items-center gap-1.5 text-amber-400 font-mono shrink-0">
                       <div className="flex gap-0.5">
-                        {[...Array(5)].map((_, i) => (
+                        {[...Array(currentReview?.rating || 5)].map((_, i) => (
                           <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
                         ))}
                       </div>
@@ -858,7 +824,7 @@ export function CinematicScrollExperience({
 
                   {/* Bottom Row: Quote Text */}
                   <p className="text-xs sm:text-[13.5px] text-neutral-200 font-sans leading-relaxed pl-0.5">
-                    &ldquo;{currentReview?.comment || 'Instant delivery and key worked perfectly!'}&rdquo;
+                    &ldquo;{currentReview?.comment}&rdquo;
                   </p>
                 </div>
 
@@ -895,6 +861,47 @@ export function CinematicScrollExperience({
                   ))}
                 </div>
               )}
+            </div>
+          ) : (
+            /* 100% Honest Vault Guarantee & Direct Dispatch Card (Zero Fake Reviews) */
+            <div className="p-4 sm:p-4.5 rounded-2xl bg-[#050811]/92 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.95)] space-y-2.5 pointer-events-auto transition-all duration-300 hover:border-white/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+                    <ShieldCheck size={16} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-bold text-white tracking-wide font-sans">
+                      Aetheria Vault Guarantee
+                    </h4>
+                    <p className="text-[10px] font-mono text-cyan-300">
+                      Direct Automated Delivery Pipeline
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 font-semibold shrink-0">
+                  ● 100% Genuine
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] font-sans text-neutral-300 border-t border-white/5">
+                <div className="flex items-center gap-1.5">
+                  <Zap size={13} className="text-cyan-400 shrink-0" />
+                  <span className="truncate">Instant On-Screen Key</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Shield size={13} className="text-emerald-400 shrink-0" />
+                  <span className="truncate">30-Day PGSharp VIP</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Check size={13} className="text-cyan-400 shrink-0" />
+                  <span className="truncate">Direct UPI & PayPal</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <HelpCircle size={13} className="text-emerald-400 shrink-0" />
+                  <span className="truncate">24/7 Priority Support</span>
+                </div>
+              </div>
             </div>
           )}
 
