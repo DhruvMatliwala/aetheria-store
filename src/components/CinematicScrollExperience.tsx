@@ -196,15 +196,10 @@ export function CinematicScrollExperience({
       .catch((err) => console.error('Error fetching reviews:', err));
   }, []);
 
-  useEffect(() => {
-    if (liveReviews.length <= 1) return;
-    const timer = setInterval(() => {
-      setActiveReviewIdx((prev) => (prev + 1) % liveReviews.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [liveReviews.length]);
-
   const currentReview = liveReviews[activeReviewIdx] || liveReviews[0];
+  const hasMultiple = liveReviews.length > 1;
+  const canGoLeft = hasMultiple && activeReviewIdx > 0;
+  const canGoRight = hasMultiple && activeReviewIdx < liveReviews.length - 1;
 
   // Anticipatory Lookahead prewarmer: quietly buffers next video in background
   const prewarmVideo = useCallback((targetIdx: number) => {
@@ -745,39 +740,107 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={scene3TrustRef}
-          className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-8 md:right-20 lg:right-24 z-20 w-auto sm:w-[360px] md:w-[380px] space-y-2 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
+          className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-6 md:right-12 lg:right-16 z-20 w-auto sm:w-[460px] md:w-[500px] space-y-2 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="trust-box"
         >
-          {/* Reference Match: Ultra-Compact Floating Verified Review Card */}
+          {/* Reference Match: Verified Review Card with Dynamic Left/Right Navigation */}
           {liveReviews.length > 0 && (
-            <div className="w-full p-3 sm:p-3.5 rounded-2xl bg-neutral-950/60 backdrop-blur-md border border-cyan-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.6)] space-y-1.5 pointer-events-auto transition-all duration-300 hover:border-cyan-500/40">
-              {/* Top Row: Avatar + Handle + Verified Checkmark (Left) and 5 Stars + 5.0 (Right) */}
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-6 h-6 rounded-full bg-cyan-950/80 border border-cyan-400/40 flex items-center justify-center font-bold text-cyan-300 text-[11px] shadow-sm shrink-0">
-                    {(currentReview?.trainerName || 'D').charAt(0).toUpperCase()}
+            <div className="space-y-1.5 pointer-events-auto">
+              {/* Row with Optional Left Arrow + Main Card + Optional Right Arrow */}
+              <div className="relative flex items-center justify-center gap-2 sm:gap-3">
+                {/* Left Arrow: ONLY appears when there is a previous review to navigate to */}
+                {canGoLeft && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveReviewIdx((prev) => Math.max(0, prev - 1))}
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-cyan-500/30 hover:border-cyan-400 text-cyan-400 hover:text-white backdrop-blur-md flex items-center justify-center transition-all shadow-[0_0_15px_rgba(6,182,212,0.25)] active:scale-95 shrink-0"
+                    aria-label="Previous review"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                      <path d="m15 18-6-6 6-6" />
+                    </svg>
+                  </button>
+                )}
+
+                {/* Main Card (Matches user reference photo) */}
+                <div className="flex-1 min-w-0 p-3.5 sm:p-4 rounded-2xl bg-[#0a0f1d]/85 backdrop-blur-xl border border-cyan-500/30 shadow-[0_12px_40px_rgba(0,0,0,0.8),0_0_25px_rgba(6,182,212,0.15)] space-y-2.5 transition-all duration-300 hover:border-cyan-500/50">
+                  {/* Top Tag: ✦ VERIFIED TRAINER FEEDBACK */}
+                  <div className="flex items-center gap-1.5 text-cyan-400 text-[10px] font-mono font-bold tracking-wider uppercase">
+                    <span className="text-xs">✦</span>
+                    <span>VERIFIED TRAINER FEEDBACK</span>
                   </div>
-                  <span className="text-xs font-semibold text-white tracking-wide truncate">
-                    @{currentReview?.trainerName || 'Dhruv'}
-                  </span>
-                  <CheckCircle2 size={13} className="text-cyan-400 fill-cyan-400/20 shrink-0" />
-                </div>
-                <div className="flex items-center gap-1.5 text-amber-400 font-mono text-[11px] shrink-0">
-                  <div className="flex gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={11} className="fill-amber-400 text-amber-400" />
-                    ))}
+
+                  {/* Two-Column Body: Left Rating Pod + Right Quote/Signature */}
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    {/* Left Rating Pod */}
+                    <div className="shrink-0 w-24 sm:w-28 py-2 px-1.5 rounded-xl bg-cyan-950/40 border border-cyan-500/25 flex flex-col items-center justify-center text-center">
+                      <span className="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-sans tracking-tight leading-none">
+                        {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)}
+                      </span>
+                      <div className="flex items-center gap-0.5 my-1 text-cyan-400">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} size={10} className="fill-cyan-400 text-cyan-400" />
+                        ))}
+                      </div>
+                      <span className="text-[8px] sm:text-[9px] text-neutral-400 font-mono tracking-tight whitespace-nowrap">
+                        {liveReviews.length > 1 ? `Based on ${liveReviews.length} reviews` : 'Verified review'}
+                      </span>
+                    </div>
+
+                    {/* Right Quote & Author Signature */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-between space-y-2 text-left">
+                      <p className="text-xs sm:text-[13px] text-neutral-100 font-sans font-medium leading-snug tracking-tight line-clamp-2 sm:line-clamp-3">
+                        &ldquo;{currentReview?.comment || 'Instant delivery and key worked perfectly. Best service!'}&rdquo;
+                      </p>
+
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/10 text-xs">
+                        <div className="flex items-center gap-1 text-xs text-neutral-300 truncate">
+                          <span className="font-semibold text-white">@{currentReview?.trainerName || 'Dhruv'}</span>
+                          <span className="text-neutral-500">•</span>
+                          <span className="text-[11px] text-neutral-400 font-mono">{currentReview?.planName || '1 Device'}</span>
+                        </div>
+                        <div className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-[9px] sm:text-[10px] font-mono font-medium">
+                          <ShieldCheck size={10} className="text-cyan-400" />
+                          <span>Verified Key</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <span className="font-bold text-neutral-300 text-xs">
-                    {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)}
-                  </span>
                 </div>
+
+                {/* Right Arrow: ONLY appears when there is a next review to navigate to */}
+                {canGoRight && (
+                  <button
+                    type="button"
+                    onClick={() => setActiveReviewIdx((prev) => Math.min(liveReviews.length - 1, prev + 1))}
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-cyan-500/30 hover:border-cyan-400 text-cyan-400 hover:text-white backdrop-blur-md flex items-center justify-center transition-all shadow-[0_0_15px_rgba(6,182,212,0.25)] active:scale-95 shrink-0"
+                    aria-label="Next review"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                      <path d="m9 18 6-6-6-6" />
+                    </svg>
+                  </button>
+                )}
               </div>
 
-              {/* Bottom Row: Quote Text */}
-              <p className="text-xs text-neutral-300 font-sans leading-snug pl-0.5">
-                &ldquo;{currentReview?.comment || 'Instant delivery and key worked perfectly!'}&rdquo;
-              </p>
+              {/* Dots Pagination: ONLY appears when multiple reviews exist */}
+              {hasMultiple && (
+                <div className="flex items-center justify-center gap-1.5 pt-1">
+                  {liveReviews.map((_, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveReviewIdx(idx)}
+                      className={`transition-all duration-300 ${
+                        activeReviewIdx === idx
+                          ? 'w-4 h-1 bg-cyan-400 rounded-full shadow-[0_0_8px_rgba(6,182,212,0.8)]'
+                          : 'w-1.5 h-1.5 bg-neutral-600 rounded-full hover:bg-neutral-400'
+                      }`}
+                      aria-label={`Go to review ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
