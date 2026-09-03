@@ -16,6 +16,7 @@ import {
   Star,
   ExternalLink,
   ShieldCheck,
+  CheckCircle2,
 } from 'lucide-react';
 import { Plan } from '@/types/plan';
 import { Review } from '@/types/review';
@@ -182,6 +183,7 @@ export function CinematicScrollExperience({
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
   const [liveReviews, setLiveReviews] = useState<Review[]>([]);
+  const [activeReviewIdx, setActiveReviewIdx] = useState<number>(0);
 
   useEffect(() => {
     fetch('/api/reviews', { cache: 'no-store' })
@@ -193,6 +195,16 @@ export function CinematicScrollExperience({
       })
       .catch((err) => console.error('Error fetching reviews:', err));
   }, []);
+
+  useEffect(() => {
+    if (liveReviews.length <= 1) return;
+    const timer = setInterval(() => {
+      setActiveReviewIdx((prev) => (prev + 1) % liveReviews.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [liveReviews.length]);
+
+  const currentReview = liveReviews[activeReviewIdx] || liveReviews[0];
 
   // Anticipatory Lookahead prewarmer: quietly buffers next video in background
   const prewarmVideo = useCallback((targetIdx: number) => {
@@ -733,97 +745,61 @@ export function CinematicScrollExperience({
         */}
         <div
           ref={scene3TrustRef}
-          className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-2.5 right-2.5 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
+          className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-3 right-3 sm:left-auto sm:right-8 md:right-20 lg:right-24 z-20 w-auto sm:w-[360px] md:w-[380px] space-y-2 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="trust-box"
         >
-          {/* Stitch Cyberpunk Verified Review Card — ONLY rendered when REAL approved reviews exist! */}
+          {/* Reference Match: Ultra-Compact Floating Verified Review Card */}
           {liveReviews.length > 0 && (
-            <div className="relative rounded-2xl bg-[#0a0a0f]/80 backdrop-blur-2xl border border-[#00f1fd]/25 shadow-[0_8px_32px_0_rgba(0,0,0,0.6),inset_0_1px_0_0_rgba(255,255,255,0.08)] p-4 sm:p-5 overflow-hidden pointer-events-auto group hover:border-[#00f1fd]/50 transition-all duration-300 space-y-3">
-              {/* Subtle inner gradient highlight */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none" />
-
-              {/* Header: Pulsing Emerald Dot + Gold Rating Pill */}
-              <div className="relative flex items-center justify-between w-full">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
-                  <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-neutral-400 uppercase font-bold">
-                    Verified Trainer Feedback
+            <div className="w-full p-3 sm:p-3.5 rounded-2xl bg-neutral-950/60 backdrop-blur-md border border-cyan-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.6)] space-y-1.5 pointer-events-auto transition-all duration-300 hover:border-cyan-500/40">
+              {/* Top Row: Avatar + Handle + Verified Checkmark (Left) and 5 Stars + 5.0 (Right) */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-6 h-6 rounded-full bg-cyan-950/80 border border-cyan-400/40 flex items-center justify-center font-bold text-cyan-300 text-[11px] shadow-sm shrink-0">
+                    {(currentReview?.trainerName || 'D').charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-xs font-semibold text-white tracking-wide truncate">
+                    @{currentReview?.trainerName || 'Dhruv'}
                   </span>
+                  <CheckCircle2 size={13} className="text-cyan-400 fill-cyan-400/20 shrink-0" />
                 </div>
-                <div className="bg-[#12121c]/80 border border-yellow-500/30 rounded-full px-3 py-1 flex items-center gap-1.5 shadow-[0_0_12px_rgba(245,158,11,0.15)]">
-                  <div className="flex text-yellow-400 gap-0.5">
+                <div className="flex items-center gap-1.5 text-amber-400 font-mono text-[11px] shrink-0">
+                  <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={11} className="fill-yellow-400 text-yellow-400" />
+                      <Star key={i} size={11} className="fill-amber-400 text-amber-400" />
                     ))}
                   </div>
-                  <span className="text-xs font-mono font-bold text-yellow-400 ml-0.5">
+                  <span className="font-bold text-neutral-300 text-xs">
                     {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)}
                   </span>
                 </div>
               </div>
 
-              {/* Quote: Stylized Cyan Border-Left with Deep Typographic Contrast */}
-              <div className="relative pl-4 sm:pl-5 border-l-2 border-[#00f1fd]/40 py-1.5 my-2">
-                <span className="absolute -left-3 -top-3 text-4xl text-[#00f1fd]/25 font-serif leading-none select-none">&ldquo;</span>
-                <p className="text-sm sm:text-base text-neutral-100 font-sans font-medium leading-snug tracking-tight">
-                  {liveReviews[0]?.comment || 'Nice service — key worked instantly on my device.'}
-                </p>
-              </div>
-
-              {/* Signature Bar: Glowing Avatar + Trainer Handle + Verified Shield */}
-              <div className="flex items-center justify-between pt-3 border-t border-white/10 text-xs">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-[#1b1b25] border border-[#00f1fd]/30 flex items-center justify-center font-bold text-[#00f1fd] text-xs shadow-[0_0_15px_rgba(0,241,253,0.15)]">
-                    {(liveReviews[0]?.trainerName || 'D').charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex flex-col text-left">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-bold text-white tracking-wide">
-                        @{liveReviews[0]?.trainerName || 'Dhruv'}
-                      </span>
-                      <span className="text-[10px] text-neutral-400 font-mono">
-                        • {liveReviews[0]?.planName || '1 Device Standard'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-400/10 border border-emerald-400/25 text-emerald-400 text-[10px] font-mono font-medium">
-                  <ShieldCheck size={11} className="text-emerald-400" />
-                  <span>Verified Key</span>
-                </div>
-              </div>
+              {/* Bottom Row: Quote Text */}
+              <p className="text-xs text-neutral-300 font-sans leading-snug pl-0.5">
+                &ldquo;{currentReview?.comment || 'Instant delivery and key worked perfectly!'}&rdquo;
+              </p>
             </div>
           )}
 
-          {/* Connected Floating Action Bar (Stitch Design) */}
-          <div className="relative mt-2 flex items-center justify-center gap-2.5 z-20 pointer-events-auto">
-            <button
-              type="button"
-              onClick={() => scrollToSection('plans')}
-              className="bg-gradient-to-r from-[#00f1fd] to-[#9c52ee] hover:from-[#6ff6ff] hover:to-[#dbb8ff] text-[#0a0a0f] font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-[0_0_25px_rgba(0,241,253,0.35)] transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-1.5"
-            >
-              <span>Buy Key (Scene 2)</span>
-              <span className="text-xs">↑</span>
-            </button>
-
+          {/* Minimalist Sub-controls: FAQ Toggle & Discord */}
+          <div className="flex items-center justify-end gap-2 pointer-events-auto pt-0.5">
             <button
               type="button"
               onClick={() => setFaqDrawerOpen(!faqDrawerOpen)}
-              className="bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-neutral-200 text-xs font-mono px-4 py-2.5 rounded-full transition-all duration-300 flex items-center gap-1.5 shadow-lg"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-950/70 hover:bg-neutral-900 border border-white/10 backdrop-blur-md text-[10px] font-mono text-neutral-400 hover:text-cyan-300 transition-colors shadow"
             >
-              <HelpCircle size={12} className="text-[#00f1fd]" />
+              <HelpCircle size={10} className="text-cyan-400" />
               <span>FAQ ({FAQS.length})</span>
-              {faqDrawerOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+              {faqDrawerOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
             </button>
-
             <a
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md flex items-center justify-center text-neutral-300 hover:text-[#00f1fd] hover:border-[#00f1fd]/40 transition-all duration-300 shadow-lg"
-              title="Join Community Discord"
+              className="p-1.5 rounded-full bg-neutral-950/70 hover:bg-neutral-900 border border-white/10 backdrop-blur-md text-neutral-400 hover:text-white transition-colors shadow flex items-center justify-center"
+              title="Discord"
             >
-              <ExternalLink size={13} />
+              <ExternalLink size={11} />
             </a>
           </div>
 
