@@ -54,8 +54,8 @@ export const TELEGRAM_URL =
   process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/sleekfx3';
 
 // Direct UPI Configuration (Indian Payments)
-export const UPI_VPA = process.env.NEXT_PUBLIC_UPI_VPA || 'dymatliwal@rapl';
-export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_PAYEE_NAME || 'AETHERIA Vault';
+export const UPI_VPA = process.env.NEXT_PUBLIC_UPI_VPA || 'dhruvmatliwala123@oksbi';
+export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_PAYEE_NAME || 'Dhruv';
 
 // Direct PayPal Configuration (International Payments)
 export const PAYPAL_ME_URL = process.env.NEXT_PUBLIC_PAYPAL_ME_URL || 'https://www.paypal.me/MatliwalaYogesh';
