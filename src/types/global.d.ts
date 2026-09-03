@@ -69,4 +69,5 @@ declare module 'lucide-react' {
   export const Activity: LucideIcon;
   export const Menu: LucideIcon;
   export const LogOut: LucideIcon;
+  export const ShieldCheck: LucideIcon;
 }

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { KeyReveal } from '@/components/success/KeyReveal';
 import { ActivationGuide } from '@/components/success/ActivationGuide';
+import { ReviewSubmissionWidget } from '@/components/success/ReviewSubmissionWidget';
 import { OrderPublic } from '@/types/order';
 import { DISCORD_URL, REDDIT_URL, TELEGRAM_URL, PLANS } from '@/lib/constants';
 import {
@@ -417,6 +418,12 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
             </div>
           </div>
         </div>
+
+        {/* ── Post-Purchase Delivery Feedback Widget ────────────────────────── */}
+        <ReviewSubmissionWidget
+          orderId={orderId}
+          planName={matchedPlan?.name ?? 'Standard License'}
+        />
 
         {/* ── 1-on-1 Direct Support Box ──────────────────────────────────────── */}
         <div className="mt-6 p-6 rounded-3xl bg-neutral-950/80 backdrop-blur-xl border border-cyan-500/30 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">

@@ -23,6 +23,7 @@ import {
   Menu,
   X,
   LogOut,
+  Star,
 } from 'lucide-react';
 import { KeyUploader } from '@/components/admin/KeyUploader';
 import { StockDashboard } from '@/components/admin/StockDashboard';
@@ -31,6 +32,7 @@ import { TransactionTable } from '@/components/admin/TransactionTable';
 import { PendingApprovals } from '@/components/admin/PendingApprovals';
 import { SmsBridgeCard } from '@/components/admin/SmsBridgeCard';
 import { CouponManager } from '@/components/admin/CouponManager';
+import { ReviewsManager } from '@/components/admin/ReviewsManager';
 import { OrderPublic } from '@/types/order';
 import { InventoryStatsSummary } from '@/lib/firestore/keys';
 import { RestockStats } from '@/lib/firestore/restock';
@@ -66,7 +68,8 @@ type AdminTab =
   | 'Orders & Deliveries'
   | 'UPI Bank Bridge'
   | 'Coupons'
-  | 'Waitlist & Demand';
+  | 'Waitlist & Demand'
+  | 'Buyer Reviews';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('Dashboard');
@@ -306,6 +309,12 @@ export default function AdminPage() {
         mobileLabel: 'Waitlist',
         icon: <Users size={17} />,
         badge: waitlistCount > 0 ? `${waitlistCount}` : undefined,
+      },
+      {
+        id: 'Buyer Reviews',
+        label: 'Buyer Reviews',
+        mobileLabel: 'Reviews',
+        icon: <Star size={17} />,
       },
     ],
     [pendingOrders.length, totalAvailable, stats?.recentOrders?.length, waitlistCount]
@@ -945,6 +954,15 @@ export default function AdminPage() {
             {activeTab === 'Waitlist & Demand' && (
               <div className="space-y-6">
                 <WaitlistWidget waitlistStats={stats?.waitlistStats} />
+              </div>
+            )}
+
+            {/* ════════════════════════════════════════════════════════════════
+                VIEW 7: BUYER REVIEWS MODERATION
+                ════════════════════════════════════════════════════════════════ */}
+            {activeTab === 'Buyer Reviews' && (
+              <div className="space-y-6">
+                <ReviewsManager adminToken={adminToken} />
               </div>
             )}
           </main>
