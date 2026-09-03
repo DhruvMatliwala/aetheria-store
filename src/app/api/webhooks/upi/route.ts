@@ -125,7 +125,10 @@ async function handleIncomingSms(data: Record<string, any>) {
   // Handle MacroDroid test pings
   const isTestPing =
     rawMessage.includes('[sms_body]') ||
+    rawMessage.includes('[sms_message]') ||
     rawMessage.includes('[not_text]') ||
+    rawMessage.includes('[not_body]') ||
+    rawMessage.includes('[notification]') ||
     rawMessage.toLowerCase().includes('test') ||
     rawMessage === '';
 
