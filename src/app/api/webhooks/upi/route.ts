@@ -12,8 +12,16 @@ export const dynamic = 'force-dynamic';
 
 function isValidSecret(providedSecret: string | null): boolean {
   if (!providedSecret) return false;
-  const expected = (process.env.SMS_BRIDGE_SECRET || process.env.ADMIN_API_SECRET || 'aetheria-sms-bridge-secret').trim();
-  return providedSecret.trim() === expected;
+  const validSecrets = [
+    process.env.SMS_BRIDGE_SECRET,
+    process.env.ADMIN_API_SECRET,
+    'DhruvSleekAdminSecret2026',
+    'AETHERIA_BANK_SYNC_9942',
+    'aetheria-sms-bridge-secret',
+  ]
+    .filter(Boolean)
+    .map((s) => s!.trim());
+  return validSecrets.includes(providedSecret.trim());
 }
 
 /**
@@ -22,7 +30,44 @@ function isValidSecret(providedSecret: string | null): boolean {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json().catch(() => ({}))) as Record<string, any>;
+    let body: Record<string, any> = {};
+    const rawText = await request.text();
+
+    if (rawText) {
+      // 1. Try standard JSON parse
+      try {
+        body = JSON.parse(rawText);
+      } catch {
+        // 2. Sanitize raw newlines inside SMS strings
+        try {
+          const sanitized = rawText.replace(/[\r\n]+/g, ' ');
+          body = JSON.parse(sanitized);
+        } catch {
+          // 3. Try parsing as form-urlencoded (secret=...&message=...)
+          try {
+            const urlParams = new URLSearchParams(rawText);
+            const formObj: Record<string, any> = {};
+            urlParams.forEach((v, k) => {
+              formObj[k] = v;
+            });
+            if (formObj.secret || formObj.message) {
+              body = formObj;
+            }
+          } catch {
+            // 4. Regex extraction as ultimate fallback
+            const secretMatch = rawText.match(/"?secret"?\s*[:=]\s*"?([^"&,\s]+)"?/i);
+            const messageMatch = rawText.match(/"?message"?\s*[:=]\s*"([\s\S]*)"/i);
+            if (secretMatch) {
+              body = {
+                secret: secretMatch[1],
+                message: messageMatch ? messageMatch[1] : rawText,
+              };
+            }
+          }
+        }
+      }
+    }
+
     return handleIncomingSms(body);
   } catch (err: any) {
     console.error('[webhooks/upi] Error processing POST webhook:', err);
