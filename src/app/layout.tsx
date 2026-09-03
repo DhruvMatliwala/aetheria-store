@@ -1,8 +1,16 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Toaster } from 'react-hot-toast';
 import { Analytics } from '@vercel/analytics/react';
 import { AmbientAudioProvider } from '@/context/AmbientAudioContext';
 import './globals.css';
+
+export const viewport: Viewport = {
+  themeColor: '#070b13',
+  colorScheme: 'dark',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & PayPal)',
@@ -130,6 +138,12 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'AETHERIA',
   },
 };
 
