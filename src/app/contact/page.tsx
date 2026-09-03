@@ -66,7 +66,7 @@ export default function ContactPage() {
             We&apos;re Here to Help
           </h1>
           <p className="text-neutral-400 text-sm leading-relaxed">
-            Need help with your PGSharp license key, setup, or have questions about instant delivery? Reach out directly via Discord, Reddit, or Telegram.
+            Need help with your PGSharp license key, setup, or have questions about key delivery? Reach out directly via Discord, Reddit, or Telegram.
           </p>
         </div>
 

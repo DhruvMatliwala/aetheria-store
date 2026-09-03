@@ -45,8 +45,8 @@ const FAQS: FAQItem[] = [
           We support all major Indian and international payment gateways:
         </p>
         <ul className="list-disc list-inside space-y-1 text-[#bfb8ae] ml-2 font-mono text-xs">
-          <li><strong>India (INR):</strong> Direct UPI QR (Google Pay, PhonePe, Paytm, BHIM, CRED) with instant automated delivery.</li>
-          <li><strong>International (USD):</strong> PayPal (PayPal Balance, Linked Debit/Credit Cards, and Pay in 4) with 24/7 cloud IPN instant delivery.</li>
+          <li><strong>India (INR):</strong> Direct UPI QR (Google Pay, PhonePe, Paytm, BHIM, CRED) with fast digital delivery upon verification.</li>
+          <li><strong>International (USD):</strong> PayPal (PayPal Balance, Linked Debit/Credit Cards, and Pay in 4) with direct digital delivery.</li>
         </ul>
       </div>
     ),
@@ -162,7 +162,7 @@ export function FAQSection() {
                 </div>
 
                 <p className="text-[#bfb8ae] text-sm font-mono leading-relaxed">
-                  Have questions about instant delivery, hardware device slots, PGSharp activation, or payment methods? Find quick answers here or contact us directly.
+                  Have questions about digital key delivery, hardware device slots, PGSharp activation, or payment methods? Find quick answers here or contact us directly.
                 </p>
 
                 {/* Support CTAs */}

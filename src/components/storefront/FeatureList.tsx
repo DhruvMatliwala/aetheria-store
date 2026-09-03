@@ -8,8 +8,8 @@ import { ScrollReveal } from '@/components/interactive/ScrollReveal';
 const FEATURES = [
   {
     icon: Zap,
-    title: 'Automated Instant Delivery',
-    description: 'Zero human delay. The moment your payment clears on UPI or PayPal, your license key is revealed on screen and sent to your email.',
+    title: 'Fast Digital Delivery',
+    description: 'The moment your payment verifies on UPI or PayPal, your license key is revealed on screen and sent to your email.',
     color: '#8b5cf6',
   },
   {

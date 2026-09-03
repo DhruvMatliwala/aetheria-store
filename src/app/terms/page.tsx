@@ -6,7 +6,7 @@ import { DISCORD_URL, REDDIT_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Terms of Service | AETHERIA — PGSharp Key Vault',
-  description: 'Terms and conditions governing the purchase and automated instant delivery of PGSharp digital license keys.',
+  description: 'Terms and conditions governing the purchase and digital delivery of PGSharp license keys.',
 };
 
 export default function TermsPage() {
@@ -79,14 +79,14 @@ export default function TermsPage() {
                 1. Overview & Service Scope
               </h2>
               <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
-                AETHERIA provides genuine, cryptographically authenticated digital license keys for unlocking standard utility features in the PGSharp Android application. By placing an order through our automated storefront, you agree to be bound by these Terms of Service.
+                AETHERIA provides genuine, cryptographically authenticated digital license keys for unlocking standard utility features in the PGSharp Android application. By placing an order through our storefront, you agree to be bound by these Terms of Service.
               </p>
             </section>
 
             <section className="bg-neutral-900/40 border border-neutral-800/60 rounded-2xl p-5">
-              <h2 className="text-base font-bold text-cyan-300 mb-2">2. Automated Instant Digital Key Delivery</h2>
+              <h2 className="text-base font-bold text-cyan-300 mb-2">2. Digital License Key Delivery</h2>
               <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
-                All PGSharp license keys are dispatched electronically and instantly upon payment confirmation via Direct UPI (Google Pay, PhonePe, Paytm, BHIM, CRED) or PayPal. Keys are revealed on screen and sent to the purchaser&apos;s email address. No physical goods are shipped.
+                All PGSharp license keys are dispatched electronically upon payment confirmation via Direct UPI (Google Pay, PhonePe, Paytm, BHIM, CRED) or PayPal. Keys are revealed on screen and sent to the purchaser&apos;s email address (typically within minutes). No physical goods are shipped.
               </p>
             </section>
 

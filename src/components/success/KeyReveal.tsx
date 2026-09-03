@@ -76,7 +76,7 @@ export function KeyReveal({ licenseKey, orderId, planType, slotsAssigned = 1 }: 
           </span>
           <span className="w-4 h-px bg-white/20" />
           <span className="text-xs font-mono uppercase tracking-wider text-emerald-400">
-            ● INSTANT DISPATCH
+            ● VERIFIED DELIVERY
           </span>
         </div>
 

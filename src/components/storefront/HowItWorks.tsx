@@ -15,15 +15,15 @@ const STEPS = [
   },
   {
     num: '02',
-    title: 'Pay Instantly',
+    title: 'Direct Checkout',
     desc: 'Zero-fee checkout via UPI (GPay, PhonePe, Paytm) or PayPal USD.',
     icon: CreditCard,
     color: '#38bdf8',
   },
   {
     num: '03',
-    title: 'Instant Delivery',
-    desc: 'Key revealed immediately on your screen & dispatched to your email in < 10s.',
+    title: 'Digital Key Delivery',
+    desc: 'Key revealed directly on your screen & dispatched to your email upon payment verification.',
     icon: Key,
     color: '#10b981',
   },

@@ -75,7 +75,7 @@ export function ReviewSubmissionWidget({ orderId, planName }: ReviewSubmissionWi
   }
 
   const ratingDescriptions: Record<number, string> = {
-    5: '⭐ Flawless & Instant Delivery',
+    5: '⭐ Flawless & Fast Delivery',
     4: '⭐ Very Fast Delivery',
     3: '⭐ Average Delivery',
     2: '⭐ Slower Than Expected',

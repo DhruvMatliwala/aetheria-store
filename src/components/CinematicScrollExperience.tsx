@@ -41,8 +41,8 @@ const SCENE_OVERLAYS = [
     idx: '01 / 03',
     subtitle: 'AWAKEN ACCESS',
     title: 'Break every limit.',
-    description: 'Official PGSharp Standard Edition 30-day keys dispatched in under 10 seconds. Zero delay.',
-    badges: ['Instant Auto-Dispatch', '30-Day License', 'PGSharp Standard ⚡'],
+    description: 'Official PGSharp Standard Edition 30-day keys with direct digital dispatch upon payment verification.',
+    badges: ['Fast Key Delivery', '30-Day License', 'PGSharp Standard ⚡'],
     showCta: true,
   },
   {
@@ -57,7 +57,7 @@ const SCENE_OVERLAYS = [
     idx: '03 / 03',
     subtitle: 'COMBAT SHOWDOWN',
     title: 'Master every raid.',
-    description: 'Live 100% IV scanner feed and official 30-day PGSharp Standard Edition licenses. Instant delivery.',
+    description: 'Live 100% IV scanner feed and official 30-day PGSharp Standard Edition licenses. Fast digital delivery.',
     badges: ['100% IV Feed', 'Raid Radar', 'PGSharp Verified'],
     showCta: false,
   },
@@ -67,15 +67,15 @@ const SCENE_OVERLAYS = [
 const FAQS = [
   {
     q: 'What are these keys used for?',
-    a: 'These are official activation keys for the PGSharp Standard Edition Android app. Entering your key inside the PGSharp app instantly unlocks VIP features including teleportation, auto-walking, quick catch, 100 IV feeds, and shiny scanner for 30 days.',
+    a: 'These are official activation keys for the PGSharp Standard Edition Android app. Entering your key inside the PGSharp app unlocks VIP features including teleportation, auto-walking, quick catch, 100 IV feeds, and shiny scanner for 30 days.',
   },
   {
     q: 'Are you the official creator of PGSharp?',
-    a: 'AETHERIA is an independent digital license distributor and reseller. We provide trainers worldwide with instant automated key delivery, local payment methods (UPI, GPay, Paytm, Cards, PayPal), and 24/7 priority customer support.',
+    a: 'AETHERIA is an independent digital license distributor and reseller. We provide trainers worldwide with fast digital key delivery, direct payment methods (UPI, GPay, PhonePe, Cards, PayPal), and 24/7 priority customer support.',
   },
   {
     q: 'How fast do I receive my PGSharp license key?',
-    a: 'Delivery is 100% automated and instant. As soon as your payment completes on UPI or PayPal, your key is revealed directly on your screen and dispatched to your email in under 10 seconds.',
+    a: 'Delivery is direct upon payment verification. As soon as your payment clears on UPI or PayPal, your key is revealed right on your screen and dispatched to your email (typically within 1 to 5 minutes).',
   },
   {
     q: 'How do device slots work across 1-Device and 2-Device plans?',
@@ -657,7 +657,7 @@ export function CinematicScrollExperience({
                         {isOutOfStock ? (
                           <span className="text-red-400 font-medium">● Sold Out</span>
                         ) : (
-                          <span className="text-emerald-400 font-medium">● Instant Dispatch</span>
+                          <span className="text-emerald-400 font-medium">● Fast Digital Delivery</span>
                         )}
                       </div>
 
@@ -718,7 +718,7 @@ export function CinematicScrollExperience({
             </span>
             <span className="text-white/20">•</span>
             <span className="flex items-center gap-1">
-              <Zap size={10} className="text-emerald-400" /> Instant Dispatch
+              <Zap size={10} className="text-emerald-400" /> Fast Digital Delivery
             </span>
             <span className="text-white/20">•</span>
             <span className="text-neutral-300">Direct UPI & PayPal</span>
@@ -845,7 +845,7 @@ export function CinematicScrollExperience({
                     <a href={REDDIT_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Reddit</a>
                     <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="hover:text-cyan-400">Telegram</a>
                   </div>
-                  <span className="text-emerald-400">Instant Dispatch</span>
+                  <span className="text-emerald-400">Fast Digital Delivery</span>
                 </div>
               </div>
             )}

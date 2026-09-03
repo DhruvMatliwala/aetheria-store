@@ -3,7 +3,7 @@
 import { Shield, Zap, Wallet, MessageCircle } from 'lucide-react';
 
 const TRUST_ITEMS = [
-  { icon: Zap, label: 'Instant Delivery', detail: '< 10s Automated' },
+  { icon: Zap, label: 'Fast Digital Delivery', detail: 'Email & Screen Dispatch' },
   { icon: Shield, label: 'Encrypted Vault Storage', detail: 'Protected Slots' },
   { icon: Wallet, label: 'UPI & PayPal', detail: 'Zero Extra Fees' },
   { icon: MessageCircle, label: '24/7 Support', detail: 'Discord & Reddit' },

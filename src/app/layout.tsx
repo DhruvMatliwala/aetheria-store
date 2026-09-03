@@ -13,9 +13,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & PayPal)',
+  title: 'AETHERIA — Buy PGSharp Standard Key | Fast Digital Delivery (UPI & PayPal)',
   description:
-    'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Buy PGSharp keys via UPI, GPay, Paytm, PhonePe & PayPal with instant automated delivery.',
+    'Official PGSharp Standard Edition 30-Day license keys with direct digital delivery. Buy PGSharp keys via UPI, GPay, Paytm, PhonePe & PayPal with verified key dispatch.',
   keywords: [
     // Core Brand & Store
     'AETHERIA',
@@ -100,8 +100,8 @@ export const metadata: Metadata = {
     'pokemon go spoofing key',
     'pokemon go joystick key',
     'pokemon go teleport key',
-    'pgsharp instant delivery',
-    'pgsharp automatic key dispatch',
+    'pgsharp digital delivery',
+    'pgsharp verified key dispatch',
   ],
   alternates: {
     canonical: process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app',
@@ -116,17 +116,17 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & PayPal)',
+    title: 'AETHERIA — Buy PGSharp Standard Key | Fast Digital Delivery (UPI & PayPal)',
     description:
-      'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Buy PGSharp via UPI, GPay, Paytm & PayPal.',
+      'Official PGSharp Standard Edition 30-Day license keys with direct digital delivery. Buy PGSharp via UPI, GPay, Paytm & PayPal.',
     type: 'website',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AETHERIA — Buy PGSharp Standard Key | Instant Delivery (UPI & PayPal)',
+    title: 'AETHERIA — Buy PGSharp Standard Key | Fast Digital Delivery (UPI & PayPal)',
     description:
-      'Official PGSharp Standard Edition 30-Day license keys dispatched in under 10 seconds. Fast UPI & PayPal checkout.',
+      'Official PGSharp Standard Edition 30-Day license keys with direct digital delivery. Fast UPI & PayPal checkout.',
   },
   robots: {
     index: true,
