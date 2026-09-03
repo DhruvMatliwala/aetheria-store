@@ -93,6 +93,7 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
   useEffect(() => {
     if (order.payment_status === 'paid' && order.delivered_key) {
       setStatus('paid');
+      triggerConfetti();
       return;
     }
 

@@ -15,19 +15,11 @@ const firebaseConfig = {
 let firebaseApp: FirebaseApp | null = null;
 
 function getFirebaseApp(): FirebaseApp {
-  if (typeof window === 'undefined') {
-    // Server-side guard
-    if (!getApps().length) {
-      return initializeApp(firebaseConfig, 'server-client-app');
-    }
-    return getApps()[0];
+  const apps = getApps();
+  if (apps.length > 0) {
+    return apps[0];
   }
-
-  if (!getApps().length) {
-    firebaseApp = initializeApp(firebaseConfig);
-  } else {
-    firebaseApp = getApp();
-  }
+  firebaseApp = initializeApp(firebaseConfig);
   return firebaseApp;
 }
 

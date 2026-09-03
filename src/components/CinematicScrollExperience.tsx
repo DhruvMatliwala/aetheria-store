@@ -184,7 +184,7 @@ export function CinematicScrollExperience({
   const mobileScrollIndicatorRef = useRef<HTMLDivElement>(null);
   const desktopScrollIndicatorRef = useRef<HTMLDivElement>(null);
   const videoElementsRef = useRef<(HTMLVideoElement | null)[]>([]);
-  const activeSceneRef = useRef<number>(0);
+  const activeSceneRef = useRef<number>(-1);
   const prewarmedRef = useRef<Record<number, boolean>>({ 0: true });
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [faqDrawerOpen, setFaqDrawerOpen] = useState(false);
@@ -221,7 +221,7 @@ export function CinematicScrollExperience({
   // Zero-overhead video decoder switcher:
   // Plays video once, pauses at last frame, and replays fresh from start when returning!
   const switchVideo = useCallback((targetIdx: number) => {
-    if (activeSceneRef.current === targetIdx && videoElementsRef.current[targetIdx] && !videoElementsRef.current[targetIdx]?.paused) {
+    if (activeSceneRef.current === targetIdx) {
       return;
     }
     activeSceneRef.current = targetIdx;

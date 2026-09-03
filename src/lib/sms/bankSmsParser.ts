@@ -33,8 +33,15 @@ export function parseBankSms(text: string): ParsedBankSms {
   }
 
   // ── 2. Extract Credited Amount in Rupees ─────────────────────────────────────
-  // Matches "Rs. 180.00", "Rs 350", "INR 180.00", "credited by Rs 180", etc.
-  const amountMatch = cleanText.match(/(?:rs\.?|inr|₹)\s*([\d,]+(?:\.\d{1,2})?)/i);
+  // Prioritize explicitly credited amounts (e.g., "Credited for Rs.180.14", "credited with INR 180", "Rs 180.14 credited")
+  // to avoid accidentally matching account balance (e.g., "Bal: Rs.12,500.00").
+  const creditSpecificMatch =
+    cleanText.match(/(?:credited(?:\s+by|\s+with|\s+for)?|received|credit)\s*(?:of\s*)?(?:rs\.?|inr|₹)?\s*([\d,]+(?:\.\d{1,2})?)/i) ||
+    cleanText.match(/(?:rs\.?|inr|₹)\s*([\d,]+(?:\.\d{1,2})?)\s*(?:has been\s*)?credited/i);
+
+  const generalAmountMatch = cleanText.match(/(?:rs\.?|inr|₹)\s*([\d,]+(?:\.\d{1,2})?)/i);
+  const amountMatch = creditSpecificMatch || generalAmountMatch;
+
   let amount: number | null = null;
   if (amountMatch) {
     const num = parseFloat(amountMatch[1].replace(/,/g, ''));
