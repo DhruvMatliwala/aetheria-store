@@ -58,10 +58,13 @@ export async function POST(request: NextRequest) {
       .get();
 
     if (!dupSnapshot.empty && dupSnapshot.docs[0].id !== orderId) {
-      return NextResponse.json(
-        { error: 'This Transaction ID has already been submitted for another order. Please check your PayPal receipt.' },
-        { status: 409 }
-      );
+      const dupData = dupSnapshot.docs[0].data();
+      if (dupData.payment_status === 'paid' || dupData.payment_status === 'verifying') {
+        return NextResponse.json(
+          { error: 'This Transaction ID has already been submitted for another order. Please check your PayPal receipt.' },
+          { status: 409 }
+        );
+      }
     }
 
     // ── 3. Check if PayPal IPN already arrived and verified this transaction ─
