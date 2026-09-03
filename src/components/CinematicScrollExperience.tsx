@@ -736,81 +736,71 @@ export function CinematicScrollExperience({
           className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-2.5 right-2.5 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="trust-box"
         >
-          {/* Frosted Cybernetic Verified Review Card — ONLY rendered when REAL approved reviews exist! */}
+          {/* Stitch Cyberpunk Verified Review Card — ONLY rendered when REAL approved reviews exist! */}
           {liveReviews.length > 0 && (
-            <div className="relative rounded-2xl bg-neutral-950/75 backdrop-blur-xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_30px_rgba(6,182,212,0.12)] p-3.5 sm:p-4 overflow-hidden pointer-events-auto transition-all duration-300 hover:border-cyan-500/30 space-y-2.5">
-              {/* Subtle top neon ambient beam */}
-              <div className="absolute -top-px left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.03] via-transparent to-blue-600/[0.04] pointer-events-none" />
+            <div className="relative rounded-2xl bg-[#0a0a0f]/80 backdrop-blur-2xl border border-[#00f1fd]/25 shadow-[0_8px_32px_0_rgba(0,0,0,0.6),inset_0_1px_0_0_rgba(255,255,255,0.08)] p-4 sm:p-5 overflow-hidden pointer-events-auto group hover:border-[#00f1fd]/50 transition-all duration-300 space-y-3">
+              {/* Subtle inner gradient highlight */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none" />
 
-              {/* Card Top: Live Pulsing Indicator + Star Rating Badge */}
-              <div className="relative flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-cyan-300 font-bold uppercase">
+              {/* Header: Pulsing Emerald Dot + Gold Rating Pill */}
+              <div className="relative flex items-center justify-between w-full">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
+                  <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-neutral-400 uppercase font-bold">
                     Verified Trainer Feedback
                   </span>
                 </div>
-                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-400 font-mono text-[10px] sm:text-[11px] font-bold">
-                  <div className="flex items-center">
+                <div className="bg-[#12121c]/80 border border-yellow-500/30 rounded-full px-3 py-1 flex items-center gap-1.5 shadow-[0_0_12px_rgba(245,158,11,0.15)]">
+                  <div className="flex text-yellow-400 gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={10} className="fill-amber-400 text-amber-400" />
+                      <Star key={i} size={11} className="fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <span className="ml-0.5">
+                  <span className="text-xs font-mono font-bold text-yellow-400 ml-0.5">
                     {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)}
                   </span>
                 </div>
               </div>
 
-              {/* Real Buyer Quotes Showcase */}
-              <div className="relative space-y-2 text-left">
-                {liveReviews.slice(0, 1).map((rev, rIdx) => (
-                  <div key={rev.id || rIdx} className="space-y-2">
-                    <div className="flex items-start gap-2">
-                      <svg className="w-3.5 h-3.5 text-cyan-400/80 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                      </svg>
-                      <p className="text-xs sm:text-[13px] text-neutral-100 font-sans font-medium leading-snug tracking-tight">
-                        &ldquo;{rev.comment || 'Verified key delivery, works flawlessly!'}&rdquo;
-                      </p>
-                    </div>
+              {/* Quote: Stylized Cyan Border-Left with Deep Typographic Contrast */}
+              <div className="relative pl-4 sm:pl-5 border-l-2 border-[#00f1fd]/40 py-1.5 my-2">
+                <span className="absolute -left-3 -top-3 text-4xl text-[#00f1fd]/25 font-serif leading-none select-none">&ldquo;</span>
+                <p className="text-sm sm:text-base text-neutral-100 font-sans font-medium leading-snug tracking-tight">
+                  {liveReviews[0]?.comment || 'Nice service — key worked instantly on my device.'}
+                </p>
+              </div>
 
-                    {/* Buyer Signature Strip */}
-                    <div className="flex items-center justify-between pt-2 border-t border-white/10 text-xs">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm ring-1 ring-white/20">
-                          {(rev.trainerName || 'T').charAt(0).toUpperCase()}
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-semibold text-white tracking-wide">
-                            @{rev.trainerName || 'Trainer'}
-                          </span>
-                          <span className="text-[10px] text-neutral-400 font-mono">
-                            • {rev.planName || '1 Device Standard'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[10px] font-mono font-medium">
-                        <ShieldCheck size={11} className="text-emerald-400" />
-                        <span>Verified Key</span>
-                      </div>
+              {/* Signature Bar: Glowing Avatar + Trainer Handle + Verified Shield */}
+              <div className="flex items-center justify-between pt-3 border-t border-white/10 text-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-[#1b1b25] border border-[#00f1fd]/30 flex items-center justify-center font-bold text-[#00f1fd] text-xs shadow-[0_0_15px_rgba(0,241,253,0.15)]">
+                    {(liveReviews[0]?.trainerName || 'D').charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-white tracking-wide">
+                        @{liveReviews[0]?.trainerName || 'Dhruv'}
+                      </span>
+                      <span className="text-[10px] text-neutral-400 font-mono">
+                        • {liveReviews[0]?.planName || '1 Device Standard'}
+                      </span>
                     </div>
                   </div>
-                ))}
+                </div>
+                <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-400/10 border border-emerald-400/25 text-emerald-400 text-[10px] font-mono font-medium">
+                  <ShieldCheck size={11} className="text-emerald-400" />
+                  <span>Verified Key</span>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Action Row: Floating Pill Controls */}
-          <div className="flex items-center justify-center gap-2 pointer-events-auto pt-0.5">
+          {/* Connected Floating Action Bar (Stitch Design) */}
+          <div className="relative mt-2 flex items-center justify-center gap-2.5 z-20 pointer-events-auto">
             <button
               type="button"
               onClick={() => scrollToSection('plans')}
-              className="flex-1 max-w-[210px] py-2 sm:py-2.5 px-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 shadow-[0_0_20px_rgba(6,182,212,0.35)] active:scale-95 flex items-center justify-center gap-1.5"
+              className="bg-gradient-to-r from-[#00f1fd] to-[#9c52ee] hover:from-[#6ff6ff] hover:to-[#dbb8ff] text-[#0a0a0f] font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-[0_0_25px_rgba(0,241,253,0.35)] transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-1.5"
             >
               <span>Buy Key (Scene 2)</span>
               <span className="text-xs">↑</span>
@@ -819,9 +809,9 @@ export function CinematicScrollExperience({
             <button
               type="button"
               onClick={() => setFaqDrawerOpen(!faqDrawerOpen)}
-              className="inline-flex items-center gap-1.5 py-2 sm:py-2.5 px-3 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-white/15 backdrop-blur-md text-[11px] sm:text-xs font-mono text-neutral-200 hover:text-cyan-300 transition-colors shadow-lg"
+              className="bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md text-neutral-200 text-xs font-mono px-4 py-2.5 rounded-full transition-all duration-300 flex items-center gap-1.5 shadow-lg"
             >
-              <HelpCircle size={12} className="text-cyan-400" />
+              <HelpCircle size={12} className="text-[#00f1fd]" />
               <span>FAQ ({FAQS.length})</span>
               {faqDrawerOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
             </button>
@@ -830,7 +820,7 @@ export function CinematicScrollExperience({
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 sm:p-2.5 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-white/15 backdrop-blur-md text-neutral-300 hover:text-white transition-colors shadow-lg flex items-center justify-center"
+              className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md flex items-center justify-center text-neutral-300 hover:text-[#00f1fd] hover:border-[#00f1fd]/40 transition-all duration-300 shadow-lg"
               title="Join Community Discord"
             >
               <ExternalLink size={13} />
