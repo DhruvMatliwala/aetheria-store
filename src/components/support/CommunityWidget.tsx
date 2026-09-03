@@ -31,9 +31,12 @@ export function CommunityWidget() {
 
       {/* Flyout Modal / Popup */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-end justify-center sm:justify-end p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-50 flex items-end sm:items-end justify-center sm:justify-end p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-fade-in cursor-pointer"
+        >
           <div
-            className="w-full max-w-md bg-surface-800 border border-surface-600 rounded-2xl shadow-2xl p-6 relative overflow-hidden animate-slide-up"
+            className="w-full max-w-md bg-surface-800 border border-surface-600 rounded-2xl shadow-2xl p-6 relative overflow-hidden animate-slide-up cursor-default"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header glow */}

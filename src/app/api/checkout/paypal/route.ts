@@ -58,7 +58,6 @@ export async function POST(request: NextRequest) {
       finalPriceUsdCents = couponResult.newPriceUsd!;
       appliedCouponCode = couponResult.code;
       discountAmountUsd = couponResult.discountAmountUsd;
-      await incrementCouponUsage(appliedCouponCode);
     }
 
     // ── Create internal order ID ─────────────────────────────────────────────

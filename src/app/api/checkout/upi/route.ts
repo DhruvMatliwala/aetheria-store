@@ -58,7 +58,6 @@ export async function POST(request: NextRequest) {
       basePriceInr = couponResult.newPriceInr!;
       appliedCouponCode = couponResult.code;
       discountAmountInr = couponResult.discountAmountInr;
-      await incrementCouponUsage(appliedCouponCode);
     }
 
     // ── Create internal order ID & unique paise amount for zero-UTR matching ─

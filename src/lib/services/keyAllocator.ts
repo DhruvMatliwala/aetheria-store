@@ -1,5 +1,6 @@
 import { getAdminFirestore } from '@/lib/firebase/admin';
 import { decryptKey } from '@/lib/crypto';
+import { incrementCouponUsage } from '@/lib/firestore/coupons';
 import { LicenseKeyDoc } from '@/types/key';
 import { Order } from '@/types/order';
 
@@ -156,6 +157,13 @@ export async function allocateKeySlot(
       key_id: keyDocRef.id,
       updated_at: Date.now(),
     });
+
+    // ── 6. Increment Coupon Usage If Applicable (Only on genuine payment) ─────
+    if (orderData.coupon_code) {
+      incrementCouponUsage(orderData.coupon_code).catch((couponErr) => {
+        console.warn('[keyAllocator] Failed to increment coupon usage:', couponErr);
+      });
+    }
 
     return {
       keyId: keyDocRef.id,
