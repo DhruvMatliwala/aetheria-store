@@ -68,8 +68,9 @@ export const SMART_ROUTING_UPI_IDS: SmartRoute[] = [
 ];
 
 // Direct UPI Configuration (Indian Payments)
+export const OFFICIAL_GPAY_URI = 'upi://pay?pa=dhruvmatliwala123@oksbi&pn=Dhruv%20-076&aid=uGICAgMC507CUEg';
 export const UPI_VPA = process.env.NEXT_PUBLIC_UPI_VPA || SMART_ROUTING_UPI_IDS[0].vpa;
-export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_PAYEE_NAME || 'Dhruv';
+export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_PAYEE_NAME || 'Dhruv -076';
 
 // Direct PayPal Configuration (International Payments)
 export const PAYPAL_ME_URL = process.env.NEXT_PUBLIC_PAYPAL_ME_URL || 'https://www.paypal.me/MatliwalaYogesh';

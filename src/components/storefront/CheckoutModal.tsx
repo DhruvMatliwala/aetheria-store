@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Plan } from '@/types/plan';
 import { CouponValidationResult } from '@/types/coupon';
 import { cn } from '@/lib/utils';
-import { SMART_ROUTING_UPI_IDS, SmartRoute } from '@/lib/constants';
+import { SMART_ROUTING_UPI_IDS, SmartRoute, OFFICIAL_GPAY_URI } from '@/lib/constants';
 
 type PaymentMethod = 'upi' | 'paypal';
 type CheckoutStep = 'details' | 'upi_qr' | 'paypal_direct';
@@ -207,7 +207,9 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
   const currentUpiId = activeVpa || upiSession?.upiId || SMART_ROUTING_UPI_IDS[0].vpa;
   const currentUpiString = upiSession
-    ? `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(upiSession.payeeName || 'Dhruv')}&cu=INR`
+    ? currentUpiId === 'dhruvmatliwala123@oksbi'
+      ? OFFICIAL_GPAY_URI
+      : `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=Dhruv%20-076&cu=INR`
     : '';
 
   const handleCopyUpi = () => {
@@ -700,14 +702,24 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
           {/* QR Code Card */}
           <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.15)]">
-            <div className="p-3 bg-white rounded-xl shadow-lg mb-3">
-              {(currentUpiString || upiSession?.upiString) && (
-                <QRCodeSVG
-                  value={currentUpiString || upiSession!.upiString}
-                  size={160}
-                  level="H"
-                  includeMargin={false}
+            <div className="p-2 bg-white rounded-xl shadow-lg mb-3 flex items-center justify-center max-w-[200px]">
+              {currentUpiId === 'dhruvmatliwala123@oksbi' ? (
+                <img
+                  src="/gpay-qr.jpg"
+                  alt="Official Google Pay QR Code"
+                  className="w-44 h-auto rounded-lg object-contain"
                 />
+              ) : (
+                (currentUpiString || upiSession?.upiString) && (
+                  <div className="p-2">
+                    <QRCodeSVG
+                      value={currentUpiString || upiSession!.upiString}
+                      size={160}
+                      level="H"
+                      includeMargin={false}
+                    />
+                  </div>
+                )
               )}
             </div>
 

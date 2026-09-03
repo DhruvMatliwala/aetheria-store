@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { PLAN_MAP, UPI_VPA, UPI_PAYEE_NAME, SMART_ROUTING_UPI_IDS } from '@/lib/constants';
+import { PLAN_MAP, UPI_VPA, UPI_PAYEE_NAME, SMART_ROUTING_UPI_IDS, OFFICIAL_GPAY_URI } from '@/lib/constants';
 import { createOrder } from '@/lib/firestore/orders';
 import { getAvailableCount } from '@/lib/firestore/keys';
 import { allocateUniquePaise } from '@/lib/orders/paiseAllocator';
@@ -66,9 +66,8 @@ export async function POST(request: NextRequest) {
     const priceRupeesStr = Math.round(amountRupees).toString();
     const note = '';
 
-    // ── Standard NPCI P2P UPI URI without locked amount (Prevents SBI U30 limits) ─
-    // Format: upi://pay?pa=VPA&pn=NAME&cu=INR
-    const upiString = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&cu=INR`;
+    // ── Official Authenticated GPay P2P URI with cryptographic aid token ────────
+    const upiString = OFFICIAL_GPAY_URI;
 
     // ── Persist pending order to Firestore ───────────────────────────────────
     await createOrder({
