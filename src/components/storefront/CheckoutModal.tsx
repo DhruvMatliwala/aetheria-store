@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Plan } from '@/types/plan';
 import { CouponValidationResult } from '@/types/coupon';
 import { cn } from '@/lib/utils';
-import { SMART_ROUTING_UPI_IDS, SmartRoute, UPI_PHONE_NUMBER } from '@/lib/constants';
+import { SMART_ROUTING_UPI_IDS, SmartRoute } from '@/lib/constants';
 
 type PaymentMethod = 'upi' | 'paypal';
 type CheckoutStep = 'details' | 'upi_qr' | 'paypal_direct';
@@ -60,7 +60,6 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [copiedAmount, setCopiedAmount] = useState(false);
-  const [copiedPhone, setCopiedPhone] = useState(false);
   const [showUtrHelp, setShowUtrHelp] = useState(false);
   const [showManualUtr, setShowManualUtr] = useState(false);
 
@@ -225,13 +224,6 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     setCopiedAmount(true);
     toast.success(`Copied amount: ₹${Math.round(upiSession.amountRupees)}`);
     setTimeout(() => setCopiedAmount(false), 2500);
-  };
-
-  const handleCopyPhone = () => {
-    navigator.clipboard.writeText(UPI_PHONE_NUMBER);
-    setCopiedPhone(true);
-    toast.success(`UPI Phone Number ${UPI_PHONE_NUMBER} copied!`);
-    setTimeout(() => setCopiedPhone(false), 2500);
   };
 
   const handleCopyPaypalEmail = () => {
@@ -725,8 +717,8 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               <span className="text-cyan-400 font-bold">Paytm</span>
             </p>
 
-            {/* Payee Info & Copy Buttons (UPI ID + Phone Number) */}
-            <div className="space-y-1.5 w-full max-w-xs">
+            {/* Payee Info & Copy Button */}
+            <div className="w-full max-w-xs">
               {/* UPI ID */}
               <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-neutral-950 border border-neutral-800 text-xs">
                 <div className="truncate pr-2">
@@ -742,29 +734,13 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
                   {copiedUpi ? 'Copied' : 'Copy'}
                 </button>
               </div>
-
-              {/* Pay Phone Number */}
-              <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-neutral-950 border border-neutral-800 text-xs">
-                <div className="truncate pr-2">
-                  <span className="text-gray-400 block text-[10px]">GPay / PhonePe Number</span>
-                  <span className="font-mono text-emerald-300 font-bold">{UPI_PHONE_NUMBER}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleCopyPhone}
-                  className="flex items-center gap-1 text-[11px] font-semibold text-white bg-emerald-600 hover:bg-emerald-500 px-2.5 py-1 rounded-md transition-colors shrink-0"
-                >
-                  {copiedPhone ? <Check size={12} /> : <Copy size={12} />}
-                  {copiedPhone ? 'Copied' : 'Copy'}
-                </button>
-              </div>
             </div>
 
             {/* 3-Step Clear Instructions */}
             <div className="w-full max-w-xs mt-3 px-3 py-2 rounded-xl bg-cyan-950/30 border border-cyan-500/20 text-[11px] text-gray-300 space-y-1 text-left">
               <div className="flex items-start gap-1.5">
                 <span className="text-cyan-400 font-bold font-mono">1.</span>
-                <span>Scan QR or pay to UPI ID / Phone number above.</span>
+                <span>Scan QR or pay to UPI ID above.</span>
               </div>
               <div className="flex items-start gap-1.5">
                 <span className="text-cyan-400 font-bold font-mono">2.</span>

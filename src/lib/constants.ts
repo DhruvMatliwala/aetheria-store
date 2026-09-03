@@ -68,7 +68,6 @@ export const SMART_ROUTING_UPI_IDS: SmartRoute[] = [
 ];
 
 // Direct UPI Configuration (Indian Payments)
-export const UPI_PHONE_NUMBER = '9773438009';
 export const UPI_VPA = process.env.NEXT_PUBLIC_UPI_VPA || SMART_ROUTING_UPI_IDS[0].vpa;
 export const UPI_PAYEE_NAME = process.env.NEXT_PUBLIC_UPI_PAYEE_NAME || 'Dhruv';
 
