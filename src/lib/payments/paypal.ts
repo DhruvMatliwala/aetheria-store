@@ -63,7 +63,7 @@ export async function createPayPalOrder(
   // Format as exact 2-decimal string in USD (e.g. "1.99", "3.99")
   const amountUsd = (amountCents / 100).toFixed(2);
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app';
 
   const res = await fetch(`${PAYPAL_BASE_URL}/v2/checkout/orders`, {
     method: 'POST',
