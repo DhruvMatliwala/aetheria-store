@@ -247,10 +247,10 @@ export default function AdminPage() {
     const usd = stats?.revenueStats?.totalRevenueUSD || 0;
     if (inr === 0 && usd === 0) return '₹0';
     if (inr > 0 && usd > 0) {
-      return `₹${(inr / 100).toLocaleString('en-IN')} + $${(usd / 100).toFixed(2)}`;
+      return `₹${inr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + $${usd.toFixed(2)}`;
     }
-    if (inr > 0) return `₹${(inr / 100).toLocaleString('en-IN')}`;
-    return `$${(usd / 100).toFixed(2)}`;
+    if (inr > 0) return `₹${inr.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `$${usd.toFixed(2)}`;
   }, [stats]);
 
   const waitlistCount = stats?.waitlistStats?.totalRequests ?? 0;
