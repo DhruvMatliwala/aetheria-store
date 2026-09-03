@@ -1,9 +1,10 @@
 import { getAdminFirestore } from '@/lib/firebase/admin';
 
 /**
- * Allocates a unique 2-digit paise offset (e.g. 0.01 to 0.99) for an active order
- * so that each buyer has a distinct amount down to the exact paisa.
- * This enables 100% automated matching from Bank SMS without requiring the user to type a UTR!
+ * Allocates a unique whole-rupee offset (e.g. 0, +1, -1, +2, -2 rupees) for an active order
+ * so that each buyer has a distinct whole-rupee amount with ZERO decimal paise.
+ * This completely avoids bank decimal-paise filters (e.g. SBI) while enabling
+ * 100% automated Zero-UTR matching from Bank SMS!
  */
 export async function allocateUniquePaise(basePriceInrPaisa: number): Promise<{
   totalPaisa: number;
@@ -12,8 +13,8 @@ export async function allocateUniquePaise(basePriceInrPaisa: number): Promise<{
 }> {
   const db = getAdminFirestore();
 
-  // Look for pending/verifying orders created in the last 15 minutes
-  const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+  // 5-slot pool of whole-rupee offsets in paise (0, +₹1, -₹1, +₹2, -₹2)
+  const WHOLE_RUPEE_OFFSETS_PAISE = [0, 100, -100, 200, -200];
 
   const activeOrdersSnap = await db
     .collection('orders')
@@ -35,29 +36,21 @@ export async function allocateUniquePaise(basePriceInrPaisa: number): Promise<{
 
       if (typeof data.amount === 'number') {
         const offset = data.amount - basePriceInrPaisa;
-        if (offset > 0 && offset < 100) {
+        if (WHOLE_RUPEE_OFFSETS_PAISE.includes(offset)) {
           usedOffsets.add(offset);
         }
       }
     }
   }
 
-  // Find an available offset between 1 and 99
-  const availableOffsets: number[] = [];
-  for (let i = 1; i <= 99; i++) {
-    if (!usedOffsets.has(i)) {
-      availableOffsets.push(i);
-    }
-  }
+  // Find available offsets in priority order: [0, +100, -100, +200, -200]
+  const availableOffsets = WHOLE_RUPEE_OFFSETS_PAISE.filter((offset) => !usedOffsets.has(offset));
 
-  // Pick a random available offset, or fallback to random if all 99 are filled
-  const chosenOffset =
-    availableOffsets.length > 0
-      ? availableOffsets[Math.floor(Math.random() * availableOffsets.length)]
-      : Math.floor(Math.random() * 98) + 1;
+  // Pick first available slot, or fallback to 0 (base price) if all 5 slots are simultaneously active
+  const chosenOffset = availableOffsets.length > 0 ? availableOffsets[0] : 0;
 
   const totalPaisa = basePriceInrPaisa + chosenOffset;
-  const amountRupees = parseFloat((totalPaisa / 100).toFixed(2));
+  const amountRupees = Math.round(totalPaisa / 100);
 
   return {
     totalPaisa,

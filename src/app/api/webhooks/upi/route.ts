@@ -161,23 +161,40 @@ async function handleIncomingSms(data: Record<string, any>) {
   let matchedDoc: FirebaseFirestore.QueryDocumentSnapshot | null = null;
   let matchMethod = 'UTR';
 
-  // Strategy A: Zero-UTR Exact Amount Match (if amount with paise is present)
+  // Strategy A: Zero-UTR Exact Amount Match with Time-Window FIFO (Whole-Rupee Engine)
   if (amount && amount > 0) {
     const targetPaisa = Math.round(amount * 100);
     // Single-field index on amount, filter status in memory
     const amountQuery = await db
       .collection('orders')
       .where('amount', '==', targetPaisa)
-      .limit(10)
+      .limit(20)
       .get();
 
-    matchedDoc =
-      amountQuery.docs.find((d) =>
-        ['pending', 'verifying'].includes(d.data().payment_status)
-      ) || null;
+    // Look for pending or verifying orders created within the last 20 minutes
+    const twentyMinutesAgoMs = Date.now() - 20 * 60 * 1000;
+    const candidates = amountQuery.docs.filter((d) => {
+      const data = d.data();
+      if (!['pending', 'verifying'].includes(data.payment_status)) return false;
+      const createdAtMs =
+        data.created_at?.toDate?.()?.getTime?.() ??
+        (typeof data.created_at === 'number' ? data.created_at : 0);
+      return !createdAtMs || createdAtMs >= twentyMinutesAgoMs;
+    });
 
-    if (matchedDoc) {
-      matchMethod = 'Zero-UTR (Exact Paise)';
+    if (candidates.length > 0) {
+      // Sort by creation time ascending (FIFO: oldest pending order matched first)
+      candidates.sort((a, b) => {
+        const aTime =
+          a.data().created_at?.toDate?.()?.getTime?.() ??
+          (typeof a.data().created_at === 'number' ? a.data().created_at : 0);
+        const bTime =
+          b.data().created_at?.toDate?.()?.getTime?.() ??
+          (typeof b.data().created_at === 'number' ? b.data().created_at : 0);
+        return aTime - bTime;
+      });
+      matchedDoc = candidates[0];
+      matchMethod = 'Zero-UTR (Whole Rupee FIFO)';
     }
   }
 

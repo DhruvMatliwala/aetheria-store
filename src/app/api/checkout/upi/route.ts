@@ -63,10 +63,10 @@ export async function POST(request: NextRequest) {
     // ── Create internal order ID & unique paise amount for zero-UTR matching ─
     const orderId = `ord_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const { totalPaisa, amountRupees, paiseOffset } = await allocateUniquePaise(basePriceInr);
-    const priceRupeesStr = amountRupees.toFixed(2);
+    const priceRupeesStr = Math.round(amountRupees).toString();
     const note = '';
 
-    // ── Standard NPCI UPI URI with exact locked amount ───────────────────────
+    // ── Standard NPCI UPI URI with exact locked whole-rupee amount ────────────
     // Format: upi://pay?pa=VPA&pn=NAME&am=AMOUNT&cu=INR
     const upiString = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${priceRupeesStr}&cu=INR`;
 

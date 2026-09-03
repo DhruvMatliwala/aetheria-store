@@ -206,7 +206,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
   const currentUpiId = activeVpa || upiSession?.upiId || SMART_ROUTING_UPI_IDS[0].vpa;
   const currentUpiString = upiSession
-    ? `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(upiSession.payeeName || 'Dhruv')}&am=${upiSession.amountRupees.toFixed(2)}&cu=INR`
+    ? `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(upiSession.payeeName || 'Dhruv')}&am=${Math.round(upiSession.amountRupees)}&cu=INR`
     : '';
 
   const handleCopyUpi = () => {
@@ -776,7 +776,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               </span>
             </div>
             <p className="text-xs text-gray-200 font-medium">
-              Pay the exact <strong className="text-cyan-300 font-bold">₹{upiSession?.amountRupees.toFixed(2)}</strong> via GPay, PhonePe, or Paytm.
+              Pay the exact <strong className="text-cyan-300 font-bold">₹{Math.round(upiSession?.amountRupees || 0)}</strong> via GPay, PhonePe, or Paytm.
             </p>
             <p className="text-[11px] text-gray-400">
               ⚡ <strong className="text-white">Zero UTR Needed!</strong> This window will automatically unlock your license key in 2-3 seconds after payment.
