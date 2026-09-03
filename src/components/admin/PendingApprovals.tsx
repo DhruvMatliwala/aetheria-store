@@ -126,11 +126,11 @@ export function PendingApprovals({ orders, adminToken, onRefresh }: PendingAppro
                 <p className="text-xs text-slate-300">{order.customer_email || 'No email provided'}</p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#16243d]/60">
                 <button
                   onClick={() => handleApprove(order.order_id)}
                   disabled={processingId === order.order_id}
-                  className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_10px_rgba(16,185,129,0.3)] disabled:opacity-50"
+                  className="flex-1 sm:flex-initial justify-center px-3.5 py-2 sm:py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-[0_0_10px_rgba(16,185,129,0.3)] disabled:opacity-50"
                 >
                   <Check size={13} />
                   <span>Approve & Send Key</span>
@@ -138,7 +138,7 @@ export function PendingApprovals({ orders, adminToken, onRefresh }: PendingAppro
                 <button
                   onClick={() => handleReject(order.order_id)}
                   disabled={processingId === order.order_id}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/80 text-slate-400 hover:text-rose-300 border border-slate-700 hover:border-rose-800 font-bold text-xs flex items-center gap-1 transition-all disabled:opacity-50"
+                  className="px-3 py-2 sm:py-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/80 text-slate-400 hover:text-rose-300 border border-slate-700 hover:border-rose-800 font-bold text-xs flex items-center justify-center gap-1 transition-all disabled:opacity-50"
                 >
                   <X size={13} />
                   <span>Reject</span>

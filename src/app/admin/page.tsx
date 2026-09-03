@@ -20,6 +20,9 @@ import {
   Plus,
   ArrowRight,
   Database,
+  Menu,
+  X,
+  LogOut,
 } from 'lucide-react';
 import { KeyUploader } from '@/components/admin/KeyUploader';
 import { StockDashboard } from '@/components/admin/StockDashboard';
@@ -67,6 +70,7 @@ type AdminTab =
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('Dashboard');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -248,6 +252,65 @@ export default function AdminPage() {
 
   const waitlistCount = stats?.waitlistStats?.totalRequests ?? 0;
 
+  const navItems: {
+    id: AdminTab;
+    label: string;
+    mobileLabel: string;
+    icon: React.ReactNode;
+    badge?: string;
+  }[] = useMemo(
+    () => [
+      {
+        id: 'Dashboard',
+        label: 'Dashboard',
+        mobileLabel: 'Overview',
+        icon: <LayoutDashboard size={17} />,
+        badge: pendingOrders.length > 0 ? `${pendingOrders.length} Pending` : undefined,
+      },
+      {
+        id: 'Inventory',
+        label: 'Inventory',
+        mobileLabel: 'Stock',
+        icon: <Package size={17} />,
+        badge: `${totalAvailable} Keys`,
+      },
+      {
+        id: 'Bulk Upload',
+        label: 'Bulk Upload',
+        mobileLabel: 'Add Keys',
+        icon: <Upload size={17} />,
+      },
+      {
+        id: 'Orders & Deliveries',
+        label: 'Orders & Deliveries',
+        mobileLabel: 'Orders',
+        icon: <Receipt size={17} />,
+        badge: stats?.recentOrders?.length ? `${stats.recentOrders.length}` : undefined,
+      },
+      {
+        id: 'UPI Bank Bridge',
+        label: 'UPI Bank Bridge',
+        mobileLabel: 'Bank Bridge',
+        icon: <Smartphone size={17} />,
+        badge: '24/7 Auto',
+      },
+      {
+        id: 'Coupons',
+        label: 'Coupons',
+        mobileLabel: 'Coupons',
+        icon: <Tag size={17} />,
+      },
+      {
+        id: 'Waitlist & Demand',
+        label: 'Waitlist & Demand',
+        mobileLabel: 'Waitlist',
+        icon: <Users size={17} />,
+        badge: waitlistCount > 0 ? `${waitlistCount}` : undefined,
+      },
+    ],
+    [pendingOrders.length, totalAvailable, stats?.recentOrders?.length, waitlistCount]
+  );
+
   async function handleSignOut() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('pgsharp_admin_secret');
@@ -329,11 +392,95 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-[#070b13] text-slate-100 flex flex-col antialiased">
-      <div className="flex flex-1">
+      {/* ══════════════════════════════════════════════════════════════════════
+          MOBILE SLIDE-OVER DRAWER
+          ══════════════════════════════════════════════════════════════════════ */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      <div
+        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-[#090e1a] border-r border-[#152138] z-50 flex flex-col justify-between shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex flex-col h-full overflow-y-auto">
+          {/* Drawer Brand Header */}
+          <div className="p-4 flex items-center justify-between border-b border-[#152138]/80">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-800 p-[1.5px] shadow-[0_0_15px_rgba(6,182,212,0.45)] overflow-hidden flex-shrink-0">
+                <div className="w-full h-full bg-[#090e1a] rounded-[9px] flex items-center justify-center overflow-hidden p-0.5">
+                  <Image
+                    src="/logo.png"
+                    alt="Aetheria Logo"
+                    width={32}
+                    height={32}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
+              <div>
+                <span className="font-black text-sm tracking-widest text-white">AETHERIA</span>
+                <p className="text-[9px] font-mono tracking-wider text-cyan-400 font-bold uppercase">
+                  VAULT ADMIN
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+              aria-label="Close navigation"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Drawer Navigation Tabs */}
+          <nav className="p-3 space-y-1.5 flex-1">
+            {navItems.map((item) => (
+              <SidebarNavItem
+                key={item.id}
+                icon={item.icon}
+                label={item.label}
+                badge={item.badge}
+                active={activeTab === item.id}
+                onClick={() => {
+                  setActiveTab(item.id);
+                  setMobileMenuOpen(false);
+                }}
+              />
+            ))}
+          </nav>
+
+          {/* Drawer Bottom Status & Sign Out */}
+          <div className="p-4 space-y-2.5 border-t border-[#152138]/80 bg-[#070b13]/50">
+            <div className="flex items-center justify-between text-[11px] font-mono px-2 py-1 text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Firestore Online</span>
+              </span>
+              <span className="text-[10px] text-cyan-400 font-semibold">Ready</span>
+            </div>
+
+            <button
+              onClick={handleSignOut}
+              className="w-full py-2.5 px-3 rounded-xl bg-rose-950/40 border border-rose-900/60 hover:bg-rose-900/50 text-rose-300 font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            >
+              <LogOut size={13} />
+              <span>Sign Out Admin</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-1 min-w-0">
         {/* ══════════════════════════════════════════════════════════════════════
-            STREAMLINED SIDEBAR
+            DESKTOP SIDEBAR (HIDDEN ON MOBILE)
             ══════════════════════════════════════════════════════════════════════ */}
-        <aside className="w-64 border-r border-[#141e33] bg-[#090e1a] flex flex-col justify-between flex-shrink-0 z-20">
+        <aside className="hidden lg:flex lg:w-64 border-r border-[#141e33] bg-[#090e1a] flex-col justify-between flex-shrink-0 z-20">
           <div className="flex flex-col h-full">
             {/* Brand Header */}
             <div className="p-5 flex items-center gap-3 border-b border-[#152138]/80">
@@ -358,53 +505,16 @@ export default function AdminPage() {
 
             {/* Navigation Tabs */}
             <nav className="p-3 space-y-1.5 flex-1">
-              <SidebarNavItem
-                icon={<LayoutDashboard size={17} />}
-                label="Dashboard"
-                badge={pendingOrders.length > 0 ? `${pendingOrders.length} Pending` : undefined}
-                active={activeTab === 'Dashboard'}
-                onClick={() => setActiveTab('Dashboard')}
-              />
-              <SidebarNavItem
-                icon={<Package size={17} />}
-                label="Inventory"
-                badge={`${totalAvailable} Keys`}
-                active={activeTab === 'Inventory'}
-                onClick={() => setActiveTab('Inventory')}
-              />
-              <SidebarNavItem
-                icon={<Upload size={17} />}
-                label="Bulk Upload"
-                active={activeTab === 'Bulk Upload'}
-                onClick={() => setActiveTab('Bulk Upload')}
-              />
-              <SidebarNavItem
-                icon={<Receipt size={17} />}
-                label="Orders & Deliveries"
-                badge={stats?.recentOrders?.length ? `${stats.recentOrders.length}` : undefined}
-                active={activeTab === 'Orders & Deliveries'}
-                onClick={() => setActiveTab('Orders & Deliveries')}
-              />
-              <SidebarNavItem
-                icon={<Smartphone size={17} />}
-                label="UPI Bank Bridge"
-                badge="24/7 Auto"
-                active={activeTab === 'UPI Bank Bridge'}
-                onClick={() => setActiveTab('UPI Bank Bridge')}
-              />
-              <SidebarNavItem
-                icon={<Tag size={17} />}
-                label="Coupons"
-                active={activeTab === 'Coupons'}
-                onClick={() => setActiveTab('Coupons')}
-              />
-              <SidebarNavItem
-                icon={<Users size={17} />}
-                label="Waitlist & Demand"
-                badge={waitlistCount > 0 ? `${waitlistCount}` : undefined}
-                active={activeTab === 'Waitlist & Demand'}
-                onClick={() => setActiveTab('Waitlist & Demand')}
-              />
+              {navItems.map((item) => (
+                <SidebarNavItem
+                  key={item.id}
+                  icon={item.icon}
+                  label={item.label}
+                  badge={item.badge}
+                  active={activeTab === item.id}
+                  onClick={() => setActiveTab(item.id)}
+                />
+              ))}
             </nav>
 
             {/* Sidebar Bottom Status */}
@@ -438,42 +548,90 @@ export default function AdminPage() {
             ══════════════════════════════════════════════════════════════════════ */}
         <div className="flex-1 flex flex-col min-w-0 bg-[#070b13]">
           {/* Top Header Bar */}
-          <header className="h-20 border-b border-[#141e33] px-8 flex items-center justify-between sticky top-0 bg-[#070b13]/90 backdrop-blur-md z-30">
-            <div>
-              <h2 className="text-2xl font-black text-white tracking-tight">{activeTab}</h2>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs text-slate-400">Aetheria Key Distribution Engine</span>
-                <span className="text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-700/50">
-                  Official Admin
-                </span>
+          <header className="h-16 lg:h-20 border-b border-[#141e33] px-3.5 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 bg-[#070b13]/95 backdrop-blur-md z-30">
+            {/* Left side: Hamburger button + Title */}
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="lg:hidden p-2 rounded-xl bg-[#0c1424] border border-[#1b2b48] text-slate-300 hover:text-white hover:border-cyan-500/50 transition-colors relative flex-shrink-0"
+                aria-label="Open Navigation Menu"
+              >
+                <Menu size={18} />
+                {pendingOrders.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500 border border-[#070b13] animate-pulse" />
+                )}
+              </button>
+
+              <div className="min-w-0">
+                <h2 className="text-base sm:text-xl lg:text-2xl font-black text-white tracking-tight truncate">
+                  {activeTab}
+                </h2>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-xs text-slate-400 hidden sm:inline">Aetheria Key Distribution Engine</span>
+                  <span className="text-[9px] sm:text-[10px] font-mono uppercase font-bold px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-700/50">
+                    Official Admin
+                  </span>
+                </div>
               </div>
             </div>
 
             {/* Right Action Icons & Live Clock */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={() => fetchStats()}
                 disabled={loading}
-                className="bg-[#0c1424] border-[#1b2b48] hover:bg-[#142038] text-slate-200 text-xs flex items-center gap-1.5"
+                className="bg-[#0c1424] border-[#1b2b48] hover:bg-[#142038] text-slate-200 text-xs px-2.5 sm:px-3.5 py-1.5 flex items-center gap-1.5"
               >
-                <RefreshCw size={13} className={loading ? 'animate-spin text-cyan-400' : ''} />
-                <span>Refresh Vault Data</span>
+                <RefreshCw size={13} className={loading ? 'animate-spin text-cyan-400' : 'text-cyan-400'} />
+                <span className="hidden sm:inline">Refresh Vault Data</span>
               </Button>
 
-              {/* Date/Time IST Chip */}
-              <div className="flex items-center gap-2 bg-[#0c1424] border border-[#192742] px-3.5 py-1.5 rounded-xl text-xs text-slate-300 font-mono">
+              {/* Date/Time IST Chip (Hidden on small mobile) */}
+              <div className="hidden md:flex items-center gap-2 bg-[#0c1424] border border-[#192742] px-3.5 py-1.5 rounded-xl text-xs text-slate-300 font-mono">
                 <Clock size={13} className="text-cyan-400" />
                 <span>{currentTime || 'Syncing IST...'}</span>
               </div>
             </div>
           </header>
 
+          {/* Mobile Horizontal Quick-Tab Strip */}
+          <div className="lg:hidden border-b border-[#141e33] bg-[#090e1a]/90 backdrop-blur px-3.5 py-2 overflow-x-auto no-scrollbar flex items-center gap-1.5 flex-nowrap z-20">
+            {navItems.map((item) => {
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all flex-shrink-0 ${
+                    isActive
+                      ? 'bg-cyan-500 text-slate-950 font-bold shadow-[0_0_12px_rgba(6,182,212,0.35)]'
+                      : 'bg-[#0c1424] border border-[#16243d] text-slate-300 hover:text-white'
+                  }`}
+                >
+                  <span className={isActive ? 'text-slate-950' : 'text-cyan-400'}>{item.icon}</span>
+                  <span>{item.mobileLabel}</span>
+                  {item.badge && (
+                    <span
+                      className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-full ${
+                        isActive
+                          ? 'bg-slate-950/20 text-slate-950'
+                          : 'bg-cyan-950 text-cyan-300 border border-cyan-800/60'
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
           {/* ════════════════════════════════════════════════════════════════════
               BODY / CONTENT AREA
               ════════════════════════════════════════════════════════════════════ */}
-          <main className="p-8 space-y-6 flex-1">
+          <main className="p-3.5 sm:p-6 lg:p-8 space-y-5 sm:space-y-6 flex-1 min-w-0">
             {error && (
               <div className="flex items-center gap-3 bg-rose-950/40 border border-rose-800/60 rounded-xl p-4 text-rose-300 text-xs">
                 <AlertCircle size={16} className="flex-shrink-0" />
@@ -543,7 +701,7 @@ export default function AdminPage() {
                 {/* 2-COLUMN OPERATIONAL WORKSPACE */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                   {/* LEFT: RECENT CUSTOMER ORDERS TABLE (7 COLS) */}
-                  <div className="lg:col-span-7 bg-[#0c1424] border border-[#16243d] rounded-2xl p-6 shadow-card flex flex-col justify-between">
+                  <div className="lg:col-span-7 bg-[#0c1424] border border-[#16243d] rounded-2xl p-4 sm:p-6 shadow-card flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between mb-4">
                         <div>
@@ -560,8 +718,8 @@ export default function AdminPage() {
                       </div>
 
                       {stats && stats.recentOrders && stats.recentOrders.length > 0 ? (
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left text-xs">
+                        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                          <table className="w-full text-left text-xs whitespace-nowrap">
                             <thead>
                               <tr className="text-[10px] font-mono text-slate-400 border-b border-[#16243d]">
                                 <th className="pb-2.5 font-semibold">ORDER ID</th>
@@ -618,7 +776,7 @@ export default function AdminPage() {
                   {/* RIGHT: PLAN INVENTORY & QUICK RESTOCK (5 COLS) */}
                   <div className="lg:col-span-5 space-y-6">
                     {/* PLAN STOCK BREAKDOWN */}
-                    <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-6 shadow-card space-y-5">
+                    <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-4 sm:p-6 shadow-card space-y-5">
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="text-base font-bold text-white">Live Plan Stock</h3>
