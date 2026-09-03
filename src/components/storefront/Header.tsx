@@ -13,7 +13,7 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 const NAV_LINKS = [
   { label: 'AWAKEN', href: '#hero' },
   { label: 'EXPEDITION', href: '#features' },
-  { label: 'SHOWDOWN', href: '#plans' },
+  { label: 'SHOWDOWN', href: '#showdown' },
 ];
 
 export function Header() {

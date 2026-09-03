@@ -13,6 +13,8 @@ import {
   Bell,
   CheckCircle,
   HelpCircle,
+  Star,
+  ExternalLink,
 } from 'lucide-react';
 import { Plan } from '@/types/plan';
 import { PLANS, DISCORD_URL, REDDIT_URL, TELEGRAM_URL } from '@/lib/constants';
@@ -168,6 +170,7 @@ export function CinematicScrollExperience({
   const sceneLayersRef = useRef<(HTMLDivElement | null)[]>([]);
   const overlayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pricingRef = useRef<HTMLDivElement>(null);
+  const scene3TrustRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const mobileScrollIndicatorRef = useRef<HTMLDivElement>(null);
   const desktopScrollIndicatorRef = useRef<HTMLDivElement>(null);
@@ -311,6 +314,7 @@ export function CinematicScrollExperience({
       gsap.set(['.hud-title-1', '.hud-title-2'], { opacity: 0, x: -50 });
       gsap.set(['.hud-badge-1', '.hud-badge-2'], { opacity: 0, x: -20 });
       gsap.set(pricingRef.current, { opacity: 0, autoAlpha: 0, y: 60, pointerEvents: 'none' });
+      gsap.set(scene3TrustRef.current, { opacity: 0, autoAlpha: 0, y: 60, pointerEvents: 'none' });
 
       // 3. Master Pinned Timeline across 3 scenes (550vh runway)
       const tl = gsap.timeline({
@@ -365,12 +369,22 @@ export function CinematicScrollExperience({
         .to('.hud-title-1', { opacity: 1, x: 0, duration: 0.8, ease: 'power3.out' }, 't1+=0.3')
         .to('.hud-desc-1', { opacity: 1, x: 0, duration: 0.7, ease: 'power2.out' }, 't1+=0.35')
         .to('.hud-badge-1', { opacity: 1, x: 0, duration: 0.5, stagger: 0.08, ease: 'power3.out' }, 't1+=0.4')
+        .to(
+          pricingRef.current,
+          { opacity: 1, autoAlpha: 1, y: 0, pointerEvents: 'auto', duration: 0.8, ease: 'power4.out' },
+          't1+=0.35'
+        )
 
         // ── Scene 2: Shibuya Hold ──
         .to({}, { duration: 2.3 })
 
         // ── Transition: Scene 2 Leaves -> Scene 3 Enters ──
         .to(overlayRefs.current[1], { opacity: 0, y: -30, duration: 0.4, ease: 'power2.in', pointerEvents: 'none' }, 't2')
+        .to(
+          pricingRef.current,
+          { opacity: 0, autoAlpha: 0, y: -25, pointerEvents: 'none', duration: 0.5, ease: 'power2.in' },
+          't2'
+        )
         .to(sceneLayersRef.current[1], { opacity: 0, duration: 1.2, ease: 'none' }, 't2')
         .to(sceneLayersRef.current[2], { opacity: 1, duration: 1.2, ease: 'none' }, 't2')
         .to(overlayRefs.current[2], { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out', pointerEvents: 'auto' }, 't2+=0.2')
@@ -379,7 +393,7 @@ export function CinematicScrollExperience({
         .to('.hud-desc-2', { opacity: 1, x: 0, duration: 0.7, ease: 'power2.out' }, 't2+=0.35')
         .to('.hud-badge-2', { opacity: 1, x: 0, duration: 0.5, stagger: 0.08, ease: 'power3.out' }, 't2+=0.4')
         .to(
-          pricingRef.current,
+          scene3TrustRef.current,
           { opacity: 1, autoAlpha: 1, y: 0, pointerEvents: 'auto', duration: 0.8, ease: 'power4.out' },
           't2+=0.35'
         )
@@ -392,6 +406,11 @@ export function CinematicScrollExperience({
   }, [handleScrollProgress]);
 
   const scrollToSection = (targetId: string) => {
+    if (targetId === 'plans' && containerRef.current) {
+      const top = containerRef.current.offsetTop + containerRef.current.offsetHeight * 0.38;
+      window.scrollTo({ top, behavior: 'smooth' });
+      return;
+    }
     const el = document.getElementById(targetId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -498,7 +517,7 @@ export function CinematicScrollExperience({
               }}
               className={cn(
                 'absolute bottom-0 left-0 w-full pointer-events-auto',
-                idx === 2 ? 'hidden md:block' : ''
+                idx > 0 ? 'hidden md:block' : ''
               )}
               style={{
                 opacity: idx === 0 ? 1 : 0,
@@ -574,7 +593,7 @@ export function CinematicScrollExperience({
 
         {/* 
           ============================================================
-          SCENE 3: FROSTED OBSIDIAN GLASS PRICING CARDS
+          SCENE 2: FROSTED OBSIDIAN GLASS PRICING CARDS (Global Expedition)
           ============================================================
         */}
         <div
@@ -677,6 +696,92 @@ export function CinematicScrollExperience({
                 </div>
               );
             })}
+          </div>
+
+          {/* Reassurance Strip */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-mono text-neutral-400/90 pointer-events-auto">
+            <span className="flex items-center gap-1">
+              <Shield size={10} className="text-cyan-400" /> AES-256 Vault
+            </span>
+            <span className="text-white/20">•</span>
+            <span className="flex items-center gap-1">
+              <Zap size={10} className="text-emerald-400" /> Instant Dispatch
+            </span>
+            <span className="text-white/20">•</span>
+            <span className="text-neutral-300">Direct UPI & PayPal</span>
+          </div>
+        </div>
+
+        {/* 
+          ============================================================
+          SCENE 3: COMMUNITY TRUST, VERIFIED VOUCHES & TRAINER FAQ (Combat Showdown)
+          ============================================================
+        */}
+        <div
+          ref={scene3TrustRef}
+          className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-2.5 right-2.5 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
+          id="trust-box"
+        >
+          {/* Frosted Community Trust Card */}
+          <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 shadow-2xl space-y-2.5 sm:space-y-3 pointer-events-auto">
+            {/* Header: Vouches Tag + Star Rating */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[11px] sm:text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider">
+                  COMMUNITY VOUCHES
+                </span>
+              </div>
+              <div className="flex items-center gap-1 text-amber-400 text-xs font-mono">
+                <Star size={12} className="fill-amber-400 text-amber-400" />
+                <span className="font-bold">4.9 / 5.0</span>
+                <span className="text-neutral-500 text-[10px] hidden xs:inline">(Verified)</span>
+              </div>
+            </div>
+
+            {/* Verified Testimonial Quotes */}
+            <div className="space-y-1.5 sm:space-y-2 text-left">
+              <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/5 space-y-0.5">
+                <p className="text-[11px] sm:text-xs text-neutral-200 font-sans italic leading-relaxed">
+                  &ldquo;Key dispatched in 5 seconds via UPI. Both slots active on our Android phones with zero lag.&rdquo;
+                </p>
+                <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-neutral-400">
+                  <span>@KevRaidMaster</span>
+                  <span className="text-emerald-400 font-medium">✔ Verified Delivery</span>
+                </div>
+              </div>
+
+              <div className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/5 space-y-0.5">
+                <p className="text-[11px] sm:text-xs text-neutral-200 font-sans italic leading-relaxed">
+                  &ldquo;Auto-walk and 100% IV radar feed unlocked right away. Best PGSharp pricing online.&rdquo;
+                </p>
+                <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-neutral-400">
+                  <span>@Alex_POGO</span>
+                  <span className="text-emerald-400 font-medium">✔ Verified Delivery</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons: Community Discord + Smooth Scroll to Buy Key */}
+            <div className="pt-0.5 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => scrollToSection('plans')}
+                className="flex-1 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white hover:bg-cyan-400 text-black font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 flex items-center justify-center gap-1.5"
+              >
+                <span>Select Plan on Scene 2</span>
+                <span className="text-xs">↑</span>
+              </button>
+              <a
+                href={DISCORD_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white font-medium text-[11px] sm:text-xs font-mono transition-colors flex items-center gap-1 shrink-0"
+              >
+                <span>Discord Vouches</span>
+                <ExternalLink size={11} />
+              </a>
+            </div>
           </div>
 
           {/* Expandable FAQ Drawer Toggle */}
@@ -834,8 +939,9 @@ export function CinematicScrollExperience({
       */}
       <div id="hero" className="absolute top-0 pointer-events-none" />
       <div id="features" className="absolute top-[38%] pointer-events-none" />
-      <div id="plans" className="absolute top-[75%] pointer-events-none" />
-      <div id="faq" className="absolute top-[80%] pointer-events-none" />
+      <div id="plans" className="absolute top-[38%] pointer-events-none" />
+      <div id="showdown" className="absolute top-[75%] pointer-events-none" />
+      <div id="faq" className="absolute top-[75%] pointer-events-none" />
     </div>
   );
 }
