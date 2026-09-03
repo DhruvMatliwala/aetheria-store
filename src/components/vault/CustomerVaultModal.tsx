@@ -387,23 +387,14 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
                   <p className="text-xs font-mono text-neutral-400">Scanning Aetheria Vault Database...</p>
                 </div>
               ) : keys.length === 0 ? (
-                <div className="p-8 rounded-2xl bg-neutral-950/60 border border-dashed border-white/15 text-center space-y-3">
+                <div className="py-12 px-6 rounded-2xl bg-neutral-950/60 border border-dashed border-white/15 text-center space-y-2.5">
                   <div className="w-12 h-12 rounded-2xl bg-cyan-950/40 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mx-auto mb-2 shadow-[0_0_15px_rgba(6,182,212,0.15)]">
                     <Key size={20} className="opacity-75" />
                   </div>
-                  <h4 className="text-sm font-bold text-white tracking-wide">No License Keys Found in this Account</h4>
-                  <p className="text-xs text-neutral-400 font-sans max-w-md mx-auto leading-relaxed">
-                    We didn&apos;t find any completed orders under this account. If you used a different email during checkout, please sign in with that address below.
+                  <h4 className="text-sm font-bold text-white tracking-wide">No License Keys Found</h4>
+                  <p className="text-xs text-neutral-400 font-sans max-w-sm mx-auto leading-relaxed">
+                    We didn&apos;t find any completed orders matching this account. If you used a different email during checkout, please use <span className="text-white font-semibold">Sign Out</span> above to switch accounts.
                   </p>
-                  <div className="pt-2">
-                    <button
-                      onClick={handleSignOut}
-                      className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-xs font-medium text-white transition-all inline-flex items-center gap-2 cursor-pointer"
-                    >
-                      <LogOut size={13} className="text-slate-400" />
-                      <span>Sign In with Different Email</span>
-                    </button>
-                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
