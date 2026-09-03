@@ -64,11 +64,11 @@ export async function POST(request: NextRequest) {
     const orderId = `ord_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
     const { totalPaisa, amountRupees, paiseOffset } = await allocateUniquePaise(basePriceInr);
     const priceRupeesStr = amountRupees.toFixed(2);
-    const note = `AETHERIA_${orderId.slice(-8).toUpperCase()}`;
+    const note = '';
 
     // ── Standard NPCI UPI URI with exact locked amount ───────────────────────
-    // Format: upi://pay?pa=VPA&pn=NAME&am=AMOUNT&cu=INR&tn=NOTE
-    const upiString = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${priceRupeesStr}&cu=INR&tn=${encodeURIComponent(note)}`;
+    // Format: upi://pay?pa=VPA&pn=NAME&am=AMOUNT&cu=INR
+    const upiString = `upi://pay?pa=${encodeURIComponent(UPI_VPA)}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${priceRupeesStr}&cu=INR`;
 
     // ── Persist pending order to Firestore ───────────────────────────────────
     await createOrder({

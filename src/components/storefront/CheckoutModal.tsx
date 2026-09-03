@@ -206,7 +206,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
   const currentUpiId = activeVpa || upiSession?.upiId || SMART_ROUTING_UPI_IDS[0].vpa;
   const currentUpiString = upiSession
-    ? `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(upiSession.payeeName || 'Dhruv')}&am=${upiSession.amountRupees.toFixed(2)}&cu=INR&tn=${encodeURIComponent(upiSession.note)}`
+    ? `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(upiSession.payeeName || 'Dhruv')}&am=${upiSession.amountRupees.toFixed(2)}&cu=INR`
     : '';
 
   const handleCopyUpi = () => {
