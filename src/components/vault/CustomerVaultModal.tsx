@@ -78,6 +78,21 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
     }
   }, []);
 
+  // Close on Escape key
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      document.addEventListener('keydown', handleKey);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKey);
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, onClose]);
+
   // Fetch Keys with ID Token
   async function fetchUserKeys(currentUser: FirebaseUser) {
     setLoading(true);
@@ -186,8 +201,14 @@ export function CustomerVaultModal({ isOpen, onClose }: CustomerVaultModalProps)
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-fade-in">
-      <div className="relative w-full max-w-2xl bg-[#090605] border border-white/15 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.9),0_0_25px_rgba(6,182,212,0.15)] overflow-hidden flex flex-col max-h-[90vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl animate-fade-in cursor-pointer"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-2xl bg-[#090605] border border-white/15 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.9),0_0_25px_rgba(6,182,212,0.15)] overflow-hidden flex flex-col max-h-[90vh] cursor-default"
+      >
         {/* Top Glowing Header Bar */}
         <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-cyan-950/40 via-surface-900/60 to-surface-950/80">
           <div className="flex items-center gap-3">

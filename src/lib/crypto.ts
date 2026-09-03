@@ -41,24 +41,34 @@ export function encryptKey(plaintext: string): string {
  * Decrypts an encrypted license key produced by encryptKey().
  */
 export function decryptKey(encryptedValue: string): string {
-  const key = getSecret();
-  const [ivHex, tagHex, ciphertextHex] = encryptedValue.split(':');
+  if (!encryptedValue) return '';
 
-  if (!ivHex || !tagHex || !ciphertextHex) {
-    throw new Error('Invalid encrypted key format.');
+  const parts = encryptedValue.split(':');
+  // If not formatted as iv:tag:ciphertext (3 hex parts), it's already a plaintext key
+  if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) {
+    return encryptedValue;
   }
 
-  const iv = Buffer.from(ivHex, 'hex');
-  const tag = Buffer.from(tagHex, 'hex');
-  const ciphertext = Buffer.from(ciphertextHex, 'hex');
+  try {
+    const key = getSecret();
+    const [ivHex, tagHex, ciphertextHex] = parts;
 
-  const decipher = createDecipheriv(ALGORITHM, key, iv);
-  decipher.setAuthTag(tag);
+    const iv = Buffer.from(ivHex, 'hex');
+    const tag = Buffer.from(tagHex, 'hex');
+    const ciphertext = Buffer.from(ciphertextHex, 'hex');
 
-  const decrypted = Buffer.concat([
-    decipher.update(ciphertext),
-    decipher.final(),
-  ]);
+    const decipher = createDecipheriv(ALGORITHM, key, iv);
+    decipher.setAuthTag(tag);
 
-  return decrypted.toString('utf8');
+    const decrypted = Buffer.concat([
+      decipher.update(ciphertext),
+      decipher.final(),
+    ]);
+
+    return decrypted.toString('utf8');
+  } catch (err) {
+    // If decryption fails (e.g. key was raw text containing colons), fallback to raw string
+    console.warn('[crypto/decryptKey] Decryption failed, returning raw string:', err);
+    return encryptedValue;
+  }
 }

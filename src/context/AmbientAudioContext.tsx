@@ -78,13 +78,18 @@ export function AmbientAudioProvider({ children }: { children: React.ReactNode }
     window.addEventListener('click', handleFirstInteraction, { passive: true });
 
     // 3. Tab Visibility handling
+    let wasPlayingBeforeHidden = false;
     const handleVisibilityChange = () => {
       const a = audioRef.current;
       if (!a) return;
       if (document.hidden) {
+        wasPlayingBeforeHidden = !a.paused;
         a.pause();
-      } else if (!userMutedRef.current && !a.paused) {
-        a.play().catch(() => {});
+        setIsPlaying(false);
+      } else if (!userMutedRef.current && wasPlayingBeforeHidden) {
+        a.play()
+          .then(() => setIsPlaying(true))
+          .catch(() => {});
       }
     };
 
