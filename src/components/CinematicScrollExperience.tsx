@@ -15,6 +15,7 @@ import {
   HelpCircle,
   Star,
   ExternalLink,
+  ShieldCheck,
 } from 'lucide-react';
 import { Plan } from '@/types/plan';
 import { Review } from '@/types/review';
@@ -735,88 +736,106 @@ export function CinematicScrollExperience({
           className="absolute bottom-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:bottom-12 md:bottom-16 left-2.5 right-2.5 sm:left-auto sm:right-6 md:right-20 z-20 w-auto sm:w-full sm:max-w-md lg:max-w-lg space-y-2 sm:space-y-3 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="trust-box"
         >
-          {/* Frosted Community Trust Card — ONLY rendered when REAL approved reviews exist! */}
-          {liveReviews.length > 0 ? (
-            <div className="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 shadow-2xl space-y-2.5 sm:space-y-3 pointer-events-auto">
-              {/* Header: Vouches Tag + Star Rating */}
-              <div className="flex items-center justify-between">
+          {/* Frosted Cybernetic Verified Review Card — ONLY rendered when REAL approved reviews exist! */}
+          {liveReviews.length > 0 && (
+            <div className="relative rounded-2xl bg-neutral-950/75 backdrop-blur-xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.7),0_0_30px_rgba(6,182,212,0.12)] p-3.5 sm:p-4 overflow-hidden pointer-events-auto transition-all duration-300 hover:border-cyan-500/30 space-y-2.5">
+              {/* Subtle top neon ambient beam */}
+              <div className="absolute -top-px left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/80 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.03] via-transparent to-blue-600/[0.04] pointer-events-none" />
+
+              {/* Card Top: Live Pulsing Indicator + Star Rating Badge */}
+              <div className="relative flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[11px] sm:text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider">
-                    TRAINER REVIEWS
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-cyan-300 font-bold uppercase">
+                    Verified Trainer Feedback
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-amber-400 text-xs font-mono">
-                  <Star size={12} className="fill-amber-400 text-amber-400" />
-                  <span className="font-bold">
-                    {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)} / 5.0
-                  </span>
-                  <span className="text-neutral-500 text-[10px] hidden xs:inline">
-                    ({liveReviews.length} Verified)
+                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-400 font-mono text-[10px] sm:text-[11px] font-bold">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={10} className="fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <span className="ml-0.5">
+                    {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)}
                   </span>
                 </div>
               </div>
 
-              {/* Verified Testimonial Quotes from Real Database */}
-              <div className="space-y-1.5 sm:space-y-2 text-left">
-                {liveReviews.slice(0, 2).map((rev, rIdx) => (
-                  <div key={rev.id || rIdx} className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl bg-white/[0.04] border border-white/5 space-y-0.5">
-                    <p className="text-[11px] sm:text-xs text-neutral-200 font-sans italic leading-relaxed">
-                      &ldquo;{rev.comment || 'Instant key delivery, works flawlessly!'}&rdquo;
-                    </p>
-                    <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-mono text-neutral-400">
-                      <span>@{rev.trainerName || 'VerifiedTrainer'}</span>
-                      <span className="text-emerald-400 font-medium">✔ Verified Delivery</span>
+              {/* Real Buyer Quotes Showcase */}
+              <div className="relative space-y-2 text-left">
+                {liveReviews.slice(0, 1).map((rev, rIdx) => (
+                  <div key={rev.id || rIdx} className="space-y-2">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-3.5 h-3.5 text-cyan-400/80 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                      </svg>
+                      <p className="text-xs sm:text-[13px] text-neutral-100 font-sans font-medium leading-snug tracking-tight">
+                        &ldquo;{rev.comment || 'Verified key delivery, works flawlessly!'}&rdquo;
+                      </p>
+                    </div>
+
+                    {/* Buyer Signature Strip */}
+                    <div className="flex items-center justify-between pt-2 border-t border-white/10 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm ring-1 ring-white/20">
+                          {(rev.trainerName || 'T').charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-semibold text-white tracking-wide">
+                            @{rev.trainerName || 'Trainer'}
+                          </span>
+                          <span className="text-[10px] text-neutral-400 font-mono">
+                            • {rev.planName || '1 Device Standard'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[10px] font-mono font-medium">
+                        <ShieldCheck size={11} className="text-emerald-400" />
+                        <span>Verified Key</span>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-
-              {/* Action Buttons: Community Discord + Smooth Scroll to Buy Key */}
-              <div className="pt-0.5 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => scrollToSection('plans')}
-                  className="flex-1 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white hover:bg-cyan-400 text-black font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 flex items-center justify-center gap-1.5"
-                >
-                  <span>Select Plan on Scene 2</span>
-                  <span className="text-xs">↑</span>
-                </button>
-                <a
-                  href={DISCORD_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 hover:text-white font-medium text-[11px] sm:text-xs font-mono transition-colors flex items-center gap-1 shrink-0"
-                >
-                  <span>Discord</span>
-                  <ExternalLink size={11} />
-                </a>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center pointer-events-auto mb-1">
-              <button
-                type="button"
-                onClick={() => scrollToSection('plans')}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-lg active:scale-95"
-              >
-                <span>Buy PGSharp Key (Scene 2)</span>
-                <span className="text-xs">↑</span>
-              </button>
             </div>
           )}
 
-          {/* Expandable FAQ Drawer Toggle */}
-          <div className="flex flex-col items-center pointer-events-auto">
+          {/* Action Row: Floating Pill Controls */}
+          <div className="flex items-center justify-center gap-2 pointer-events-auto pt-0.5">
+            <button
+              type="button"
+              onClick={() => scrollToSection('plans')}
+              className="flex-1 max-w-[210px] py-2 sm:py-2.5 px-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold text-[11px] sm:text-xs uppercase tracking-wider transition-all duration-200 shadow-[0_0_20px_rgba(6,182,212,0.35)] active:scale-95 flex items-center justify-center gap-1.5"
+            >
+              <span>Buy Key (Scene 2)</span>
+              <span className="text-xs">↑</span>
+            </button>
+
             <button
               type="button"
               onClick={() => setFaqDrawerOpen(!faqDrawerOpen)}
-              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-0.5 sm:py-1.5 rounded-full bg-neutral-950/80 border border-white/10 backdrop-blur-md text-[9px] sm:text-xs font-mono text-neutral-300 hover:text-cyan-300 transition-colors shadow-lg"
+              className="inline-flex items-center gap-1.5 py-2 sm:py-2.5 px-3 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-white/15 backdrop-blur-md text-[11px] sm:text-xs font-mono text-neutral-200 hover:text-cyan-300 transition-colors shadow-lg"
             >
-              <HelpCircle size={10} className="text-cyan-400" />
-              <span>Trainer FAQ & Support ({FAQS.length})</span>
-              {faqDrawerOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+              <HelpCircle size={12} className="text-cyan-400" />
+              <span>FAQ ({FAQS.length})</span>
+              {faqDrawerOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
             </button>
+
+            <a
+              href={DISCORD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 sm:p-2.5 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-white/15 backdrop-blur-md text-neutral-300 hover:text-white transition-colors shadow-lg flex items-center justify-center"
+              title="Join Community Discord"
+            >
+              <ExternalLink size={13} />
+            </a>
+          </div>
 
             {/* Collapsible FAQ Content */}
             {faqDrawerOpen && (
@@ -849,7 +868,6 @@ export function CinematicScrollExperience({
                 </div>
               </div>
             )}
-          </div>
 
           {/* Legal Links & Independent Reseller Disclaimer */}
           <div className="flex flex-col items-center gap-0.5 text-center font-sans pointer-events-auto">
