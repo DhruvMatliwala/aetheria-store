@@ -183,14 +183,14 @@ export function CinematicScrollExperience({
   const [liveReviews, setLiveReviews] = useState<Review[]>([]);
 
   useEffect(() => {
-    fetch('/api/reviews')
+    fetch('/api/reviews', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         if (data.reviews && Array.isArray(data.reviews) && data.reviews.length > 0) {
           setLiveReviews(data.reviews);
         }
       })
-      .catch(() => {});
+      .catch((err) => console.error('Error fetching reviews:', err));
   }, []);
 
   // Anticipatory Lookahead prewarmer: quietly buffers next video in background

@@ -2,11 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createReview, getApprovedReviews } from '@/lib/firestore/reviews';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET() {
   try {
     const reviews = await getApprovedReviews(10);
-    return NextResponse.json({ reviews });
+    return NextResponse.json(
+      { reviews },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (err: any) {
     return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 });
   }

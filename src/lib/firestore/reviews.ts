@@ -59,11 +59,10 @@ export async function getApprovedReviews(limitCount = 10): Promise<Review[]> {
     const snapshot = await db
       .collection(COLLECTION)
       .where('status', '==', 'approved')
-      .orderBy('created_at', 'desc')
-      .limit(limitCount)
+      .limit(50)
       .get();
 
-    return snapshot.docs.map((doc) => {
+    const reviews: Review[] = snapshot.docs.map((doc) => {
       const d = doc.data();
       return {
         id: doc.id,
@@ -79,6 +78,10 @@ export async function getApprovedReviews(limitCount = 10): Promise<Review[]> {
         createdAt: d.created_at?.toDate ? d.created_at.toDate().toISOString() : new Date().toISOString(),
       };
     });
+
+    // In-memory sort by newest first (eliminates Firestore composite index requirement)
+    reviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return reviews.slice(0, limitCount);
   } catch (err) {
     console.error('[getApprovedReviews] Error:', err);
     return [];
