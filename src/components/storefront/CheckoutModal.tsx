@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Plan } from '@/types/plan';
 import { CouponValidationResult } from '@/types/coupon';
 import { cn } from '@/lib/utils';
+import { SMART_ROUTING_UPI_IDS, SmartRoute } from '@/lib/constants';
 
 type PaymentMethod = 'upi' | 'paypal';
 type CheckoutStep = 'details' | 'upi_qr' | 'paypal_direct';
@@ -29,6 +30,7 @@ interface UpiSessionData {
   payeeName: string;
   upiString: string;
   note: string;
+  smartRouting?: SmartRoute[];
 }
 
 interface PaypalSessionData {
@@ -53,6 +55,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
   // UPI Stage 2 states
   const [upiSession, setUpiSession] = useState<UpiSessionData | null>(null);
+  const [activeVpa, setActiveVpa] = useState<string>(SMART_ROUTING_UPI_IDS[0].vpa);
   const [utrNumber, setUtrNumber] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [copiedUpi, setCopiedUpi] = useState(false);
@@ -74,6 +77,9 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
         if (parsed.orderId && Date.now() - (parsed.timestamp || 0) < 30 * 60 * 1000) {
           if (parsed.upiSession && parsed.method === 'upi') {
             setUpiSession(parsed.upiSession);
+            if (parsed.upiSession.upiId) {
+              setActiveVpa(parsed.upiSession.upiId);
+            }
             setMethod('upi');
             setStep('upi_qr');
           } else if (parsed.paypalSession && parsed.method === 'paypal') {
@@ -198,9 +204,17 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     toast.success('Promo code removed.');
   };
 
+  const currentUpiId = activeVpa || upiSession?.upiId || SMART_ROUTING_UPI_IDS[0].vpa;
+  const currentUpiString = useMemo(() => {
+    if (!upiSession) return '';
+    const payeeName = upiSession.payeeName || 'Dhruv';
+    const priceRupeesStr = upiSession.amountRupees.toFixed(2);
+    return `upi://pay?pa=${encodeURIComponent(currentUpiId)}&pn=${encodeURIComponent(payeeName)}&am=${priceRupeesStr}&cu=INR&tn=${encodeURIComponent(upiSession.note)}`;
+  }, [upiSession, currentUpiId]);
+
   const handleCopyUpi = () => {
-    if (!upiSession?.upiId) return;
-    navigator.clipboard.writeText(upiSession.upiId);
+    if (!currentUpiId) return;
+    navigator.clipboard.writeText(currentUpiId);
     setCopiedUpi(true);
     toast.success('UPI ID copied to clipboard!');
     setTimeout(() => setCopiedUpi(false), 2500);
@@ -241,6 +255,9 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
         }
 
         setUpiSession(data);
+        if (data.upiId) {
+          setActiveVpa(data.upiId);
+        }
         setStep('upi_qr');
         if (typeof window !== 'undefined') {
           localStorage.setItem(
@@ -666,9 +683,9 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
           {/* QR Code Card */}
           <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-b from-neutral-900 to-black border border-cyan-500/30 shadow-[0_0_25px_rgba(6,182,212,0.15)]">
             <div className="p-3 bg-white rounded-xl shadow-lg mb-3">
-              {upiSession?.upiString && (
+              {(currentUpiString || upiSession?.upiString) && (
                 <QRCodeSVG
-                  value={upiSession.upiString}
+                  value={currentUpiString || upiSession!.upiString}
                   size={160}
                   level="H"
                   includeMargin={false}
@@ -686,7 +703,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
             <div className="flex items-center justify-between w-full max-w-xs px-3 py-1.5 rounded-lg bg-neutral-950 border border-neutral-800 text-xs">
               <div className="truncate pr-2">
                 <span className="text-gray-400 block text-[10px]">UPI ID</span>
-                <span className="font-mono text-cyan-300 font-bold">{upiSession?.upiId}</span>
+                <span className="font-mono text-cyan-300 font-bold">{currentUpiId}</span>
               </div>
               <button
                 type="button"
@@ -698,11 +715,51 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
               </button>
             </div>
 
+            {/* Google Pay Smart Bank Failover Route Switcher */}
+            <div className="w-full max-w-xs pt-2.5 pb-1 space-y-1.5">
+              <div className="flex items-center justify-between text-[10px] font-mono">
+                <span className="flex items-center gap-1 text-cyan-400 font-semibold">
+                  <Sparkles size={11} /> Smart Bank Routing
+                </span>
+                <span className="text-emerald-400 flex items-center gap-1 font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> 4 Active
+                </span>
+              </div>
+
+              <div className="grid grid-cols-4 gap-1 p-0.5 bg-neutral-950/80 rounded-lg border border-neutral-800">
+                {SMART_ROUTING_UPI_IDS.map((route) => {
+                  const isSelected = currentUpiId === route.vpa;
+                  return (
+                    <button
+                      key={route.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveVpa(route.vpa);
+                        toast.success(`Switched to ${route.bank} route`, { duration: 1500 });
+                      }}
+                      className={cn(
+                        'py-1 px-1 rounded-md text-[10px] font-mono font-medium transition-all text-center truncate',
+                        isSelected
+                          ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-400/60 shadow-[0_0_8px_rgba(6,182,212,0.25)]'
+                          : 'text-neutral-400 hover:text-neutral-200 hover:bg-white/5'
+                      )}
+                      title={`${route.bank} (${route.vpa})`}
+                    >
+                      {route.bank.replace(' Bank', '')}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[9px] text-neutral-500 text-center font-mono">
+                If your bank app shows limit error, tap another bank route above.
+              </p>
+            </div>
+
             {/* Mobile Direct Intent Button */}
-            {upiSession?.upiString && (
+            {(currentUpiString || upiSession?.upiString) && (
               <a
-                href={upiSession.upiString}
-                className="mt-3 sm:hidden w-full max-w-xs py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold text-center shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-1.5"
+                href={currentUpiString || upiSession!.upiString}
+                className="mt-2 sm:hidden w-full max-w-xs py-2 px-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold text-center shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-1.5"
               >
                 <Sparkles size={13} />
                 Open in Installed UPI App

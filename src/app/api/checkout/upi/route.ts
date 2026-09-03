@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { PLAN_MAP, UPI_VPA, UPI_PAYEE_NAME } from '@/lib/constants';
+import { PLAN_MAP, UPI_VPA, UPI_PAYEE_NAME, SMART_ROUTING_UPI_IDS } from '@/lib/constants';
 import { createOrder } from '@/lib/firestore/orders';
 import { getAvailableCount } from '@/lib/firestore/keys';
 import { allocateUniquePaise } from '@/lib/orders/paiseAllocator';
@@ -95,6 +95,7 @@ export async function POST(request: NextRequest) {
       payeeName: UPI_PAYEE_NAME,
       upiString,
       note,
+      smartRouting: SMART_ROUTING_UPI_IDS,
     });
   } catch (err) {
     console.error('[checkout/upi]', err);
