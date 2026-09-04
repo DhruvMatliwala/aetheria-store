@@ -369,8 +369,8 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
       </header>
 
       {/* Main Content Container */}
-      <div className="relative z-10 pt-28 pb-20 px-4 max-w-3xl mx-auto">
-        {/* Key Reveal Component */}
+      <div className="relative z-10 pt-20 sm:pt-24 pb-16 px-4 max-w-2xl mx-auto">
+        {/* Compact Key Reveal Component */}
         <KeyReveal
           licenseKey={order.delivered_key ?? ''}
           orderId={orderId}
@@ -378,55 +378,55 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
           slotsAssigned={order.slots_assigned}
         />
 
+        {/* ── Verified Customer Review Submission Widget (Placed Right Under Key!) ── */}
+        <ReviewSubmissionWidget
+          orderId={orderId}
+          planName={matchedPlan?.name ?? 'Standard License'}
+        />
+
         {/* ── Transaction Receipt Breakdown ─────────────────────────────────── */}
-        <div className="mt-6 p-6 rounded-3xl bg-neutral-950/80 backdrop-blur-xl border border-white/10 shadow-2xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-white/5">
+        <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-neutral-950/80 backdrop-blur-xl border border-white/10 shadow-xl space-y-3">
+          <div className="flex items-center justify-between pb-2.5 border-b border-white/5">
             <div className="flex items-center gap-2">
-              <Receipt size={16} className="text-cyan-400" />
+              <Receipt size={15} className="text-cyan-400" />
               <span className="text-xs font-mono uppercase tracking-wider text-white font-semibold">
                 Transaction Receipt
               </span>
             </div>
             <span className="text-xs font-mono text-emerald-400 flex items-center gap-1.5">
               <CheckCircle size={13} />
-              <span>Paid & Vault Verified</span>
+              <span>Paid & Verified</span>
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
             <div>
               <p className="text-neutral-500 uppercase tracking-wider text-[10px]">License Plan</p>
-              <p className="text-white font-medium mt-1">
+              <p className="text-white font-medium mt-0.5">
                 {matchedPlan?.name ?? 'Standard License'}
               </p>
             </div>
 
             <div>
               <p className="text-neutral-500 uppercase tracking-wider text-[10px]">Device Slots</p>
-              <p className="text-white font-medium mt-1">
+              <p className="text-white font-medium mt-0.5">
                 {order.slots_assigned ?? (matchedPlan?.device_slots ?? 1)} Device{((order.slots_assigned ?? 1) > 1) ? 's' : ''}
               </p>
             </div>
 
             <div>
               <p className="text-neutral-500 uppercase tracking-wider text-[10px]">Amount Captured</p>
-              <p className="text-cyan-300 font-bold mt-1">
+              <p className="text-cyan-300 font-bold mt-0.5">
                 {order.currency === 'INR' ? `₹${(order.amount / 100).toLocaleString('en-IN')}` : `$${(order.amount / 100).toFixed(2)}`}
               </p>
             </div>
 
             <div>
               <p className="text-neutral-500 uppercase tracking-wider text-[10px]">Duration</p>
-              <p className="text-neutral-300 font-medium mt-1">30 Days Standard</p>
+              <p className="text-neutral-300 font-medium mt-0.5">30 Days Standard</p>
             </div>
           </div>
         </div>
-
-        {/* ── Verified Customer Review Submission Widget ────────────────────── */}
-        <ReviewSubmissionWidget
-          orderId={orderId}
-          planName={matchedPlan?.name ?? 'Standard License'}
-        />
 
         {/* ── 1-on-1 Direct Support Box ──────────────────────────────────────── */}
         <div className="mt-6 p-6 rounded-3xl bg-neutral-950/80 backdrop-blur-xl border border-cyan-500/30 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
