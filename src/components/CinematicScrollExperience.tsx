@@ -139,7 +139,7 @@ function SceneMedia({
   item,
   mediaMode,
   preload = 'none',
-  mediaClassName = 'object-contain object-[center_24%] sm:object-cover sm:object-center',
+  mediaClassName = 'object-cover object-center',
   onVideoMount,
   priority = false,
 }: SceneMediaProps) {
@@ -527,7 +527,7 @@ export function CinematicScrollExperience({
                 onVideoMount={(el) => {
                   videoElementsRef.current[idx] = el;
                 }}
-                mediaClassName="object-contain object-[center_24%] sm:object-cover sm:object-center"
+                mediaClassName="object-cover object-center"
               />
             </div>
           ))}
@@ -583,7 +583,7 @@ export function CinematicScrollExperience({
           Clean Cyber-Cyan / Emerald Palette with High Contrast
           ============================================================
         */}
-        <div className="absolute bottom-[max(4.5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] sm:bottom-14 md:bottom-16 left-4 sm:left-6 md:left-12 xl:left-20 w-[calc(100vw-2rem)] sm:w-[85vw] md:w-full max-w-xl xl:max-w-2xl z-20 pointer-events-none">
+        <div className="absolute inset-x-3 sm:inset-x-6 md:left-12 xl:left-20 top-0 bottom-0 xl:top-auto xl:bottom-14 md:xl:bottom-16 w-auto xl:w-full xl:max-w-2xl z-20 pointer-events-none">
           {SCENE_OVERLAYS.map((overlay, idx) => (
             <div
               key={idx}
@@ -591,29 +591,31 @@ export function CinematicScrollExperience({
                 overlayRefs.current[idx] = el;
               }}
               className={cn(
-                'absolute bottom-0 left-0 w-full pointer-events-auto',
-                idx > 0 ? 'hidden xl:block' : ''
+                'absolute left-0 w-full pointer-events-auto',
+                idx === 0
+                  ? 'bottom-[max(4.5rem,calc(env(safe-area-inset-bottom,0px)+3.5rem))] sm:bottom-14 md:bottom-16 xl:bottom-0'
+                  : 'top-[max(4.25rem,calc(env(safe-area-inset-top,0px)+3.75rem))] sm:top-20 xl:top-auto xl:bottom-0'
               )}
               style={{
                 opacity: idx === 0 ? 1 : 0,
               }}
             >
               {/* Line 1: Index Number + Section Subtitle Rule */}
-              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2.5', `hud-tag-${idx}`)}>
-                <span className="text-xs sm:text-base font-mono uppercase tracking-[0.2em] sm:tracking-[0.3em] text-cyan-400 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+              <div className={cn('hud-tag flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2.5', `hud-tag-${idx}`)}>
+                <span className="text-xs sm:text-base font-display uppercase tracking-[0.2em] sm:tracking-[0.3em] text-cyan-400 font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.idx}
                 </span>
                 <span className="w-4 sm:w-6 h-px bg-white/30" />
-                <span className="text-xs sm:text-base font-sans uppercase tracking-[0.16em] sm:tracking-[0.25em] text-neutral-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+                <span className="text-xs sm:text-base font-display uppercase tracking-[0.16em] sm:tracking-[0.25em] text-neutral-200 font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
                   {overlay.subtitle}
                 </span>
               </div>
 
               {/* Line 2: Bold Modern Geometric Display Title (Matches Reference Photo) */}
-              <div className="overflow-hidden mb-2 sm:mb-4">
+              <div className="overflow-hidden mb-1 sm:mb-3">
                 <h2
                   className={cn(
-                    'hud-title text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold uppercase font-display tracking-tight leading-[0.92] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]',
+                    'hud-title text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] font-extrabold uppercase font-display tracking-tight leading-[0.92] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]',
                     `hud-title-${idx}`
                   )}
                 >
@@ -627,7 +629,7 @@ export function CinematicScrollExperience({
               {/* Line 3: Editorial Prose Description */}
               <p
                 className={cn(
-                  'hud-desc text-xs sm:text-lg md:text-xl text-neutral-100 font-normal leading-relaxed mb-3 sm:mb-6 max-w-sm sm:max-w-xl font-sans drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
+                  'hud-desc text-[11px] sm:text-base md:text-lg xl:text-xl text-neutral-100 font-normal leading-relaxed mb-2 sm:mb-5 max-w-xs sm:max-w-xl font-display line-clamp-2 sm:line-clamp-none drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]',
                   `hud-desc-${idx}`
                 )}
               >
@@ -635,12 +637,12 @@ export function CinematicScrollExperience({
               </p>
 
               {/* Line 4: Row of Capsule Tag Pills */}
-              <div className={cn('hud-badges flex flex-wrap items-center gap-2 sm:gap-2.5 mb-3.5 sm:mb-6', `hud-badges-${idx}`)}>
+              <div className={cn('hud-badges flex flex-wrap items-center gap-1.5 sm:gap-2.5 mb-2.5 sm:mb-6', `hud-badges-${idx}`)}>
                 {overlay.badges.map((badge, bIdx) => (
                   <span
                     key={bIdx}
                     className={cn(
-                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/25 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm md:text-sm text-white font-sans font-medium tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
+                      'hud-badge rounded-full bg-white/10 backdrop-blur-md border border-white/25 px-2.5 sm:px-4 py-0.5 sm:py-1.5 text-[10px] sm:text-xs md:text-sm text-white font-display font-medium tracking-wide shadow-md whitespace-nowrap hover:bg-white/20 transition-colors inline-block',
                       `hud-badge-${idx}`
                     )}
                   >
@@ -656,7 +658,7 @@ export function CinematicScrollExperience({
                     type="button"
                     onClick={() => scrollToSection('plans')}
                     className={cn(
-                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-semibold transition-all duration-200 px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm md:text-base shadow-[0_0_20px_rgba(56,189,248,0.25)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
+                      'hud-cta rounded-full bg-white text-black hover:bg-cyan-400 hover:text-black font-semibold font-display transition-all duration-200 px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm md:text-base shadow-[0_0_20px_rgba(56,189,248,0.25)] inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap',
                       `hud-cta-${idx}`
                     )}
                   >
@@ -684,7 +686,7 @@ export function CinematicScrollExperience({
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
               <span className="text-[10px] font-display font-bold tracking-widest text-cyan-300 uppercase">
-                02 // SELECT LICENSE TIER
+                SELECT LICENSE TIER
               </span>
             </div>
             <span className="text-[9px] font-display text-neutral-400">
@@ -818,7 +820,7 @@ export function CinematicScrollExperience({
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[10px] font-display font-bold tracking-widest text-cyan-300 uppercase">
-                {liveReviews.length > 0 ? '03 // TRAINER VOUCHES & TRUST' : '03 // VAULT DISPATCH & GUARANTEE'}
+                {liveReviews.length > 0 ? 'TRAINER VOUCHES & TRUST' : 'VAULT DISPATCH & GUARANTEE'}
               </span>
             </div>
             <span className="text-[9px] font-display text-emerald-400 font-bold">
