@@ -70,4 +70,10 @@ declare module 'lucide-react' {
   export const Menu: LucideIcon;
   export const LogOut: LucideIcon;
   export const ShieldCheck: LucideIcon;
+  export const Radar: LucideIcon;
+  export const Radio: LucideIcon;
+  export const Crosshair: LucideIcon;
+  export const Sliders: LucideIcon;
+  export const User: LucideIcon;
+  export const Terminal: LucideIcon;
 }

@@ -1,0 +1,32 @@
+export type IntentLevel = 'HOT' | 'WARM';
+
+export interface LeadItem {
+  id: string; // Unique deduplication ID (e.g. "reddit_t3_xyz", "web_hash123")
+  source: 'reddit' | 'web' | 'telegram';
+  subSource?: string; // e.g. "r/PoGoAndroids" or "Google Alerts"
+  author: string;
+  title: string;
+  body: string;
+  url: string;
+  timestamp: number; // Unix epoch ms
+  matchedKeywords: string[];
+  intentLevel: IntentLevel;
+}
+
+export interface RadarConfig {
+  discordWebhookUrl: string;
+  storeUrl: string;
+  scanIntervalSeconds: number;
+  maxLeadAgeHours?: number;
+  subreddits: string[];
+  redditSearchQueries: string[];
+  googleAlertRssUrls: string[];
+  telegramChannels: string[];
+  highIntentKeywords: string[];
+  generalKeywords: string[];
+  excludeKeywords: string[];
+  pitchTemplates: {
+    hot: string;
+    warm: string;
+  };
+}

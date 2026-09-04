@@ -1,0 +1,70 @@
+{
+  "discordWebhookUrl": "",
+  "storeUrl": "https://aetheria-store.vercel.app",
+  "scanIntervalSeconds": 60,
+  "maxLeadAgeHours": 24,
+  "subreddits": [
+    "PoGoAndroids",
+    "PokemonGoSpoofing",
+    "PGSharp",
+    "PokemonGoSpoofing_"
+  ],
+  "redditSearchQueries": [
+    "pgsharp key",
+    "buy pgsharp",
+    "pgsharp standard key",
+    "pgsharp slot"
+  ],
+  "googleAlertRssUrls": [
+    "https://www.google.com/alerts/feeds/placeholder-alert-id/placeholder"
+  ],
+  "telegramChannels": [
+    "pgsharp",
+    "pgsharpofficial"
+  ],
+  "highIntentKeywords": [
+    "need",
+    "want",
+    "buy",
+    "buying",
+    "spare",
+    "sell",
+    "selling",
+    "purchase",
+    "purchasing",
+    "slot",
+    "slots",
+    "cheap",
+    "how to buy",
+    "looking for key",
+    "spare key",
+    "where can i buy",
+    "who sells",
+    "anyone selling",
+    "paypal",
+    "upi"
+  ],
+  "generalKeywords": [
+    "pgsharp key",
+    "pgsharp standard",
+    "activation key",
+    "standard edition",
+    "license key",
+    "pgsharp license"
+  ],
+  "excludeKeywords": [
+    "ban wave",
+    "i got banned",
+    "update v",
+    "changelog",
+    "apk download",
+    "patch notes",
+    "virus",
+    "mod apk",
+    "cracked apk"
+  ],
+  "pitchTemplates": {
+    "hot": "Hey @{author}! Saw you're looking for an instant PGSharp Standard key. I have verified keys available with instant auto-delivery, UPI/PayPal, and 24/7 activation support: {storeUrl}",
+    "warm": "Hey @{author}! If you need a verified PGSharp Standard key or slot, check out our instant key dispatch store: {storeUrl}"
+  }
+}
