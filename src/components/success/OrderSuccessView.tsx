@@ -398,7 +398,8 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
         />
 
         {/* ── Transaction Receipt Breakdown ─────────────────────────────────── */}
-        <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-neutral-950/80 backdrop-blur-xl border border-white/10 shadow-xl space-y-3">
+        <div className="mt-5 p-4 sm:p-5 rounded-2xl bg-neutral-950/80 backdrop-blur-xl border border-white/10 shadow-xl space-y-3.5">
+          {/* Receipt Top Header */}
           <div className="flex items-center justify-between pb-2.5 border-b border-white/5">
             <div className="flex items-center gap-2">
               <Receipt size={15} className="text-cyan-400" />
@@ -412,24 +413,26 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-xs font-mono">
-            <div className="col-span-2 sm:col-span-1">
-              <p className="text-neutral-500 uppercase tracking-wider text-[10px]">Order Number</p>
-              <button
-                type="button"
-                onClick={handleCopyOrderId}
-                className="inline-flex items-center gap-1.5 text-cyan-300 hover:text-cyan-200 font-medium mt-0.5 group text-left transition-colors"
-                title="Click to copy Order ID"
-              >
-                <span className="truncate">#{orderId}</span>
-                {orderCopied ? (
-                  <Check size={11} className="text-emerald-400 flex-shrink-0" />
-                ) : (
-                  <Copy size={11} className="text-neutral-500 group-hover:text-cyan-300 flex-shrink-0" />
-                )}
-              </button>
-            </div>
+          {/* Dedicated Order Number Banner (Prevents any column squishing or overlap) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-3 px-3.5 py-2.5 rounded-xl bg-black/40 border border-white/5 font-mono text-xs">
+            <span className="text-neutral-500 uppercase tracking-wider text-[10px]">Order Number</span>
+            <button
+              type="button"
+              onClick={handleCopyOrderId}
+              className="inline-flex items-center gap-1.5 text-cyan-300 hover:text-cyan-200 transition-colors font-medium group self-start sm:self-auto"
+              title="Click to copy Order ID"
+            >
+              <span className="break-all font-mono">#{orderId}</span>
+              {orderCopied ? (
+                <Check size={12} className="text-emerald-400 flex-shrink-0" />
+              ) : (
+                <Copy size={12} className="text-neutral-500 group-hover:text-cyan-300 flex-shrink-0" />
+              )}
+            </button>
+          </div>
 
+          {/* 4 Spacious Details Columns */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono pt-0.5">
             <div>
               <p className="text-neutral-500 uppercase tracking-wider text-[10px]">License Plan</p>
               <p className="text-white font-medium mt-0.5">
