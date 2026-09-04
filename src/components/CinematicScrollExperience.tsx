@@ -54,7 +54,7 @@ const SCENE_MEDIA = [
     fallbackSrc: '/videos/scene3.mp4',
     imageSrc: '/images/scenes/scene3.webp',
     alt: 'Mega Charizard X vs Ash-Greninja Stadium Showdown',
-    mediaClassName: 'object-cover object-[78%_center]',
+    mediaClassName: 'object-cover object-[95%_center]',
   },
 ];
 
@@ -818,18 +818,6 @@ export function CinematicScrollExperience({
           className="absolute bottom-[max(2.25rem,calc(env(safe-area-inset-bottom,0px)+1.75rem))] sm:bottom-10 md:bottom-12 xl:bottom-16 left-3 right-3 sm:left-0 sm:right-0 sm:mx-auto xl:left-auto xl:right-16 xl:mx-0 z-20 w-auto sm:w-[480px] xl:w-[440px] space-y-2.5 will-change-transform transform-gpu pointer-events-none opacity-0 invisible"
           id="trust-box"
         >
-          {/* Mobile & Tablet Scene 3 Eyebrow Header */}
-          <div className="flex items-center justify-between px-1.5 mb-1 xl:hidden">
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[10px] font-display font-bold tracking-widest text-cyan-300 uppercase">
-                {liveReviews.length > 0 ? 'TRAINER VOUCHES & TRUST' : 'VAULT DISPATCH & GUARANTEE'}
-              </span>
-            </div>
-            <span className="text-[9px] font-display text-emerald-400 font-bold">
-              {liveReviews.length > 0 ? '★ Verified Reviews' : '⚡ Official Reseller'}
-            </span>
-          </div>
 
           {/* Real Customer Reviews Carousel (Active when real reviews are submitted & approved) */}
           {liveReviews.length > 0 ? (
