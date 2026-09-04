@@ -81,10 +81,13 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
     }
   }
 
-  // ── Auto-clear waitlist for this plan upon successful key purchase ──────────
+  // ── Auto-clear waitlist and active checkout session upon key purchase ──────
   useEffect(() => {
-    if (order.payment_status === 'paid' && order.plan_type && typeof window !== 'undefined') {
-      localStorage.removeItem(`restock_requested_${order.plan_type}`);
+    if (order.payment_status === 'paid' && typeof window !== 'undefined') {
+      localStorage.removeItem('aetheria_active_checkout');
+      if (order.plan_type) {
+        localStorage.removeItem(`restock_requested_${order.plan_type}`);
+      }
     }
   }, [order.payment_status, order.plan_type]);
 

@@ -143,8 +143,8 @@ export default function HomePage() {
               .then((res) => res.json())
               .then((data) => {
                 if (data.payment_status === 'paid') {
+                  // Order is already complete: wipe session so the user can browse and buy freely!
                   localStorage.removeItem('aetheria_active_checkout');
-                  window.location.href = `/order-success/${parsed.orderId}`;
                 } else if (data.payment_status === 'pending' || data.payment_status === 'verifying') {
                   const matchingPlan = PLANS.find((p) => p.id === parsed.planId) || PLANS[0];
                   setSelectedPlan(matchingPlan);
@@ -161,6 +161,17 @@ export default function HomePage() {
   }, [counts]);
 
   function handleBuyClick(plan: Plan) {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('aetheria_active_checkout');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.planId !== plan.id) {
+            localStorage.removeItem('aetheria_active_checkout');
+          }
+        }
+      } catch {}
+    }
     setSelectedPlan(plan);
     setIsCheckoutModalOpen(true);
   }

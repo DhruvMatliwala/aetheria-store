@@ -69,28 +69,51 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
 
   // Restore active session from localStorage if user reloaded or switched back from UPI app
   useEffect(() => {
-    if (typeof window === 'undefined' || !isOpen) return;
+    if (typeof window === 'undefined' || !isOpen || !plan) return;
     try {
       const saved = localStorage.getItem('aetheria_active_checkout');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.orderId && Date.now() - (parsed.timestamp || 0) < 30 * 60 * 1000) {
-          if (parsed.upiSession && parsed.method === 'upi') {
-            setUpiSession(parsed.upiSession);
-            if (parsed.upiSession.upiId) {
-              setActiveVpa(parsed.upiSession.upiId);
-            }
-            setMethod('upi');
-            setStep('upi_qr');
-          } else if (parsed.paypalSession && parsed.method === 'paypal') {
-            setPaypalSession(parsed.paypalSession);
-            setMethod('paypal');
-            setStep('paypal_direct');
-          }
+        const age = Date.now() - (parsed.timestamp || 0);
+        // Only consider resuming if same plan and under 30 minutes
+        if (parsed.orderId && parsed.planId === plan.id && age < 30 * 60 * 1000) {
+          fetch(`/api/order/${parsed.orderId}`, { cache: 'no-store' })
+            .then((res) => res.json())
+            .then((data) => {
+              const isPaid = data?.payment_status === 'paid' || data?.order?.payment_status === 'paid';
+              if (isPaid) {
+                // Previous order already finished: clear memory so user gets a fresh purchase form!
+                localStorage.removeItem('aetheria_active_checkout');
+                setStep('details');
+              } else if (data?.payment_status === 'pending' || data?.payment_status === 'verifying') {
+                if (parsed.upiSession && parsed.method === 'upi') {
+                  setUpiSession(parsed.upiSession);
+                  if (parsed.upiSession.upiId) {
+                    setActiveVpa(parsed.upiSession.upiId);
+                  }
+                  setMethod('upi');
+                  setStep('upi_qr');
+                } else if (parsed.paypalSession && parsed.method === 'paypal') {
+                  setPaypalSession(parsed.paypalSession);
+                  setMethod('paypal');
+                  setStep('paypal_direct');
+                }
+              }
+            })
+            .catch(() => {
+              localStorage.removeItem('aetheria_active_checkout');
+              setStep('details');
+            });
+        } else {
+          // Different plan or expired session: clear and show fresh details form!
+          localStorage.removeItem('aetheria_active_checkout');
+          setStep('details');
         }
+      } else {
+        setStep('details');
       }
     } catch {}
-  }, [isOpen]);
+  }, [isOpen, plan?.id]);
 
   // ── Auto-poll for Zero-UTR & PayPal instant bank/cloud match ───────────────
   useEffect(() => {
