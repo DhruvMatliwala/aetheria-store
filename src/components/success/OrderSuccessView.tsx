@@ -16,7 +16,10 @@ import {
   CheckCircle,
   Receipt,
   Sparkles,
+  Copy,
+  Check,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 
 interface OrderSuccessViewProps {
@@ -34,9 +37,19 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
   );
   const [attempts, setAttempts] = useState(0);
   const [isCheckingManual, setIsCheckingManual] = useState(false);
+  const [orderCopied, setOrderCopied] = useState(false);
 
   const isCapturingRef = useRef(false);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  async function handleCopyOrderId() {
+    try {
+      await navigator.clipboard.writeText(orderId);
+      setOrderCopied(true);
+      toast.success('Order ID copied!', { icon: '📋' });
+      setTimeout(() => setOrderCopied(false), 2000);
+    } catch {}
+  }
 
   // ── Confetti Trigger ────────────────────────────────────────────────────────
   function triggerConfetti() {
@@ -399,7 +412,24 @@ export function OrderSuccessView({ initialOrder, orderId }: OrderSuccessViewProp
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-xs font-mono">
+            <div className="col-span-2 sm:col-span-1">
+              <p className="text-neutral-500 uppercase tracking-wider text-[10px]">Order Number</p>
+              <button
+                type="button"
+                onClick={handleCopyOrderId}
+                className="inline-flex items-center gap-1.5 text-cyan-300 hover:text-cyan-200 font-medium mt-0.5 group text-left transition-colors"
+                title="Click to copy Order ID"
+              >
+                <span className="truncate">#{orderId}</span>
+                {orderCopied ? (
+                  <Check size={11} className="text-emerald-400 flex-shrink-0" />
+                ) : (
+                  <Copy size={11} className="text-neutral-500 group-hover:text-cyan-300 flex-shrink-0" />
+                )}
+              </button>
+            </div>
+
             <div>
               <p className="text-neutral-500 uppercase tracking-wider text-[10px]">License Plan</p>
               <p className="text-white font-medium mt-0.5">

@@ -86,15 +86,10 @@ export function ReviewSubmissionWidget({ orderId, planName }: ReviewSubmissionWi
 
   return (
     <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[#0c1424]/90 backdrop-blur-xl border border-cyan-500/30 shadow-xl space-y-3 text-left">
-      <div className="flex items-center justify-between pb-2.5 border-b border-white/5">
-        <div className="flex items-center gap-2">
-          <Sparkles size={15} className="text-cyan-400" />
-          <span className="text-xs font-mono uppercase tracking-wider text-white font-semibold">
-            How was your delivery experience?
-          </span>
-        </div>
-        <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-400/30">
-          Verified Order
+      <div className="flex items-center gap-2 pb-2.5 border-b border-white/5">
+        <Sparkles size={15} className="text-cyan-400" />
+        <span className="text-xs font-mono uppercase tracking-wider text-white font-semibold">
+          How was your delivery experience?
         </span>
       </div>
 

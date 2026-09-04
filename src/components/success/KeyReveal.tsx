@@ -1,20 +1,19 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Copy, Check, Key, CheckCircle, ShieldCheck } from 'lucide-react';
+import { Copy, Check, Key, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { triggerParticleBurst } from '@/components/interactive/ParticleBurst';
 
 interface KeyRevealProps {
   licenseKey: string;
-  orderId: string;
+  orderId?: string;
   planType?: string;
   slotsAssigned?: number;
 }
 
-export function KeyReveal({ licenseKey, orderId, planType, slotsAssigned = 1 }: KeyRevealProps) {
+export function KeyReveal({ licenseKey, planType, slotsAssigned = 1 }: KeyRevealProps) {
   const [copied, setCopied] = useState(false);
-  const [orderCopied, setOrderCopied] = useState(false);
   const hasTriggeredConfetti = useRef(false);
 
   // Auto-trigger celebratory confetti on page mount
@@ -44,42 +43,10 @@ export function KeyReveal({ licenseKey, orderId, planType, slotsAssigned = 1 }: 
     }
   }
 
-  async function handleCopyOrderId() {
-    try {
-      await navigator.clipboard.writeText(orderId);
-      setOrderCopied(true);
-      toast.success('Order ID copied!', { icon: '📋' });
-      setTimeout(() => setOrderCopied(false), 2000);
-    } catch {}
-  }
-
   const isMultiDevice = slotsAssigned > 1 || (planType && planType.includes('2_device'));
 
   return (
     <div className="w-full max-w-2xl mx-auto text-center">
-      {/* ── Compact Top Status Pill ─────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-medium shadow-sm">
-          <CheckCircle size={13} className="text-emerald-400" />
-          <span>Payment Verified & Key Dispatched</span>
-        </span>
-
-        {/* Clickable Order ID Pill */}
-        <button
-          type="button"
-          onClick={handleCopyOrderId}
-          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/90 border border-white/10 hover:border-cyan-500/40 text-neutral-400 hover:text-cyan-300 text-xs font-mono transition-all shadow-sm group"
-          title="Click to copy Order ID"
-        >
-          <span>Order #{orderId}</span>
-          {orderCopied ? (
-            <Check size={12} className="text-emerald-400" />
-          ) : (
-            <Copy size={12} className="text-neutral-500 group-hover:text-cyan-400 transition-colors" />
-          )}
-        </button>
-      </div>
-
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif text-white font-normal tracking-tight mb-2">
         Your PGSharp License Key
       </h1>
