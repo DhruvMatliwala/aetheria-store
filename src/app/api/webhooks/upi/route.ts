@@ -76,7 +76,12 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    const headerSecret = request.headers.get('x-secret') || request.headers.get('x-api-key');
+    // Support Authorization: Bearer <token>, x-secret, and x-api-key headers
+    const authHeader = request.headers.get('authorization');
+    const bearerSecret = authHeader?.toLowerCase().startsWith('bearer ')
+      ? authHeader.substring(7).trim()
+      : null;
+    const headerSecret = bearerSecret || request.headers.get('x-secret') || request.headers.get('x-api-key');
     if (headerSecret && !body.secret) {
       body.secret = headerSecret;
     }
@@ -94,6 +99,16 @@ export async function GET(request: NextRequest) {
   searchParams.forEach((value, key) => {
     params[key] = value;
   });
+
+  const authHeader = request.headers.get('authorization');
+  const bearerSecret = authHeader?.toLowerCase().startsWith('bearer ')
+    ? authHeader.substring(7).trim()
+    : null;
+  const headerSecret = bearerSecret || request.headers.get('x-secret') || request.headers.get('x-api-key');
+  if (headerSecret && !params.secret) {
+    params.secret = headerSecret;
+  }
+
   return handleIncomingSms(params);
 }
 
@@ -119,6 +134,24 @@ async function handleIncomingSms(data: Record<string, any>) {
     data.notification_text ||
     ''
   ).toString();
+
+  // ── Privacy & Security Guard: Never process or store sensitive 2FA / OTPs ──────────
+  const lowerMsg = rawMessage.toLowerCase();
+  const isOtpOrAuth =
+    (lowerMsg.includes('otp') ||
+      lowerMsg.includes('verification code') ||
+      lowerMsg.includes('security code') ||
+      lowerMsg.includes('one time password') ||
+      lowerMsg.includes('login code')) &&
+    !lowerMsg.includes('credited');
+
+  if (isOtpOrAuth) {
+    console.warn('[webhooks/upi] Dropped sensitive OTP/Auth SMS for security.');
+    return NextResponse.json(
+      { error: 'Security Policy: Authentication/OTP messages are strictly rejected.' },
+      { status: 400 }
+    );
+  }
 
   let utr = (data.utr || data.reference || data.ref || '').toString().trim();
   let amount = data.amount ? parseFloat(data.amount.toString()) : null;

@@ -28,11 +28,20 @@ export async function recordBankCredit(
     return { alreadyExisted: true, docId };
   }
 
+  // Privacy protection: Redact account numbers and sensitive info before saving
+  const sanitizedSms = rawSms
+    ? rawSms
+        .replace(/\b\d{9,18}\b/g, (match) => {
+          return match === utrOrDocId ? match : '******' + match.slice(-4);
+        })
+        .slice(0, 300)
+    : '';
+
   await docRef.set({
     utr: utrOrDocId,
     amount: amount || null,
     status: 'unclaimed',
-    raw_sms: rawSms || '',
+    raw_sms: sanitizedSms,
     credited_at: admin.firestore.FieldValue.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,
   });
 
