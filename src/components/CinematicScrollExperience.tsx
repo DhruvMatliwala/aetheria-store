@@ -683,11 +683,11 @@ export function CinematicScrollExperience({
           <div className="flex items-center justify-between px-1.5 mb-1 xl:hidden">
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              <span className="text-[10px] font-mono font-bold tracking-widest text-cyan-300 uppercase">
+              <span className="text-[10px] font-display font-bold tracking-widest text-cyan-300 uppercase">
                 02 // SELECT LICENSE TIER
               </span>
             </div>
-            <span className="text-[9px] font-mono text-neutral-400">
+            <span className="text-[9px] font-display text-neutral-400">
               ⚡ Instant Key Delivery
             </span>
           </div>
@@ -704,34 +704,34 @@ export function CinematicScrollExperience({
                   {/* Tag sitting directly on top edge of the box */}
                   <div className="h-4 sm:h-6 flex items-end justify-end px-1.5 sm:px-3 -mb-[1px] z-10">
                     {plan.discount_badge && (
-                      <span className="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-300 border border-cyan-400/40 text-[7px] sm:text-[10px] font-mono uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(6,182,212,0.3)] backdrop-blur-md">
+                      <span className="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 text-cyan-300 border border-cyan-400/40 text-[7px] sm:text-[10px] font-display uppercase tracking-wider font-bold shadow-[0_0_12px_rgba(6,182,212,0.3)] backdrop-blur-md">
                         🔥 {plan.discount_badge}
                       </span>
                     )}
                   </div>
 
-                  {/* 100% Symmetrical Vertically Long Obsidian Box Format */}
+                  {/* 100% Symmetrical Vertically Long Obsidian Frosted Glass Format */}
                   <div
-                    className="p-3 py-3.5 sm:p-5 sm:py-7 md:p-6 md:py-8 rounded-xl sm:rounded-2xl bg-neutral-950/90 backdrop-blur-md border border-white/15 hover:border-cyan-500/50 transition-all duration-200 flex flex-col justify-between min-h-[195px] sm:min-h-[245px] space-y-2 sm:space-y-5 shadow-2xl transform-gpu pointer-events-auto"
+                    className="p-3 py-3.5 sm:p-5 sm:py-7 md:p-6 md:py-8 rounded-xl sm:rounded-2xl bg-[#050811]/75 sm:bg-[#050811]/80 backdrop-blur-xl border border-white/10 hover:border-cyan-400/40 hover:bg-[#050811]/85 transition-all duration-300 flex flex-col justify-between min-h-[195px] sm:min-h-[245px] space-y-2 sm:space-y-5 shadow-[0_12px_40px_rgba(0,0,0,0.85)] transform-gpu pointer-events-auto"
                   >
                     <div className="space-y-1.5 sm:space-y-2.5">
                       <div className="flex items-center justify-between gap-1">
-                        <h3 className="text-xs sm:text-base font-bold text-white font-sans truncate">{plan.name}</h3>
-                        <span className="text-[9px] sm:text-xs font-mono text-neutral-300 font-medium shrink-0">
+                        <h3 className="text-xs sm:text-base font-bold text-white font-display truncate">{plan.name}</h3>
+                        <span className="text-[9px] sm:text-xs font-display text-neutral-300 font-medium shrink-0">
                           {plan.device_slots} Device{plan.device_slots > 1 ? 's' : ''}
                         </span>
                       </div>
 
                       <div className="flex items-baseline">
-                        <span className="text-xl sm:text-3xl md:text-4xl font-bold text-white font-sans tracking-tight">
+                        <span className="text-xl sm:text-3xl md:text-4xl font-bold text-white font-display tracking-tight">
                           ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
                         </span>
-                        <span className="text-[10px] sm:text-xs md:text-sm text-cyan-400 font-mono ml-1 sm:ml-2">
+                        <span className="text-[10px] sm:text-xs md:text-sm text-cyan-400 font-display ml-1 sm:ml-2">
                           (${(plan.price_usd / 100).toFixed(2)})
                         </span>
                       </div>
 
-                      <div className="text-[9px] sm:text-xs font-mono">
+                      <div className="text-[9px] sm:text-xs font-display">
                         {isOutOfStock ? (
                           <span className="text-red-400 font-medium">● Sold Out</span>
                         ) : (
@@ -739,7 +739,7 @@ export function CinematicScrollExperience({
                         )}
                       </div>
 
-                      <div className="pt-1.5 border-t border-white/10 flex flex-col gap-0.5 sm:gap-1 text-[9px] sm:text-[11px] text-neutral-300/90 font-sans">
+                      <div className="pt-1.5 border-t border-white/10 flex flex-col gap-0.5 sm:gap-1 text-[9px] sm:text-[11px] text-neutral-300/90 font-display">
                         <div className="flex items-center gap-1">
                           <span className="text-cyan-400 font-bold">✓</span>
                           <span className="truncate">30-Day PGSharp VIP</span>
@@ -757,7 +757,7 @@ export function CinematicScrollExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-2 sm:py-3 text-center text-[10px] sm:text-xs font-mono text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg sm:rounded-xl border border-emerald-500/30 transition-colors font-semibold"
+                          className="w-full py-2 sm:py-3 text-center text-[10px] sm:text-xs font-display text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 rounded-lg sm:rounded-xl border border-emerald-500/30 transition-colors font-semibold"
                           title="Click to update or re-register notification email"
                         >
                           ✓ Waitlisted
@@ -766,7 +766,7 @@ export function CinematicScrollExperience({
                         <button
                           type="button"
                           onClick={() => onNotifyClick?.(plan)}
-                          className="w-full py-2 sm:py-3 text-center text-[10px] sm:text-xs font-mono text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl border border-white/10 transition-colors font-semibold"
+                          className="w-full py-2 sm:py-3 text-center text-[10px] sm:text-xs font-display text-neutral-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg sm:rounded-xl border border-white/10 transition-colors font-semibold"
                         >
                           NOTIFY ME
                         </button>
@@ -778,7 +778,7 @@ export function CinematicScrollExperience({
                           triggerParticleBurst(e, 25);
                           onBuyClick?.(plan);
                         }}
-                        className="w-full py-2 sm:py-3 rounded-lg sm:rounded-xl font-bold text-[11px] sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
+                        className="w-full py-2 sm:py-3 rounded-lg sm:rounded-xl font-bold font-display text-[11px] sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95 bg-white text-black hover:bg-cyan-400 hover:text-black"
                       >
                         Buy Key
                       </button>
@@ -790,7 +790,7 @@ export function CinematicScrollExperience({
           </div>
 
           {/* Reassurance Strip */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-mono text-neutral-400/90 pointer-events-auto">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-display text-neutral-400/90 pointer-events-auto">
             <span className="flex items-center gap-1">
               <Shield size={10} className="text-cyan-400" /> AES-256 Vault
             </span>
@@ -817,11 +817,11 @@ export function CinematicScrollExperience({
           <div className="flex items-center justify-between px-1.5 mb-1 xl:hidden">
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[10px] font-mono font-bold tracking-widest text-cyan-300 uppercase">
+              <span className="text-[10px] font-display font-bold tracking-widest text-cyan-300 uppercase">
                 {liveReviews.length > 0 ? '03 // TRAINER VOUCHES & TRUST' : '03 // VAULT DISPATCH & GUARANTEE'}
               </span>
             </div>
-            <span className="text-[9px] font-mono text-emerald-400 font-bold">
+            <span className="text-[9px] font-display text-emerald-400 font-bold">
               {liveReviews.length > 0 ? '★ Verified Reviews' : '⚡ Official Reseller'}
             </span>
           </div>
@@ -846,32 +846,32 @@ export function CinematicScrollExperience({
                 )}
 
                 {/* The EXACT Reference Capsule (Darker Muted Border matching reference) */}
-                <div className="flex-1 min-w-0 p-4 sm:p-4.5 rounded-2xl bg-[#050811]/92 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.95)] space-y-2 transition-all duration-300 hover:border-white/20">
+                <div className="flex-1 min-w-0 p-4 sm:p-4.5 rounded-2xl bg-[#050811]/75 sm:bg-[#050811]/80 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.85)] space-y-2 transition-all duration-300 hover:border-white/20">
                   {/* Top Row: Avatar + @Handle + Verified Checkmark (Left) and 5 Gold Stars + 5.0 (Right) */}
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-7 h-7 rounded-full bg-[#0b1329] border border-white/15 flex items-center justify-center font-bold text-cyan-300 text-xs shadow-sm shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-[#0b1329] border border-white/15 flex items-center justify-center font-bold font-display text-cyan-300 text-xs shadow-sm shrink-0">
                         {(currentReview?.trainerName || 'T').charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-sm font-semibold text-white tracking-wide truncate">
+                      <span className="text-sm font-semibold text-white font-display tracking-wide truncate">
                         @{currentReview?.trainerName || 'Trainer'}
                       </span>
                       <CheckCircle2 size={15} className="text-cyan-400 fill-cyan-400/20 shrink-0" />
                     </div>
-                    <div className="flex items-center gap-1.5 text-amber-400 font-mono shrink-0">
+                    <div className="flex items-center gap-1.5 text-amber-400 font-display shrink-0">
                       <div className="flex gap-0.5">
                         {[...Array(currentReview?.rating || 5)].map((_, i) => (
                           <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
                         ))}
                       </div>
-                      <span className="font-bold text-neutral-200 text-xs sm:text-sm ml-0.5">
+                      <span className="font-bold text-neutral-200 text-xs sm:text-sm ml-0.5 font-display">
                         {(liveReviews.reduce((acc, r) => acc + (r.rating || 5), 0) / liveReviews.length).toFixed(1)}
                       </span>
                     </div>
                   </div>
 
                   {/* Bottom Row: Quote Text */}
-                  <p className="text-xs sm:text-[13.5px] text-neutral-200 font-sans leading-relaxed pl-0.5">
+                  <p className="text-xs sm:text-[13.5px] text-neutral-200 font-display leading-relaxed pl-0.5">
                     &ldquo;{currentReview?.comment}&rdquo;
                   </p>
                 </div>
@@ -912,27 +912,27 @@ export function CinematicScrollExperience({
             </div>
           ) : (
             /* 100% Honest Vault Guarantee & Direct Dispatch Card (Zero Fake Reviews) */
-            <div className="p-4 sm:p-4.5 rounded-2xl bg-[#050811]/92 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.95)] space-y-2.5 pointer-events-auto transition-all duration-300 hover:border-white/20">
+            <div className="p-4 sm:p-4.5 rounded-2xl bg-[#050811]/75 sm:bg-[#050811]/80 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.85)] space-y-2.5 pointer-events-auto transition-all duration-300 hover:border-white/20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-full bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
                     <ShieldCheck size={16} />
                   </div>
                   <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-white tracking-wide font-sans">
+                    <h4 className="text-xs sm:text-sm font-bold text-white tracking-wide font-display">
                       Aetheria Vault Guarantee
                     </h4>
-                    <p className="text-[10px] font-mono text-cyan-300">
+                    <p className="text-[10px] font-display text-cyan-300">
                       Direct Automated Delivery Pipeline
                     </p>
                   </div>
                 </div>
-                <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 font-semibold shrink-0">
+                <span className="text-[9px] font-display px-2 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 font-semibold shrink-0">
                   ● 100% Genuine
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] font-sans text-neutral-300 border-t border-white/5">
+              <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] font-display text-neutral-300 border-t border-white/5">
                 <div className="flex items-center gap-1.5">
                   <Zap size={13} className="text-cyan-400 shrink-0" />
                   <span className="truncate">Instant On-Screen Key</span>
@@ -958,7 +958,7 @@ export function CinematicScrollExperience({
             <button
               type="button"
               onClick={() => scrollToSection('plans')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 backdrop-blur-md text-[10px] font-mono font-bold text-cyan-300 hover:text-white transition-all shadow active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/30 backdrop-blur-md text-[10px] font-display font-bold text-cyan-300 hover:text-white transition-all shadow active:scale-95"
             >
               <Zap size={11} className="text-cyan-400" />
               <span>Get License Key →</span>
@@ -968,7 +968,7 @@ export function CinematicScrollExperience({
               <button
                 type="button"
                 onClick={() => setFaqDrawerOpen(!faqDrawerOpen)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-950/80 hover:bg-neutral-900 border border-white/10 backdrop-blur-md text-[10px] font-mono text-neutral-300 hover:text-cyan-300 transition-colors shadow"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#050811]/75 hover:bg-[#050811]/90 border border-white/10 backdrop-blur-md text-[10px] font-display text-neutral-300 hover:text-cyan-300 transition-colors shadow"
               >
                 <HelpCircle size={10} className="text-cyan-400" />
                 <span>FAQ ({FAQS.length})</span>

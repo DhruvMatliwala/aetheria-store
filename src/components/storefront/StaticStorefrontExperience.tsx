@@ -186,13 +186,13 @@ export function StaticStorefrontExperience({
                   className={cn(
                     'relative rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300',
                     isPopular
-                      ? 'bg-gradient-to-b from-neutral-900/90 via-neutral-950/90 to-black border-2 border-cyan-500/60 shadow-[0_0_45px_rgba(6,182,212,0.2)]'
-                      : 'bg-neutral-950/80 backdrop-blur-xl border border-white/10 hover:border-cyan-500/40 shadow-xl'
+                      ? 'bg-[#050811]/85 backdrop-blur-xl border-2 border-cyan-400/60 shadow-[0_12px_45px_rgba(6,182,212,0.25)]'
+                      : 'bg-[#050811]/75 sm:bg-[#050811]/80 backdrop-blur-xl border border-white/10 hover:border-cyan-400/40 hover:bg-[#050811]/85 shadow-[0_12px_40px_rgba(0,0,0,0.85)]'
                   )}
                 >
                   {/* Top Badge */}
                   {plan.discount_badge && (
-                    <div className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 text-black text-[10px] font-mono font-black uppercase tracking-wider shadow-md">
+                    <div className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 text-black text-[10px] font-display font-black uppercase tracking-wider shadow-md">
                       {plan.discount_badge}
                     </div>
                   )}
@@ -201,31 +201,31 @@ export function StaticStorefrontExperience({
                     {/* Header */}
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h3 className="text-xl font-bold text-white font-serif">{plan.name}</h3>
-                        <p className="text-xs font-mono text-cyan-400 mt-0.5">{plan.duration} Access</p>
+                        <h3 className="text-xl font-bold text-white font-display">{plan.name}</h3>
+                        <p className="text-xs font-display text-cyan-400 mt-0.5">{plan.duration} Access</p>
                       </div>
-                      <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-gray-300">
+                      <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-display text-gray-300">
                         {plan.device_slots} Device{plan.device_slots > 1 ? 's' : ''}
                       </span>
                     </div>
 
                     {/* Price */}
                     <div className="mb-6 flex items-baseline gap-2">
-                      <span className="text-4xl sm:text-5xl font-black text-white font-mono">
+                      <span className="text-4xl sm:text-5xl font-black text-white font-display">
                         ₹{(plan.price_inr / 100).toLocaleString('en-IN')}
                       </span>
-                      <span className="text-sm font-mono text-gray-400">
+                      <span className="text-sm font-display text-gray-400">
                         / ${(plan.price_usd / 100).toFixed(2)} USD
                       </span>
                       {plan.original_price_inr && (
-                        <span className="text-xs font-mono text-gray-500 line-through ml-1">
+                        <span className="text-xs font-display text-gray-500 line-through ml-1">
                           ₹{plan.original_price_inr / 100}
                         </span>
                       )}
                     </div>
 
                     {/* Stock Status Indicator */}
-                    <div className="mb-6 pb-4 border-b border-white/10 flex items-center justify-between text-xs font-mono">
+                    <div className="mb-6 pb-4 border-b border-white/10 flex items-center justify-between text-xs font-display">
                       <span className="text-gray-400">Availability:</span>
                       {inStock ? (
                         <span className="text-emerald-400 flex items-center gap-1.5 font-semibold">
@@ -241,7 +241,7 @@ export function StaticStorefrontExperience({
                     </div>
 
                     {/* Features List */}
-                    <ul className="space-y-2.5 mb-8 text-xs text-gray-300">
+                    <ul className="space-y-2.5 mb-8 text-xs font-display text-gray-300">
                       {plan.features.map((feat: string, i: number) => (
                         <li key={i} className="flex items-start gap-2">
                           <Check size={14} className="text-cyan-400 shrink-0 mt-0.5" />
@@ -261,7 +261,7 @@ export function StaticStorefrontExperience({
                           onBuyClick(plan);
                         }}
                         className={cn(
-                          'w-full py-3.5 px-6 rounded-xl font-bold text-xs uppercase tracking-wider transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg',
+                          'w-full py-3.5 px-6 rounded-xl font-bold font-display text-xs uppercase tracking-wider transition-all transform active:scale-95 flex items-center justify-center gap-2 shadow-lg',
                           isPopular
                             ? 'bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-black shadow-[0_0_25px_rgba(6,182,212,0.35)]'
                             : 'bg-white hover:bg-cyan-400 text-black hover:text-black shadow-md'
@@ -275,7 +275,7 @@ export function StaticStorefrontExperience({
                         type="button"
                         onClick={() => onNotifyClick(plan)}
                         disabled={isWaitlisted}
-                        className="w-full py-3.5 px-6 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3.5 px-6 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold font-display text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
                       >
                         <span>{isWaitlisted ? 'Waitlist Joined ✓' : 'Notify on Restock'}</span>
                       </button>
