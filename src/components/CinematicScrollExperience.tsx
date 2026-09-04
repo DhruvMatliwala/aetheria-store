@@ -38,6 +38,7 @@ const SCENE_MEDIA = [
     fallbackSrc: '/videos/Scene5.mp4',
     imageSrc: '/images/scenes/scene1.webp',
     alt: 'Mewtwo Cryo-Awakening with Psychic Eye Flare',
+    mediaClassName: 'object-cover object-center',
   },
   {
     id: 'scene2',
@@ -45,6 +46,7 @@ const SCENE_MEDIA = [
     fallbackSrc: '/videos/scene2.mp4',
     imageSrc: '/images/scenes/scene2.webp',
     alt: 'Shibuya Crossing & Pikachu Scene Frame',
+    mediaClassName: 'object-cover object-center',
   },
   {
     id: 'scene3',
@@ -52,6 +54,7 @@ const SCENE_MEDIA = [
     fallbackSrc: '/videos/scene3.mp4',
     imageSrc: '/images/scenes/scene3.webp',
     alt: 'Mega Charizard X vs Ash-Greninja Stadium Showdown',
+    mediaClassName: 'object-cover object-[78%_center]',
   },
 ];
 
@@ -527,7 +530,7 @@ export function CinematicScrollExperience({
                 onVideoMount={(el) => {
                   videoElementsRef.current[idx] = el;
                 }}
-                mediaClassName="object-cover object-center"
+                mediaClassName={item.mediaClassName || 'object-cover object-center'}
               />
             </div>
           ))}
