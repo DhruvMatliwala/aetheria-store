@@ -36,21 +36,21 @@ const SCENE_MEDIA = [
     id: 'scene1',
     src: '/videos/scene5.mp4',
     fallbackSrc: '/videos/Scene5.mp4',
-    imageSrc: '/images/scenes/scene1.png',
+    imageSrc: '/images/scenes/scene1.webp',
     alt: 'Mewtwo Cryo-Awakening with Psychic Eye Flare',
   },
   {
     id: 'scene2',
     src: '/videos/Scene2.mp4',
     fallbackSrc: '/videos/scene2.mp4',
-    imageSrc: '/images/scenes/scene2-frame.jpg',
+    imageSrc: '/images/scenes/scene2.webp',
     alt: 'Shibuya Crossing & Pikachu Scene Frame',
   },
   {
     id: 'scene3',
     src: '/videos/Scene3.mp4',
     fallbackSrc: '/videos/scene3.mp4',
-    imageSrc: '/images/scenes/scene3.png',
+    imageSrc: '/images/scenes/scene3.webp',
     alt: 'Mega Charizard X vs Ash-Greninja Stadium Showdown',
   },
 ];
@@ -248,9 +248,9 @@ export function CinematicScrollExperience({
     if (typeof window === 'undefined') return;
     if (CINEMATIC_MEDIA_MODE === 'image') {
       const img2 = new window.Image();
-      img2.src = '/images/scenes/scene2-frame.jpg';
+      img2.src = '/images/scenes/scene2.webp';
       const img3 = new window.Image();
-      img3.src = '/images/scenes/scene3.png';
+      img3.src = '/images/scenes/scene3.webp';
     }
   }, []);
 
