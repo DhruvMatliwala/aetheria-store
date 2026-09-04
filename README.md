@@ -1,180 +1,168 @@
-# 🌌 AETHERIA — PGSharp Luxury Digital Storefront
+# 🌌 AETHERIA — Studio-Grade PGSharp Digital Storefront
 
-A state-of-the-art, high-converting digital product storefront built with **Next.js 14 (App Router)**, **GSAP Scrollytelling**, **Hardware-Accelerated 1440p Video Engine**, and **Atomic AES-256-GCM License Key Delivery** across UPI (India) and PayPal (International).
+A luxury digital license key storefront engineered with **Next.js 14 (App Router)**, **GSAP Scrollytelling**, **Modular Multi-Theme Engine**, and **Atomic AES-256-GCM Digital Key Delivery** across **Direct UPI QR (India)** and **PayPal (International)**.
 
 ---
 
 ## 📑 Table of Contents
 1. [Project Overview & Capabilities](#-project-overview--capabilities)
-2. [Cinematic Scrollytelling Architecture](#-cinematic-scrollytelling-architecture)
-3. [Video Engineering & Zero-Lag Optimizations](#-video-engineering--zero-lag-optimizations)
-4. [E-Commerce & Payment Systems](#-e-commerce--payment-systems)
-5. [Security & Atomic Key Allocation](#-security--atomic-key-allocation)
-6. [Complete Tech Stack](#-complete-tech-stack)
-7. [Directory Structure](#-directory-structure)
-8. [API Route Specifications](#-api-route-specifications)
-9. [Setup & Environment Variables](#-setup--environment-variables)
-10. [Deployment & Production Build](#-deployment--production-build)
+2. [Multi-Theme Architecture (The 3 Official Themes)](#-multi-theme-architecture)
+3. [Payment Systems & Instant Key Dispatch](#-payment-systems--instant-key-dispatch)
+4. [Security & Atomic Key Allocation](#-security--atomic-key-allocation)
+5. [Complete Tech Stack](#-complete-tech-stack)
+6. [Clean Directory Structure](#-clean-directory-structure)
+7. [API Route Specifications](#-api-route-specifications)
+8. [Setup & Environment Variables](#-setup--environment-variables)
+9. [Deployment & Production Build](#-deployment--production-build)
 
 ---
 
 ## 🚀 Project Overview & Capabilities
 
-**AETHERIA** is engineered to deliver an award-winning user experience for purchasing PGSharp Android Standard license keys.
+**AETHERIA** is engineered to deliver an award-winning user experience for purchasing PGSharp Android Standard 30-day license keys.
 
-### 🌟 Key Highlights & Achievements
-- **Full-Screen Cinematic Preloader (`Preloader.tsx`)**: 3-phase GSAP splash intro with glowing delta emblem, character-split 'AETHERIA' reveal, cyber pulse line, and smooth shutter exit with sessionStorage persistence and zero FOUC.
+### 🌟 Key Highlights
+- **Multi-Theme Engine (`src/config/theme.ts` & `src/themes/`)**: 3 fully-isolated storefront themes (Obsidian, Motion, Nexus) switchable via single config variable or instant URL query parameter (`?theme=...`).
+- **Direct Native UPI Payment Flow**: Dynamic paise allocation (e.g., ₹180.14) preventing collision, instant QR code rendering via `qrcode.react`, and manual UTR verification or bank SMS auto-match.
+- **Discord 1-Click Approval System**: Instant admin webhook notification with cryptographic 1-click `[Approve]` and `[Reject]` action buttons.
+- **PayPal Client & Webhook Integration**: Native PayPal JS SDK modal checkout with real-time server capture and IPN webhook listener.
+- **Customer Order Vault (`CustomerVaultModal.tsx`)**: Header lookup widget allowing customers to recover their purchased keys and view receipt history using their email or phone number.
+- **Full-Screen Cinematic Preloader (`Preloader.tsx`)**: 3-phase GSAP splash intro with glowing delta emblem, character-split reveal, cyber pulse line, and sessionStorage persistence.
 - **Ambient Background Audio Subsystem (`AmbientAudioContext.tsx`)**: Global audio singleton (`/audio/ambient.mp3`) capped at 25% target volume with smooth 300ms cross-fading ramps and frosted HUD controls.
-- **3-Scene Pinned Scrollytelling**: 550vh timeline scrubbed with GSAP ScrollTrigger and initial hero reveal entrance timeline.
-- **Dual-Player Optical Dissolve Loop (`DissolveSceneVideo`)**: Eliminates hard cuts on video loops with native `onTimeUpdate` hardware event triggers (90%+ CPU reduction).
-- **Zero-Lag React & GSAP Engine**: State reconciliation bailout guards on scroll, `anticipatePin: 1`, `invalidateOnRefresh: true`, and tab visibility throttling (`visibilitychange`).
-- **Redesigned Luxury Order Success Portal (`/order-success/[orderId]`)**: Holographic encrypted key vault with click-to-reveal blur, 1-click copy confetti burst, 4-column receipt breakdown, 1-on-1 VIP support, and 4-step activation guide.
-- **SpaceX-Inspired Split HUD Top Bar**: Floating left brand emblem and compact right frosted capsule nav, keeping the center 100% unobstructed.
-- **Dual Payment Rail**: Razorpay (UPI, GPay, PhonePe, Paytm, Cards) for India (INR) and PayPal REST API for Worldwide (USD).
-- **Atomic Key Allocation**: Firebase Firestore transactions with zero-trust AES-256-GCM encryption at rest.
-- **Live Inventory & Smart Restock Waitlist**: Real-time stock counters with auto-purging waitlist lifecycle.
-- **Admin Command Center**: Protected dashboard for bulk key uploads, inventory counts, and transaction audits.
+- **Post-Purchase Key Reveal (`/order-success/[orderId]`)**: Holographic encrypted key vault with click-to-reveal blur, 1-click copy confetti burst, detailed receipt breakdown, and 4-step PGSharp activation guide.
+- **Live Inventory & Smart Restock Waitlist**: Real-time stock counters with auto-purging waitlist lifecycle and admin restock notifications.
+- **Admin Command Center (`/admin`)**: Protected dashboard for bulk key uploads, inventory counts, pending payment approvals, coupon management, and transaction audits.
 
 ---
 
-## 🎬 Cinematic Scrollytelling Architecture
+## 🎨 Multi-Theme Architecture
 
-The landing page features a **550vh continuous master runway** pinned to the viewport:
+The storefront features 3 official theme identities:
 
-```
-[0% - 36%] ── Scene 1: Mewtwo Cryo-Awakening (/videos/scene5.mp4)
-            └─ HUD: "01 / 03 • AWAKEN ACCESS" | "Break every limit."
-            └─ CTA: "Buy License Key →" (smooth auto-scroll to plans)
+| Theme ID | Official Name | Engine / Codename | Best For | Status |
+|---|---|---|---|---|
+| `obsidian` | **Aetheria Obsidian** | High-Res Frame Scrollytelling Engine | Mobile, budget phones, zero GPU load, instant load | **Active Default** |
+| `motion` | **Aetheria Motion** | 1440p Live Video Scrollytelling Runway | Desktop immersion, high-performance GPUs | **Backup 1** |
+| `nexus` | **Aetheria Nexus** | Classic Modular Cyber E-Commerce Grid | Traditional direct buyers, classic vertical layout | **Backup 2** |
 
-[36% - 68%] ── Scene 2: Global Shibuya Expedition (/videos/Scene2.mp4)
-            └─ HUD: "02 / 03 • GLOBAL EXPEDITION" | "Roam anywhere."
-            └─ Badges: GPS Joystick • Auto-Walk • Cooldown Radar
+### Live Preview via URL
+Preview any theme in real-time by appending `?theme=<id>`:
+- **Obsidian**: `http://localhost:3000/` or `http://localhost:3000/?theme=obsidian`
+- **Motion**: `http://localhost:3000/?theme=motion`
+- **Nexus**: `http://localhost:3000/?theme=nexus`
 
-[68% - 100%] ─ Scene 3: Combat Showdown Arena (/videos/Scene3.mp4)
-            └─ HUD: "03 / 03 • COMBAT SHOWDOWN" | "Master every raid."
-            └─ UI: Obsidian Frosted Glass Pricing Cards (₹180 / ₹340)
-            └─ Collapsible Trainer FAQ & Support Drawer (5 Key Questions)
+### Permanent Theme Switch
+In [`src/config/theme.ts`](file:///f:/Pgsharp/src/config/theme.ts):
+```typescript
+export const ACTIVE_STORE_THEME: StoreThemeId = 'obsidian'; // 'obsidian' | 'motion' | 'nexus'
 ```
 
-### Aesthetic & HUD Layering
-- **Theatrical Perimeter Vignette**: Multi-layered radial gradients and inset shadows (`box-shadow: inset 0 0 100px...`) framing the viewport.
-- **Ambient Mist Particles (`AmbientMistParticles.tsx`)**: Lightweight 20-particle concentric alpha motes floating across the screen.
-- **Floating Social Dock**: Frosted dark capsule in the bottom-right corner with direct profile links for Discord and Reddit.
-
 ---
 
-## ⚡ Video Engineering & Zero-Lag Optimizations
-
-High-resolution 1440p (2560x1440) video playback has been optimized for silky-smooth 60 FPS performance:
-
-### 1. Dual-Player Optical Dissolve Engine (`DissolveSceneVideo`)
-- Rather than abruptly snapping from end-to-beginning, each scene coordinates two synchronized hardware video players (`Player A` and `Player B`).
-- At `currentTime >= duration - 0.35s`, the alternate player starts from `0s` and executes a smooth **300ms optical cross-fade** (`opacity: 0 → 1`), creating a continuous, perpetual loop.
-
-### 2. Smart Active-Only GPU Decoding (67% VRAM Reduction)
-- Only the **currently visible scene** decodes video.
-- Off-screen scenes are paused in GPU memory, preventing hardware decode saturation.
-
-### 3. Direct Hardware Passthrough (Zero-Copy)
-- Removed real-time CSS filters on the `<video>` elements, enabling Direct3D 11, NVDEC, and Metal hardware overlay planes to stream directly to the screen without compositor pixel shader overhead.
-
-### 4. GPU Layer Isolation on UI Overlays
-- Pricing cards use obsidian dark glass (`bg-neutral-950/85 backdrop-blur-md transform-gpu will-change-transform`), preventing heavy 3.7-million-pixel Gaussian blur calculations on top of 1440p video.
-
----
-
-## 💳 E-Commerce & Payment Systems
+## 💳 Payment Systems & Instant Key Dispatch
 
 | Plan Name | Device Slots | Price (INR) | Price (USD) | Delivery Speed | Features |
 |---|---|---|---|---|---|
 | **1 Device Plan** | 1 Device | ₹180 | $1.99 | < 10 Seconds | Teleport, Joystick, 100% IV Feed, Fast Catch, Auto-Walk |
 | **2 Devices Plan** (Popular) | 2 Devices | ₹340 | $3.99 | < 10 Seconds | Multi-device sync, Raid Radar, Spawn Booster, Priority Support |
 
-### Payment Flow (Domestic INR — UPI / Razorpay)
-1. User clicks **Buy Key** → `CheckoutModal` opens with plan summary.
-2. User enters Email + Phone Number.
-3. Client requests `POST /api/checkout/upi` → Razorpay order created & pending Firestore order recorded.
-4. Razorpay standard checkout opens (GPay, PhonePe, Paytm, BHIM, UPI QR, NetBanking, Cards).
-5. User completes payment → Webhook `/api/webhooks/upi` verifies HMAC-SHA256 signature.
-6. **Atomic Firestore transaction** assigns and decrypts the license key.
-7. Resend API sends order receipt with key; browser redirects to `/order-success/[orderId]`.
+### 1. Direct UPI Flow (India — INR)
+1. User selects plan in `CheckoutModal`.
+2. Server allocates dynamic paise offset via `allocateUniquePaise()` (e.g. ₹180.14) to uniquely identify the transfer without third-party gateway fees.
+3. User scans dynamic UPI QR or taps deep-link for GPay, PhonePe, or Paytm.
+4. User submits 12-digit UTR transaction reference.
+5. System verifies transaction via SMS webhook auto-matching or sends instant Discord alert with 1-click `[Approve]` button.
+6. Upon approval, an atomic Firestore transaction decrypts and assigns the key, dispatches an HTML email via Resend, and reveals the key on screen.
 
-### Payment Flow (International USD — PayPal)
-1. User selects USD currency tab in `CheckoutModal`.
-2. Client requests `POST /api/checkout/paypal` → PayPal REST order created.
-3. User redirects to PayPal approval window.
-4. On redirect to `/order-success/[orderId]?token=...`, server automatically executes `POST /api/checkout/paypal/capture`.
-5. Atomic transaction assigns key and triggers confetti on key reveal.
+### 2. PayPal Flow (Worldwide — USD)
+1. User switches to USD tab in `CheckoutModal`.
+2. PayPal SDK loads native buttons inside the modal.
+3. On transaction authorization, `/api/checkout/paypal/capture` captures payment.
+4. License key is immediately assigned via atomic Firestore transaction and displayed.
 
 ---
 
 ## 🔒 Security & Atomic Key Allocation
 
-### 1. AES-256-GCM Encryption at Rest (`crypto.ts`)
-- All PGSharp license keys stored in Firebase Cloud Firestore are encrypted with **AES-256-GCM** using a 32-byte master key.
-- Raw plaintext keys never touch the database or public client APIs. Decryption occurs strictly in server-side memory upon payment verification.
+### 1. Zero-Trust AES-256-GCM Encryption (`crypto.ts`)
+- All license keys stored in Firebase Cloud Firestore are encrypted with **AES-256-GCM** using a 32-byte secret key and 16-byte initialization vector.
+- Plaintext keys never touch public APIs or client-side storage until verified payment release.
 
-### 2. Race-Condition Proof Atomic Transactions (`transaction.ts`)
-- Key assignment utilizes **Firestore Atomic Transactions** with optimistic concurrency control:
-  1. Read pending order.
-  2. Query first available key (`status == 'available'`).
-  3. Re-verify key availability within transaction lock.
-  4. Write `key.status = 'sold'`, `key.order_id = orderId`.
-  5. Write `order.payment_status = 'paid'`, `order.delivered_key = decryptedKey`.
-- If concurrent payments arrive simultaneously, Firestore guarantees zero double-allocation.
+### 2. Race-Condition Proof Atomic Transactions (`keyAllocator.ts`)
+- Key assignment runs inside **Firestore Atomic Transactions**:
+  1. Verifies order is pending.
+  2. Finds available key with matching slot capability.
+  3. Locks and marks key as `sold` with timestamp and `orderId`.
+  4. Updates order to `paid` with `delivered_key = decryptedKey`.
+  5. Guarantees zero double-allocation even during traffic spikes.
 
-### 3. Webhook Authentication
-- **Razorpay**: HMAC-SHA256 signature validated against raw request payload.
-- **PayPal**: Direct REST signature verification with PayPal OAuth2 servers.
+### 3. Cryptographic Admin Approval Tokens (`approvalToken.ts`)
+- Discord webhook approve/reject buttons use HMAC-SHA256 signed action tokens with 24-hour expiration, preventing replay attacks or unauthorized approvals.
 
 ---
 
 ## 🛠️ Complete Tech Stack
 
-- **Core Framework**: Next.js 14.2.5 (App Router, Server Actions, TypeScript)
-- **Animation & Scrollytelling**: GSAP 3.12 + ScrollTrigger, Canvas Confetti
-- **Styling**: Tailwind CSS v3 + Lucide Icons + Custom Obsidian Glass Tokens
-- **Database & Auth**: Firebase Cloud Firestore, Firebase Admin SDK, Firebase Auth (Google OAuth)
-- **Payment Gateways**: Razorpay Node.js SDK, PayPal Checkout REST SDK
-- **Email Delivery**: Resend API (Responsive Dark Mode HTML Order Receipts)
-- **Cryptography**: Node.js `crypto` (AES-256-GCM)
+- **Framework**: Next.js 14.2.5 (App Router, Server Actions, TypeScript)
+- **Animation & Motion**: GSAP 3.15 + ScrollTrigger, Canvas Confetti
+- **Styling**: Tailwind CSS v3, Lucide Icons, Glassmorphic Tokens
+- **Database & Auth**: Firebase Cloud Firestore, Firebase Admin SDK v12, Firebase Auth
+- **Payments**: Direct Native UPI QR, PayPal Checkout SDK (`@paypal/paypal-js`)
+- **Email Delivery**: Resend API
+- **Cryptography**: Node.js `crypto` (AES-256-GCM, HMAC-SHA256)
 
 ---
 
-## 📂 Directory Structure
+## 📂 Clean Directory Structure
 
 ```
-f:/Pgsharp/
-├── public/
-│   ├── videos/
-│   │   ├── scene5.mp4          # Scene 1: Mewtwo Awakening (1440p)
-│   │   ├── Scene2.mp4          # Scene 2: Shibuya Street Expedition (1440p)
-│   │   └── Scene3.mp4          # Scene 3: Charizard vs Greninja Battle Arena (1440p)
-│   └── icon.svg                # Brand Vector Favicon
-├── src/
-│   ├── app/
-│   │   ├── page.tsx            # Main Landing Page
-│   │   ├── layout.tsx          # Root Layout & Metadata
-│   │   ├── admin/page.tsx      # Protected Admin Dashboard
-│   │   ├── order-success/      # Post-Purchase Key Reveal & Activation Guide
-│   │   ├── contact/page.tsx    # Direct Support Channels (Discord, Reddit)
-│   │   ├── privacy/page.tsx    # Privacy Policy
-│   │   ├── terms/page.tsx      # Terms of Service
-│   │   ├── refund/page.tsx     # Refund & Replacement Policy
-│   │   └── api/                # 11 REST API Endpoints
-│   ├── components/
-│   │   ├── CinematicScrollExperience.tsx # Master 3-Scene GSAP Experience
-│   │   ├── storefront/         # Header (Split HUD), CheckoutModal, RestockNotifyModal
-│   │   ├── interactive/        # AmbientMistParticles, ParticleBurst, PokeballOrb
-│   │   ├── success/            # OrderSuccessView, KeyReveal, ActivationGuide
-│   │   └── admin/              # KeyUploader, StockDashboard, TransactionTable
-│   ├── lib/
-│   │   ├── constants.ts        # Pricing, Plans, URLs, Social Links
-│   │   ├── crypto.ts           # AES-256-GCM Encrypt/Decrypt
-│   │   ├── firebase/           # Firebase Client & Admin SDK Singletons
-│   │   ├── firestore/          # Atomic Transaction, Key Pool, Order CRUD
-│   │   └── email/resend.ts     # Resend Transactional Email Templates
-│   └── types/                  # Order, Plan, Key TypeScript Interfaces
+src/
+├── app/
+│   ├── page.tsx                      # Dynamic Suspense Theme Router
+│   ├── layout.tsx                    # Root Layout, Metadata & Audio Provider
+│   ├── admin/page.tsx                # Admin Dashboard (Keys, Orders, Approvals)
+│   ├── order-success/[orderId]/      # Post-Purchase Key Vault & Activation
+│   ├── contact/                      # Support Channels (Discord, Telegram, Reddit)
+│   ├── privacy/, terms/, refund/     # Legal Policies
+│   └── api/                          # REST API Endpoints
+├── config/
+│   └── theme.ts                      # Central Theme Registry & Switcher
+├── themes/
+│   ├── index.ts                      # Barrel Export & Theme Resolver
+│   ├── AetheriaObsidian.tsx          # Obsidian Theme Wrapper
+│   ├── AetheriaMotion.tsx            # Motion Theme Wrapper
+│   └── AetheriaNexus.tsx             # Nexus Theme Wrapper
+├── components/
+│   ├── CinematicScrollExperience.tsx # Core Scrollytelling Engine
+│   ├── storefront/
+│   │   ├── Header.tsx                # Split HUD Navigation & Audio Controls
+│   │   ├── CheckoutModal.tsx         # Unified UPI & PayPal Payment Modal
+│   │   ├── RestockNotifyModal.tsx    # Inventory Restock Email Waitlist
+│   │   ├── Preloader.tsx             # 3-Phase GSAP Cinematic Intro
+│   │   └── StaticStorefrontExperience.tsx # Nexus Cyberpunk Grid Storefront
+│   ├── vault/
+│   │   └── CustomerVaultModal.tsx    # Header Key Lookup & Order History
+│   ├── success/
+│   │   ├── OrderSuccessView.tsx      # Success Portal Container
+│   │   ├── KeyReveal.tsx             # Holographic Key Reveal Box
+│   │   ├── ActivationGuide.tsx       # 4-Step PGSharp Tutorial
+│   │   └── ReviewSubmissionWidget.tsx# Post-Purchase Review Box
+│   ├── admin/                        # 8 Admin Management Panels
+│   └── interactive/
+│       ├── AmbientMistParticles.tsx  # Floating Atmosphere Particles
+│       └── ParticleBurst.tsx         # Confetti & Click Particles
+├── context/
+│   └── AmbientAudioContext.tsx       # Global Background Audio Subsystem
+├── lib/
+│   ├── constants.ts                  # Plans, Bank VPAs, Links
+│   ├── crypto.ts                     # AES-256-GCM Encryption Engine
+│   ├── services/keyAllocator.ts      # Atomic Key Slot & Pool Service
+│   ├── orders/                       # Approval Tokens & Paise Allocator
+│   ├── notifications/discordAdmin.ts # Discord Webhook & Alerts
+│   ├── email/resend.ts               # Transactional Key Dispatch Email
+│   ├── firestore/                    # Cloud Firestore Typed Queries
+│   └── sms/bankSmsParser.ts          # Bank SMS Auto-Verification Parser
+└── types/                            # TypeScript Type Definitions
 ```
 
 ---
@@ -183,18 +171,26 @@ f:/Pgsharp/
 
 | Endpoint | Method | Purpose | Auth / Access |
 |---|---|---|---|
-| `/api/stock` | `GET` | Returns available key count per plan | Public |
+| `/api/stock` | `GET` | Returns available key inventory count | Public |
 | `/api/stock/[planId]` | `GET` | Returns stock for a specific plan | Public |
 | `/api/restock-notify` | `POST` | Registers email for restock notification | Public |
-| `/api/checkout/upi` | `POST` | Creates Razorpay order & pending Firestore record | Public |
-| `/api/checkout/upi/verify` | `POST` | Verifies Razorpay payment signature | Public |
-| `/api/checkout/paypal` | `POST` | Creates PayPal order & pending Firestore record | Public |
+| `/api/checkout/upi` | `POST` | Generates dynamic paise UPI order & pending record | Public |
+| `/api/checkout/upi/verify` | `POST` | Submits UTR for verification & admin notification | Public |
+| `/api/checkout/paypal` | `POST` | Creates PayPal order | Public |
 | `/api/checkout/paypal/capture` | `POST` | Captures authorized PayPal transaction | Public |
-| `/api/webhooks/upi` | `POST` | Razorpay webhook listener (`payment.captured`) | HMAC-SHA256 |
-| `/api/webhooks/paypal` | `POST` | PayPal webhook listener (`PAYMENT.CAPTURE.COMPLETED`) | PayPal Verify |
-| `/api/order/[orderId]` | `GET` | Returns sanitized order for Key Reveal screen | Public (ID masked) |
-| `/api/admin/keys` | `POST` | Bulk uploads & encrypts license keys | Admin UID + Secret |
-| `/api/admin/stats` | `GET` | Returns inventory counts & transaction statistics | Admin UID + Secret |
+| `/api/checkout/paypal/verify` | `POST` | Verifies PayPal transaction status | Public |
+| `/api/webhooks/paypal` | `POST` | PayPal IPN webhook listener | IPN Verified |
+| `/api/webhooks/upi` | `POST` | Bank SMS forwarder webhook for auto-credit | Secret Key |
+| `/api/admin/orders/quick-approve` | `GET` | Discord 1-click instant approval endpoint | HMAC Token |
+| `/api/admin/orders/quick-reject` | `GET` | Discord 1-click instant rejection endpoint | HMAC Token |
+| `/api/user/keys` | `POST` | Vault lookup: returns customer keys by email/phone | Public (Masked) |
+| `/api/coupons/validate` | `POST` | Validates promotional discount codes | Public |
+| `/api/reviews` | `GET`/`POST` | Customer review submissions & retrieval | Public |
+| `/api/order/[orderId]` | `GET` | Returns sanitized order for Key Reveal screen | Public (ID Masked) |
+| `/api/admin/keys` | `GET`/`POST`/`DELETE` | Bulk key pool management | Admin UID |
+| `/api/admin/orders/approve` | `POST` | Manual admin order approval | Admin UID |
+| `/api/admin/orders/reject` | `POST` | Manual admin order rejection | Admin UID |
+| `/api/admin/stats` | `GET` | Financial & stock analytics | Admin UID |
 
 ---
 
@@ -223,17 +219,17 @@ NEXT_PUBLIC_FIREBASE_APP_ID="1:123456789:web:abcdef"
 
 # Security & Key Encryption (32-byte Hex)
 KEY_ENCRYPTION_SECRET="generate-with-crypto-randomBytes-32"
-
-# Payment Gateways (Razorpay)
-RAZORPAY_KEY_ID="rzp_live_..."
-RAZORPAY_KEY_SECRET="your-razorpay-secret"
-RAZORPAY_WEBHOOK_SECRET="your-webhook-secret"
+APPROVAL_TOKEN_SECRET="your-approval-token-secret"
 
 # Payment Gateways (PayPal)
 NEXT_PUBLIC_PAYPAL_CLIENT_ID="your-paypal-client-id"
 PAYPAL_CLIENT_SECRET="your-paypal-secret"
 PAYPAL_WEBHOOK_ID="your-paypal-webhook-id"
 PAYPAL_ENVIRONMENT="live" # or sandbox
+
+# Notifications & Automation
+DISCORD_ADMIN_WEBHOOK_URL="https://discord.com/api/webhooks/..."
+SMS_FORWARDER_SECRET="your-sms-webhook-secret"
 
 # Transactional Email (Resend)
 RESEND_API_KEY="re_..."
@@ -248,14 +244,12 @@ ADMIN_API_SECRET="your-custom-admin-secret"
 
 ## 🚢 Deployment & Production Build
 
-To test and deploy the production build:
-
 ```bash
-# 1. Type-check and build production bundle
+# Build production bundle
 npm run build
 
-# 2. Start production server
+# Start production server
 npm run start
 ```
 
-Verified with **exit code 0** across all 15 static and dynamic routes.
+✅ **Verified with 0 errors across all 17 routes.**
