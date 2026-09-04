@@ -1,14 +1,68 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/storefront/Header';
 import { Preloader } from '@/components/storefront/Preloader';
-import { CinematicScrollExperience } from '@/components/CinematicScrollExperience';
-import { StaticStorefrontExperience } from '@/components/storefront/StaticStorefrontExperience';
+import {
+  AetheriaObsidian,
+  AetheriaMotion,
+  AetheriaNexus,
+  resolveStoreTheme,
+  StoreThemeId,
+} from '@/themes';
 import { CheckoutModal } from '@/components/storefront/CheckoutModal';
 import { RestockNotifyModal } from '@/components/storefront/RestockNotifyModal';
-import { PLANS, STOREFRONT_MODE } from '@/lib/constants';
+import { PLANS } from '@/lib/constants';
 import { Plan } from '@/types/plan';
+
+function StorefrontContent({
+  counts,
+  onBuyClick,
+  onNotifyClick,
+  waitlistedPlans,
+}: {
+  counts: Record<string, number>;
+  onBuyClick: (plan: Plan) => void;
+  onNotifyClick: (plan: Plan) => void;
+  waitlistedPlans: Record<string, boolean>;
+}) {
+  const searchParams = useSearchParams();
+  const themeParam = searchParams.get('theme');
+  const activeTheme: StoreThemeId = resolveStoreTheme(themeParam);
+
+  if (activeTheme === 'motion') {
+    return (
+      <AetheriaMotion
+        stockCounts={counts}
+        onBuyClick={onBuyClick}
+        onNotifyClick={onNotifyClick}
+        waitlistedPlans={waitlistedPlans}
+      />
+    );
+  }
+
+  if (activeTheme === 'nexus') {
+    return (
+      <AetheriaNexus
+        stockCounts={counts}
+        onBuyClick={onBuyClick}
+        onNotifyClick={onNotifyClick}
+        waitlistedPlans={waitlistedPlans}
+      />
+    );
+  }
+
+  // Default: Aetheria Obsidian (Image Scrollytelling Engine)
+  return (
+    <AetheriaObsidian
+      stockCounts={counts}
+      onBuyClick={onBuyClick}
+      onNotifyClick={onNotifyClick}
+      waitlistedPlans={waitlistedPlans}
+    />
+  );
+}
 
 function useStockCounts() {
   const [counts, setCounts] = useState<Record<string, number>>({});
@@ -128,24 +182,24 @@ export default function HomePage() {
       {/* Top Glassmorphic Navigation */}
       <Header />
 
-      {/* Conditionally Render Experience based on STOREFRONT_MODE */}
-      {STOREFRONT_MODE === 'static' ? (
-        /* Zero-Lag, Instant-Loading 4K Cyberpunk Static Experience */
-        <StaticStorefrontExperience
-          stockCounts={counts}
+      {/* Multi-Theme Storefront Engine with URL Switcher & Zero-Flicker Fallback */}
+      <Suspense
+        fallback={
+          <AetheriaObsidian
+            stockCounts={counts}
+            onBuyClick={handleBuyClick}
+            onNotifyClick={handleNotifyClick}
+            waitlistedPlans={waitlistedPlans}
+          />
+        }
+      >
+        <StorefrontContent
+          counts={counts}
           onBuyClick={handleBuyClick}
           onNotifyClick={handleNotifyClick}
           waitlistedPlans={waitlistedPlans}
         />
-      ) : (
-        /* Crafted Scrollytelling Experience with Pinned Viewport & Docked HUD Capsules */
-        <CinematicScrollExperience
-          stockCounts={counts}
-          onBuyClick={handleBuyClick}
-          onNotifyClick={handleNotifyClick}
-          waitlistedPlans={waitlistedPlans}
-        />
-      )}
+      </Suspense>
 
       {/* Checkout Modal (100% existing UPI/PayPal & key allocation logic) */}
       <CheckoutModal

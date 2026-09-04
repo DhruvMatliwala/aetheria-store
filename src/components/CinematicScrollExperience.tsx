@@ -205,6 +205,7 @@ interface CinematicScrollProps {
   onBuyClick?: (plan: Plan) => void;
   onNotifyClick?: (plan: Plan) => void;
   waitlistedPlans?: Record<string, boolean>;
+  mediaMode?: 'image' | 'video';
 }
 
 export function CinematicScrollExperience({
@@ -212,6 +213,7 @@ export function CinematicScrollExperience({
   onBuyClick,
   onNotifyClick,
   waitlistedPlans = {},
+  mediaMode = CINEMATIC_MEDIA_MODE,
 }: CinematicScrollProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -249,7 +251,7 @@ export function CinematicScrollExperience({
   // Preload Scene 2 and 3 images into browser cache so scrub cross-dissolve is instantaneous
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (CINEMATIC_MEDIA_MODE === 'image') {
+    if (mediaMode === 'image') {
       const img2 = new window.Image();
       img2.src = '/images/scenes/scene2.webp';
       const img3 = new window.Image();
@@ -259,7 +261,7 @@ export function CinematicScrollExperience({
 
   // Anticipatory Lookahead prewarmer: quietly buffers next video in background (video mode only)
   const prewarmVideo = useCallback((targetIdx: number) => {
-    if (CINEMATIC_MEDIA_MODE !== 'video') return;
+    if (mediaMode !== 'video') return;
     if (prewarmedRef.current[targetIdx]) return;
     prewarmedRef.current[targetIdx] = true;
     const vid = videoElementsRef.current[targetIdx];
@@ -272,7 +274,7 @@ export function CinematicScrollExperience({
   // Zero-overhead video decoder switcher (video mode only):
   // Plays video once, pauses at last frame, and replays fresh from start when returning!
   const switchVideo = useCallback((targetIdx: number) => {
-    if (CINEMATIC_MEDIA_MODE !== 'video') return;
+    if (mediaMode !== 'video') return;
     if (activeSceneRef.current === targetIdx) {
       return;
     }
@@ -301,7 +303,7 @@ export function CinematicScrollExperience({
 
   // Safe initial autoplay for Scene 0 only, plus gentle gesture unlocker (video mode only)
   useEffect(() => {
-    if (CINEMATIC_MEDIA_MODE !== 'video') return;
+    if (mediaMode !== 'video') return;
     switchVideo(0);
 
     const unlockFirstVideo = () => {
@@ -331,7 +333,7 @@ export function CinematicScrollExperience({
 
   // Update active scene for GPU video decoding management with exact React bailout guard
   const handleScrollProgress = useCallback((progress: number) => {
-    if (CINEMATIC_MEDIA_MODE !== 'video') return;
+    if (mediaMode !== 'video') return;
     let newIdx = 0;
     if (progress < 0.28) {
       newIdx = 0;
@@ -524,7 +526,7 @@ export function CinematicScrollExperience({
             >
               <SceneMedia
                 item={item}
-                mediaMode={CINEMATIC_MEDIA_MODE}
+                mediaMode={mediaMode}
                 priority={idx === 0}
                 preload={idx === 0 ? 'auto' : 'none'}
                 onVideoMount={(el) => {

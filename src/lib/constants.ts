@@ -1,10 +1,9 @@
 import { Plan } from '@/types/plan';
+import { ACTIVE_STORE_THEME } from '@/config/theme';
 
-// Storefront Media Engine Mode:
-// 'image' = Zero-lag, crystal-clear paused video frames (0% GPU video decoding load, ultra-smooth 60fps scroll on all mobile and low-end devices)
-// 'video' = Live looping MP4 videos in the 3-scene scrollytelling runway (can be toggled back instantly)
-export const CINEMATIC_MEDIA_MODE: 'image' | 'video' = 'image';
-export const STOREFRONT_MODE: 'scrollytelling' | 'static' = 'scrollytelling';
+// Storefront Media Engine Mode (derived from central ACTIVE_STORE_THEME in src/config/theme.ts):
+export const CINEMATIC_MEDIA_MODE: 'image' | 'video' = ACTIVE_STORE_THEME === 'motion' ? 'video' : 'image';
+export const STOREFRONT_MODE: 'scrollytelling' | 'static' = ACTIVE_STORE_THEME === 'nexus' ? 'static' : 'scrollytelling';
 
 export const PLANS: Plan[] = [
   {
