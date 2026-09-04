@@ -68,6 +68,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Also merge URL query parameters (allows passing ?secret=... in webhook URL)
+    const { searchParams } = new URL(request.url);
+    searchParams.forEach((v, k) => {
+      if (!body[k]) {
+        body[k] = v;
+      }
+    });
+
+    const headerSecret = request.headers.get('x-secret') || request.headers.get('x-api-key');
+    if (headerSecret && !body.secret) {
+      body.secret = headerSecret;
+    }
+
     return handleIncomingSms(body);
   } catch (err: any) {
     console.error('[webhooks/upi] Error processing POST webhook:', err);
@@ -90,12 +103,17 @@ async function handleIncomingSms(data: Record<string, any>) {
     return NextResponse.json({ error: 'Unauthorized. Invalid secret.' }, { status: 401 });
   }
 
-  // Extract raw message or pre-parsed fields (supports SMS and notification triggers)
+  // Extract raw message or pre-parsed fields (supports SMS Forwarder, MacroDroid, etc.)
   const rawMessage = (
     data.message ||
+    data.content ||
+    data.msg ||
     data.body ||
     data.text ||
     data.sms ||
+    data.smsContent ||
+    data.sms_body ||
+    data.text_body ||
     data.notification ||
     data.not_text ||
     data.notification_text ||
