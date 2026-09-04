@@ -24,6 +24,7 @@ import {
   X,
   LogOut,
   Star,
+  Bell,
 } from 'lucide-react';
 import { KeyUploader } from '@/components/admin/KeyUploader';
 import { StockDashboard } from '@/components/admin/StockDashboard';
@@ -81,6 +82,30 @@ export default function AdminPage() {
   const [showSecretModal, setShowSecretModal] = useState(false);
   const [secretInput, setSecretInput] = useState('');
   const [currentTime, setCurrentTime] = useState<string>('');
+  const [testingWebhook, setTestingWebhook] = useState(false);
+
+  async function handleTestWebhook() {
+    setTestingWebhook(true);
+    try {
+      const res = await fetch('/api/admin/test-discord', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-secret': adminToken,
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success('🔔 Discord Webhook test sent! Check your channel.');
+      } else {
+        toast.error(data.error || 'Failed to send test alert. Check DISCORD_ADMIN_WEBHOOK_URL.');
+      }
+    } catch (err: any) {
+      toast.error('Network error testing webhook.');
+    } finally {
+      setTestingWebhook(false);
+    }
+  }
 
   // Live Real-Time Clock (IST)
   useEffect(() => {
@@ -586,6 +611,18 @@ export default function AdminPage() {
 
             {/* Right Action Icons & Live Clock */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleTestWebhook}
+                disabled={testingWebhook}
+                className="bg-[#0c1424] border-[#1b2b48] hover:bg-[#142038] text-slate-200 text-xs px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5"
+                title="Send a test ping to your Discord admin webhook"
+              >
+                <Bell size={13} className={testingWebhook ? 'animate-bounce text-amber-400' : 'text-amber-400'} />
+                <span className="hidden sm:inline">{testingWebhook ? 'Testing...' : 'Test Webhook'}</span>
+              </Button>
+
               <Button
                 variant="secondary"
                 size="sm"

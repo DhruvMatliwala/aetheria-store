@@ -1,6 +1,7 @@
 import { getAdminFirestore } from '@/lib/firebase/admin';
 import { decryptKey } from '@/lib/crypto';
 import { incrementCouponUsage } from '@/lib/firestore/coupons';
+import { sendLowStockAlert } from '@/lib/notifications/discordAdmin';
 import { LicenseKeyDoc } from '@/types/key';
 import { Order } from '@/types/order';
 
@@ -48,7 +49,7 @@ export async function allocateKeySlot(
   const orderRef = db.collection('orders').doc(orderId);
   const keysRef = db.collection('keys');
 
-  return await db.runTransaction(async (txn) => {
+  const result: SlotAllocationResult = await db.runTransaction<SlotAllocationResult>(async (txn): Promise<SlotAllocationResult> => {
     // ── 1. Validate Order State ──────────────────────────────────────────────
     const orderSnap = await txn.get(orderRef);
     if (!orderSnap.exists) {
@@ -175,6 +176,47 @@ export async function allocateKeySlot(
       status: newStatus,
     };
   });
+
+  // ── 7. Asynchronously verify remaining inventory and dispatch Low-Stock Alert if <= 3 ────
+  checkLowStockAfterAllocation(result.assignedSlots === 2 ? '1_month_2_device' : '1_month_1_device').catch((err) => {
+    console.warn('[keyAllocator] Low stock alert check error:', err);
+  });
+
+  return result;
+}
+
+/**
+ * Checks remaining slot inventory for a plan tier and fires a Discord alert when capacity falls to <= 3.
+ */
+async function checkLowStockAfterAllocation(planType: string): Promise<void> {
+  try {
+    const db = getAdminFirestore();
+    const snap = await db.collection('keys').where('status', '==', 'available').get();
+    const requiredSlots = getRequiredSlotsForPlan(planType);
+    let count = 0;
+
+    snap.docs.forEach((doc) => {
+      const data = doc.data() as LicenseKeyDoc;
+      const total = data.totalSlots ?? (data.source === 'web_3slot' ? 3 : 2);
+      const used = data.usedSlots ?? 0;
+      const remaining = data.remainingSlots ?? Math.max(0, total - used);
+      if (requiredSlots === 1) {
+        if (remaining > 0) count += remaining;
+      } else {
+        if (remaining >= requiredSlots) count++;
+      }
+    });
+
+    if (count <= 3) {
+      await sendLowStockAlert({
+        planType,
+        remainingKeysOrSlots: count,
+        threshold: 3,
+      });
+    }
+  } catch (err) {
+    console.error('[keyAllocator] Failed to verify low stock:', err);
+  }
 }
 
 /**

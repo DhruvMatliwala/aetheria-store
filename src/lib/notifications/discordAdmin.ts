@@ -187,3 +187,136 @@ export async function sendAdminOrderAlert(params: AdminOrderAlertParams): Promis
     console.error('[discordAdmin] Failed to send Discord admin alert:', err);
   }
 }
+
+export interface LowStockAlertParams {
+  planType: string;
+  remainingKeysOrSlots: number;
+  threshold?: number;
+}
+
+/**
+ * Dispatches an automated high-priority alert to Discord when stock drops below threshold (default: <= 3).
+ */
+export async function sendLowStockAlert(params: LowStockAlertParams): Promise<void> {
+  const webhookUrl =
+    process.env.DISCORD_ADMIN_WEBHOOK_URL ||
+    process.env.ADMIN_DISCORD_WEBHOOK_URL ||
+    process.env.DISCORD_WEBHOOK_URL;
+
+  if (!webhookUrl || !webhookUrl.startsWith('http')) {
+    return;
+  }
+
+  try {
+    const plan = PLAN_MAP[params.planType];
+    const planName = plan ? `${plan.name} (${plan.duration})` : params.planType;
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app').replace(/\/+$/, '');
+    const adminUrl = `${appUrl}/admin`;
+
+    const isCritical = params.remainingKeysOrSlots <= 1;
+
+    const payload = {
+      username: 'Aetheria Stock Guard',
+      avatar_url: 'https://aetheria-store.vercel.app/logo.png',
+      embeds: [
+        {
+          title: isCritical
+            ? '🚨 CRITICAL: License Key Stock Nearly Sold Out!'
+            : '⚠️ LOW INVENTORY WARNING — Restock Recommended',
+          description:
+            `Available stock for **${planName}** has dropped to **${params.remainingKeysOrSlots} remaining**.\n\n` +
+            `👉 **[Click Here to Open Admin Portal & Add Keys](${adminUrl})**`,
+          color: isCritical ? 0xef4444 : 0xf59e0b, // Red (#EF4444) or Amber (#F59E0B)
+          fields: [
+            {
+              name: '📦 Plan Tier',
+              value: `**${planName}**`,
+              inline: true,
+            },
+            {
+              name: '📉 Remaining Capacity',
+              value: `**${params.remainingKeysOrSlots} key(s)/slot(s)**`,
+              inline: true,
+            },
+            {
+              name: '⚙️ Threshold Rule',
+              value: `Alert triggered at ≤ ${params.threshold ?? 3}`,
+              inline: true,
+            },
+          ],
+          footer: {
+            text: 'Aetheria Store • Autonomous Inventory Monitor',
+          },
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    };
+
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    console.error('[discordAdmin] Failed to send low stock alert:', err);
+  }
+}
+
+/**
+ * Sends a test ping to the configured Discord webhook to verify integration.
+ */
+export async function sendTestDiscordAlert(): Promise<{ success: boolean; error?: string }> {
+  const webhookUrl =
+    process.env.DISCORD_ADMIN_WEBHOOK_URL ||
+    process.env.ADMIN_DISCORD_WEBHOOK_URL ||
+    process.env.DISCORD_WEBHOOK_URL;
+
+  if (!webhookUrl || !webhookUrl.startsWith('http')) {
+    return {
+      success: false,
+      error: 'DISCORD_ADMIN_WEBHOOK_URL environment variable is missing or invalid.',
+    };
+  }
+
+  try {
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app').replace(/\/+$/, '');
+    const adminUrl = `${appUrl}/admin`;
+
+    const res = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'Aetheria Alert Tester',
+        avatar_url: 'https://aetheria-store.vercel.app/logo.png',
+        embeds: [
+          {
+            title: '✅ Discord Webhook Connected Successfully!',
+            description:
+              `Your private Discord alert channel is properly connected to **Aetheria Store**.\n\n` +
+              `**You will receive instant alerts for:**\n` +
+              `• ⚡ **Manual UPI UTR Submissions** (with instant 1-Click Approve & Reject links)\n` +
+              `• 💰 **Completed Orders** (PayPal & Auto-UPI key dispatch logs)\n` +
+              `• ⚠️ **Low Inventory Warnings** (whenever stock drops to 3 or fewer keys)\n\n` +
+              `👉 **[Access Admin Portal](${adminUrl})**`,
+            color: 0x10b981, // Emerald #10B981
+            footer: {
+              text: 'Aetheria Store • Alert Verification',
+            },
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      }),
+    });
+
+    if (!res.ok) {
+      return {
+        success: false,
+        error: `Discord webhook rejected request with status ${res.status}: ${res.statusText}`,
+      };
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Network error sending to Discord webhook.' };
+  }
+}
