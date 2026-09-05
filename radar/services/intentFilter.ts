@@ -56,10 +56,21 @@ export function evaluateBuyerIntent(
     'has anyone got a key',
     'where to buy',
     'how to buy',
+    'where to get key',
+    'how to get a key',
     'looking for key',
     'looking for a key',
     'share key',
     'share slot',
+    'split key',
+    'split slot',
+    'split standard',
+    'share standard',
+    '1 slot',
+    'one slot',
+    'second slot',
+    '2nd slot',
+    'have 1 slot',
     'standard edition key',
     'pgsharp standard key',
     'need standard',
@@ -68,8 +79,15 @@ export function evaluateBuyerIntent(
     'can anyone give me a key',
     'can anyone share',
     'payment failed',
+    'payment declined',
+    'card declined',
+    'payment error',
+    'cant pay',
+    'cannot pay',
     'cannot buy key',
     'cant buy key',
+    'beli key',
+    'comprar key',
   ];
 
   const matchedPhrases: string[] = [];
@@ -80,8 +98,25 @@ export function evaluateBuyerIntent(
   }
 
   // Pair matching: (buyer intent verb) + (key / slot noun)
-  const buyerVerbs = ['need', 'want', 'buy', 'buying', 'purchase', 'looking for', 'searching for', 'spare', 'anyone have', 'anyone got'];
-  const keyNouns = ['key', 'keys', 'slot', 'slots', 'code', 'standard'];
+  const buyerVerbs = [
+    'need',
+    'want',
+    'buy',
+    'buying',
+    'purchase',
+    'looking for',
+    'searching for',
+    'spare',
+    'split',
+    'share',
+    'anyone have',
+    'anyone got',
+    'who sells',
+    'anyone selling',
+    'declined',
+    'failed',
+  ];
+  const keyNouns = ['key', 'keys', 'slot', 'slots', 'code', 'standard', 'license', 'activation'];
 
   let hasVerb = false;
   let hasNoun = false;
