@@ -182,10 +182,9 @@ async function handleIncomingSms(data: Record<string, any>) {
   utr = utr.replace(/\D/g, '').trim();
 
   console.log('[webhooks/upi] Inbound bridge received:', {
-    rawLength: rawMessage.length,
-    rawPreview: rawMessage.slice(0, 100),
+    sender: rawSender || 'Official Bank Header',
     parsedAmount: amount,
-    parsedUtr: utr || null,
+    parsedUtr: utr ? `***${utr.slice(-4)}` : null,
   });
 
   // Handle MacroDroid test pings
