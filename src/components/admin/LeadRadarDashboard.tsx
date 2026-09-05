@@ -74,6 +74,16 @@ function DiscordIcon({ className = "h-3 w-3" }: { className?: string }) {
   );
 }
 
+function RssIcon({ className = "h-3.5 w-3.5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 11a9 9 0 0 1 9 9" />
+      <path d="M4 4a16 16 0 0 1 16 16" />
+      <circle cx="5" cy="19" r="1" />
+    </svg>
+  );
+}
+
 interface LeadItem {
   id: string;
   source: 'reddit' | 'web' | 'forum' | 'telegram' | 'twitter' | 'youtube' | 'facebook' | 'threads' | 'instagram' | 'discord';
@@ -99,6 +109,8 @@ interface RadarConfigData {
   socialSearchQueries?: string[];
   googleAlertRssUrls: string[];
   telegramChannels: string[];
+  redditClientId?: string;
+  redditClientSecret?: string;
   highIntentKeywords: string[];
   generalKeywords: string[];
   excludeKeywords: string[];
@@ -778,7 +790,128 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
               </div>
             </div>
 
-            {/* 4. High-Intent Trigger Keywords */}
+            {/* 6. Google Alerts RSS Feeds (Direct Google Search Indexing) */}
+            <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-amber-900/40">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-amber-400 flex items-center gap-1.5 font-mono">
+                  <RssIcon className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Google Alerts RSS Feeds ({(config.googleAlertRssUrls || []).length})</span>
+                </label>
+                <a
+                  href="https://www.google.com/alerts"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-amber-400/90 hover:text-amber-300 flex items-center gap-1 font-mono underline"
+                >
+                  Create Alert ↗
+                </a>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Paste your Google Alert RSS feed link below (set <em>Deliver to: RSS feed</em> on google.com/alerts). Google crawls Twitter, YouTube, Reddit & forums 24/7.
+              </p>
+              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
+                {(config.googleAlertRssUrls || []).map((url, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-amber-800/60 bg-amber-950/50 px-2.5 py-1 text-xs font-medium text-amber-300 font-mono text-[11px]"
+                  >
+                    <span className="truncate max-w-[200px]">{url}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = config.googleAlertRssUrls || [];
+                        setConfig({
+                          ...config,
+                          googleAlertRssUrls: current.filter((_, idx) => idx !== i),
+                        });
+                      }}
+                      className="text-amber-400 hover:text-rose-400"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="https://www.google.com/alerts/feeds/..."
+                  value={newGoogleAlert}
+                  onChange={(e) => setNewGoogleAlert(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newGoogleAlert.trim()) {
+                      e.preventDefault();
+                      const clean = newGoogleAlert.trim();
+                      const current = config.googleAlertRssUrls || [];
+                      if (!current.includes(clean)) {
+                        setConfig({ ...config, googleAlertRssUrls: [...current, clean] });
+                      }
+                      setNewGoogleAlert('');
+                    }
+                  }}
+                  className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:border-amber-500 focus:outline-none font-mono"
+                />
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    if (newGoogleAlert.trim()) {
+                      const clean = newGoogleAlert.trim();
+                      const current = config.googleAlertRssUrls || [];
+                      if (!current.includes(clean)) {
+                        setConfig({ ...config, googleAlertRssUrls: [...current, clean] });
+                      }
+                      setNewGoogleAlert('');
+                    }
+                  }}
+                  className="border-[#1b2b48] text-amber-300 hover:border-amber-500"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* 7. Reddit Official API Credentials (Optional) */}
+            <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-orange-950/50">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-orange-400 flex items-center gap-1.5 font-mono">
+                  <span>Reddit API Credentials (Optional)</span>
+                </label>
+                <a
+                  href="https://www.reddit.com/prefs/apps"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-orange-400/90 hover:text-orange-300 flex items-center gap-1 font-mono underline"
+                >
+                  Create App (Free) ↗
+                </a>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Create a free script app at reddit.com/prefs/apps to crawl Reddit with 0 rate limits.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Reddit Client ID"
+                    value={config.redditClientId || ''}
+                    onChange={(e) => setConfig({ ...config, redditClientId: e.target.value })}
+                    className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:border-orange-500 focus:outline-none font-mono"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="password"
+                    placeholder="Reddit Client Secret"
+                    value={config.redditClientSecret || ''}
+                    onChange={(e) => setConfig({ ...config, redditClientSecret: e.target.value })}
+                    className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:border-orange-500 focus:outline-none font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 8. High-Intent Trigger Keywords */}
             <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-[#16243d]">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 font-mono">
