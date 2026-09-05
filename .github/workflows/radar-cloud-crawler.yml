@@ -1,0 +1,34 @@
+name: 🛰️ Lead Radar 24/7 Cloud Crawler
+
+on:
+  schedule:
+    # Runs every 30 minutes, 24/7/365 (runs even when PC is completely turned off)
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Allows manual 1-click trigger from GitHub Actions tab anytime
+
+jobs:
+  sweep-internet-leads:
+    name: 🌐 Sweep Whole Internet for PGSharp Buyers
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 📡 Run Autonomous Cloud Lead Sweep
+        run: |
+          echo "Initiating 24/7 multi-source lead sweep..."
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST "https://aetheria-store.vercel.app/api/admin/radar/scan" \
+            -H "Content-Type: application/json" \
+            -H "x-admin-secret: ${{ secrets.ADMIN_API_SECRET || 'DhruvSleekAdminSecret2026' }}")
+
+          HTTP_BODY=$(echo "$RESPONSE" | sed -e '$d')
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1 | cut -d':' -f2)
+
+          echo "Status: $HTTP_STATUS"
+          echo "Response: $HTTP_BODY"
+
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "::error::Lead Radar scan failed with status $HTTP_STATUS"
+            exit 1
+          fi
+
+          echo "✅ Lead Radar cloud sweep finished successfully. Fresh leads dispatched to Discord."
