@@ -1,5 +1,5 @@
 {
-  "discordWebhookUrl": "",
+  "discordWebhookUrl": "https://discord.com/api/webhooks/1545593335471677440/nqnvpczvQfSPIh3yrMZh8HF4jurgy046ygx8-YwYiYiOCinQwqD6GRp0eupCgS9TeQ6m",
   "storeUrl": "https://aetheria-store.vercel.app",
   "scanIntervalSeconds": 60,
   "maxLeadAgeHours": 24,

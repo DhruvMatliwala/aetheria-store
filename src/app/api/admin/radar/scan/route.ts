@@ -8,6 +8,8 @@ import { dispatchDiscordLead } from '../../../../../../radar/services/discordLea
 import { leadStorage } from '../../../../../../radar/store/leadStorage';
 import { LeadItem, RadarConfig } from '../../../../../../radar/types';
 
+import { getLiveRadarConfig } from '@/lib/firestore/radarConfig';
+
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -20,42 +22,12 @@ function isAdminRequest(request: NextRequest): boolean {
   );
 }
 
-function getRadarConfig(): RadarConfig {
-  const configPath = path.join(process.cwd(), 'radar', 'radar.config.json');
-  try {
-    const raw = fs.readFileSync(configPath, 'utf-8');
-    const config: RadarConfig = JSON.parse(raw);
-    if (!config.discordWebhookUrl || config.discordWebhookUrl.trim() === '') {
-      config.discordWebhookUrl = process.env.DISCORD_LEADS_WEBHOOK_URL || '';
-    }
-    return config;
-  } catch {
-    return {
-      discordWebhookUrl: process.env.DISCORD_LEADS_WEBHOOK_URL || '',
-      storeUrl: 'https://aetheria-store.vercel.app',
-      scanIntervalSeconds: 60,
-      maxLeadAgeHours: 24,
-      subreddits: ['PoGoAndroids', 'PGSharp', 'PokemonGoSpoofing'],
-      redditSearchQueries: ['pgsharp key', 'buy pgsharp'],
-      googleAlertRssUrls: [],
-      telegramChannels: ['pgsharp'],
-      highIntentKeywords: ['need key', 'buy', 'spare slot'],
-      generalKeywords: ['pgsharp key'],
-      excludeKeywords: ['ban wave'],
-      pitchTemplates: {
-        hot: "Hey @{author}! Saw you're looking for an instant PGSharp Standard key. I have verified keys available with instant auto-delivery, UPI/PayPal, and 24/7 activation support: {storeUrl}",
-        warm: "Hey @{author}! If you need a verified PGSharp Standard key or slot, check out our instant key dispatch store: {storeUrl}",
-      },
-    };
-  }
-}
-
 export async function POST(request: NextRequest) {
   if (!isAdminRequest(request)) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 
-  const config = getRadarConfig();
+  const config = await getLiveRadarConfig();
   const allDiscovered: LeadItem[] = [];
 
   // 1. Scan subreddits
