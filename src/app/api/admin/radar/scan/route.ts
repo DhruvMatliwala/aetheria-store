@@ -8,7 +8,7 @@ import { dispatchDiscordLead } from '../../../../../../radar/services/discordLea
 import { leadStorage } from '../../../../../../radar/store/leadStorage';
 import { LeadItem, RadarConfig } from '../../../../../../radar/types';
 
-import { getLiveRadarConfig } from '@/lib/firestore/radarConfig';
+import { getLiveRadarConfig, getPersistentSeenLeads, addPersistentSeenLeads } from '@/lib/firestore/radarConfig';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -66,16 +66,24 @@ export async function POST(request: NextRequest) {
     console.error('[AdminScan] Error scanning telegram:', err);
   }
 
-  // Apply recency filter (default: 48h)
-  const maxAgeMs = (config.maxLeadAgeHours || 48) * 60 * 60 * 1000;
+  // Apply recency filter (default: 24h)
+  const maxAgeMs = (config.maxLeadAgeHours || 24) * 60 * 60 * 1000;
   const cutoffTime = Date.now() - maxAgeMs;
+
+  // Load persistent seen lead IDs from Firestore to ensure 0 duplicates across cold starts
+  const persistentSeenIds = await getPersistentSeenLeads();
+  const newlySeenIds: string[] = [];
 
   const freshLeads: LeadItem[] = [];
   for (const lead of allDiscovered) {
     if (lead.timestamp >= cutoffTime) {
       freshLeads.push(lead);
     } else {
-      // Historical post: silently cache so it doesn't reprocess
+      // Historical post: cache so it never alerts in future
+      if (!persistentSeenIds.has(lead.id)) {
+        newlySeenIds.push(lead.id);
+        persistentSeenIds.add(lead.id);
+      }
       leadStorage.add(lead.id);
     }
   }
@@ -86,13 +94,21 @@ export async function POST(request: NextRequest) {
   // Dispatch any unsent leads to Discord (limit to top 5 in a manual GUI scan)
   let newlyDispatched = 0;
   for (const lead of freshLeads.slice(0, 5)) {
-    if (!leadStorage.has(lead.id)) {
+    const alreadySeen = leadStorage.has(lead.id) || persistentSeenIds.has(lead.id);
+    if (!alreadySeen) {
       if (config.discordWebhookUrl) {
         await dispatchDiscordLead(lead, config);
         newlyDispatched++;
+        newlySeenIds.push(lead.id);
       }
       leadStorage.add(lead.id);
+      persistentSeenIds.add(lead.id);
     }
+  }
+
+  // Persist all newly seen lead IDs to Firestore
+  if (newlySeenIds.length > 0) {
+    await addPersistentSeenLeads(newlySeenIds);
   }
 
   return NextResponse.json({

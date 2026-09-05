@@ -1,4 +1,4 @@
-import { getAdminFirestore } from '@/lib/firebase/admin';
+import { getAdminFirestore, admin } from '@/lib/firebase/admin';
 import { RadarConfig } from '../../../radar/types';
 import fs from 'fs';
 import path from 'path';
@@ -145,4 +145,38 @@ export async function saveLiveRadarConfig(newConfig: Partial<RadarConfig>): Prom
   }
 
   return merged;
+}
+
+const SEEN_LEADS_DOC = 'radar_seen_leads';
+
+export async function getPersistentSeenLeads(): Promise<Set<string>> {
+  try {
+    const db = getAdminFirestore();
+    const doc = await db.collection(SETTINGS_COLLECTION).doc(SEEN_LEADS_DOC).get();
+    if (doc.exists) {
+      const data = doc.data();
+      if (data?.ids && Array.isArray(data.ids)) {
+        return new Set<string>(data.ids);
+      }
+    }
+  } catch (err) {
+    console.error('[RadarConfig] Error reading persistent seen leads:', err);
+  }
+  return new Set<string>();
+}
+
+export async function addPersistentSeenLeads(ids: string[]): Promise<void> {
+  if (!ids || ids.length === 0) return;
+  try {
+    const db = getAdminFirestore();
+    await db.collection(SETTINGS_COLLECTION).doc(SEEN_LEADS_DOC).set(
+      {
+        ids: admin.firestore.FieldValue.arrayUnion(...ids),
+        updatedAt: Date.now(),
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.error('[RadarConfig] Error writing persistent seen leads:', err);
+  }
 }
