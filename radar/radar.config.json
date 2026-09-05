@@ -32,6 +32,7 @@
   "socialSearchQueries": [
     "site:x.com OR site:twitter.com (\"buy pgsharp\" OR \"pgsharp key\" OR \"pgsharp slot\")",
     "site:youtube.com (\"pgsharp key\" OR \"buy pgsharp\" OR \"pgsharp standard\")",
+    "(\"discord.gg\" OR site:discord.com OR site:disboard.org) (\"pgsharp key\" OR \"buy pgsharp\" OR \"pgsharp slot\")",
     "site:facebook.com (\"pgsharp key\" OR \"buy pgsharp\" OR \"pgsharp slot\")",
     "site:threads.net (\"pgsharp key\" OR \"pgsharp\")",
     "site:instagram.com (\"pgsharp key\")"

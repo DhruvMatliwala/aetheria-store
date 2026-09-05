@@ -19,6 +19,7 @@ export async function dispatchDiscordLead(
     facebook: { emoji: '📘', color: 0x1877f2 },
     threads: { emoji: '🧵', color: 0x222222 },
     instagram: { emoji: '📸', color: 0xe1306c },
+    discord: { emoji: '💬', color: 0x5865f2 },
     telegram: { emoji: '✈️', color: 0x229ed9 },
     forum: { emoji: '🎮', color: 0xa855f7 },
     reddit: { emoji: '🔴', color: 0xff4500 },

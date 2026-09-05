@@ -2,8 +2,8 @@ export type IntentLevel = 'HOT' | 'WARM';
 
 export interface LeadItem {
   id: string; // Unique deduplication ID (e.g. "reddit_t3_xyz", "web_hash123")
-  source: 'reddit' | 'web' | 'forum' | 'telegram' | 'twitter' | 'youtube' | 'facebook' | 'threads' | 'instagram';
-  subSource?: string; // e.g. "r/PoGoAndroids" or "OwnedCore" or "X / Twitter" or "YouTube"
+  source: 'reddit' | 'web' | 'forum' | 'telegram' | 'twitter' | 'youtube' | 'facebook' | 'threads' | 'instagram' | 'discord';
+  subSource?: string; // e.g. "r/PoGoAndroids" or "OwnedCore" or "X / Twitter" or "Discord"
   author: string;
   title: string;
   body: string;

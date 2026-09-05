@@ -122,6 +122,10 @@ export async function scanWebRssFeeds(config: RadarConfig): Promise<LeadItem[]> 
           source = 'instagram';
           subSource = 'Instagram';
           author = item.creator || 'Instagram User';
+        } else if (lowerUrl.includes('discord.gg') || lowerUrl.includes('discord.com') || lowerUrl.includes('disboard.org')) {
+          source = 'discord';
+          subSource = 'Discord Community';
+          author = item.creator || 'Discord Member';
         } else if (
           feedEntry.isForum ||
           lowerUrl.includes('ownedcore.com') ||

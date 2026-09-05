@@ -181,7 +181,7 @@ async function main() {
   console.log(`[✓] Storefront URL:    ${rawConfig.storeUrl}`);
   console.log(`[✓] Subreddits (${rawConfig.subreddits.length}):   r/${rawConfig.subreddits.join(', r/')}`);
   console.log(`[✓] Gaming Forums (${(rawConfig.gamingForums || []).length}): ${(rawConfig.gamingForums || []).join(', ')}`);
-  console.log(`[✓] Social Streams (${(rawConfig.socialSearchQueries || []).length}): X/Twitter, YouTube, Facebook, Threads, Instagram`);
+  console.log(`[✓] Social Streams (${(rawConfig.socialSearchQueries || []).length}): X/Twitter, YouTube, Discord, Facebook, Threads, Instagram`);
   console.log(`[✓] Telegram Feeds:    ${rawConfig.telegramChannels.length} channel(s) (@${rawConfig.telegramChannels.join(', @')})`);
   console.log(`[✓] Discord Webhook:   ${rawConfig.discordWebhookUrl ? 'Configured ✅' : 'NOT CONFIGURED ⚠️'}`);
   console.log(`[✓] Scan Frequency:    Every ${rawConfig.scanIntervalSeconds} seconds`);
