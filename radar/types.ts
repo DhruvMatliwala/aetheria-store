@@ -2,8 +2,8 @@ export type IntentLevel = 'HOT' | 'WARM';
 
 export interface LeadItem {
   id: string; // Unique deduplication ID (e.g. "reddit_t3_xyz", "web_hash123")
-  source: 'reddit' | 'web' | 'telegram';
-  subSource?: string; // e.g. "r/PoGoAndroids" or "Google Alerts"
+  source: 'reddit' | 'web' | 'forum' | 'telegram';
+  subSource?: string; // e.g. "r/PoGoAndroids" or "OwnedCore" or "Google Alerts"
   author: string;
   title: string;
   body: string;
@@ -20,6 +20,8 @@ export interface RadarConfig {
   maxLeadAgeHours?: number;
   subreddits: string[];
   redditSearchQueries: string[];
+  webSearchQueries?: string[];
+  gamingForums?: string[];
   googleAlertRssUrls: string[];
   telegramChannels: string[];
   highIntentKeywords: string[];

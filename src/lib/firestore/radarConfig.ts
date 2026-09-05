@@ -14,6 +14,15 @@ export const DEFAULT_RADAR_CONFIG: RadarConfig = {
   maxLeadAgeHours: 24,
   subreddits: ['PoGoAndroids', 'PokemonGoSpoofing', 'PGSharp', 'PokemonGoSpoofing_'],
   redditSearchQueries: ['pgsharp key', 'buy pgsharp', 'pgsharp standard key', 'pgsharp slot'],
+  webSearchQueries: [
+    'buy pgsharp key',
+    'pgsharp standard key',
+    'pgsharp slot',
+    'where to buy pgsharp',
+    'cheap pgsharp key',
+    'pgsharp activation key',
+  ],
+  gamingForums: ['ownedcore.com', 'elitepvpers.com', 'epicnpc.com', 'playerup.com'],
   googleAlertRssUrls: [],
   telegramChannels: ['pgsharp', 'pgsharpofficial'],
   highIntentKeywords: [

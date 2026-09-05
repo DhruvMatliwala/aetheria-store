@@ -20,13 +20,15 @@ import {
   ShieldCheck,
   AlertTriangle,
   Terminal,
+  Globe,
+  Gamepad2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import toast from 'react-hot-toast';
 
 interface LeadItem {
   id: string;
-  source: 'reddit' | 'web' | 'telegram';
+  source: 'reddit' | 'web' | 'forum' | 'telegram';
   subSource?: string;
   author: string;
   title: string;
@@ -44,6 +46,8 @@ interface RadarConfigData {
   maxLeadAgeHours?: number;
   subreddits: string[];
   redditSearchQueries: string[];
+  webSearchQueries?: string[];
+  gamingForums?: string[];
   googleAlertRssUrls: string[];
   telegramChannels: string[];
   highIntentKeywords: string[];
@@ -67,7 +71,10 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // New tag inputs
+  const [newWebQuery, setNewWebQuery] = useState('');
+  const [newForum, setNewForum] = useState('');
   const [newSubreddit, setNewSubreddit] = useState('');
+  const [newGoogleAlert, setNewGoogleAlert] = useState('');
   const [newKeyword, setNewKeyword] = useState('');
 
   // Fetch initial config and recent leads
@@ -104,7 +111,9 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
         setLeads(data.leads || []);
         setLastScanned(new Date());
         if (data.newlyDispatched > 0) {
-          toast.success(`📡 Scan complete! Found ${data.totalCount} leads, dispatched ${data.newlyDispatched} new alert(s) to Discord!`);
+          toast.success(
+            `📡 Whole-internet scan complete! Found ${data.totalCount} leads across Web, Forums & Reddit. Dispatched ${data.newlyDispatched} alert(s) to Discord!`
+          );
         } else {
           toast.success(`📡 Scan complete! ${data.totalCount} active lead(s) discovered.`);
         }
@@ -130,7 +139,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        toast.success('🧪 Test lead sent to Discord! Check your phone/channel.');
+        toast.success('🧪 Test lead sent to Discord! Check your #leads channel.');
       } else {
         toast.error(data.error || 'Failed to send test alert.');
       }
@@ -192,18 +201,18 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
   return (
     <div className="space-y-6">
       {/* Top Banner & Control Bar */}
-      <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-r from-neutral-900 via-neutral-900 to-amber-950/20 p-6 backdrop-blur-xl">
+      <div className="relative overflow-hidden rounded-2xl border border-[#16243d] bg-gradient-to-r from-[#0c1424] via-[#0c1424] to-[#081a33] p-6 backdrop-blur-xl shadow-card">
         <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                <Crosshair className="h-5 w-5 animate-pulse" />
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-950/80 text-cyan-400 border border-cyan-800/60 shadow-[0_0_15px_rgba(6,182,212,0.25)]">
+                <Crosshair className="h-5 w-5 animate-pulse text-cyan-400" />
               </span>
               <div>
                 <h2 className="text-xl font-bold tracking-tight text-white flex flex-wrap items-center gap-2">
-                  Lead Radar
+                  <span>Lead Radar</span>
                   {config?.discordWebhookUrl ? (
-                    <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+                    <span className="rounded-full bg-emerald-950/80 px-2.5 py-0.5 text-xs font-semibold text-emerald-400 border border-emerald-800/60 flex items-center gap-1 font-mono">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       SEPARATE #LEADS CHANNEL CONNECTED
                     </span>
@@ -211,22 +220,22 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                     <button
                       type="button"
                       onClick={() => setShowSettings(true)}
-                      className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-colors flex items-center gap-1 cursor-pointer"
+                      className="rounded-full bg-cyan-950/80 px-2.5 py-0.5 text-xs font-semibold text-cyan-400 border border-cyan-700/60 hover:bg-cyan-900/60 transition-colors flex items-center gap-1 cursor-pointer font-mono"
                     >
                       <AlertTriangle className="h-3 w-3" />
                       SET #LEADS WEBHOOK (ORDERS PROTECTED)
                     </button>
                   )}
                 </h2>
-                <p className="text-sm text-neutral-400">
-                  Autonomous 24/7 internet crawler tracking prospective PGSharp buyers on Reddit, Forums & Telegram.
+                <p className="text-sm text-slate-400 mt-0.5">
+                  Autonomous 24/7 internet crawler tracking prospective PGSharp buyers across Google, Gaming Forums, Reddit & Telegram.
                 </p>
               </div>
             </div>
 
             {lastScanned && (
-              <p className="mt-2 text-xs text-neutral-500 flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5" />
+              <p className="mt-2 text-xs text-slate-500 flex items-center gap-1.5 font-mono">
+                <Clock className="h-3.5 w-3.5 text-cyan-400" />
                 Last scanned: {lastScanned.toLocaleTimeString()} ({leads.length} leads in cache)
               </p>
             )}
@@ -239,9 +248,9 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
               size="sm"
               onClick={handleTestWebhook}
               disabled={testingWebhook}
-              className="border-neutral-800 bg-neutral-900/60 text-neutral-200 hover:bg-neutral-800 hover:text-white"
+              className="border-[#16243d] bg-[#080e1a] text-slate-300 hover:text-white hover:border-[#1b2b48]"
             >
-              <Send className={`mr-2 h-4 w-4 ${testingWebhook ? 'animate-spin' : 'text-amber-400'}`} />
+              <Send className={`mr-2 h-4 w-4 ${testingWebhook ? 'animate-spin' : 'text-cyan-400'}`} />
               {testingWebhook ? 'Sending...' : 'Test Webhook Alert'}
             </Button>
 
@@ -249,7 +258,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
               variant="secondary"
               size="sm"
               onClick={() => setShowSettings(!showSettings)}
-              className="border-neutral-800 bg-neutral-900/60 text-neutral-200 hover:bg-neutral-800 hover:text-white"
+              className="border-[#16243d] bg-[#080e1a] text-cyan-300 hover:text-white hover:border-cyan-500/50"
             >
               <Sliders className="mr-2 h-4 w-4 text-cyan-400" />
               {showSettings ? 'Hide Settings' : 'Radar Settings'}
@@ -258,7 +267,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
             <Button
               onClick={handleScan}
               disabled={loading}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 font-semibold text-black shadow-lg shadow-amber-500/20 hover:from-amber-400 hover:to-amber-500"
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 font-bold text-white shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:from-cyan-400 hover:to-blue-500 transition-all disabled:opacity-50"
             >
               <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
               {loading ? 'Scanning Internet...' : 'Scan Internet Now'}
@@ -269,58 +278,58 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
 
       {/* Visual Settings Drawer */}
       {showSettings && config && (
-        <div className="rounded-2xl border border-neutral-800 bg-neutral-900/70 p-6 backdrop-blur-xl space-y-6 animate-in fade-in slide-in-from-top-4 duration-200">
-          <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+        <div className="rounded-2xl border border-[#16243d] bg-[#0c1424] p-6 shadow-card space-y-6 animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="flex items-center justify-between border-b border-[#16243d] pb-4">
             <div>
-              <h3 className="text-base font-semibold text-white flex items-center gap-2">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Sliders className="h-4 w-4 text-cyan-400" />
-                Radar Target Settings & Keywords
+                <span>Radar Internet Target Settings & Keywords</span>
               </h3>
-              <p className="text-xs text-neutral-400">
-                Customize which subreddits and buying keywords trigger alerts. No code editing required.
+              <p className="text-xs text-slate-400">
+                Customize which open web search engines, gaming forums, subreddits, and buying keywords trigger alerts.
               </p>
             </div>
             <Button
               size="sm"
               onClick={handleSaveConfig}
               disabled={savingConfig}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)]"
             >
               {savingConfig ? 'Saving...' : 'Save Settings'}
             </Button>
           </div>
 
           {/* Dedicated Discord Webhook for Leads */}
-          <div className="rounded-xl border border-amber-500/20 bg-amber-950/20 p-4 space-y-2">
+          <div className="rounded-xl border border-cyan-800/60 bg-cyan-950/30 p-4 space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5 font-mono">
                 <Send className="h-3.5 w-3.5" />
                 Dedicated Discord Leads Webhook (Keeps Order Channel Clean)
               </label>
-              <span className="text-[11px] text-neutral-400">Posts only buyer leads, never orders</span>
+              <span className="text-[11px] text-slate-400">Posts only buyer leads, never orders</span>
             </div>
             <input
               type="text"
               placeholder="https://discord.com/api/webhooks/YOUR_CHANNEL_ID/YOUR_TOKEN"
               value={config.discordWebhookUrl || ''}
               onChange={(e) => setConfig({ ...config, discordWebhookUrl: e.target.value })}
-              className="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-2.5 text-xs text-white placeholder-neutral-600 focus:border-amber-500 focus:outline-none font-mono"
+              className="w-full rounded-lg border border-[#1b2b48] bg-[#080e1a] p-2.5 text-xs text-cyan-300 placeholder-slate-600 focus:border-cyan-500 focus:outline-none font-mono"
             />
-            <p className="text-[11px] text-neutral-400">
-              💡 Create a dedicated <code className="text-amber-300 bg-neutral-900 px-1 py-0.5 rounded">#leads</code> channel in your Discord server, copy its webhook URL, and paste it here so it never mixes with orders.
+            <p className="text-[11px] text-slate-400">
+              💡 Create a dedicated <code className="text-cyan-300 bg-[#080e1a] px-1 py-0.5 rounded border border-[#16243d]">#leads</code> channel in your Discord server, copy its webhook URL, and paste it here so it never mixes with orders.
             </p>
           </div>
 
           {/* Recency Threshold & Scan Frequency */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">
                 Max Post Age (Hours) - Ignores Old Threads
               </label>
               <select
                 value={config.maxLeadAgeHours || 24}
                 onChange={(e) => setConfig({ ...config, maxLeadAgeHours: parseInt(e.target.value, 10) })}
-                className="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-lg border border-[#1b2b48] bg-[#080e1a] p-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
               >
                 <option value={6}>Last 6 Hours (Ultra Fresh Only)</option>
                 <option value={12}>Last 12 Hours</option>
@@ -330,13 +339,13 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">
                 Background Scan Interval
               </label>
               <select
                 value={config.scanIntervalSeconds || 60}
                 onChange={(e) => setConfig({ ...config, scanIntervalSeconds: parseInt(e.target.value, 10) })}
-                className="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-lg border border-[#1b2b48] bg-[#080e1a] p-2 text-xs text-white focus:border-cyan-500 focus:outline-none"
               >
                 <option value={45}>Every 45 Seconds</option>
                 <option value={60}>Every 60 Seconds (Recommended)</option>
@@ -346,17 +355,165 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
             </div>
           </div>
 
+          {/* ══════════════════════════════════════════════════════════════
+              MULTI-SOURCE TARGET PANELS: THE WHOLE INTERNET
+              ══════════════════════════════════════════════════════════════ */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* Subreddits to Monitor */}
-            <div className="space-y-3">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                Target Subreddits ({config.subreddits.length})
-              </label>
-              <div className="flex flex-wrap gap-2">
+            {/* 1. Open Web Search Queries (Entire Internet) */}
+            <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-[#16243d]">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 font-mono">
+                  <Globe className="h-3.5 w-3.5" />
+                  <span>Open Web Queries ({(config.webSearchQueries || config.redditSearchQueries).length})</span>
+                </label>
+                <span className="text-[10px] text-slate-500 font-mono">Crawls entire internet via Bing/Google</span>
+              </div>
+              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
+                {(config.webSearchQueries || config.redditSearchQueries).map((q, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-800/60 bg-cyan-950/50 px-2.5 py-1 text-xs font-medium text-cyan-300"
+                  >
+                    {q}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = config.webSearchQueries || config.redditSearchQueries;
+                        const updated = current.filter((_, idx) => idx !== i);
+                        setConfig({ ...config, webSearchQueries: updated, redditSearchQueries: updated });
+                      }}
+                      className="text-cyan-400 hover:text-rose-400"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. buy pgsharp key, pgsharp standard key slot"
+                  value={newWebQuery}
+                  onChange={(e) => setNewWebQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newWebQuery.trim()) {
+                      e.preventDefault();
+                      const clean = newWebQuery.trim().toLowerCase();
+                      const current = config.webSearchQueries || config.redditSearchQueries;
+                      if (!current.includes(clean)) {
+                        const updated = [...current, clean];
+                        setConfig({ ...config, webSearchQueries: updated, redditSearchQueries: updated });
+                      }
+                      setNewWebQuery('');
+                    }
+                  }}
+                  className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:border-cyan-500 focus:outline-none"
+                />
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    if (newWebQuery.trim()) {
+                      const clean = newWebQuery.trim().toLowerCase();
+                      const current = config.webSearchQueries || config.redditSearchQueries;
+                      if (!current.includes(clean)) {
+                        const updated = [...current, clean];
+                        setConfig({ ...config, webSearchQueries: updated, redditSearchQueries: updated });
+                      }
+                      setNewWebQuery('');
+                    }
+                  }}
+                  className="border-[#1b2b48] text-cyan-300 hover:border-cyan-500"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* 2. Gaming & Cheat Forums (OwnedCore, Elitepvpers, EpicNPC) */}
+            <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-[#16243d]">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-purple-400 flex items-center gap-1.5 font-mono">
+                  <Gamepad2 className="h-3.5 w-3.5" />
+                  <span>Gaming & Trade Forums ({(config.gamingForums || ['ownedcore.com', 'elitepvpers.com', 'epicnpc.com', 'playerup.com']).length})</span>
+                </label>
+                <span className="text-[10px] text-slate-500 font-mono">Specific trade boards</span>
+              </div>
+              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
+                {(config.gamingForums || ['ownedcore.com', 'elitepvpers.com', 'epicnpc.com', 'playerup.com']).map((forum, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-purple-800/60 bg-purple-950/50 px-2.5 py-1 text-xs font-medium text-purple-300"
+                  >
+                    {forum}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = config.gamingForums || ['ownedcore.com', 'elitepvpers.com', 'epicnpc.com', 'playerup.com'];
+                        setConfig({
+                          ...config,
+                          gamingForums: current.filter((_, idx) => idx !== i),
+                        });
+                      }}
+                      className="text-purple-400 hover:text-rose-400"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. ownedcore.com, elitepvpers.com"
+                  value={newForum}
+                  onChange={(e) => setNewForum(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newForum.trim()) {
+                      e.preventDefault();
+                      const clean = newForum.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim().toLowerCase();
+                      const current = config.gamingForums || ['ownedcore.com', 'elitepvpers.com', 'epicnpc.com', 'playerup.com'];
+                      if (!current.includes(clean)) {
+                        setConfig({ ...config, gamingForums: [...current, clean] });
+                      }
+                      setNewForum('');
+                    }
+                  }}
+                  className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:border-cyan-500 focus:outline-none"
+                />
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    if (newForum.trim()) {
+                      const clean = newForum.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim().toLowerCase();
+                      const current = config.gamingForums || ['ownedcore.com', 'elitepvpers.com', 'epicnpc.com', 'playerup.com'];
+                      if (!current.includes(clean)) {
+                        setConfig({ ...config, gamingForums: [...current, clean] });
+                      }
+                      setNewForum('');
+                    }
+                  }}
+                  className="border-[#1b2b48] text-purple-300 hover:border-purple-500"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* 3. Subreddits to Monitor */}
+            <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-[#16243d]">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-orange-400 flex items-center gap-1.5 font-mono">
+                  <span>Target Subreddits ({config.subreddits.length})</span>
+                </label>
+                <span className="text-[10px] text-slate-500 font-mono">Reddit live feeds</span>
+              </div>
+              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
                 {config.subreddits.map((sub, i) => (
                   <span
                     key={i}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-700 bg-neutral-800/80 px-2.5 py-1 text-xs font-medium text-neutral-200"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-orange-800/60 bg-orange-950/50 px-2.5 py-1 text-xs font-medium text-orange-300"
                   >
                     r/{sub}
                     <button
@@ -367,7 +524,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                           subreddits: config.subreddits.filter((_, idx) => idx !== i),
                         })
                       }
-                      className="text-neutral-400 hover:text-red-400"
+                      className="text-orange-400 hover:text-rose-400"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -390,7 +547,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                       setNewSubreddit('');
                     }
                   }}
-                  className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-xs text-white placeholder-neutral-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:border-cyan-500 focus:outline-none"
                 />
                 <Button
                   size="sm"
@@ -404,23 +561,26 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                       setNewSubreddit('');
                     }
                   }}
-                  className="border-neutral-800 text-neutral-300"
+                  className="border-[#1b2b48] text-orange-300 hover:border-orange-500"
                 >
                   <Plus className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
 
-            {/* High-Intent Trigger Keywords */}
-            <div className="space-y-3">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                Buyer Intent Trigger Words ({config.highIntentKeywords.length})
-              </label>
+            {/* 4. High-Intent Trigger Keywords */}
+            <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-[#16243d]">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 font-mono">
+                  <span>Buyer Intent Trigger Words ({config.highIntentKeywords.length})</span>
+                </label>
+                <span className="text-[10px] text-slate-500 font-mono">Matches buyer intent</span>
+              </div>
               <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
                 {config.highIntentKeywords.map((kw, i) => (
                   <span
                     key={i}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-300"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-800/60 bg-cyan-950/60 px-2.5 py-1 text-xs font-medium text-cyan-300"
                   >
                     {kw}
                     <button
@@ -431,7 +591,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                           highIntentKeywords: config.highIntentKeywords.filter((_, idx) => idx !== i),
                         })
                       }
-                      className="text-amber-400 hover:text-red-400"
+                      className="text-cyan-400 hover:text-rose-400"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -441,7 +601,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="e.g. spare slot, buy key"
+                  placeholder="e.g. spare slot, buy key, who sells"
                   value={newKeyword}
                   onChange={(e) => setNewKeyword(e.target.value)}
                   onKeyDown={(e) => {
@@ -454,7 +614,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                       setNewKeyword('');
                     }
                   }}
-                  className="w-full rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-xs text-white placeholder-neutral-500 focus:border-amber-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:border-cyan-500 focus:outline-none"
                 />
                 <Button
                   size="sm"
@@ -468,7 +628,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                       setNewKeyword('');
                     }
                   }}
-                  className="border-neutral-800 text-neutral-300"
+                  className="border-[#1b2b48] text-cyan-300 hover:border-cyan-500"
                 >
                   <Plus className="h-3.5 w-3.5" />
                 </Button>
@@ -476,9 +636,9 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
             </div>
 
             {/* Sales Pitch Template */}
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
-                1-Tap Copy Sales Pitch (Use {'{author}'} and {'{storeUrl}'})
+            <div className="space-y-2 md:col-span-2 bg-[#080e1a] p-4 rounded-xl border border-[#16243d]">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">
+                1-Tap Copy Sales Pitch Template (Use {'{author}'} and {'{storeUrl}'})
               </label>
               <textarea
                 rows={2}
@@ -489,7 +649,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                     pitchTemplates: { ...config.pitchTemplates, hot: e.target.value },
                   })
                 }
-                className="w-full rounded-lg border border-neutral-800 bg-neutral-950 p-3 text-xs text-white placeholder-neutral-500 focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] p-3 text-xs text-cyan-300 placeholder-slate-600 focus:border-cyan-500 focus:outline-none font-mono"
               />
             </div>
           </div>
@@ -497,67 +657,72 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
       )}
 
       {/* Filter Tabs & Lead Counter */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#16243d] pb-4">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFilter('ALL')}
-            className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
+            className={`rounded-xl px-4 py-2 text-xs font-bold transition-all font-mono ${
               filter === 'ALL'
-                ? 'bg-neutral-800 text-white shadow-sm'
-                : 'text-neutral-400 hover:text-white'
+                ? 'bg-[#0c1424] text-cyan-300 border border-cyan-700/60 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+                : 'text-slate-400 hover:text-white'
             }`}
           >
             All Leads ({leads.length})
           </button>
           <button
             onClick={() => setFilter('HOT')}
-            className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
+            className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all font-mono ${
               filter === 'HOT'
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                : 'text-neutral-400 hover:text-amber-300'
+                ? 'bg-rose-950/60 text-rose-300 border border-rose-800/60 shadow-[0_0_10px_rgba(244,63,94,0.2)]'
+                : 'text-slate-400 hover:text-rose-300'
             }`}
           >
-            <Flame className="h-3.5 w-3.5" />
+            <Flame className="h-3.5 w-3.5 text-rose-400" />
             Hot Buyers ({hotCount})
           </button>
           <button
             onClick={() => setFilter('WARM')}
-            className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
+            className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all font-mono ${
               filter === 'WARM'
-                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                : 'text-neutral-400 hover:text-cyan-300'
+                ? 'bg-cyan-950/60 text-cyan-300 border border-cyan-800/60 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+                : 'text-slate-400 hover:text-cyan-300'
             }`}
           >
-            <Zap className="h-3.5 w-3.5" />
+            <Zap className="h-3.5 w-3.5 text-cyan-400" />
             Warm Leads ({warmCount})
           </button>
         </div>
 
         {/* 24/7 Desktop Worker Banner */}
-        <div className="flex items-center gap-2 text-xs text-neutral-400">
+        <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
           <Terminal className="h-4 w-4 text-cyan-400" />
-          <span>24/7 Background Monitor: Double-click <code className="text-amber-400 bg-neutral-900 px-1.5 py-0.5 rounded border border-neutral-800">Start-Lead-Radar.bat</code></span>
+          <span>
+            24/7 Background Monitor: Double-click{' '}
+            <code className="text-cyan-400 bg-[#080e1a] px-2 py-0.5 rounded border border-[#16243d]">
+              Start-Lead-Radar.bat
+            </code>
+          </span>
         </div>
       </div>
 
       {/* Discovered Leads Stream */}
       {filteredLeads.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-800 bg-neutral-900/30 py-16 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-neutral-800/80 text-neutral-400 mb-4">
-            <Crosshair className="h-7 w-7 text-amber-400/70" />
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#16243d] bg-[#0c1424]/40 py-16 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-950/60 text-cyan-400 border border-cyan-800/60 mb-4 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+            <Crosshair className="h-7 w-7 text-cyan-400 animate-pulse" />
           </div>
-          <h3 className="text-base font-semibold text-white">No active leads in current view</h3>
-          <p className="mt-1 max-w-sm text-xs text-neutral-400">
-            Click the <strong className="text-amber-400">Scan Internet Now</strong> button above to sweep Reddit, forums, and Telegram for new customers.
+          <h3 className="text-base font-bold text-white">No active leads in current view</h3>
+          <p className="mt-1 max-w-sm text-xs text-slate-400">
+            Click the <strong className="text-cyan-400">Scan Internet Now</strong> button above to sweep Google, gaming forums, Reddit, and Telegram for prospective buyers.
           </p>
           <Button
             size="sm"
             onClick={handleScan}
             disabled={loading}
-            className="mt-5 bg-neutral-800 text-white hover:bg-neutral-700"
+            className="mt-5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold hover:from-cyan-400 hover:to-blue-500 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
           >
             <RefreshCw className={`mr-2 h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-            Run Live Scan
+            Run Live Internet Scan
           </Button>
         </div>
       ) : (
@@ -566,61 +731,80 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
             const isHot = lead.intentLevel === 'HOT';
             const isCopied = copiedId === lead.id;
 
+            // Determine source badge styling
+            let sourceBadgeClass = 'bg-cyan-950/80 text-cyan-400 border-cyan-800/60';
+            let sourceIcon = <Globe className="h-3 w-3" />;
+            let sourceLabel = lead.subSource || 'Open Web';
+
+            if (lead.source === 'forum') {
+              sourceBadgeClass = 'bg-purple-950/80 text-purple-300 border-purple-800/60';
+              sourceIcon = <Gamepad2 className="h-3 w-3" />;
+            } else if (lead.source === 'reddit') {
+              sourceBadgeClass = 'bg-orange-950/80 text-orange-400 border-orange-800/60';
+              sourceIcon = <span className="font-bold text-[10px]">r/</span>;
+            } else if (lead.source === 'telegram') {
+              sourceBadgeClass = 'bg-sky-950/80 text-sky-400 border-sky-800/60';
+              sourceIcon = <Send className="h-3 w-3" />;
+            }
+
             return (
               <div
                 key={lead.id}
-                className={`relative overflow-hidden rounded-xl border p-5 transition-all duration-200 ${
+                className={`relative overflow-hidden rounded-2xl border p-5 transition-all duration-200 bg-[#0c1424] shadow-card ${
                   isHot
-                    ? 'border-amber-500/30 bg-neutral-900/90 hover:border-amber-500/50 shadow-sm shadow-amber-950/20'
-                    : 'border-neutral-800 bg-neutral-900/60 hover:border-neutral-700'
+                    ? 'border-rose-900/50 hover:border-rose-700/60 shadow-[0_0_15px_rgba(244,63,94,0.1)]'
+                    : 'border-[#16243d] hover:border-cyan-500/40'
                 }`}
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   {/* Left content */}
-                  <div className="space-y-2 flex-1">
+                  <div className="space-y-2.5 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-bold ${
+                        className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-0.5 text-xs font-bold border font-mono ${
                           isHot
-                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                            : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                            ? 'bg-rose-950/60 text-rose-400 border-rose-800/60'
+                            : 'bg-cyan-950/60 text-cyan-400 border-cyan-800/60'
                         }`}
                       >
-                        {isHot ? <Flame className="h-3 w-3" /> : <Zap className="h-3 w-3" />}
+                        {isHot ? <Flame className="h-3 w-3 text-rose-400" /> : <Zap className="h-3 w-3 text-cyan-400" />}
                         {lead.intentLevel} LEAD
                       </span>
 
-                      <span className="rounded-md bg-neutral-800 px-2 py-0.5 text-xs font-medium text-neutral-300">
-                        {lead.subSource || lead.source.toUpperCase()}
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-0.5 text-xs font-medium border font-mono ${sourceBadgeClass}`}
+                      >
+                        {sourceIcon}
+                        <span>{sourceLabel}</span>
                       </span>
 
-                      <span className="flex items-center gap-1 text-xs text-neutral-400">
-                        <User className="h-3 w-3" />
+                      <span className="flex items-center gap-1 text-xs text-slate-400 font-mono">
+                        <User className="h-3 w-3 text-slate-500" />
                         {lead.author}
                       </span>
 
-                      <span className="text-xs text-neutral-500">
+                      <span className="text-xs text-slate-500 font-mono">
                         • {new Date(lead.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
 
-                    <h4 className="text-sm font-semibold text-white leading-snug">
+                    <h4 className="text-sm font-bold text-white leading-snug">
                       {lead.title}
                     </h4>
 
                     {lead.body && (
-                      <p className="text-xs text-neutral-300 line-clamp-2 leading-relaxed bg-neutral-950/60 p-2.5 rounded-lg border border-neutral-800/80">
-                        "{lead.body}"
+                      <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed bg-[#080e1a] p-3 rounded-xl border border-[#16243d]">
+                        &quot;{lead.body}&quot;
                       </p>
                     )}
 
                     {/* Matched Keywords */}
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                      <span className="text-[11px] text-neutral-500">Triggered by:</span>
+                      <span className="text-[11px] text-slate-500 font-mono">Triggered by:</span>
                       {lead.matchedKeywords.map((kw, i) => (
                         <span
                           key={i}
-                          className="rounded bg-neutral-800/90 px-1.5 py-0.5 text-[10px] font-medium text-amber-300/90 border border-neutral-700/50"
+                          className="rounded-md bg-cyan-950/80 px-2 py-0.5 text-[10px] font-mono font-medium text-cyan-300 border border-cyan-800/60"
                         >
                           {kw}
                         </span>
@@ -629,14 +813,14 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                   </div>
 
                   {/* Right Actions */}
-                  <div className="flex sm:flex-col items-center sm:items-end gap-2 pt-2 sm:pt-0">
+                  <div className="flex sm:flex-col items-center sm:items-end gap-2 pt-2 sm:pt-0 shrink-0">
                     <Button
                       size="sm"
                       onClick={() => copyPitch(lead)}
-                      className={`w-full sm:w-auto text-xs font-medium transition-all ${
+                      className={`w-full sm:w-auto text-xs font-bold transition-all ${
                         isCopied
                           ? 'bg-emerald-600 text-white'
-                          : 'bg-amber-500 text-black hover:bg-amber-400 font-semibold'
+                          : 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-[0_0_12px_rgba(6,182,212,0.3)]'
                       }`}
                     >
                       {isCopied ? (
@@ -647,7 +831,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                       ) : (
                         <>
                           <Copy className="mr-1.5 h-3.5 w-3.5" />
-                          Copy Sales Pitch
+                          1-Tap Copy Pitch
                         </>
                       )}
                     </Button>
@@ -656,7 +840,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                       href={lead.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs text-neutral-400 hover:text-cyan-400 py-1 px-2 rounded hover:bg-neutral-800 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-cyan-300 py-1.5 px-3 rounded-xl bg-[#080e1a] border border-[#16243d] hover:border-cyan-500/40 transition-colors font-mono"
                     >
                       <span>Open Post</span>
                       <ExternalLink className="h-3 w-3" />
@@ -671,3 +855,4 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
     </div>
   );
 }
+
