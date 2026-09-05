@@ -99,6 +99,7 @@ export async function POST(request: NextRequest) {
         gateway: 'PayPal IPN (Instant Match)',
         transactionId: `Verified PayPal Tx: ${rawTxId}`,
         deliveredKey: allocation.decryptedKey,
+        patreonEmail: allocation.patreonEmail,
       }).catch((err) => console.error('[checkout/paypal/verify] Discord alert error:', err));
 
       const updatedOrder = await getOrderById(orderId);

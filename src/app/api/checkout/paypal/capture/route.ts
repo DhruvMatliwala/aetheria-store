@@ -82,6 +82,7 @@ export async function POST(request: NextRequest) {
       gateway: 'paypal',
       transactionId: paypalOrderId,
       deliveredKey: allocation.decryptedKey,
+      patreonEmail: allocation.patreonEmail,
     }).catch((alertErr) => {
       console.error('[paypal/capture] Discord admin alert error:', alertErr);
     });

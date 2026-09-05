@@ -17,6 +17,7 @@ export interface Order {
   paypal_tx_id?: string;         // PayPal transaction ID / payer reference
   slots_assigned?: number;       // number of device slots claimed
   key_id?: string;               // document ID of the assigned license key
+  patreon_email?: string;        // Patreon source account owning the key
   coupon_code?: string;          // applied promo code e.g. REGULAR10
   discount_amount?: number;      // amount discounted in paise / cents
   original_amount?: number;      // original plan price before discount
@@ -35,6 +36,7 @@ export interface OrderPublic {
   payment_gateway?: PaymentGateway;
   payment_status: PaymentStatus;
   delivered_key: string | null;
+  patreon_email?: string;
   utr_number?: string;
   paypal_tx_id?: string;
   slots_assigned?: number;

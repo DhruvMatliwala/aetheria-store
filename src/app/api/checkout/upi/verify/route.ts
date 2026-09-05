@@ -102,6 +102,7 @@ export async function POST(request: NextRequest) {
         gateway: 'Bank SMS Bridge (Instant Match)',
         transactionId: `Verified UTR: ${cleanUtr}`,
         deliveredKey: allocation.decryptedKey,
+        patreonEmail: allocation.patreonEmail,
       }).catch((err) => console.error('[checkout/upi/verify] Discord alert error:', err));
 
       const updatedOrder = await getOrderById(orderId);

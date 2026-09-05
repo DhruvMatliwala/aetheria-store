@@ -133,6 +133,7 @@ export async function POST(request: NextRequest) {
           gateway: 'PayPal IPN (24/7 Auto)',
           transactionId: `PayPal Tx: ${txnId}`,
           deliveredKey: allocation.decryptedKey,
+          patreonEmail: allocation.patreonEmail,
         }).catch((err) => console.error('[webhook/paypal] Discord alert error:', err));
 
         console.log(`[webhook/paypal] ⚡ 24/7 AUTO-FULFILLED PayPal Order #${orderData.order_id} via IPN Tx: ${txnId}`);
@@ -192,6 +193,19 @@ export async function POST(request: NextRequest) {
                 planType: order.plan_type,
                 licenseKey: allocation.decryptedKey,
               }).catch(() => {});
+
+              sendAdminOrderAlert({
+                orderId: order.order_id,
+                customerEmail: order.customer_email,
+                customerPhone: order.customer_phone,
+                planType: order.plan_type,
+                amount: order.amount,
+                currency: order.currency,
+                gateway: 'PayPal REST (24/7 Auto)',
+                transactionId: `PayPal Tx: ${event.resource.id}`,
+                deliveredKey: allocation.decryptedKey,
+                patreonEmail: allocation.patreonEmail,
+              }).catch((err) => console.error('[webhook/paypal] Discord alert error:', err));
             }
           }
         }

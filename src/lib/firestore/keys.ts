@@ -171,13 +171,58 @@ export interface BulkUploadResult {
   errors: string[];
 }
 
+export interface KeyUploadEntry {
+  key: string;
+  patreonEmail?: string;
+}
+
+const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+
 /**
- * Bulk-inserts Patreon 2-slot license keys.
+ * Extracts license key and optional inline email from a raw line.
+ * Supports delimiters like ' : ', ' | ', '\t', ',', or space.
+ */
+function parseKeyEntry(
+  item: string | KeyUploadEntry,
+  defaultEmail?: string
+): { cleanKey: string; patreonEmail?: string } | null {
+  if (typeof item === 'object' && item !== null) {
+    const cleanKey = item.key?.trim();
+    if (!cleanKey) return null;
+    const email = item.patreonEmail?.trim().toLowerCase() || defaultEmail?.trim().toLowerCase();
+    return { cleanKey, patreonEmail: email || undefined };
+  }
+
+  const rawLine = item.trim();
+  if (!rawLine) return null;
+
+  const emailMatch = rawLine.match(EMAIL_REGEX);
+  if (emailMatch) {
+    const inlineEmail = emailMatch[0].toLowerCase();
+    // Remove email and common separator characters
+    const cleanKey = rawLine
+      .replace(emailMatch[0], '')
+      .replace(/[:|,\t]/g, ' ')
+      .trim();
+
+    if (!cleanKey) return null;
+    return { cleanKey, patreonEmail: inlineEmail };
+  }
+
+  return {
+    cleanKey: rawLine,
+    patreonEmail: defaultEmail?.trim().toLowerCase() || undefined,
+  };
+}
+
+/**
+ * Bulk-inserts Patreon 2-slot license keys with optional Patreon account tagging.
  * Keys are encrypted with AES-256-GCM before storage.
  */
 export async function bulkInsertKeys(
   _sourceOrPlan: string,
-  rawKeys: string[]
+  rawKeys: (string | KeyUploadEntry)[],
+  defaultPatreonEmail?: string
 ): Promise<BulkUploadResult> {
   const db = getAdminFirestore();
   const result: BulkUploadResult = { inserted: 0, skipped: 0, errors: [] };
@@ -185,19 +230,28 @@ export async function bulkInsertKeys(
   const source: KeySource = 'patreon_2slot';
   const totalSlots = 2;
 
-  // Deduplicate input keys
-  const uniqueKeys = [...new Set(rawKeys.map((k) => k.trim()).filter(Boolean))];
+  // Parse and deduplicate by key string
+  const parsedEntries: { cleanKey: string; patreonEmail?: string }[] = [];
+  const seenKeys = new Set<string>();
+
+  for (const raw of rawKeys) {
+    const parsed = parseKeyEntry(raw, defaultPatreonEmail);
+    if (parsed && !seenKeys.has(parsed.cleanKey)) {
+      seenKeys.add(parsed.cleanKey);
+      parsedEntries.push(parsed);
+    }
+  }
 
   // Batch writes in chunks of 490 (Firestore limit is 500)
   const BATCH_SIZE = 490;
 
-  for (let i = 0; i < uniqueKeys.length; i += BATCH_SIZE) {
+  for (let i = 0; i < parsedEntries.length; i += BATCH_SIZE) {
     const batch = db.batch();
-    const chunk = uniqueKeys.slice(i, i + BATCH_SIZE);
+    const chunk = parsedEntries.slice(i, i + BATCH_SIZE);
 
-    for (const rawKey of chunk) {
+    for (const entry of chunk) {
       try {
-        const cleanKey = rawKey.trim();
+        const { cleanKey, patreonEmail } = entry;
         // Deterministic document ID based on SHA-256 fingerprint prevents duplicate key entries
         const keyHash = createHash('sha256').update(cleanKey).digest('hex').slice(0, 32);
         const docRef = db.collection(COLLECTION).doc(`key_${keyHash}`);
@@ -225,6 +279,7 @@ export async function bulkInsertKeys(
           order_id: null,
           created_at: admin.firestore.FieldValue.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,
           sold_at: null,
+          ...(patreonEmail ? { patreon_email: patreonEmail } : {}),
         };
 
         batch.set(docRef, newDoc);
@@ -244,3 +299,4 @@ export async function bulkInsertKeys(
 
   return result;
 }
+

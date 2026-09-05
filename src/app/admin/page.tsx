@@ -780,6 +780,8 @@ export default function AdminPage() {
                               <tr className="text-[10px] font-mono text-slate-400 border-b border-[#16243d]">
                                 <th className="pb-2.5 font-semibold">ORDER ID</th>
                                 <th className="pb-2.5 font-semibold">CUSTOMER EMAIL</th>
+                                <th className="pb-2.5 font-semibold">DELIVERED KEY</th>
+                                <th className="pb-2.5 font-semibold">PATREON SOURCE</th>
                                 <th className="pb-2.5 font-semibold">PLAN</th>
                                 <th className="pb-2.5 font-semibold">AMOUNT</th>
                                 <th className="pb-2.5 font-semibold">STATUS</th>
@@ -791,6 +793,18 @@ export default function AdminPage() {
                                 <tr key={order.order_id} className="hover:bg-slate-800/30 transition-colors">
                                   <td className="py-3 font-mono font-bold text-cyan-400">{order.order_id}</td>
                                   <td className="py-3 text-slate-300 font-medium">{order.customer_email || 'Anonymous'}</td>
+                                  <td className="py-3 font-mono text-xs text-cyan-300 select-all">
+                                    {order.delivered_key || <span className="text-slate-600">—</span>}
+                                  </td>
+                                  <td className="py-3">
+                                    {order.patreon_email ? (
+                                      <span className="inline-flex items-center gap-1 font-mono text-[11px] text-amber-300 bg-amber-950/50 border border-amber-800/60 px-2 py-0.5 rounded select-all font-medium">
+                                        {order.patreon_email}
+                                      </span>
+                                    ) : (
+                                      <span className="text-slate-600 font-mono text-xs">—</span>
+                                    )}
+                                  </td>
                                   <td className="py-3 text-slate-400 font-mono">
                                     {order.plan_type?.includes('2_device') ? '2 Devices' : '1 Device'}
                                   </td>

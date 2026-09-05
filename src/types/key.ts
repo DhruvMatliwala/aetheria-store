@@ -17,6 +17,7 @@ export interface LicenseKeyDoc {
   // Backwards compatibility / legacy fields:
   plan_type?: string;
   order_id?: string | null;
+  patreon_email?: string;               // Patreon account that owns this key (for clearing devices)
   created_at?: FirebaseFirestore.Timestamp | null;
   sold_at?: FirebaseFirestore.Timestamp | null;
 }
@@ -30,4 +31,5 @@ export interface LicenseKeyPublic {
   usedSlots: number;
   remainingSlots: number;
   status: KeyStatus;
+  patreon_email?: string;
 }

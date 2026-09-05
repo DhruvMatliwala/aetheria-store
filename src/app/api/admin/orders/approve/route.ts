@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
       gateway: existingOrder.payment_gateway,
       transactionId: existingOrder.utr_number || existingOrder.paypal_tx_id || 'N/A',
       deliveredKey: allocation.decryptedKey,
+      patreonEmail: allocation.patreonEmail,
     }).catch((err) => console.error('[admin/orders/approve] Discord alert error:', err));
 
     return NextResponse.json({

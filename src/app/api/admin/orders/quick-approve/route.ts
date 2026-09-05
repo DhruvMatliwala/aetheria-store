@@ -82,6 +82,7 @@ export async function GET(request: NextRequest) {
       gateway: existingOrder.payment_gateway,
       transactionId: existingOrder.utr_number || existingOrder.paypal_tx_id || 'N/A',
       deliveredKey: allocation.decryptedKey,
+      patreonEmail: allocation.patreonEmail,
     }).catch((err) => console.error('[quick-approve] Discord alert error:', err));
 
     return new NextResponse(

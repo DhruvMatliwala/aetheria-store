@@ -132,9 +132,12 @@ export function toOrderPublic(order: Order): OrderPublic {
     payment_gateway: order.payment_gateway,
     payment_status: order.payment_status,
     delivered_key: order.payment_status === 'paid' ? order.delivered_key : null,
+    patreon_email: order.patreon_email,
     utr_number: order.utr_number,
     paypal_tx_id: order.paypal_tx_id,
     slots_assigned: order.slots_assigned,
+    coupon_code: order.coupon_code,
+    discount_amount: order.discount_amount,
     created_at: (order.created_at as unknown as { toDate: () => Date })?.toDate?.().toISOString() ?? '',
   };
 }

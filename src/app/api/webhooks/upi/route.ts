@@ -342,6 +342,7 @@ async function handleIncomingSms(data: Record<string, any>) {
         gateway: 'Bank SMS Bridge (24/7 Auto)',
         transactionId: `Verified UTR: ${utr}`,
         deliveredKey: allocation.decryptedKey,
+        patreonEmail: allocation.patreonEmail,
       }).catch((err) => console.error('[webhooks/upi] Discord alert error:', err));
 
       console.log(`[webhooks/upi] ⚡ 24/7 AUTO-FULFILLED Order #${orderData.order_id} via Bank SMS UTR: ${utr}`);

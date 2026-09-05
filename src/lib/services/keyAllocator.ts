@@ -29,6 +29,7 @@ export interface SlotAllocationResult {
   usedSlots: number;
   remainingSlots: number;
   status: 'available' | 'full';
+  patreonEmail?: string;
 }
 
 /**
@@ -69,6 +70,7 @@ export async function allocateKeySlot(
         usedSlots: 2,
         remainingSlots: 0,
         status: 'full',
+        patreonEmail: orderData.patreon_email,
       };
     }
 
@@ -136,6 +138,7 @@ export async function allocateKeySlot(
 
     // Decrypt the raw license key
     const decryptedKey = decryptKey(keyData.license_key);
+    const patreonEmail = keyData.patreon_email?.trim().toLowerCase() || undefined;
 
     // ── 4. Update Key Document ───────────────────────────────────────────────
     txn.update(keyDocRef, {
@@ -156,6 +159,7 @@ export async function allocateKeySlot(
       gateway_order_id: gatewayOrderId || orderData.gateway_order_id,
       slots_assigned: requiredSlots,
       key_id: keyDocRef.id,
+      ...(patreonEmail ? { patreon_email: patreonEmail } : {}),
       updated_at: Date.now(),
     });
 
@@ -174,6 +178,7 @@ export async function allocateKeySlot(
       usedSlots: newUsedSlots,
       remainingSlots: newRemainingSlots,
       status: newStatus,
+      patreonEmail,
     };
   });
 

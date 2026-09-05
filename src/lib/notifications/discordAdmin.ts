@@ -11,6 +11,7 @@ export interface AdminOrderAlertParams {
   gateway: string;
   transactionId: string;
   deliveredKey: string;
+  patreonEmail?: string;
 }
 
 export interface AdminVerificationAlertParams {
@@ -131,6 +132,48 @@ export async function sendAdminOrderAlert(params: AdminOrderAlertParams): Promis
         ? `$${(params.amount / 100).toFixed(2)}`
         : `₹${(params.amount / 100).toFixed(2)}`;
 
+    const fields: Array<{ name: string; value: string; inline?: boolean }> = [
+      {
+        name: '📋 Order ID',
+        value: `\`${params.orderId}\``,
+        inline: true,
+      },
+      {
+        name: '👤 Customer Email',
+        value: `\`${params.customerEmail}\``,
+        inline: true,
+      },
+      {
+        name: '📦 Plan',
+        value: `**${planName}**`,
+        inline: true,
+      },
+      {
+        name: '💰 Amount Paid',
+        value: `**${formattedAmount}** (${params.gateway.toUpperCase()})`,
+        inline: true,
+      },
+      {
+        name: '🆔 Transaction Ref',
+        value: `\`${params.transactionId || 'N/A'}\``,
+        inline: true,
+      },
+    ];
+
+    if (params.patreonEmail) {
+      fields.push({
+        name: '📧 Patreon Source Account',
+        value: `\`${params.patreonEmail}\``,
+        inline: true,
+      });
+    }
+
+    fields.push({
+      name: '🔑 Delivered License Key',
+      value: `\`\`\`${params.deliveredKey}\`\`\``,
+      inline: false,
+    });
+
     const payload = {
       username: 'Aetheria Order Backup',
       avatar_url: 'https://aetheria-store.vercel.app/logo.png',
@@ -138,38 +181,7 @@ export async function sendAdminOrderAlert(params: AdminOrderAlertParams): Promis
         {
           title: '✅ Order Approved & Key Dispatched',
           color: 0x06b6d4, // Cyan #06B6D4
-          fields: [
-            {
-              name: '📋 Order ID',
-              value: `\`${params.orderId}\``,
-              inline: true,
-            },
-            {
-              name: '👤 Customer Email',
-              value: `\`${params.customerEmail}\``,
-              inline: true,
-            },
-            {
-              name: '📦 Plan',
-              value: `**${planName}**`,
-              inline: true,
-            },
-            {
-              name: '💰 Amount Paid',
-              value: `**${formattedAmount}** (${params.gateway.toUpperCase()})`,
-              inline: true,
-            },
-            {
-              name: '🆔 Transaction Ref',
-              value: `\`${params.transactionId || 'N/A'}\``,
-              inline: true,
-            },
-            {
-              name: '🔑 Delivered License Key',
-              value: `\`\`\`${params.deliveredKey}\`\`\``,
-              inline: false,
-            },
-          ],
+          fields,
           footer: {
             text: 'Aetheria Store • Instant Backup Vault',
           },

@@ -23,9 +23,10 @@ export async function POST(request: NextRequest) {
       source?: string;
       planType?: string;
       keys: string[];
+      patreonEmail?: string;
     };
 
-    const { keys } = body;
+    const { keys, patreonEmail } = body;
     const source = body.source || body.planType || 'patreon_2slot';
 
     if (!Array.isArray(keys) || keys.length === 0) {
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await bulkInsertKeys(source, keys);
+    const result = await bulkInsertKeys(source, keys, patreonEmail);
     return NextResponse.json(result);
   } catch (err) {
     console.error('[admin/keys]', err);

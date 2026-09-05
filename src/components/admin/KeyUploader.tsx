@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Upload, CheckCircle, AlertCircle, Key, Shield, Sparkles } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, Key, Shield, Sparkles, Mail } from 'lucide-react';
 
 interface UploadResult {
   inserted: number;
@@ -16,6 +16,7 @@ interface KeyUploaderProps {
 
 export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
   const [rawKeys, setRawKeys] = useState('');
+  const [patreonEmail, setPatreonEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +28,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
     setIsLoading(true);
 
     const keys = rawKeys
-      .split(/[\n,]+/)
+      .split(/\r?\n+/)
       .map((k) => k.trim())
       .filter(Boolean);
 
@@ -44,7 +45,11 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
           'Content-Type': 'application/json',
           'x-admin-secret': adminToken,
         },
-        body: JSON.stringify({ source: 'patreon_2slot', keys }),
+        body: JSON.stringify({
+          source: 'patreon_2slot',
+          keys,
+          patreonEmail: patreonEmail.trim() || undefined,
+        }),
       });
 
       const data = (await res.json()) as UploadResult & { error?: string };
@@ -54,6 +59,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
 
       setResult(data);
       setRawKeys('');
+      setPatreonEmail('');
       if (onUploadSuccess) {
         onUploadSuccess();
       }
@@ -64,7 +70,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
     }
   }
 
-  const detectedKeyCount = rawKeys.split(/[\n,]+/).filter((k) => k.trim()).length;
+  const detectedKeyCount = rawKeys.split(/\r?\n+/).filter((k) => k.trim()).length;
 
   return (
     <div className="bg-[#0c1424] border border-[#16243d] rounded-2xl p-6 shadow-card space-y-5">
@@ -82,7 +88,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
               </span>
             </h2>
             <p className="text-xs text-slate-400">
-              Keys are encrypted at rest and automatically dispatched upon verified payment
+              Keys are encrypted at rest and automatically tagged with your Patreon source account
             </p>
           </div>
         </div>
@@ -95,16 +101,41 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
       </div>
 
       <form onSubmit={handleUpload} className="space-y-4">
+        {/* Patreon Source Email (Batch) */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-400 mb-1.5 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-slate-300">
+              <Mail size={13} className="text-cyan-400" />
+              <span>Patreon Source Email (Optional for this batch)</span>
+            </span>
+            <span className="text-[11px] text-cyan-400/80 font-normal">
+              Tags all keys in this batch for 1-click device clearing
+            </span>
+          </label>
+          <input
+            type="email"
+            value={patreonEmail}
+            onChange={(e) => setPatreonEmail(e.target.value)}
+            placeholder="e.g. pgsharpdeal60@gmail.com (or write inline per key below)"
+            className="w-full bg-[#080e1a] border border-[#1b2b48] rounded-xl px-4 py-2.5 text-xs font-mono text-cyan-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+          />
+        </div>
+
         {/* Keys Input Textarea */}
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5">
-            Paste Keys (One key per line)
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-semibold text-slate-400">
+              Paste Keys (One key per line)
+            </label>
+            <span className="text-[10px] text-slate-500 font-mono">
+              Format: KEY or KEY : email@example.com
+            </span>
+          </div>
           <textarea
             rows={7}
             value={rawKeys}
             onChange={(e) => setRawKeys(e.target.value)}
-            placeholder={`e.g.&#10;XXXX-XXXX-XXXX-XXXX&#10;YYYY-YYYY-YYYY-YYYY`}
+            placeholder={`e.g.&#10;XXXX-XXXX-XXXX-XXXX&#10;YYYY-YYYY-YYYY-YYYY : account2@gmail.com&#10;ZZZZ-ZZZZ-ZZZZ-ZZZZ`}
             className="w-full bg-[#080e1a] border border-[#1b2b48] rounded-xl p-4 text-xs font-mono text-cyan-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
           />
         </div>
