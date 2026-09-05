@@ -135,6 +135,21 @@ async function handleIncomingSms(data: Record<string, any>) {
     ''
   ).toString();
 
+  // ── Anti-Fraud Guard: Bank SMS NEVER originates from personal 10-digit mobile numbers ──
+  const rawSender = (data.from || data.sender || data.sender_id || data.phone || '').toString().trim();
+  const cleanSenderDigits = rawSender.replace(/[\s+-]/g, '');
+  const isPersonalMobile =
+    /^(91)?[6-9]\d{9}$/.test(cleanSenderDigits) ||
+    /^\+?\d{10,14}$/.test(cleanSenderDigits) && !/[a-zA-Z]/.test(rawSender);
+
+  if (rawSender && isPersonalMobile) {
+    console.warn(`[webhooks/upi] 🛑 FRAUD ATTEMPT BLOCKED: SMS came from personal mobile number "${rawSender}"`);
+    return NextResponse.json(
+      { error: 'Fraud Protection: Official bank credit SMS cannot originate from personal mobile numbers.' },
+      { status: 403 }
+    );
+  }
+
   // ── Privacy & Security Guard: Never process or store sensitive 2FA / OTPs ──────────
   const lowerMsg = rawMessage.toLowerCase();
   const isOtpOrAuth =
