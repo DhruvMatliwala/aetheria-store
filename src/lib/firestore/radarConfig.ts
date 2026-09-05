@@ -12,7 +12,7 @@ export const DEFAULT_RADAR_CONFIG: RadarConfig = {
   storeUrl: 'https://aetheria-store.vercel.app',
   scanIntervalSeconds: 60,
   maxLeadAgeHours: 24,
-  subreddits: ['PoGoAndroids', 'PokemonGoSpoofing', 'PGSharp', 'PokemonGoSpoofing_'],
+  subreddits: ['PoGoAndroidSpoofing', 'PokemonGoSpoofing', 'PGSharp'],
   redditSearchQueries: ['pgsharp key', 'buy pgsharp', 'pgsharp standard key', 'pgsharp slot'],
   webSearchQueries: [
     'buy pgsharp key',
@@ -32,7 +32,7 @@ export const DEFAULT_RADAR_CONFIG: RadarConfig = {
     'site:instagram.com ("pgsharp key")',
   ],
   googleAlertRssUrls: [],
-  telegramChannels: ['PGSharpkeyss', 'pgsharp', 'pgsharpofficial', 'PoGoSpoofing'],
+  telegramChannels: ['PGSharpkeyss'],
   redditClientId: process.env.REDDIT_CLIENT_ID || '',
   redditClientSecret: process.env.REDDIT_CLIENT_SECRET || '',
   highIntentKeywords: [
