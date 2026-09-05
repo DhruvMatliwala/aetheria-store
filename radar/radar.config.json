@@ -29,12 +29,20 @@
     "epicnpc.com",
     "playerup.com"
   ],
+  "socialSearchQueries": [
+    "site:x.com OR site:twitter.com (\"buy pgsharp\" OR \"pgsharp key\" OR \"pgsharp slot\")",
+    "site:youtube.com (\"pgsharp key\" OR \"buy pgsharp\" OR \"pgsharp standard\")",
+    "site:facebook.com (\"pgsharp key\" OR \"buy pgsharp\" OR \"pgsharp slot\")",
+    "site:threads.net (\"pgsharp key\" OR \"pgsharp\")",
+    "site:instagram.com (\"pgsharp key\")"
+  ],
   "googleAlertRssUrls": [
     "https://www.google.com/alerts/feeds/placeholder-alert-id/placeholder"
   ],
   "telegramChannels": [
     "pgsharp",
-    "pgsharpofficial"
+    "pgsharpofficial",
+    "PoGoSpoofing"
   ],
   "highIntentKeywords": [
     "need",

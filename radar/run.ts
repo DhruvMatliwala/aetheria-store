@@ -180,9 +180,9 @@ async function main() {
   console.log('===============================================================');
   console.log(`[✓] Storefront URL:    ${rawConfig.storeUrl}`);
   console.log(`[✓] Subreddits (${rawConfig.subreddits.length}):   r/${rawConfig.subreddits.join(', r/')}`);
-  console.log(`[✓] Search Queries (${rawConfig.redditSearchQueries.length}): "${rawConfig.redditSearchQueries.join('", "')}"`);
-  console.log(`[✓] Web RSS Feeds:     ${rawConfig.googleAlertRssUrls.filter((u) => !u.includes('placeholder')).length} active feed(s)`);
-  console.log(`[✓] Telegram Feeds:    ${rawConfig.telegramChannels.length} channel(s)`);
+  console.log(`[✓] Gaming Forums (${(rawConfig.gamingForums || []).length}): ${(rawConfig.gamingForums || []).join(', ')}`);
+  console.log(`[✓] Social Streams (${(rawConfig.socialSearchQueries || []).length}): X/Twitter, YouTube, Facebook, Threads, Instagram`);
+  console.log(`[✓] Telegram Feeds:    ${rawConfig.telegramChannels.length} channel(s) (@${rawConfig.telegramChannels.join(', @')})`);
   console.log(`[✓] Discord Webhook:   ${rawConfig.discordWebhookUrl ? 'Configured ✅' : 'NOT CONFIGURED ⚠️'}`);
   console.log(`[✓] Scan Frequency:    Every ${rawConfig.scanIntervalSeconds} seconds`);
   console.log(`[✓] Max Lead Recency:  ${rawConfig.maxLeadAgeHours || 48} hours`);

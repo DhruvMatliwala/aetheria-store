@@ -11,9 +11,23 @@ export async function dispatchDiscordLead(
   }
 
   const isHot = lead.intentLevel === 'HOT';
-  const color = isHot ? 0xf59e0b : 0x3b82f6; // Amber gold for HOT, Blue for WARM
-  const iconEmoji = isHot ? '🔥' : '⚡';
-  const badgeTitle = `${iconEmoji} [${lead.intentLevel} LEAD] ${lead.subSource || lead.source.toUpperCase()}`;
+  const urgencyEmoji = isHot ? '🔥' : '⚡';
+
+  const platformIcons: Record<string, { emoji: string; color: number }> = {
+    twitter: { emoji: '🐦', color: 0x1d9bf0 },
+    youtube: { emoji: '▶️', color: 0xff0000 },
+    facebook: { emoji: '📘', color: 0x1877f2 },
+    threads: { emoji: '🧵', color: 0x222222 },
+    instagram: { emoji: '📸', color: 0xe1306c },
+    telegram: { emoji: '✈️', color: 0x229ed9 },
+    forum: { emoji: '🎮', color: 0xa855f7 },
+    reddit: { emoji: '🔴', color: 0xff4500 },
+    web: { emoji: '🌐', color: 0x06b6d4 },
+  };
+
+  const platform = platformIcons[lead.source] || { emoji: '🌐', color: isHot ? 0xf43f5e : 0x06b6d4 };
+  const color = isHot ? 0xf43f5e : platform.color;
+  const badgeTitle = `${urgencyEmoji} [${lead.intentLevel} LEAD] ${platform.emoji} ${lead.subSource || lead.source.toUpperCase()}`;
 
   // Craft personalized pitch
   const rawTemplate = isHot

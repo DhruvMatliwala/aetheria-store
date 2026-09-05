@@ -23,8 +23,15 @@ export const DEFAULT_RADAR_CONFIG: RadarConfig = {
     'pgsharp activation key',
   ],
   gamingForums: ['ownedcore.com', 'elitepvpers.com', 'epicnpc.com', 'playerup.com'],
+  socialSearchQueries: [
+    'site:x.com OR site:twitter.com ("buy pgsharp" OR "pgsharp key" OR "pgsharp slot")',
+    'site:youtube.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp standard")',
+    'site:facebook.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp slot")',
+    'site:threads.net ("pgsharp key" OR "pgsharp")',
+    'site:instagram.com ("pgsharp key")',
+  ],
   googleAlertRssUrls: [],
-  telegramChannels: ['pgsharp', 'pgsharpofficial'],
+  telegramChannels: ['pgsharp', 'pgsharpofficial', 'PoGoSpoofing'],
   highIntentKeywords: [
     'need',
     'want',

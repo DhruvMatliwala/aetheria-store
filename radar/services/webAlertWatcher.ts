@@ -68,7 +68,25 @@ export async function scanWebRssFeeds(config: RadarConfig): Promise<LeadItem[]> 
     });
   }
 
-  // ── 4. Process Each Feed ──────────────────────────────────────────────────
+  // ── 4. Social Media & Video Streams (X/Twitter, YouTube, Facebook, Threads, Instagram) ─
+  const socialQueries = config.socialSearchQueries && config.socialSearchQueries.length > 0
+    ? config.socialSearchQueries
+    : [
+        'site:x.com OR site:twitter.com ("buy pgsharp" OR "pgsharp key" OR "pgsharp slot")',
+        'site:youtube.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp standard")',
+        'site:facebook.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp slot")',
+        'site:threads.net ("pgsharp key" OR "pgsharp")',
+        'site:instagram.com ("pgsharp key")',
+      ];
+
+  for (const sq of socialQueries) {
+    feedUrls.push({
+      url: `https://www.bing.com/search?q=${encodeURIComponent(sq)}&format=rss`,
+      label: `Social Search`,
+    });
+  }
+
+  // ── 5. Process Each Feed ──────────────────────────────────────────────────
   for (const feedEntry of feedUrls) {
     const feedUrl = feedEntry.url;
     try {
@@ -77,8 +95,51 @@ export async function scanWebRssFeeds(config: RadarConfig): Promise<LeadItem[]> 
 
       for (const item of items) {
         const rawId = item.id || item.guid || item.link || '';
-        const prefix = feedEntry.isForum ? 'forum' : 'web';
-        const leadId = `${prefix}_${Buffer.from(rawId).toString('base64').substring(0, 32)}`;
+        const itemUrl = item.link || feedUrl;
+        const lowerUrl = itemUrl.toLowerCase();
+
+        let source: LeadItem['source'] = 'web';
+        let subSource = feedEntry.label || 'Open Web';
+        let author = item.creator || 'Web User';
+
+        if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) {
+          source = 'twitter';
+          subSource = 'X / Twitter';
+          author = item.creator || 'Twitter User';
+        } else if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
+          source = 'youtube';
+          subSource = 'YouTube';
+          author = item.creator || 'YouTube User';
+        } else if (lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.com')) {
+          source = 'facebook';
+          subSource = 'Facebook Group/Post';
+          author = item.creator || 'Facebook User';
+        } else if (lowerUrl.includes('threads.net')) {
+          source = 'threads';
+          subSource = 'Threads';
+          author = item.creator || 'Threads User';
+        } else if (lowerUrl.includes('instagram.com')) {
+          source = 'instagram';
+          subSource = 'Instagram';
+          author = item.creator || 'Instagram User';
+        } else if (
+          feedEntry.isForum ||
+          lowerUrl.includes('ownedcore.com') ||
+          lowerUrl.includes('elitepvpers.com') ||
+          lowerUrl.includes('epicnpc.com') ||
+          lowerUrl.includes('playerup.com') ||
+          lowerUrl.includes('forum')
+        ) {
+          source = 'forum';
+          subSource = feedEntry.forumName || 'Gaming Forum';
+          author = item.creator || `${subSource} Member`;
+        } else if (lowerUrl.includes('reddit.com')) {
+          source = 'reddit';
+          subSource = 'Reddit';
+          author = item.creator || 'Reddit User';
+        }
+
+        const leadId = `${source}_${Buffer.from(rawId).toString('base64').substring(0, 32)}`;
 
         if (leadStorage.has(leadId)) {
           continue;
@@ -103,21 +164,11 @@ export async function scanWebRssFeeds(config: RadarConfig): Promise<LeadItem[]> 
         );
 
         if (filter.isMatch) {
-          // Detect if URL is from a known forum
-          const itemUrl = item.link || feedUrl;
-          const isForumPost =
-            feedEntry.isForum ||
-            itemUrl.includes('ownedcore.com') ||
-            itemUrl.includes('elitepvpers.com') ||
-            itemUrl.includes('epicnpc.com') ||
-            itemUrl.includes('playerup.com') ||
-            itemUrl.includes('forum');
-
           leads.push({
             id: leadId,
-            source: isForumPost ? 'forum' : 'web',
-            subSource: feedEntry.label || (feed.title ? `Web: ${feed.title}` : 'Open Web'),
-            author: item.creator || (feedEntry.forumName ? `${feedEntry.forumName} User` : 'Web User'),
+            source,
+            subSource,
+            author,
             title,
             body: snippet,
             url: itemUrl,

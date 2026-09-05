@@ -26,9 +26,49 @@ import {
 import { Button } from '@/components/ui/Button';
 import toast from 'react-hot-toast';
 
+function TwitterIcon({ className = "h-3 w-3" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+function YouTubeIcon({ className = "h-3 w-3" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+  );
+}
+
+function FacebookIcon({ className = "h-3 w-3" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+    </svg>
+  );
+}
+
+function ThreadsIcon({ className = "h-3 w-3" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12.186 24C5.467 24 0 18.533 0 11.814 0 5.094 5.467 0 12.186 0c6.643 0 12.052 5.313 12.052 11.814 0 .524-.04 1.056-.12 1.579h-4.329c.07-.464.106-.94.106-1.42 0-4.227-3.44-7.666-7.709-7.666-4.269 0-7.709 3.439-7.709 7.666 0 4.227 3.44 7.667 7.709 7.667 2.457 0 4.673-1.144 6.108-2.957l3.197 2.923C19.349 22.109 15.986 24 12.186 24z" />
+    </svg>
+  );
+}
+
+function InstagramIcon({ className = "h-3 w-3" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+    </svg>
+  );
+}
+
 interface LeadItem {
   id: string;
-  source: 'reddit' | 'web' | 'forum' | 'telegram';
+  source: 'reddit' | 'web' | 'forum' | 'telegram' | 'twitter' | 'youtube' | 'facebook' | 'threads' | 'instagram';
   subSource?: string;
   author: string;
   title: string;
@@ -48,6 +88,7 @@ interface RadarConfigData {
   redditSearchQueries: string[];
   webSearchQueries?: string[];
   gamingForums?: string[];
+  socialSearchQueries?: string[];
   googleAlertRssUrls: string[];
   telegramChannels: string[];
   highIntentKeywords: string[];
@@ -70,9 +111,11 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
   const [lastScanned, setLastScanned] = useState<Date | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // New tag inputs
+  // Tag inputs
   const [newWebQuery, setNewWebQuery] = useState('');
   const [newForum, setNewForum] = useState('');
+  const [newSocialQuery, setNewSocialQuery] = useState('');
+  const [newTelegramChannel, setNewTelegramChannel] = useState('');
   const [newSubreddit, setNewSubreddit] = useState('');
   const [newGoogleAlert, setNewGoogleAlert] = useState('');
   const [newKeyword, setNewKeyword] = useState('');
@@ -112,7 +155,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
         setLastScanned(new Date());
         if (data.newlyDispatched > 0) {
           toast.success(
-            `📡 Whole-internet scan complete! Found ${data.totalCount} leads across Web, Forums & Reddit. Dispatched ${data.newlyDispatched} alert(s) to Discord!`
+            `📡 Omni-channel scan complete! Found ${data.totalCount} lead(s) across Social Media, Forums, Reddit, Web & Telegram. Dispatched ${data.newlyDispatched} alert(s) to Discord!`
           );
         } else {
           toast.success(`📡 Scan complete! ${data.totalCount} active lead(s) discovered.`);
@@ -228,7 +271,7 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
                   )}
                 </h2>
                 <p className="text-sm text-slate-400 mt-0.5">
-                  Autonomous 24/7 internet crawler tracking prospective PGSharp buyers across Google, Gaming Forums, Reddit & Telegram.
+                  Autonomous 24/7 crawler tracking prospective PGSharp buyers across Twitter/X, YouTube, Facebook, Threads, Instagram, Telegram, Gaming Forums, Reddit & Google.
                 </p>
               </div>
             </div>
@@ -501,7 +544,158 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
               </div>
             </div>
 
-            {/* 3. Subreddits to Monitor */}
+            {/* 3. Social Media & Video Streams (X/Twitter, YouTube, Facebook, Threads, Instagram) */}
+            <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-[#16243d]">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-sky-400 flex items-center gap-1.5 font-mono">
+                  <TwitterIcon className="h-3.5 w-3.5 text-sky-400" />
+                  <span>Social & Video Streams ({(config.socialSearchQueries || []).length})</span>
+                </label>
+                <span className="text-[10px] text-slate-500 font-mono">X, YouTube, FB, Threads, IG</span>
+              </div>
+              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
+                {(config.socialSearchQueries || [
+                  'site:x.com OR site:twitter.com ("buy pgsharp" OR "pgsharp key" OR "pgsharp slot")',
+                  'site:youtube.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp standard")',
+                  'site:facebook.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp slot")',
+                  'site:threads.net ("pgsharp key" OR "pgsharp")',
+                  'site:instagram.com ("pgsharp key")',
+                ]).map((sq, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-sky-800/60 bg-sky-950/50 px-2.5 py-1 text-xs font-medium text-sky-300 font-mono text-[11px]"
+                  >
+                    <span className="truncate max-w-[200px]">{sq}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const current = config.socialSearchQueries || [
+                          'site:x.com OR site:twitter.com ("buy pgsharp" OR "pgsharp key" OR "pgsharp slot")',
+                          'site:youtube.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp standard")',
+                          'site:facebook.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp slot")',
+                          'site:threads.net ("pgsharp key" OR "pgsharp")',
+                          'site:instagram.com ("pgsharp key")',
+                        ];
+                        setConfig({
+                          ...config,
+                          socialSearchQueries: current.filter((_, idx) => idx !== i),
+                        });
+                      }}
+                      className="text-sky-400 hover:text-rose-400"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder='e.g. site:x.com "pgsharp key"'
+                  value={newSocialQuery}
+                  onChange={(e) => setNewSocialQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newSocialQuery.trim()) {
+                      e.preventDefault();
+                      const clean = newSocialQuery.trim();
+                      const current = config.socialSearchQueries || [];
+                      if (!current.includes(clean)) {
+                        setConfig({ ...config, socialSearchQueries: [...current, clean] });
+                      }
+                      setNewSocialQuery('');
+                    }
+                  }}
+                  className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:border-cyan-500 focus:outline-none font-mono"
+                />
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    if (newSocialQuery.trim()) {
+                      const clean = newSocialQuery.trim();
+                      const current = config.socialSearchQueries || [];
+                      if (!current.includes(clean)) {
+                        setConfig({ ...config, socialSearchQueries: [...current, clean] });
+                      }
+                      setNewSocialQuery('');
+                    }
+                  }}
+                  className="border-[#1b2b48] text-sky-300 hover:border-sky-500"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* 4. Telegram Public Channels */}
+            <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-[#16243d]">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 font-mono">
+                  <Send className="h-3.5 w-3.5 text-cyan-400" />
+                  <span>Telegram Channels ({config.telegramChannels.length})</span>
+                </label>
+                <span className="text-[10px] text-slate-500 font-mono">Public channel feeds</span>
+              </div>
+              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
+                {config.telegramChannels.map((ch, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-cyan-800/60 bg-cyan-950/60 px-2.5 py-1 text-xs font-medium text-cyan-300 font-mono"
+                  >
+                    @{ch.replace(/^@/, '')}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setConfig({
+                          ...config,
+                          telegramChannels: config.telegramChannels.filter((_, idx) => idx !== i),
+                        })
+                      }
+                      className="text-cyan-400 hover:text-rose-400"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. pgsharp, PoGoSpoofing"
+                  value={newTelegramChannel}
+                  onChange={(e) => setNewTelegramChannel(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newTelegramChannel.trim()) {
+                      e.preventDefault();
+                      const clean = newTelegramChannel.replace(/^@/, '').trim();
+                      if (!config.telegramChannels.includes(clean)) {
+                        setConfig({ ...config, telegramChannels: [...config.telegramChannels, clean] });
+                      }
+                      setNewTelegramChannel('');
+                    }
+                  }}
+                  className="w-full rounded-lg border border-[#1b2b48] bg-[#0c1424] px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:border-cyan-500 focus:outline-none font-mono"
+                />
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    if (newTelegramChannel.trim()) {
+                      const clean = newTelegramChannel.replace(/^@/, '').trim();
+                      if (!config.telegramChannels.includes(clean)) {
+                        setConfig({ ...config, telegramChannels: [...config.telegramChannels, clean] });
+                      }
+                      setNewTelegramChannel('');
+                    }
+                  }}
+                  className="border-[#1b2b48] text-cyan-300 hover:border-cyan-500"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* 5. Subreddits to Monitor */}
             <div className="space-y-3 bg-[#080e1a] p-4 rounded-xl border border-[#16243d]">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold uppercase tracking-wider text-orange-400 flex items-center gap-1.5 font-mono">
@@ -733,18 +927,33 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
 
             // Determine source badge styling
             let sourceBadgeClass = 'bg-cyan-950/80 text-cyan-400 border-cyan-800/60';
-            let sourceIcon = <Globe className="h-3 w-3" />;
+            let sourceIcon: React.ReactNode = <Globe className="h-3 w-3 text-cyan-400" />;
             let sourceLabel = lead.subSource || 'Open Web';
 
-            if (lead.source === 'forum') {
+            if (lead.source === 'twitter') {
+              sourceBadgeClass = 'bg-[#0c2238] text-[#38bdf8] border-[#0284c7]/60';
+              sourceIcon = <TwitterIcon className="h-3 w-3 text-[#38bdf8]" />;
+            } else if (lead.source === 'youtube') {
+              sourceBadgeClass = 'bg-[#380c10] text-[#f87171] border-[#ef4444]/60';
+              sourceIcon = <YouTubeIcon className="h-3 w-3 text-[#f87171]" />;
+            } else if (lead.source === 'facebook') {
+              sourceBadgeClass = 'bg-[#0c1a38] text-[#60a5fa] border-[#2563eb]/60';
+              sourceIcon = <FacebookIcon className="h-3 w-3 text-[#60a5fa]" />;
+            } else if (lead.source === 'threads') {
+              sourceBadgeClass = 'bg-slate-900 text-slate-200 border-slate-700/60';
+              sourceIcon = <ThreadsIcon className="h-3 w-3 text-slate-200" />;
+            } else if (lead.source === 'instagram') {
+              sourceBadgeClass = 'bg-[#380c25] text-[#f472b6] border-[#ec4899]/60';
+              sourceIcon = <InstagramIcon className="h-3 w-3 text-[#f472b6]" />;
+            } else if (lead.source === 'forum') {
               sourceBadgeClass = 'bg-purple-950/80 text-purple-300 border-purple-800/60';
-              sourceIcon = <Gamepad2 className="h-3 w-3" />;
+              sourceIcon = <Gamepad2 className="h-3 w-3 text-purple-400" />;
             } else if (lead.source === 'reddit') {
               sourceBadgeClass = 'bg-orange-950/80 text-orange-400 border-orange-800/60';
-              sourceIcon = <span className="font-bold text-[10px]">r/</span>;
+              sourceIcon = <span className="font-bold text-[10px] text-orange-400">r/</span>;
             } else if (lead.source === 'telegram') {
               sourceBadgeClass = 'bg-sky-950/80 text-sky-400 border-sky-800/60';
-              sourceIcon = <Send className="h-3 w-3" />;
+              sourceIcon = <Send className="h-3 w-3 text-sky-400" />;
             }
 
             return (
