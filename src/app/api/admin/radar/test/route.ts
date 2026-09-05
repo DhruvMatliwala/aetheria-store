@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: 'Sample HOT lead alert sent to your Discord channel!',
+        sampleLead,
       });
     } else {
       return NextResponse.json(

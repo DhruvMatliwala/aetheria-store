@@ -3,7 +3,7 @@ import { LeadItem, RadarConfig } from '../types';
 import { evaluateBuyerIntent } from './intentFilter';
 import { leadStorage } from '../store/leadStorage';
 
-const parser = new Parser({
+const rssParser = new Parser({
   headers: {
     'User-Agent':
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 AetheriaRadar/2.0',
@@ -20,145 +20,30 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-interface FeedTarget {
-  url: string;
-  label: string;
-  isForum?: boolean;
-  forumName?: string;
-}
-
 export async function scanWebRssFeeds(config: RadarConfig): Promise<LeadItem[]> {
   const leads: LeadItem[] = [];
   const maxAgeHours = config.maxLeadAgeHours || 24;
   const cutoffMs = Date.now() - maxAgeHours * 3600 * 1000;
 
-  const feedUrls: FeedTarget[] = [];
-
-  // ── 1. Google Alerts Feeds (Direct Google Search Indexing) ────────────────
+  // ── 1. Google Alerts RSS Feeds (High Reliability Real-time Index) ──────────
   for (const url of config.googleAlertRssUrls || []) {
-    if (url && url.startsWith('http') && !url.includes('placeholder')) {
-      feedUrls.push({ url, label: 'Google Alerts' });
-    }
-  }
+    if (!url || !url.startsWith('http') || url.includes('placeholder')) continue;
 
-  // ── 2. Open Web Search Streams (Entire Internet via Live Search RSS) ───────
-  const webQueries = config.webSearchQueries && config.webSearchQueries.length > 0
-    ? config.webSearchQueries
-    : config.redditSearchQueries || ['buy pgsharp key', 'pgsharp standard key'];
-
-  for (const query of webQueries.slice(0, 4)) {
-    feedUrls.push({
-      url: `https://www.bing.com/search?q=${encodeURIComponent(query)}&format=rss`,
-      label: `🌐 Web Search: "${query}"`,
-    });
-  }
-
-  // ── 3. Premier Gaming & Spoofing Forums ────────────────────────────────────
-  const targetForums = config.gamingForums && config.gamingForums.length > 0
-    ? config.gamingForums
-    : ['ownedcore.com', 'elitepvpers.com', 'epicnpc.com', 'playerup.com'];
-
-  for (const forum of targetForums.slice(0, 3)) {
-    const cleanForum = forum.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
-    feedUrls.push({
-      url: `https://www.bing.com/search?q=${encodeURIComponent('site:' + cleanForum + ' pgsharp')}&format=rss`,
-      label: `🎮 ${cleanForum}`,
-      isForum: true,
-      forumName: cleanForum,
-    });
-  }
-
-  // ── 4. Social Media & Video Streams (X/Twitter, YouTube, Facebook, Threads, Instagram) ─
-  const socialQueries = config.socialSearchQueries && config.socialSearchQueries.length > 0
-    ? config.socialSearchQueries
-    : [
-        'site:x.com OR site:twitter.com ("buy pgsharp" OR "pgsharp key" OR "pgsharp slot")',
-        'site:youtube.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp standard")',
-        'site:facebook.com ("pgsharp key" OR "buy pgsharp" OR "pgsharp slot")',
-        'site:threads.net ("pgsharp key" OR "pgsharp")',
-        'site:instagram.com ("pgsharp key")',
-      ];
-
-  for (const sq of socialQueries) {
-    feedUrls.push({
-      url: `https://www.bing.com/search?q=${encodeURIComponent(sq)}&format=rss`,
-      label: `Social Search`,
-    });
-  }
-
-  // ── 5. Process Each Feed ──────────────────────────────────────────────────
-  for (const feedEntry of feedUrls) {
-    const feedUrl = feedEntry.url;
     try {
-      const feed = await parser.parseURL(feedUrl);
+      const feed = await rssParser.parseURL(url);
       const items = feed.items || [];
 
       for (const item of items) {
-        const rawId = item.id || item.guid || item.link || '';
-        const itemUrl = item.link || feedUrl;
-        const lowerUrl = itemUrl.toLowerCase();
-
-        let source: LeadItem['source'] = 'web';
-        let subSource = feedEntry.label || 'Open Web';
-        let author = item.creator || 'Web User';
-
-        if (lowerUrl.includes('twitter.com') || lowerUrl.includes('x.com')) {
-          source = 'twitter';
-          subSource = 'X / Twitter';
-          author = item.creator || 'Twitter User';
-        } else if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
-          source = 'youtube';
-          subSource = 'YouTube';
-          author = item.creator || 'YouTube User';
-        } else if (lowerUrl.includes('facebook.com') || lowerUrl.includes('fb.com')) {
-          source = 'facebook';
-          subSource = 'Facebook Group/Post';
-          author = item.creator || 'Facebook User';
-        } else if (lowerUrl.includes('threads.net')) {
-          source = 'threads';
-          subSource = 'Threads';
-          author = item.creator || 'Threads User';
-        } else if (lowerUrl.includes('instagram.com')) {
-          source = 'instagram';
-          subSource = 'Instagram';
-          author = item.creator || 'Instagram User';
-        } else if (lowerUrl.includes('discord.gg') || lowerUrl.includes('discord.com') || lowerUrl.includes('disboard.org')) {
-          source = 'discord';
-          subSource = 'Discord Community';
-          author = item.creator || 'Discord Member';
-        } else if (
-          feedEntry.isForum ||
-          lowerUrl.includes('ownedcore.com') ||
-          lowerUrl.includes('elitepvpers.com') ||
-          lowerUrl.includes('epicnpc.com') ||
-          lowerUrl.includes('playerup.com') ||
-          lowerUrl.includes('forum')
-        ) {
-          source = 'forum';
-          subSource = feedEntry.forumName || 'Gaming Forum';
-          author = item.creator || `${subSource} Member`;
-        } else if (lowerUrl.includes('reddit.com')) {
-          source = 'reddit';
-          subSource = 'Reddit';
-          author = item.creator || 'Reddit User';
-        }
-
-        const leadId = `${source}_${Buffer.from(rawId).toString('base64').substring(0, 32)}`;
-
-        if (leadStorage.has(leadId)) {
-          continue;
-        }
-
+        const itemUrl = item.link || '';
         const title = stripHtml(item.title || '');
         const snippet = stripHtml(item.contentSnippet || item.content || '');
         const fullText = `${title} ${snippet}`;
 
-        const pubTime = item.pubDate ? new Date(item.pubDate).getTime() : 0;
+        const pubTime = item.pubDate ? new Date(item.pubDate).getTime() : Date.now();
+        if (pubTime < cutoffMs) continue;
 
-        if (pubTime === 0 || pubTime < cutoffMs) {
-          leadStorage.add(leadId);
-          continue;
-        }
+        const leadId = `ga_${Buffer.from(itemUrl).toString('base64').substring(0, 28)}`;
+        if (leadStorage.has(leadId)) continue;
 
         const filter = evaluateBuyerIntent(
           fullText,
@@ -168,13 +53,14 @@ export async function scanWebRssFeeds(config: RadarConfig): Promise<LeadItem[]> 
         );
 
         if (filter.isMatch) {
+          const platform = detectPlatform(itemUrl);
           leads.push({
             id: leadId,
-            source,
-            subSource,
-            author,
+            source: platform.source,
+            subSource: platform.subSource,
+            author: item.creator || 'Web Poster',
             title,
-            body: snippet,
+            body: snippet || title,
             url: itemUrl,
             timestamp: pubTime,
             matchedKeywords: filter.matchedKeywords,
@@ -185,10 +71,141 @@ export async function scanWebRssFeeds(config: RadarConfig): Promise<LeadItem[]> 
         }
       }
     } catch (err) {
-      console.error(`[Radar:WebAlerts] Error parsing feed ${feedUrl}:`, err);
+      console.warn(`[Radar:Web] Error parsing Google Alert feed ${url}:`, err);
+    }
+  }
+
+  // ── 2. Live Dynamic Web & Social Crawl (DuckDuckGo Real-Time Search) ────────
+  const dynamicQueries: { query: string; label: string }[] = [
+    { query: 'pgsharp key buy', label: 'Web (Key Buying)' },
+    { query: 'pgsharp "spare key"', label: 'Web (Spare Key)' },
+    { query: 'pgsharp standard key', label: 'Web (Standard Key)' },
+    { query: 'site:youtube.com pgsharp key', label: 'YouTube Discussion' },
+    { query: 'site:x.com pgsharp key', label: 'X / Twitter Post' },
+    { query: 'site:itemku.com pgsharp', label: 'Marketplace (Itemku)' },
+  ];
+
+  for (const { query, label } of dynamicQueries.slice(0, 4)) {
+    try {
+      const searchLeads = await crawlDuckDuckGoQuery(query, label, config);
+      leads.push(...searchLeads);
+      // Brief breather between search engine calls
+      await new Promise((r) => setTimeout(r, 400));
+    } catch (err) {
+      console.warn(`[Radar:Web] Search error on "${query}":`, err);
     }
   }
 
   return leads;
 }
 
+function detectPlatform(url: string): { source: LeadItem['source']; subSource: string } {
+  const lower = url.toLowerCase();
+  if (lower.includes('twitter.com') || lower.includes('x.com')) {
+    return { source: 'twitter', subSource: 'X / Twitter' };
+  }
+  if (lower.includes('youtube.com') || lower.includes('youtu.be')) {
+    return { source: 'youtube', subSource: 'YouTube' };
+  }
+  if (lower.includes('facebook.com') || lower.includes('fb.com')) {
+    return { source: 'facebook', subSource: 'Facebook' };
+  }
+  if (lower.includes('threads.net')) {
+    return { source: 'threads', subSource: 'Threads' };
+  }
+  if (lower.includes('instagram.com')) {
+    return { source: 'instagram', subSource: 'Instagram' };
+  }
+  if (lower.includes('discord.gg') || lower.includes('discord.com')) {
+    return { source: 'discord', subSource: 'Discord' };
+  }
+  if (lower.includes('reddit.com')) {
+    return { source: 'reddit', subSource: 'Reddit' };
+  }
+  if (
+    lower.includes('ownedcore.com') ||
+    lower.includes('elitepvpers.com') ||
+    lower.includes('epicnpc.com') ||
+    lower.includes('itemku.com') ||
+    lower.includes('playerup.com')
+  ) {
+    const domain = lower.split('/')[2] || 'Forum';
+    return { source: 'forum', subSource: domain };
+  }
+  return { source: 'web', subSource: 'Open Web' };
+}
+
+async function crawlDuckDuckGoQuery(
+  query: string,
+  defaultLabel: string,
+  config: RadarConfig
+): Promise<LeadItem[]> {
+  const leads: LeadItem[] = [];
+
+  try {
+    const searchUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
+    const res = await fetch(searchUrl, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      },
+    });
+
+    if (!res.ok) return [];
+
+    const html = await res.text();
+    const blockRegex = /<div[^>]*class="[^"]*web-result[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>/gi;
+    let blockMatch: RegExpExecArray | null;
+
+    while ((blockMatch = blockRegex.exec(html)) !== null) {
+      const block = blockMatch[1];
+      const linkMatch = /<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(block);
+      const snippetMatch = /<a[^>]*class="[^"]*result__snippet[^"]*"[^>]*>([\s\S]*?)<\/a>/i.exec(block);
+
+      if (linkMatch) {
+        let rawHref = linkMatch[1];
+        let realUrl = rawHref;
+        const uddg = /uddg=([^&]+)/.exec(rawHref);
+        if (uddg) {
+          realUrl = decodeURIComponent(uddg[1]);
+        }
+
+        const title = linkMatch[2].replace(/<[^>]*>/g, '').trim();
+        const snippet = snippetMatch ? snippetMatch[1].replace(/<[^>]*>/g, '').trim() : '';
+        const fullText = `${title} ${snippet}`;
+
+        const leadId = `web_${Buffer.from(realUrl).toString('base64').substring(0, 24)}`;
+        if (leadStorage.has(leadId)) continue;
+
+        const filter = evaluateBuyerIntent(
+          fullText,
+          config.highIntentKeywords,
+          config.generalKeywords,
+          config.excludeKeywords
+        );
+
+        if (filter.isMatch) {
+          const platform = detectPlatform(realUrl);
+          leads.push({
+            id: leadId,
+            source: platform.source,
+            subSource: platform.subSource || defaultLabel,
+            author: `${platform.subSource} User`,
+            title,
+            body: snippet || title,
+            url: realUrl,
+            timestamp: Date.now(),
+            matchedKeywords: filter.matchedKeywords,
+            intentLevel: filter.intentLevel,
+          });
+        } else {
+          leadStorage.add(leadId);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn(`[Radar:Web] Search crawl error on "${query}":`, err);
+  }
+
+  return leads;
+}

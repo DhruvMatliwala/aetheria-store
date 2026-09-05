@@ -165,8 +165,13 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
           toast.success(
             `📡 Omni-channel scan complete! Found ${data.totalCount} lead(s) across Social Media, Forums, Reddit, Web & Telegram. Dispatched ${data.newlyDispatched} alert(s) to Discord!`
           );
-        } else {
+        } else if (data.totalCount > 0) {
           toast.success(`📡 Scan complete! ${data.totalCount} active lead(s) discovered.`);
+        } else {
+          toast(
+            '📡 Scan complete! All sources checked. 0 active buyer leads found in the past 24h. The 24/7 cloud crawler will alert your Discord the instant a buyer posts.',
+            { icon: 'ℹ️' }
+          );
         }
       } else {
         toast.error(data.error || 'Failed to complete scan.');
@@ -190,6 +195,9 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
       });
       const data = await res.json();
       if (res.ok && data.success) {
+        if (data.sampleLead) {
+          setLeads((prev) => [data.sampleLead, ...prev.filter((l) => l.id !== data.sampleLead.id)]);
+        }
         toast.success('🧪 Test lead sent to Discord! Check your #leads channel.');
       } else {
         toast.error(data.error || 'Failed to send test alert.');
@@ -917,15 +925,27 @@ export function LeadRadarDashboard({ adminToken }: { adminToken: string }) {
           <p className="mt-1 max-w-sm text-xs text-slate-400">
             Click the <strong className="text-cyan-400">Scan Internet Now</strong> button above to sweep Google, gaming forums, Reddit, and Telegram for prospective buyers.
           </p>
-          <Button
-            size="sm"
-            onClick={handleScan}
-            disabled={loading}
-            className="mt-5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold hover:from-cyan-400 hover:to-blue-500 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
-          >
-            <RefreshCw className={`mr-2 h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-            Run Live Internet Scan
-          </Button>
+          <div className="mt-5 flex items-center gap-3">
+            <Button
+              size="sm"
+              onClick={handleScan}
+              disabled={loading}
+              className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold hover:from-cyan-400 hover:to-blue-500 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+            >
+              <RefreshCw className={`mr-2 h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+              Run Live Internet Scan
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleTestWebhook}
+              disabled={testingWebhook}
+              className="border-[#16243d] bg-[#080e1a] text-slate-300 hover:text-white hover:border-cyan-500/50"
+            >
+              <Send className={`mr-2 h-3.5 w-3.5 ${testingWebhook ? 'animate-spin' : 'text-cyan-400'}`} />
+              {testingWebhook ? 'Sending...' : '🧪 Send Sample Lead to Discord'}
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">

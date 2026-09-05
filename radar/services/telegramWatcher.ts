@@ -2,12 +2,16 @@ import { LeadItem, RadarConfig } from '../types';
 import { evaluateBuyerIntent } from './intentFilter';
 import { leadStorage } from '../store/leadStorage';
 
-const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 AetheriaRadar/1.0';
+const USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 AetheriaRadar/2.0';
 
 export async function scanTelegramChannels(config: RadarConfig): Promise<LeadItem[]> {
   const leads: LeadItem[] = [];
+  const channels = config.telegramChannels && config.telegramChannels.length > 0
+    ? config.telegramChannels
+    : ['PGSharpkeyss', 'pgsharp', 'PoGoSpoofing'];
 
-  for (const channel of config.telegramChannels) {
+  for (const channel of channels) {
     if (!channel || channel.trim() === '') continue;
 
     const cleanChannel = channel.replace(/^@/, '').trim();
@@ -15,37 +19,47 @@ export async function scanTelegramChannels(config: RadarConfig): Promise<LeadIte
 
     try {
       const res = await fetch(previewUrl, {
-        headers: { 'User-Agent': USER_AGENT },
+        headers: {
+          'User-Agent': USER_AGENT,
+          Accept: 'text/html,application/xhtml+xml',
+        },
       });
 
-      if (!res.ok) {
-        continue;
-      }
+      if (!res.ok) continue;
 
       const html = await res.text();
-      // Extract tgme_widget_message blocks
-      const msgRegex = /<div class="tgme_widget_message\b[^"]*" data-post="([^"]+)"([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>/gi;
-
-      const maxAgeHours = config.maxLeadAgeHours || 24;
+      const maxAgeHours = config.maxLeadAgeHours || 72;
       const cutoffMs = Date.now() - maxAgeHours * 3600 * 1000;
 
+      // Extract message containers
+      // Matches data-post="channel/123" and inner content
+      const msgRegex = /data-post="([^"]+)"([\s\S]*?)(?=data-post="|<\/section>|$)/gi;
       let match: RegExpExecArray | null;
+
       while ((match = msgRegex.exec(html)) !== null) {
-        const postDataPost = match[1]; // e.g. "pgsharp/1234"
+        const postDataPost = match[1];
         const blockContent = match[2];
 
         // Extract message text
-        const textMatch = /<div class="tgme_widget_message_text[^"]*"[^>]*>([\s\S]*?)<\/div>/i.exec(blockContent);
+        const textMatch = /class="[^"]*tgme_widget_message_text[^"]*"[^>]*>([\s\S]*?)<\/div>/i.exec(blockContent);
         if (!textMatch) continue;
 
-        const rawText = textMatch[1].replace(/<[^>]*>?/gm, ' ').trim();
-        const leadId = `tg_${postDataPost.replace('/', '_')}`;
-        if (leadStorage.has(leadId)) {
-          continue;
-        }
+        const rawText = textMatch[1]
+          .replace(/<br\s*\/?>/gi, '\n')
+          .replace(/<[^>]*>?/gm, ' ')
+          .replace(/&#39;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&amp;/g, '&')
+          .replace(/\s+/g, ' ')
+          .trim();
 
-        // Extract datetime if available
-        const timeMatch = /<time[^>]*datetime="([^"]+)"/i.exec(blockContent);
+        if (rawText.length < 10) continue;
+
+        const leadId = `tg_${postDataPost.replace('/', '_')}`;
+        if (leadStorage.has(leadId)) continue;
+
+        // Extract datetime
+        const timeMatch = /datetime="([^"]+)"/i.exec(blockContent);
         let postTimeMs = Date.now();
         if (timeMatch) {
           const parsed = new Date(timeMatch[1]).getTime();
@@ -70,9 +84,9 @@ export async function scanTelegramChannels(config: RadarConfig): Promise<LeadIte
           leads.push({
             id: leadId,
             source: 'telegram',
-            subSource: `Telegram @${cleanChannel}`,
+            subSource: `Telegram: @${cleanChannel}`,
             author: `@${cleanChannel}`,
-            title: `New post in @${cleanChannel}`,
+            title: `Telegram @${cleanChannel} Message`,
             body: rawText,
             url: `https://t.me/${postDataPost}`,
             timestamp: postTimeMs,
@@ -84,7 +98,7 @@ export async function scanTelegramChannels(config: RadarConfig): Promise<LeadIte
         }
       }
     } catch (err) {
-      console.error(`[Radar:Telegram] Error scanning channel @${cleanChannel}:`, err);
+      console.warn(`[Radar:Telegram] Error scanning @${cleanChannel}:`, err);
     }
   }
 

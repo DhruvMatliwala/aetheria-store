@@ -32,4 +32,6 @@ export interface RadarConfig {
     hot: string;
     warm: string;
   };
+  redditClientId?: string;
+  redditClientSecret?: string;
 }

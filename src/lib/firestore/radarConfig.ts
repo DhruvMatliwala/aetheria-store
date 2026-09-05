@@ -32,7 +32,9 @@ export const DEFAULT_RADAR_CONFIG: RadarConfig = {
     'site:instagram.com ("pgsharp key")',
   ],
   googleAlertRssUrls: [],
-  telegramChannels: ['pgsharp', 'pgsharpofficial', 'PoGoSpoofing'],
+  telegramChannels: ['PGSharpkeyss', 'pgsharp', 'pgsharpofficial', 'PoGoSpoofing'],
+  redditClientId: process.env.REDDIT_CLIENT_ID || '',
+  redditClientSecret: process.env.REDDIT_CLIENT_SECRET || '',
   highIntentKeywords: [
     'need',
     'want',
