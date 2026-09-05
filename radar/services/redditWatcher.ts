@@ -85,8 +85,31 @@ export async function scanSubreddit(
         const json = await res.json();
         const posts = (json.data?.children || []).map((c: any) => c.data);
         leads.push(...processRedditPosts(posts, `r/${subreddit}`, config));
-        return leads;
       }
+
+      // Also scan latest comments across the subreddit
+      try {
+        const commentUrl = `https://oauth.reddit.com/r/${encodeURIComponent(subreddit)}/comments?limit=50`;
+        const commentRes = await fetch(commentUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'User-Agent': 'node:com.aetheria.radar:v2.0 (by /u/aetheriabot)',
+          },
+        });
+
+        if (commentRes.ok) {
+          const cJson = await commentRes.json();
+          const comments = (cJson.data?.children || []).map((c: any) => ({
+            ...c.data,
+            title: `Comment in r/${subreddit}`,
+          }));
+          leads.push(...processRedditPosts(comments, `r/${subreddit} Comments`, config));
+        }
+      } catch (cErr) {
+        console.error(`[Radar:Reddit] Comment fetch error on r/${subreddit}:`, cErr);
+      }
+
+      if (leads.length > 0) return leads;
     } catch (err) {
       console.error(`[Radar:Reddit] OAuth error on r/${subreddit}:`, err);
     }
