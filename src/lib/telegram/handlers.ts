@@ -5,6 +5,7 @@ import {
   editTelegramMessage,
   answerTelegramCallbackQuery,
   InlineKeyboardMarkup,
+  ReplyKeyboardMarkup,
 } from './bot';
 import {
   PLANS,
@@ -27,42 +28,79 @@ import { randomUUID } from 'crypto';
 const STORE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app';
 
 /**
- * Main Menu Keyboard Markup
+ * Persistent Bottom Keyboard (Always visible below chat input box)
+ * Styled like high-converting VIP digital store bots
  */
-function getMainMenuKeyboard(): InlineKeyboardMarkup {
+export function getPersistentKeyboard(): ReplyKeyboardMarkup {
   return {
-    inline_keyboard: [
+    keyboard: [
       [
-        { text: '🛒 Buy 1 Device (₹180 / $1.99)', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '🛒 Buy Standard Key' },
+        { text: '👤 My Keys' },
       ],
       [
-        { text: '🔥 Buy 2 Devices (₹350 / $3.50)', callback_data: 'cb_buy_1_month_2_device' },
-      ],
-      [
-        { text: '📦 Live Stock Checker', callback_data: 'cb_stock' },
+        { text: '📦 Live Stock' },
         { text: '🌐 Open Web Store', web_app: { url: STORE_URL } },
       ],
       [
-        { text: '🛡️ Anti-Ban & Setup Guide', callback_data: 'cb_faq' },
-        { text: '💬 Live Support', callback_data: 'cb_support' },
+        { text: '💬 Support' },
       ],
     ],
+    resize_keyboard: true,
+    is_persistent: true,
   };
 }
 
 /**
- * Format the welcome card
+ * Plan Picker Message (Styled exactly like the VIP membership menu)
+ */
+function getPlanPickerContent() {
+  const text =
+    `⚡ <b>PGSharp Standard Edition</b>\n\n` +
+    `🎬 <b>Premium Features Included:</b>\n` +
+    `1️⃣ <b>Auto-Walk, Virtual Joystick & Teleport</b>\n` +
+    `2️⃣ <b>100% IV Checker & Quick Catch</b>\n` +
+    `3️⃣ <b>Enhanced Throw (100% Curve & Excellent)</b>\n` +
+    `4️⃣ <b>Live Coordinates Radar & 100 IV Feeds</b>\n` +
+    `5️⃣ <b>Spawn Booster & Auto-Transfer</b>\n` +
+    `🛡️ <i>...and 100% replacement warranty & anti-ban protection!</i>\n\n` +
+    `⭐ <b>Best verified PGSharp key service in the whole market!</b>\n\n` +
+    `👇 <b>Choose Your Plan Below:</b>`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [
+        { text: '📱 1 Device (30 Days) — ₹180', callback_data: 'cb_buy_1_month_1_device' },
+      ],
+      [
+        { text: '🔋 2 Devices (30 Days) [BEST VALUE] — ₹350', callback_data: 'cb_buy_1_month_2_device' },
+      ],
+      [
+        { text: '🌐 Pay on Web Store (Cart)', web_app: { url: STORE_URL } },
+      ],
+      [
+        { text: '⬅️ Back', callback_data: 'menu_main' },
+        { text: '🏠 Home', callback_data: 'menu_main' },
+      ],
+    ],
+  };
+
+  return { text, keyboard };
+}
+
+/**
+ * Welcome Message Card
  */
 function getWelcomeMessage(firstName: string = 'Trainer'): string {
   return (
-    `⚡ <b>Welcome to PGSharp Official Key Dispatch!</b>\n\n` +
-    `Hello <b>${firstName}</b>! Get instant, verified <b>PGSharp Standard Edition</b> activation keys delivered directly into this chat 24/7.\n\n` +
+    `⚡ <b>Welcome to PGSharp Key Store!</b>\n\n` +
+    `Hello <b>${firstName}</b>! Get instant, verified <b>PGSharp Standard Edition</b> keys delivered directly into this chat 24/7.\n\n` +
     `🛡️ <b>Why Buy From Us?</b>\n` +
-    `• <b>100% Anti-Ban Guarantee</b> — Fresh, legitimate keys\n` +
-    `• <b>Instant Auto-Delivery</b> — No waiting, key delivered in chat\n` +
+    `• <b>100% Anti-Ban Verified</b> — Legitimate, fresh keys\n` +
+    `• <b>Instant Auto-Delivery</b> — Key sent to your chat immediately\n` +
     `• <b>All Payment Methods</b> — UPI (GPay/PhonePe/Paytm), Cards & PayPal\n` +
-    `• <b>Full Features</b> — Auto-walk, Teleport, 100% IV, Quick Catch\n\n` +
-    `👇 <b>Select an option below to get started:</b>`
+    `• <b>Full Standard Features</b> — Teleport, 100% IV, Quick Catch, Auto-Walk\n\n` +
+    `👇 <b>Tap an option on your keyboard below or select a plan:</b>`
   );
 }
 
@@ -103,9 +141,18 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
   // Main menu navigation
   if (data === 'menu_main') {
-    await sendTelegramMessage(chatId, getWelcomeMessage(firstName), {
-      reply_markup: getMainMenuKeyboard(),
-    });
+    const { text, keyboard } = getPlanPickerContent();
+    if (messageId) {
+      await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+    } else {
+      await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    }
+    return;
+  }
+
+  // My Keys / My Profile
+  if (data === 'cb_my_keys') {
+    await handleMyKeys(chatId, query.from.username);
     return;
   }
 
@@ -118,17 +165,20 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       `📦 <b>Live Real-Time PGSharp Inventory</b>\n\n` +
       `📱 <b>1 Device Plan (30 Days):</b>\n` +
       `${stock1 > 0 ? `🟢 <b>${stock1} Slots Available</b>` : '🔴 <b>Out of Stock</b>'} — ₹180 / $1.99\n\n` +
-      `📱📱 <b>2 Devices Plan (30 Days):</b>\n` +
+      `🔋 <b>2 Devices Plan (30 Days):</b>\n` +
       `${stock2 > 0 ? `🟢 <b>${stock2} Full Keys Available</b>` : '🔴 <b>Out of Stock</b>'} — ₹350 / $3.50\n\n` +
       `⚡ <i>All keys come with 100% replacement warranty and instant dispatch.</i>`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
-          { text: '🛒 Buy 1 Device', callback_data: 'cb_buy_1_month_1_device' },
-          { text: '🔥 Buy 2 Devices', callback_data: 'cb_buy_1_month_2_device' },
+          { text: '📱 Buy 1 Device (₹180)', callback_data: 'cb_buy_1_month_1_device' },
+          { text: '🔋 Buy 2 Devices (₹350)', callback_data: 'cb_buy_1_month_2_device' },
         ],
-        [{ text: '⬅️ Back to Main Menu', callback_data: 'menu_main' }],
+        [
+          { text: '⬅️ Back', callback_data: 'menu_main' },
+          { text: '🏠 Home', callback_data: 'menu_main' },
+        ],
       ],
     };
 
@@ -192,21 +242,21 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     const paymentText =
       `🛒 <b>Order Summary: ${plan.name} (${plan.duration})</b>\n\n` +
-      `⚡ <b>Slots:</b> ${plan.device_slots} Android Device(s)\n` +
+      `⚡ <b>Device Slots:</b> ${plan.device_slots} Android Device(s)\n` +
       `💰 <b>Price (INR):</b> ₹${amountInr}\n` +
       `💵 <b>Price (USD):</b> $${amountUsd}\n` +
       `🆔 <b>Order ID:</b> <code>${orderId}</code>\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━\n` +
-      `💳 <b>Payment Option 1: Direct UPI (India - 0% Fee)</b>\n` +
+      `💳 <b>Payment Option 1: Direct UPI (0% Fee)</b>\n` +
       `• UPI ID: <code>${UPI_VPA}</code> <i>(tap to copy)</i>\n` +
       `• Payee Name: <b>${UPI_PAYEE_NAME}</b>\n` +
       `• Apps: Google Pay, PhonePe, Paytm, BHIM, Cred\n\n` +
       `💳 <b>Payment Option 2: International (PayPal / Card)</b>\n` +
-      `• PayPal.Me: <a href="${PAYPAL_ME_URL}/${amountUsd}USD">${PAYPAL_ME_URL}/${amountUsd}USD</a>\n\n` +
+      `• Link: <a href="${PAYPAL_ME_URL}/${amountUsd}USD">${PAYPAL_ME_URL}/${amountUsd}USD</a>\n\n` +
       `━━━━━━━━━━━━━━━━━━━━━━\n` +
       `📝 <b>HOW TO GET YOUR KEY INSTANTLY:</b>\n` +
-      `1. Pay <b>₹${amountInr}</b> using UPI or <b>$${amountUsd}</b> via PayPal.\n` +
-      `2. After paying, <b>send your 12-digit UPI Reference Number / UTR</b> right here in this chat (e.g. <code>423456789012</code>).\n` +
+      `1. Pay <b>₹${amountInr}</b> via UPI or <b>$${amountUsd}</b> via PayPal.\n` +
+      `2. After paying, <b>send your 12-digit UPI UTR / Ref Number</b> in this chat (e.g. <code>423456789012</code>).\n` +
       `3. Our automated system will verify and dispatch your key immediately!`;
 
     const keyboard: InlineKeyboardMarkup = {
@@ -215,12 +265,15 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
           { text: '⚡ Pay via UPI App (GPay/PhonePe)', url: OFFICIAL_GPAY_URI },
         ],
         [
-          { text: '💳 Pay via PayPal ($' + amountUsd + ')', url: `${PAYPAL_ME_URL}/${amountUsd}USD` },
+          { text: '💳 Pay with PayPal ($' + amountUsd + ')', url: `${PAYPAL_ME_URL}/${amountUsd}USD` },
         ],
         [
-          { text: '🌐 Pay on Web Store (Cart Checkout)', web_app: { url: STORE_URL } },
+          { text: '🌐 Pay on Web Store (Cart)', web_app: { url: STORE_URL } },
         ],
-        [{ text: '⬅️ Cancel / Back to Menu', callback_data: 'menu_main' }],
+        [
+          { text: '⬅️ Back', callback_data: 'menu_main' },
+          { text: '🏠 Home', callback_data: 'menu_main' },
+        ],
       ],
     };
 
@@ -289,37 +342,122 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 }
 
 /**
- * Handle Inbound Text Messages (Commands, UTR submissions)
+ * Handle My Keys / My Profile
+ */
+async function handleMyKeys(chatId: number, username?: string) {
+  const db = getAdminFirestore();
+
+  try {
+    const snap = await db
+      .collection('orders')
+      .where('telegram_chat_id', '==', chatId)
+      .where('payment_status', '==', 'paid')
+      .orderBy('created_at', 'desc')
+      .limit(10)
+      .get();
+
+    if (snap.empty) {
+      const emptyText =
+        `👤 <b>My Account & Keys</b>\n\n` +
+        `🆔 <b>Telegram ID:</b> <code>${chatId}</code>\n` +
+        `👤 <b>Username:</b> ${username ? `@${username}` : 'Trainer'}\n` +
+        `📦 <b>Active Keys:</b> 0\n\n` +
+        `<i>You have not purchased any keys yet.</i>\n\n` +
+        `Tap <b>🛒 Buy Standard Key</b> below to get your instant key!`;
+
+      await sendTelegramMessage(chatId, emptyText, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '🛒 Buy Standard Key', callback_data: 'cb_buy_1_month_1_device' }],
+            [{ text: '📦 Check Live Stock', callback_data: 'cb_stock' }],
+          ],
+        },
+      });
+      return;
+    }
+
+    let keysList = '';
+    snap.docs.forEach((doc, idx) => {
+      const order = doc.data();
+      const plan = PLAN_MAP[order.plan_type] || PLANS[0];
+      const key = order.delivered_key || 'Processing';
+      keysList += `\n${idx + 1}️⃣ <b>${plan.name} (${plan.duration}):</b>\n<code>${key}</code>\n<i>Order: ${order.order_id}</i>\n`;
+    });
+
+    const profileText =
+      `👤 <b>My Account & Keys</b>\n\n` +
+      `🆔 <b>Telegram ID:</b> <code>${chatId}</code>\n` +
+      `👤 <b>Username:</b> ${username ? `@${username}` : 'Trainer'}\n` +
+      `📦 <b>Total Purchased Keys:</b> ${snap.size}\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `🔑 <b>Your License Keys:</b>\n` +
+      `${keysList}\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `💡 <i>Tap any key code above to copy to clipboard.</i>\n\n` +
+      `<b>How to activate:</b> Open PGSharp -> Star ⭐ -> Settings ⚙️ -> Activate.`;
+
+    await sendTelegramMessage(chatId, profileText, {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '🔄 Renew / Buy Another Key', callback_data: 'cb_buy_1_month_1_device' }],
+          [{ text: '💬 Support', url: TELEGRAM_URL }],
+        ],
+      },
+    });
+  } catch (err) {
+    console.error('[Telegram] My Keys error:', err);
+    await sendTelegramMessage(
+      chatId,
+      `👤 <b>My Account</b>\n\n🆔 <b>Telegram ID:</b> <code>${chatId}</code>\n\nTap below to buy a key:`,
+      {
+        reply_markup: {
+          inline_keyboard: [[{ text: '🛒 Buy Standard Key', callback_data: 'cb_buy_1_month_1_device' }]],
+        },
+      }
+    );
+  }
+}
+
+/**
+ * Handle Inbound Text Messages (Persistent Keyboard buttons, Commands, UTR submissions)
  */
 async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>) {
   const chatId = message.chat.id;
   const rawText = (message.text || '').trim();
   const firstName = message.from?.first_name || 'Trainer';
+  const username = message.from?.username;
 
-  // ── Commands ─────────────────────────────────────────────────────────────
-  if (rawText.startsWith('/start')) {
-    await sendTelegramMessage(chatId, getWelcomeMessage(firstName), {
-      reply_markup: getMainMenuKeyboard(),
+  // ── 1. Persistent Keyboard Actions ────────────────────────────────────────
+  if (rawText === '🛒 Buy Standard Key' || rawText.startsWith('/buy')) {
+    const { text, keyboard } = getPlanPickerContent();
+    await sendTelegramMessage(chatId, text, {
+      reply_markup: keyboard,
     });
     return;
   }
 
-  if (rawText.startsWith('/stock')) {
+  if (rawText === '👤 My Keys' || rawText === '👤 My profile' || rawText.startsWith('/keys') || rawText.startsWith('/profile')) {
+    await handleMyKeys(chatId, username);
+    return;
+  }
+
+  if (rawText === '📦 Live Stock' || rawText.startsWith('/stock')) {
     const stock1 = await getAvailableCount('1_month_1_device');
     const stock2 = await getAvailableCount('1_month_2_device');
     await sendTelegramMessage(
       chatId,
       `📦 <b>Current Live Stock:</b>\n\n` +
-        `• 1 Device: <b>${stock1}</b> slots available (₹180)\n` +
-        `• 2 Devices: <b>${stock2}</b> keys available (₹350)\n\n` +
-        `Type /buy to order immediately!`,
+        `• 📱 <b>1 Device Plan:</b> <b>${stock1}</b> slots available (₹180 / $1.99)\n` +
+        `• 🔋 <b>2 Devices Plan:</b> <b>${stock2}</b> keys available (₹350 / $3.50)\n\n` +
+        `⚡ <i>Instant auto-delivery 24/7!</i>`,
       {
         reply_markup: {
           inline_keyboard: [
             [
-              { text: '🛒 Buy 1 Device', callback_data: 'cb_buy_1_month_1_device' },
-              { text: '🔥 Buy 2 Devices', callback_data: 'cb_buy_1_month_2_device' },
+              { text: '📱 Buy 1 Device (₹180)', callback_data: 'cb_buy_1_month_1_device' },
+              { text: '🔋 Buy 2 Devices (₹350)', callback_data: 'cb_buy_1_month_2_device' },
             ],
+            [{ text: '🌐 Open Web Store', web_app: { url: STORE_URL } }],
           ],
         },
       }
@@ -327,28 +465,20 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     return;
   }
 
-  if (rawText.startsWith('/buy')) {
-    await sendTelegramMessage(chatId, `👇 <b>Choose your desired PGSharp Standard plan:</b>`, {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: '🛒 Buy 1 Device (₹180 / $1.99)', callback_data: 'cb_buy_1_month_1_device' }],
-          [{ text: '🔥 Buy 2 Devices (₹350 / $3.50)', callback_data: 'cb_buy_1_month_2_device' }],
-          [{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }],
-        ],
-      },
-    });
-    return;
-  }
-
-  if (rawText.startsWith('/help') || rawText.startsWith('/support')) {
+  if (rawText === '💬 Support' || rawText.startsWith('/help') || rawText.startsWith('/support')) {
     await sendTelegramMessage(
       chatId,
-      `💬 <b>Need assistance?</b>\nDirect support is available on Telegram: @sleekfx3`,
+      `💬 <b>Direct Support & Verification</b>\n\n` +
+        `Need help with key activation, have questions, or need custom payment?\n\n` +
+        `• <b>Telegram:</b> @sleekfx3\n` +
+        `• <b>Discord:</b> <a href="${DISCORD_URL}">Official Discord Support</a>\n` +
+        `• <b>Response Time:</b> Usually within 5–15 minutes\n\n` +
+        `Tap below to message directly:`,
       {
         reply_markup: {
           inline_keyboard: [
             [{ text: '💬 Chat with @sleekfx3', url: TELEGRAM_URL }],
-            [{ text: '⬅️ Main Menu', callback_data: 'menu_main' }],
+            [{ text: '🌐 Visit Web Store', web_app: { url: STORE_URL } }],
           ],
         },
       }
@@ -356,21 +486,35 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     return;
   }
 
-  // ── Detect 12-digit UPI Reference Number / UTR ────────────────────────────
-  const utrMatch = rawText.match(/\b(\d{12})\b/);
-  if (utrMatch) {
-    const cleanUtr = utrMatch[1];
-    await processTelegramUtrSubmission(chatId, cleanUtr, message.from?.username);
+  // ── 2. Commands ───────────────────────────────────────────────────────────
+  if (rawText.startsWith('/start')) {
+    // Send welcome message and attach the persistent bottom keyboard
+    await sendTelegramMessage(chatId, getWelcomeMessage(firstName), {
+      reply_markup: getPersistentKeyboard(),
+    });
+    // Immediately show the plan picker card (like in the screenshot)
+    const { text, keyboard } = getPlanPickerContent();
+    await sendTelegramMessage(chatId, text, {
+      reply_markup: keyboard,
+    });
     return;
   }
 
-  // ── Default Friendly Fallback ─────────────────────────────────────────────
+  // ── 3. Detect 12-digit UPI Reference Number / UTR ──────────────────────────
+  const utrMatch = rawText.match(/\b(\d{12})\b/);
+  if (utrMatch) {
+    const cleanUtr = utrMatch[1];
+    await processTelegramUtrSubmission(chatId, cleanUtr, username);
+    return;
+  }
+
+  // ── 4. Default Friendly Fallback with Persistent Keyboard ──────────────────
   await sendTelegramMessage(
     chatId,
-    `👋 Hello <b>${firstName}</b>! To purchase a PGSharp key or check stock, please choose an option from the menu below.\n\n` +
-      `<i>If you recently sent a payment, please reply with your 12-digit UPI Ref/UTR number.</i>`,
+    `👋 Hello <b>${firstName}</b>! To purchase a PGSharp key, view your keys, or check stock, use the menu buttons below.\n\n` +
+      `<i>If you recently sent a UPI payment, reply with your 12-digit UTR number.</i>`,
     {
-      reply_markup: getMainMenuKeyboard(),
+      reply_markup: getPersistentKeyboard(),
     }
   );
 }
@@ -475,6 +619,7 @@ async function processTelegramUtrSubmission(
       await sendTelegramMessage(chatId, deliveryMessage, {
         reply_markup: {
           inline_keyboard: [
+            [{ text: '👤 View All My Keys', callback_data: 'cb_my_keys' }],
             [{ text: '💬 Support & Questions', url: TELEGRAM_URL }],
             [{ text: '🌐 Visit Web Store', web_app: { url: STORE_URL } }],
           ],

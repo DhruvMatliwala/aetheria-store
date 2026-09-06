@@ -11,6 +11,19 @@ export interface InlineKeyboardMarkup {
   inline_keyboard: InlineKeyboardButton[][];
 }
 
+export interface KeyboardButton {
+  text: string;
+  web_app?: { url: string };
+  request_contact?: boolean;
+}
+
+export interface ReplyKeyboardMarkup {
+  keyboard: KeyboardButton[][];
+  resize_keyboard?: boolean;
+  one_time_keyboard?: boolean;
+  is_persistent?: boolean;
+}
+
 export interface SendMessageOptions {
   parse_mode?: 'HTML' | 'MarkdownV2' | 'Markdown';
   reply_markup?: InlineKeyboardMarkup | any;
