@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         `1. Open PGSharp on your Android device.\n` +
         `2. Tap the floating Star icon ⭐ -> Go to <b>Settings ⚙️</b>.\n` +
         `3. Tap <b>Activate</b>, paste your key, and tap OK!\n\n` +
-        `Need assistance or renewal? We're always here at @sleekfx3!`;
+        `Need a new key next month or assistance? We're always here at @sleekfx3!`;
 
       sendTelegramMessage(existingOrder.telegram_chat_id, deliveryMessage, {
         reply_markup: {

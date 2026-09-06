@@ -533,7 +533,7 @@ async function handleReferAndEarn(chatId: number) {
     `👥 <b>Refer & Earn</b>\n\n` +
     `Invite fellow trainers and save together!\n` +
     `• 🎁 <b>Your Friend Gets:</b> ₹30 / $0.50 OFF their first key\n` +
-    `• 🎟️ <b>You Get:</b> ₹30 / $0.50 OFF renewal coupon when they buy\n\n` +
+    `• 🎟️ <b>You Get:</b> ₹30 / $0.50 OFF coupon for your next key purchase\n\n` +
     `🔗 <b>Your Personal Referral Link:</b>\n` +
     `<code>${refLink}</code>\n` +
     `<i>(Tap link above to copy)</i>\n\n` +
@@ -552,7 +552,7 @@ async function handleReferAndEarn(chatId: number) {
         },
       ],
       [
-        { text: '🛒 Buy / Renew Key', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '🛒 Buy A Key', callback_data: 'cb_buy_1_month_1_device' },
         { text: '⬅️ Back to Menu', callback_data: 'menu_main' },
       ],
     ],
@@ -647,12 +647,12 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
         } else if (eligibility.reason === 'self_referral') {
           await sendTelegramMessage(
             chatId,
-            `⚠️ <b>Self-referrals are not allowed!</b>\nShare your link with other trainers in <b>👥 Refer & Earn</b> to earn ₹30 / $0.50 renewal coupons.`
+            `⚠️ <b>Self-referrals are not allowed!</b>\nShare your link with other trainers in <b>👥 Refer & Earn</b> to earn ₹30 / $0.50 discount coupons on your next key purchase.`
           );
         } else {
           await sendTelegramMessage(
             chatId,
-            `👋 <b>Welcome back!</b>\nReferral discounts are reserved for new trainers' first purchase. Use <b>👥 Refer & Earn</b> below to invite friends and earn renewal coupons!`
+            `👋 <b>Welcome back!</b>\nReferral discounts are reserved for new trainers' first purchase. Use <b>👥 Refer & Earn</b> below to invite friends and earn discount coupons on your next key purchase!`
           );
         }
       }
@@ -824,7 +824,7 @@ async function processTelegramUtrSubmission(
         `1. Open PGSharp on your Android device.\n` +
         `2. Tap the floating Star icon ⭐ -> Go to <b>Settings ⚙️</b>.\n` +
         `3. Tap <b>Activate</b>, paste your key, and tap OK!\n\n` +
-        `Need assistance or renewal? We're always here at @sleekfx3!`;
+        `Need a new key next month or assistance? We're always here at @sleekfx3!`;
 
       await sendTelegramMessage(chatId, deliveryMessage, {
         reply_markup: {
@@ -1028,7 +1028,7 @@ async function processTelegramPaypalSubmission(
         `1. Open PGSharp on your Android device.\n` +
         `2. Tap the floating Star icon ⭐ -> Go to <b>Settings ⚙️</b>.\n` +
         `3. Tap <b>Activate</b>, paste your key, and tap OK!\n\n` +
-        `Need assistance or renewal? We're always here at @sleekfx3!`;
+        `Need a new key next month or assistance? We're always here at @sleekfx3!`;
 
       await sendTelegramMessage(chatId, deliveryMessage, {
         reply_markup: {

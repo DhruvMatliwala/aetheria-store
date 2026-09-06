@@ -178,13 +178,13 @@ export async function processReferralReward(order: Order): Promise<boolean> {
   const rewardMessage =
     `🎉 <b>REFERRAL REWARD EARNED!</b>\n\n` +
     `Your friend just purchased a PGSharp key!\n` +
-    `Here is your exclusive <b>₹30 / $0.50 OFF</b> discount coupon for your next renewal:\n\n` +
+    `Here is your exclusive <b>₹30 / $0.50 OFF</b> discount coupon for your next key purchase:\n\n` +
     `🎟️ Coupon Code:\n` +
     `<code>${couponCode}</code>\n` +
     `<i>(Tap code above to copy to clipboard)</i>\n\n` +
     `• <b>UPI Discount:</b> ₹30 OFF (₹180 ➔ ₹150 / ₹350 ➔ ₹320)\n` +
     `• <b>PayPal Discount:</b> $0.50 OFF ($1.99 ➔ $1.50 / $3.50 ➔ $3.00)\n` +
-    `• Single-use coupon — simply enter it in chat during checkout!\n\n` +
+    `• Single-use coupon — simply enter it in chat when buying your next key!\n\n` +
     `Keep inviting friends to earn more coupons! 🚀`;
 
   try {
@@ -192,7 +192,7 @@ export async function processReferralReward(order: Order): Promise<boolean> {
       reply_markup: {
         inline_keyboard: [
           [{ text: '👥 View My Referral Stats', callback_data: 'cb_refer_earn' }],
-          [{ text: '📱 Renew My Key Now', callback_data: 'cb_buy_1_month_1_device' }],
+          [{ text: '📱 Buy My Next Key', callback_data: 'cb_buy_1_month_1_device' }],
         ],
       },
     });
