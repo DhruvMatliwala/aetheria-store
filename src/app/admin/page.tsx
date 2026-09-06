@@ -86,6 +86,7 @@ export default function AdminPage() {
   const [secretInput, setSecretInput] = useState('');
   const [currentTime, setCurrentTime] = useState<string>('');
   const [testingWebhook, setTestingWebhook] = useState(false);
+  const [checkingReminders, setCheckingReminders] = useState(false);
 
   async function handleTestWebhook() {
     setTestingWebhook(true);
@@ -107,6 +108,31 @@ export default function AdminPage() {
       toast.error('Network error testing webhook.');
     } finally {
       setTestingWebhook(false);
+    }
+  }
+
+  async function handleTriggerReminders() {
+    setCheckingReminders(true);
+    try {
+      const res = await fetch('/api/cron/expiry-reminders', {
+        headers: {
+          'x-admin-secret': adminToken,
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        const { totalScanned, remindedCount, skippedCount } = data.result;
+        toast.success(
+          `⏳ Scanned ${totalScanned} orders: Sent ${remindedCount} 48h reminders! (${skippedCount} not yet due)`,
+          { duration: 5000 }
+        );
+      } else {
+        toast.error(data.error || 'Failed to trigger reminders.');
+      }
+    } catch (err: any) {
+      toast.error('Network error checking reminders.');
+    } finally {
+      setCheckingReminders(false);
     }
   }
 
@@ -631,6 +657,18 @@ export default function AdminPage() {
               >
                 <Bell size={13} className={testingWebhook ? 'animate-bounce text-amber-400' : 'text-amber-400'} />
                 <span className="hidden sm:inline">{testingWebhook ? 'Testing...' : 'Test Webhook'}</span>
+              </Button>
+
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleTriggerReminders}
+                disabled={checkingReminders}
+                className="bg-[#0c1424] border-[#1b2b48] hover:bg-[#142038] text-slate-200 text-xs px-2.5 sm:px-3 py-1.5 flex items-center gap-1.5"
+                title="Scan and dispatch 48-hour key expiry reminders via Telegram and Email"
+              >
+                <Clock size={13} className={checkingReminders ? 'animate-spin text-cyan-400' : 'text-cyan-400'} />
+                <span className="hidden sm:inline">{checkingReminders ? 'Reminding...' : 'Run Reminders'}</span>
               </Button>
 
               <Button

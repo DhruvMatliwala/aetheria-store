@@ -490,12 +490,29 @@ async function handleMyKeys(chatId: number, username?: string) {
       return;
     }
 
+    const nowMs = Date.now();
     let keysList = '';
     snap.docs.forEach((doc, idx) => {
       const order = doc.data();
       const plan = PLAN_MAP[order.plan_type] || PLANS[0];
       const key = order.delivered_key || 'Processing';
-      keysList += `\n${idx + 1}. <b>${plan.name} (${plan.duration}):</b>\n<code>${key}</code>\n`;
+
+      const createdAtMs =
+        order.created_at?.toDate?.()?.getTime?.() ||
+        (typeof order.created_at === 'number' ? order.created_at : nowMs);
+      const expiresAtMs = createdAtMs + 30 * 24 * 60 * 60 * 1000;
+      const daysLeft = Math.ceil((expiresAtMs - nowMs) / (1000 * 60 * 60 * 24));
+
+      let statusBadge = '';
+      if (daysLeft <= 0) {
+        statusBadge = '🔴 <i>Expired (30 days completed)</i>';
+      } else if (daysLeft <= 3) {
+        statusBadge = `⚠️ <b>Expiring soon: ${daysLeft} day${daysLeft === 1 ? '' : 's'} left!</b>`;
+      } else {
+        statusBadge = `🟢 <i>Active (${daysLeft} days remaining)</i>`;
+      }
+
+      keysList += `\n${idx + 1}. <b>${plan.name} (${plan.duration}):</b>\n<code>${key}</code>\n${statusBadge}\n`;
     });
 
     const profileText =

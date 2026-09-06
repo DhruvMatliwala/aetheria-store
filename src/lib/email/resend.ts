@@ -149,3 +149,60 @@ export async function sendKeyDeliveryEmail(params: KeyDeliveryEmailParams): Prom
     throw new Error(`Email delivery failed: ${error.message}`);
   }
 }
+
+export interface KeyExpiryReminderEmailParams {
+  to: string;
+  orderId: string;
+  planType: string;
+  customerName?: string;
+}
+
+export async function sendKeyExpiryReminderEmail(params: KeyExpiryReminderEmailParams): Promise<void> {
+  const from = process.env.EMAIL_FROM || 'Aetheria Store <onboarding@resend.dev>';
+  const resend = getResendClient();
+  const name = extractName(params.to, params.customerName);
+  const storeUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app';
+
+  const text = `Dear ${name},
+
+Your 30-day PGSharp Standard key from Aetheria Store is expiring in 48 hours.
+
+To avoid losing your teleport, auto-walk, and 100% IV scanner mid-event, visit our store to get your next key:
+${storeUrl}
+
+Or order directly via our 24/7 Telegram bot: https://t.me/pgsharpkeystorebot
+
+Need assistance? Feel free to contact our support on Telegram: @sleekfx3
+
+Regards,
+Aetheria-store`;
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:24px;background:#ffffff;color:#222222;font-family:'Times New Roman', Times, serif;font-size:16px;line-height:1.6;">
+  <div style="max-width:620px;margin:0 auto;padding:12px;">
+    <p>Dear ${name},</p>
+    <p>Your 30-day PGSharp Standard key is <strong>expiring in 48 hours</strong>.</p>
+    <p>To avoid losing your teleport, auto-walk, and 100% IV scanner mid-event, grab your next fresh key now:</p>
+    <div style="margin:24px 0;text-align:center;">
+      <a href="${storeUrl}" style="background:#0e7490;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;font-size:16px;display:inline-block;">🛒 Get My Next Key</a>
+    </div>
+    <p>Or order directly on Telegram via our 24/7 bot: <a href="https://t.me/pgsharpkeystorebot">@pgsharpkeystorebot</a></p>
+    <p>Regards,<br><strong>Aetheria-store</strong></p>
+  </div>
+</body>
+</html>`;
+
+  const { error } = await resend.emails.send({
+    from,
+    to: params.to,
+    subject: '⏳ Reminder: Your PGSharp Key expires in 48 hours!',
+    text,
+    html,
+  });
+
+  if (error) {
+    console.error('[resend] Expiry reminder email failed:', error);
+  }
+}

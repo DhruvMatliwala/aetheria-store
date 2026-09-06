@@ -26,6 +26,9 @@ export interface Order {
   telegram_user_id?: number;
   applied_referral_from?: number;
   referral_reward_processed?: boolean;
+  expiry_reminder_sent?: boolean;
+  expiry_reminder_sent_at?: FirebaseFirestore.Timestamp;
+  key_expires_at?: FirebaseFirestore.Timestamp;
   created_at: FirebaseFirestore.Timestamp;
   updated_at?: FirebaseFirestore.Timestamp;
 }
