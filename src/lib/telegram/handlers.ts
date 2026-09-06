@@ -147,8 +147,8 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     const stockText =
       `📦 <b>Live Stock</b>\n\n` +
-      `• 📱 <b>1 Device (30 Days):</b> ${stock1 > 0 ? `🟢 ${stock1} in stock` : '🔴 Sold out'} (₹180 / $1.99)\n` +
-      `• 🔋 <b>2 Devices (30 Days):</b> ${stock2 > 0 ? `🟢 ${stock2} in stock` : '🔴 Sold out'} (₹350 / $3.50)`;
+      `• <b>1 Device :</b> ${stock1 > 0 ? `${stock1} in stock` : '0 in stock'}\n` +
+      `• <b>2 Devices :</b> ${stock2 > 0 ? `${stock2} in stock` : '0 in stock'}`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
@@ -498,8 +498,8 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     await sendTelegramMessage(
       chatId,
       `📦 <b>Live Stock</b>\n\n` +
-        `• 📱 <b>1 Device (30 Days):</b> ${stock1 > 0 ? `🟢 ${stock1} in stock` : '🔴 Sold out'} (₹180 / $1.99)\n` +
-        `• 🔋 <b>2 Devices (30 Days):</b> ${stock2 > 0 ? `🟢 ${stock2} in stock` : '🔴 Sold out'} (₹350 / $3.50)`,
+        `• <b>1 Device :</b> ${stock1 > 0 ? `${stock1} in stock` : '0 in stock'}\n` +
+        `• <b>2 Devices :</b> ${stock2 > 0 ? `${stock2} in stock` : '0 in stock'}`,
       {
         reply_markup: {
           inline_keyboard: [
