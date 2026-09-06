@@ -6,6 +6,8 @@ import { Order } from '@/types/order';
 import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
 import { sendAdminOrderAlert, sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
+import { sendTelegramMessage } from '@/lib/telegram/bot';
+import { PLAN_MAP, PLANS, TELEGRAM_URL } from '@/lib/constants';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -330,6 +332,33 @@ async function handleIncomingSms(data: Record<string, any>) {
         planType: orderData.plan_type,
         licenseKey: allocation.decryptedKey,
       }).catch((err) => console.error('[webhooks/upi] Email send error:', err));
+
+      // Auto-deliver key to Telegram if order originated from Telegram bot (Zero-UTR matching!)
+      if (orderData.telegram_chat_id) {
+        const plan = PLAN_MAP[orderData.plan_type] || PLANS[0];
+        const deliveryMessage =
+          `🎉 <b>PAYMENT DETECTED! YOUR KEY HAS BEEN DISPATCHED:</b>\n\n` +
+          `🔑 <b>License Key:</b>\n` +
+          `<code>${allocation.decryptedKey}</code>\n` +
+          `<i>(Tap key above to copy to clipboard)</i>\n\n` +
+          `📱 <b>Plan:</b> ${plan.name} (${plan.duration})\n` +
+          `⚡ <b>Device Slots:</b> ${plan.device_slots} Android Device(s)\n` +
+          `🆔 <b>Order ID:</b> <code>${orderData.order_id}</code>\n\n` +
+          `<b>How to Activate:</b>\n` +
+          `1. Open PGSharp on your Android device.\n` +
+          `2. Tap the floating Star icon ⭐ -> Go to <b>Settings ⚙️</b>.\n` +
+          `3. Tap <b>Activate</b>, paste your key, and tap OK!\n\n` +
+          `Need assistance or renewal? We're always here at @sleekfx3!`;
+
+        sendTelegramMessage(orderData.telegram_chat_id, deliveryMessage, {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '👤 View All My Keys', callback_data: 'cb_my_keys' }],
+              [{ text: '💬 Support & Questions', url: TELEGRAM_URL }],
+            ],
+          },
+        }).catch((err) => console.error('[webhooks/upi] Telegram auto-deliver error:', err));
+      }
 
       // Dispatch real-time Discord notification
       sendAdminOrderAlert({

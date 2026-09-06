@@ -232,7 +232,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
           { text: '💳 Pay via PayPal / Card ($' + amountUsd + ')', callback_data: `cb_pay_paypal_${plan.id}` },
         ],
         [
-          { text: '🌐 1-Click Web Checkout (No UTR needed)', web_app: { url: STORE_URL } },
+          { text: '🌐 Open Web Store (Mini App)', web_app: { url: STORE_URL } },
         ],
         [
           { text: '⬅️ Back to Plans', callback_data: 'menu_main' },
@@ -293,16 +293,16 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       `<code>${UPI_VPA}</code>\n\n` +
       `🆔 <b>Order ID:</b> <code>${orderId}</code>\n` +
       `━━━━━━━━━━━━━━━━━━━━━━\n` +
-      `📝 <b>How to get your key:</b>\n` +
-      `1. Tap the UPI ID above to copy it (or scan the QR code).\n` +
-      `2. Pay <b>₹${amountInr}</b> using GPay, PhonePe, Paytm, or BHIM.\n` +
-      `3. Reply right here in this chat with your <b>12-digit UPI UTR / Ref Number</b>.\n` +
-      `4. Your key will be dispatched immediately!`;
+      `📝 <b>How it works (Zero-UTR Instant Key):</b>\n` +
+      `1. Tap the UPI ID above to copy it (or scan QR code).\n` +
+      `2. Pay exact <b>₹${amountInr}</b> in GPay, PhonePe, Paytm, or BHIM.\n` +
+      `3. ⚡ <b>Done!</b> Your key will be sent right here in this chat automatically within seconds!\n\n` +
+      `<i>(💡 Note: No UTR needed! If your bank SMS is delayed more than 1 minute, you can optionally reply with your 12-digit UTR as a backup.)</i>`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
-          { text: '🌐 Pay on Web (Instant QR)', web_app: { url: STORE_URL } },
+          { text: '🌐 Open Web Store (Mini App)', web_app: { url: STORE_URL } },
         ],
         [
           { text: '💬 Chat with Support', url: TELEGRAM_URL },
