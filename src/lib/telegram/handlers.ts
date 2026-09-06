@@ -3,6 +3,7 @@ import {
   sendTelegramMessage,
   sendTelegramPhoto,
   editTelegramMessage,
+  deleteTelegramMessage,
   answerTelegramCallbackQuery,
   InlineKeyboardMarkup,
   ReplyKeyboardMarkup,
@@ -122,7 +123,11 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
   if (data === 'menu_main') {
     const { text, keyboard } = getPlanPickerContent();
     if (messageId) {
-      await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (!editRes.ok) {
+        await deleteTelegramMessage(chatId, messageId);
+        await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+      }
     } else {
       await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     }
@@ -211,6 +216,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, paymentChoiceText, { reply_markup: keyboard });
       if (!editRes.ok) {
+        await deleteTelegramMessage(chatId, messageId);
         await sendTelegramMessage(chatId, paymentChoiceText, { reply_markup: keyboard });
       }
     } else {
@@ -269,6 +275,10 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
         ],
       ],
     };
+
+    if (messageId) {
+      await deleteTelegramMessage(chatId, messageId);
+    }
 
     await sendTelegramPhoto(chatId, upiQrUrl, {
       caption: upiText,
@@ -329,7 +339,11 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     };
 
     if (messageId) {
-      await editTelegramMessage(chatId, messageId, paypalText, { reply_markup: keyboard });
+      const editRes = await editTelegramMessage(chatId, messageId, paypalText, { reply_markup: keyboard });
+      if (!editRes.ok) {
+        await deleteTelegramMessage(chatId, messageId);
+        await sendTelegramMessage(chatId, paypalText, { reply_markup: keyboard });
+      }
     } else {
       await sendTelegramMessage(chatId, paypalText, { reply_markup: keyboard });
     }
@@ -352,7 +366,11 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     };
 
     if (messageId) {
-      await editTelegramMessage(chatId, messageId, faqText, { reply_markup: keyboard });
+      const editRes = await editTelegramMessage(chatId, messageId, faqText, { reply_markup: keyboard });
+      if (!editRes.ok) {
+        await deleteTelegramMessage(chatId, messageId);
+        await sendTelegramMessage(chatId, faqText, { reply_markup: keyboard });
+      }
     } else {
       await sendTelegramMessage(chatId, faqText, { reply_markup: keyboard });
     }
@@ -374,7 +392,11 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     };
 
     if (messageId) {
-      await editTelegramMessage(chatId, messageId, supportText, { reply_markup: keyboard });
+      const editRes = await editTelegramMessage(chatId, messageId, supportText, { reply_markup: keyboard });
+      if (!editRes.ok) {
+        await deleteTelegramMessage(chatId, messageId);
+        await sendTelegramMessage(chatId, supportText, { reply_markup: keyboard });
+      }
     } else {
       await sendTelegramMessage(chatId, supportText, { reply_markup: keyboard });
     }

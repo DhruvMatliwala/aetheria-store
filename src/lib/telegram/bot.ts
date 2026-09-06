@@ -188,6 +188,24 @@ export async function editTelegramMessage(
 }
 
 /**
+ * Delete message from chat
+ */
+export async function deleteTelegramMessage(
+  chatId: number | string,
+  messageId: number,
+  token?: string
+) {
+  return callTelegramApi(
+    'deleteMessage',
+    {
+      chat_id: chatId,
+      message_id: messageId,
+    },
+    token
+  );
+}
+
+/**
  * Answer callback query (dismiss spinner on inline buttons)
  */
 export async function answerTelegramCallbackQuery(
