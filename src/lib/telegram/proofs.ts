@@ -99,3 +99,56 @@ export async function broadcastOrderProof(payload: OrderProofPayload): Promise<b
     return false;
   }
 }
+
+/**
+ * Broadcasts an automated, flashy "Restock Alert" announcement
+ * to the official public Telegram channel (@pgsharpkeys_official)
+ * whenever fresh keys are uploaded to the vault.
+ */
+export async function broadcastRestockAlert(insertedCount: number = 0): Promise<boolean> {
+  const channelTarget = TELEGRAM_PROOF_CHANNEL?.trim();
+  if (!channelTarget) {
+    return false;
+  }
+
+  try {
+    const [stock1, stock2] = await Promise.all([
+      getAvailableCount('1_month_1_device').catch(() => 0),
+      getAvailableCount('1_month_2_device').catch(() => 0),
+    ]);
+
+    const botUsername = TELEGRAM_BOT_USERNAME || 'pgsharpkeystorebot';
+    const countBadge = insertedCount > 0 ? ` (+${insertedCount} new slots added)` : '';
+
+    const restockText =
+      `🚨 <b>RESTOCK ALERT!</b>\n\n` +
+      `📦 <b>Fresh batch of 1-Device & 2-Device PGSharp keys just loaded!</b>${countBadge}\n\n` +
+      `📊 <b>Live Stock in Vault:</b>\n` +
+      `• 📱 <b>1 Device (30 Days):</b> ${stock1 > 0 ? `${stock1} keys available` : 'Limited'}\n` +
+      `• 🔋 <b>2 Devices (30 Days):</b> ${stock2 > 0 ? `${stock2} keys available` : 'Limited'}\n\n` +
+      `⚡ <b>Fast Auto-Delivery via UPI & PayPal:</b>\n` +
+      `• UPI (Instant Auto-Match): <b>₹180 / ₹350</b>\n` +
+      `• PayPal (Direct): <b>$1.99 / $3.50</b>\n` +
+      `<i>(First-time buyers get ₹30 / $0.50 OFF referral discount!)</i>\n\n` +
+      `👉 <b>Order now before stock sells out:</b> @${botUsername}`;
+
+    await sendTelegramMessage(channelTarget, restockText, {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: '⚡ Order Key Now | 24/7 Auto Bot 🤖',
+              url: `https://t.me/${botUsername}?start=restock`,
+            },
+          ],
+        ],
+      },
+    });
+
+    console.log(`[proofs] Successfully broadcast restock alert (+${insertedCount}) to ${channelTarget}`);
+    return true;
+  } catch (err: any) {
+    console.warn(`[proofs] Failed to broadcast restock alert to ${channelTarget}:`, err?.message || err);
+    return false;
+  }
+}
