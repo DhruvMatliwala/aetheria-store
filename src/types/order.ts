@@ -21,6 +21,9 @@ export interface Order {
   coupon_code?: string;          // applied promo code e.g. REGULAR10
   discount_amount?: number;      // amount discounted in paise / cents
   original_amount?: number;      // original plan price before discount
+  telegram_chat_id?: number | string;
+  telegram_username?: string;
+  telegram_user_id?: number;
   created_at: FirebaseFirestore.Timestamp;
   updated_at?: FirebaseFirestore.Timestamp;
 }
@@ -42,5 +45,7 @@ export interface OrderPublic {
   slots_assigned?: number;
   coupon_code?: string;
   discount_amount?: number;
+  telegram_chat_id?: number | string;
+  telegram_username?: string;
   created_at: string;
 }

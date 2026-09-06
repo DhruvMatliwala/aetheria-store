@@ -57,6 +57,10 @@ export const REDDIT_URL =
   process.env.NEXT_PUBLIC_REDDIT_URL || 'https://www.reddit.com/user/dhruv_emperor/';
 export const TELEGRAM_URL =
   process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/sleekfx3';
+export const TELEGRAM_BOT_USERNAME =
+  process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'PGSharpStoreBot';
+export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+export const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET || '';
 
 export interface SmartRoute {
   id: string;
