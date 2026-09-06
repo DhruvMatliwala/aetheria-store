@@ -193,7 +193,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // Buy Plan Selected
+  // ── Step 1: Buy Plan Selected -> Show Payment Method Choices ─────────────
   if (data.startsWith('cb_buy_')) {
     const planId = data.replace('cb_buy_', '');
     const plan = PLAN_MAP[planId] || PLANS[0];
@@ -212,7 +212,52 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       return;
     }
 
-    // Create a pending order in Firestore
+    const amountInr = (plan.price_inr / 100).toFixed(0);
+    const amountUsd = (plan.price_usd / 100).toFixed(2);
+
+    const paymentChoiceText =
+      `🛒 <b>Selected Plan: ${plan.name} (${plan.duration})</b>\n\n` +
+      `⚡ <b>Device Slots:</b> ${plan.device_slots} Android Device(s)\n` +
+      `💰 <b>Price (INR):</b> ₹${amountInr}\n` +
+      `💵 <b>Price (USD):</b> $${amountUsd}\n` +
+      `🛡️ <b>Warranty:</b> 100% replacement guarantee & anti-ban protection\n\n` +
+      `👇 <b>Choose your payment method below:</b>`;
+
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [
+          { text: '⚡ Pay via UPI (GPay/PhonePe/Paytm)', callback_data: `cb_pay_upi_${plan.id}` },
+        ],
+        [
+          { text: '💳 Pay via PayPal / Card ($' + amountUsd + ')', callback_data: `cb_pay_paypal_${plan.id}` },
+        ],
+        [
+          { text: '🌐 1-Click Web Checkout (No UTR needed)', web_app: { url: STORE_URL } },
+        ],
+        [
+          { text: '⬅️ Back to Plans', callback_data: 'menu_main' },
+        ],
+      ],
+    };
+
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, paymentChoiceText, { reply_markup: keyboard });
+      if (!editRes.ok) {
+        await sendTelegramMessage(chatId, paymentChoiceText, { reply_markup: keyboard });
+      }
+    } else {
+      await sendTelegramMessage(chatId, paymentChoiceText, { reply_markup: keyboard });
+    }
+    return;
+  }
+
+  // ── Step 2A: User Selected UPI Payment ────────────────────────────────────
+  if (data.startsWith('cb_pay_upi_')) {
+    const planId = data.replace('cb_pay_upi_', '');
+    const plan = PLAN_MAP[planId] || PLANS[0];
+    const amountInr = (plan.price_inr / 100).toFixed(0);
+
+    // Create pending order
     const orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
     const db = getAdminFirestore();
 
@@ -237,54 +282,109 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     await db.collection('orders').doc(orderId).set(orderDoc);
 
-    const amountInr = (plan.price_inr / 100).toFixed(0);
-    const amountUsd = (plan.price_usd / 100).toFixed(2);
     const upiQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(
       OFFICIAL_GPAY_URI
     )}`;
 
-    const paymentText =
-      `🛒 <b>Order Summary: ${plan.name} (${plan.duration})</b>\n\n` +
-      `⚡ <b>Device Slots:</b> ${plan.device_slots} Android Device(s)\n` +
-      `💰 <b>Price (INR):</b> ₹${amountInr}\n` +
-      `💵 <b>Price (USD):</b> $${amountUsd}\n` +
-      `🆔 <b>Order ID:</b> <code>${orderId}</code>\n\n` +
+    const upiText =
+      `⚡ <b>UPI Payment — ${plan.name} (${plan.duration})</b>\n\n` +
+      `💰 <b>Exact Amount:</b> <b>₹${amountInr}</b>\n` +
+      `💳 <b>UPI ID (Tap to Copy):</b>\n` +
+      `<code>${UPI_VPA}</code>\n\n` +
+      `🆔 <b>Order ID:</b> <code>${orderId}</code>\n` +
       `━━━━━━━━━━━━━━━━━━━━━━\n` +
-      `💳 <b>Payment Option 1: Direct UPI (0% Fee)</b>\n` +
-      `• UPI ID: <code>${UPI_VPA}</code> <i>(tap to copy)</i>\n` +
-      `• Payee Name: <b>${UPI_PAYEE_NAME}</b>\n` +
-      `• Apps: Google Pay, PhonePe, Paytm, BHIM, Cred\n\n` +
-      `💳 <b>Payment Option 2: International (PayPal / Card)</b>\n` +
-      `• Link: <a href="${PAYPAL_ME_URL}/${amountUsd}USD">${PAYPAL_ME_URL}/${amountUsd}USD</a>\n\n` +
-      `━━━━━━━━━━━━━━━━━━━━━━\n` +
-      `📝 <b>HOW TO GET YOUR KEY INSTANTLY:</b>\n` +
-      `1. Pay <b>₹${amountInr}</b> via UPI or <b>$${amountUsd}</b> via PayPal.\n` +
-      `2. After paying, <b>send your 12-digit UPI UTR / Ref Number</b> in this chat (e.g. <code>423456789012</code>).\n` +
-      `3. Our automated system will verify and dispatch your key immediately!`;
+      `📝 <b>How to get your key:</b>\n` +
+      `1. Tap the UPI ID above to copy it (or scan the QR code).\n` +
+      `2. Pay <b>₹${amountInr}</b> using GPay, PhonePe, Paytm, or BHIM.\n` +
+      `3. Reply right here in this chat with your <b>12-digit UPI UTR / Ref Number</b>.\n` +
+      `4. Your key will be dispatched immediately!`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
-          { text: '🌐 Pay on Web Store (Cart)', web_app: { url: STORE_URL } },
-        ],
-        [
-          { text: '💳 Pay with PayPal ($' + amountUsd + ')', url: `${PAYPAL_ME_URL}/${amountUsd}USD` },
+          { text: '🌐 Pay on Web (Instant QR)', web_app: { url: STORE_URL } },
         ],
         [
           { text: '💬 Chat with Support', url: TELEGRAM_URL },
         ],
         [
-          { text: '⬅️ Back', callback_data: 'menu_main' },
-          { text: '🏠 Home', callback_data: 'menu_main' },
+          { text: '⬅️ Change Payment Method', callback_data: `cb_buy_${plan.id}` },
         ],
       ],
     };
 
-    // Send QR Code photo with payment details
     await sendTelegramPhoto(chatId, upiQrUrl, {
-      caption: paymentText,
+      caption: upiText,
       reply_markup: keyboard,
     });
+    return;
+  }
+
+  // ── Step 2B: User Selected PayPal Payment ─────────────────────────────────
+  if (data.startsWith('cb_pay_paypal_')) {
+    const planId = data.replace('cb_pay_paypal_', '');
+    const plan = PLAN_MAP[planId] || PLANS[0];
+    const amountUsd = (plan.price_usd / 100).toFixed(2);
+
+    // Create pending order
+    const orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
+    const db = getAdminFirestore();
+
+    const orderDoc = {
+      order_id: orderId,
+      customer_email: query.from.username
+        ? `${query.from.username.toLowerCase()}@telegram.user`
+        : `tg_${query.from.id}@telegram.user`,
+      customer_phone: '',
+      plan_type: plan.id,
+      amount: plan.price_usd,
+      currency: 'USD',
+      payment_gateway: 'paypal_direct',
+      payment_status: 'pending',
+      delivered_key: null,
+      gateway_order_id: `paypal_${orderId}`,
+      telegram_chat_id: chatId,
+      telegram_username: query.from.username || '',
+      telegram_user_id: query.from.id,
+      created_at: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    await db.collection('orders').doc(orderId).set(orderDoc);
+
+    const paypalUrl = `${PAYPAL_ME_URL}/${amountUsd}USD`;
+
+    const paypalText =
+      `💳 <b>PayPal Payment — ${plan.name} (${plan.duration})</b>\n\n` +
+      `💵 <b>Exact Amount:</b> <b>$${amountUsd} USD</b>\n` +
+      `🆔 <b>Order ID:</b> <code>${orderId}</code>\n\n` +
+      `🔗 <b>Direct Payment Link:</b>\n` +
+      `<a href="${paypalUrl}">${paypalUrl}</a>\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `📝 <b>How to get your key:</b>\n` +
+      `1. Tap the PayPal link above.\n` +
+      `2. Send <b>$${amountUsd} USD</b> via Friends & Family or Goods.\n` +
+      `3. Reply right here with your <b>PayPal Transaction ID or Sender Email</b>.\n` +
+      `4. Your key will be dispatched immediately!`;
+
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [
+          { text: '💳 Open PayPal ($' + amountUsd + ')', url: paypalUrl },
+        ],
+        [
+          { text: '💬 Chat with Support', url: TELEGRAM_URL },
+        ],
+        [
+          { text: '⬅️ Change Payment Method', callback_data: `cb_buy_${plan.id}` },
+        ],
+      ],
+    };
+
+    if (messageId) {
+      await editTelegramMessage(chatId, messageId, paypalText, { reply_markup: keyboard });
+    } else {
+      await sendTelegramMessage(chatId, paypalText, { reply_markup: keyboard });
+    }
     return;
   }
 
