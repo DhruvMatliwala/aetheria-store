@@ -40,11 +40,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true, ignored: true });
     }
 
-    // ── 3. Process the update asynchronously without blocking response ───────
-    // Fire and handle to guarantee fast 200 OK back to Telegram
-    handleTelegramUpdate(update).catch((err) => {
-      console.error('[TelegramWebhook] Background handling error:', err);
-    });
+    // ── 3. Process the update (await required for Vercel serverless functions) ──
+    await handleTelegramUpdate(update);
 
     return NextResponse.json({ ok: true });
   } catch (err: any) {
