@@ -5,6 +5,7 @@ import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
 import { sendPaymentVerificationAlert, sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 import { getAdminFirestore } from '@/lib/firebase/admin';
+import { broadcastOrderProof } from '@/lib/telegram/proofs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -104,6 +105,17 @@ export async function POST(request: NextRequest) {
         deliveredKey: allocation.decryptedKey,
         patreonEmail: allocation.patreonEmail,
       }).catch((err) => console.error('[checkout/upi/verify] Discord alert error:', err));
+
+      // Broadcast proof to official channel
+      broadcastOrderProof({
+        orderId: existingOrder.order_id,
+        planType: existingOrder.plan_type,
+        gateway: 'upi_direct',
+        amount: existingOrder.amount,
+        currency: existingOrder.currency || 'INR',
+        customerEmail: existingOrder.customer_email,
+        customerUsername: existingOrder.customer_phone,
+      }).catch((err) => console.error('[checkout/upi/verify] Proof broadcast error:', err));
 
       const updatedOrder = await getOrderById(orderId);
       return NextResponse.json({

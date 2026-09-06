@@ -7,6 +7,7 @@ import { verifyApprovalToken } from '@/lib/orders/approvalToken';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 import { sendTelegramMessage } from '@/lib/telegram/bot';
 import { PLAN_MAP, PLANS, TELEGRAM_URL } from '@/lib/constants';
+import { broadcastOrderProof } from '@/lib/telegram/proofs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -112,6 +113,17 @@ export async function GET(request: NextRequest) {
       deliveredKey: allocation.decryptedKey,
       patreonEmail: allocation.patreonEmail,
     }).catch((err) => console.error('[quick-approve] Discord alert error:', err));
+
+    // Broadcast proof to official channel
+    broadcastOrderProof({
+      orderId: existingOrder.order_id,
+      planType: existingOrder.plan_type,
+      gateway: existingOrder.payment_gateway,
+      amount: existingOrder.amount,
+      currency: existingOrder.currency,
+      customerEmail: existingOrder.customer_email,
+      customerUsername: existingOrder.telegram_username || existingOrder.customer_phone,
+    }).catch((err) => console.error('[quick-approve] Proof broadcast error:', err));
 
     return new NextResponse(
       renderHtml(

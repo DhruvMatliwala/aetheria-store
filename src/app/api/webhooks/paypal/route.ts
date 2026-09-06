@@ -10,6 +10,7 @@ import { sendKeyDeliveryEmail } from '@/lib/email/resend';
 import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 import { sendTelegramMessage } from '@/lib/telegram/bot';
 import { PLAN_MAP, PLANS, TELEGRAM_URL } from '@/lib/constants';
+import { broadcastOrderProof } from '@/lib/telegram/proofs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -163,6 +164,16 @@ export async function POST(request: NextRequest) {
           }).catch((tgErr) => console.error('[webhook/paypal] Telegram deliver error:', tgErr));
         }
 
+        // Broadcast proof to official channel
+        broadcastOrderProof({
+          orderId: orderData.order_id,
+          planType: orderData.plan_type,
+          gateway: 'paypal_direct',
+          amount: orderData.amount,
+          currency: orderData.currency || 'USD',
+          customerEmail: orderData.customer_email,
+        }).catch((err) => console.error('[webhook/paypal] Proof broadcast error:', err));
+
         console.log(`[webhook/paypal] ⚡ 24/7 AUTO-FULFILLED PayPal Order #${orderData.order_id} via IPN Tx: ${txnId}`);
       } catch (allocErr: any) {
         console.error('[webhook/paypal] IPN allocation error:', allocErr);
@@ -258,6 +269,16 @@ export async function POST(request: NextRequest) {
                   },
                 }).catch((tgErr) => console.error('[webhook/paypal] Telegram deliver error:', tgErr));
               }
+
+              // Broadcast proof to official channel
+              broadcastOrderProof({
+                orderId: order.order_id,
+                planType: order.plan_type,
+                gateway: 'paypal_direct',
+                amount: order.amount,
+                currency: order.currency || 'USD',
+                customerEmail: order.customer_email,
+              }).catch((err) => console.error('[webhook/paypal] Proof broadcast error:', err));
             }
           }
         }

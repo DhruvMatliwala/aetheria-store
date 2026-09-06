@@ -27,6 +27,7 @@ import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendAdminOrderAlert, sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
 import { getAdminFirestore, admin } from '@/lib/firebase/admin';
 import { randomUUID } from 'crypto';
+import { broadcastOrderProof } from './proofs';
 
 const STORE_URL =
   process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('https://')
@@ -698,6 +699,16 @@ async function processTelegramUtrSubmission(
         deliveredKey: allocation.decryptedKey,
       }).catch((err) => console.error('[Telegram] Admin alert error:', err));
 
+      // Broadcast proof to official channel
+      broadcastOrderProof({
+        orderId,
+        planType: targetOrder.plan_type,
+        gateway: 'upi_direct',
+        amount: targetOrder.amount,
+        currency: 'INR',
+        customerUsername: username,
+      }).catch((err) => console.error('[Telegram] Proof broadcast error:', err));
+
       return;
     } catch (allocErr) {
       console.error('[Telegram] Key allocation error:', allocErr);
@@ -882,6 +893,17 @@ async function processTelegramPaypalSubmission(
         transactionId: matchedCredit.txn_id,
         deliveredKey: allocation.decryptedKey,
       }).catch((err) => console.error('[Telegram] Admin alert error:', err));
+
+      // Broadcast proof to official channel
+      broadcastOrderProof({
+        orderId,
+        planType: targetOrder.plan_type,
+        gateway: 'paypal_direct',
+        amount: targetOrder.amount,
+        currency: 'USD',
+        customerEmail: isEmail ? cleanInput.toLowerCase() : targetOrder.customer_email,
+        customerUsername: username,
+      }).catch((err) => console.error('[Telegram] Proof broadcast error:', err));
 
       return;
     } catch (allocErr) {

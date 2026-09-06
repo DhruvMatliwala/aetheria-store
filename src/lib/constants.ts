@@ -62,6 +62,8 @@ export const TELEGRAM_BOT_USERNAME =
 export const TELEGRAM_BOT_TOKEN =
   process.env.TELEGRAM_BOT_TOKEN || '';
 export const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET || '';
+export const TELEGRAM_PROOF_CHANNEL =
+  process.env.TELEGRAM_PROOF_CHANNEL || '@pgsharpkeys_official';
 
 export interface SmartRoute {
   id: string;

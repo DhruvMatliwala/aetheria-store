@@ -8,6 +8,7 @@ import { sendKeyDeliveryEmail } from '@/lib/email/resend';
 import { sendAdminOrderAlert, sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
 import { sendTelegramMessage } from '@/lib/telegram/bot';
 import { PLAN_MAP, PLANS, TELEGRAM_URL } from '@/lib/constants';
+import { broadcastOrderProof } from '@/lib/telegram/proofs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -357,7 +358,6 @@ async function handleIncomingSms(data: Record<string, any>) {
         }).catch((err) => console.error('[webhooks/upi] Telegram auto-deliver error:', err));
       }
 
-      // Dispatch real-time Discord notification
       sendAdminOrderAlert({
         orderId: orderData.order_id,
         customerEmail: orderData.customer_email,
@@ -370,6 +370,17 @@ async function handleIncomingSms(data: Record<string, any>) {
         deliveredKey: allocation.decryptedKey,
         patreonEmail: allocation.patreonEmail,
       }).catch((err) => console.error('[webhooks/upi] Discord alert error:', err));
+
+      // Broadcast proof to official channel
+      broadcastOrderProof({
+        orderId: orderData.order_id,
+        planType: orderData.plan_type,
+        gateway: 'upi_direct',
+        amount: orderData.amount,
+        currency: orderData.currency || 'INR',
+        customerEmail: orderData.customer_email,
+        customerUsername: orderData.telegram_username || orderData.customer_phone,
+      }).catch((err) => console.error('[webhooks/upi] Proof broadcast error:', err));
 
       console.log(`[webhooks/upi] ⚡ 24/7 AUTO-FULFILLED Order #${orderData.order_id} via Bank SMS UTR: ${utr}`);
     } catch (allocErr: any) {
