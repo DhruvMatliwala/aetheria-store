@@ -25,7 +25,10 @@ import { sendAdminOrderAlert, sendPaymentVerificationAlert } from '@/lib/notific
 import { getAdminFirestore, admin } from '@/lib/firebase/admin';
 import { randomUUID } from 'crypto';
 
-const STORE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app';
+const STORE_URL =
+  process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('https://')
+    ? process.env.NEXT_PUBLIC_APP_URL
+    : 'https://aetheria-store.vercel.app';
 
 /**
  * Persistent Bottom Keyboard (Always visible below chat input box)
@@ -262,13 +265,13 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
-          { text: '⚡ Pay via UPI App (GPay/PhonePe)', url: OFFICIAL_GPAY_URI },
+          { text: '🌐 Pay on Web Store (Cart)', web_app: { url: STORE_URL } },
         ],
         [
           { text: '💳 Pay with PayPal ($' + amountUsd + ')', url: `${PAYPAL_ME_URL}/${amountUsd}USD` },
         ],
         [
-          { text: '🌐 Pay on Web Store (Cart)', web_app: { url: STORE_URL } },
+          { text: '💬 Chat with Support', url: TELEGRAM_URL },
         ],
         [
           { text: '⬅️ Back', callback_data: 'menu_main' },
