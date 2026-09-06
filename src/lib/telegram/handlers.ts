@@ -342,22 +342,15 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
   // FAQ & Guide
   if (data === 'cb_faq') {
     const faqText =
-      `🛡️ <b>PGSharp Setup & Safe Spoofing Guide</b>\n\n` +
-      `1️⃣ <b>What is a Standard Key?</b>\n` +
-      `A Standard Key activates all premium PGSharp features: Auto-Walk, Teleport, 100% IV Quick Catch, Enhanced Throw, Spawn Booster, and Gym Feeds.\n\n` +
-      `2️⃣ <b>How do I activate the key?</b>\n` +
-      `Open PGSharp -> Tap the floating Star icon ⭐ -> Go to <b>Settings ⚙️</b> -> Tap <b>Activate</b> -> Paste your key.\n\n` +
-      `3️⃣ <b>How does 1-Device vs 2-Device slot work?</b>\n` +
-      `• <b>1 Device Slot:</b> Activated on 1 Android phone at a time.\n` +
-      `• <b>2 Devices Plan:</b> Dedicated key for 2 Android devices simultaneously.\n\n` +
-      `4️⃣ <b>Safe Spoofing Rules (Cooldown):</b>\n` +
-      `Always respect the 2-hour cooldown timer when teleporting between distant locations before spinning or catching.\n\n` +
-      `💬 Need further help? Contact our direct support below.`;
+      `🔑 <b>Key Activation:</b>\n` +
+      `Open PGSharp ➔ Settings ⚙️ ➔ Activate ➔ Paste key.\n\n` +
+      `• <b>1 Device:</b> Use on 1 phone\n` +
+      `• <b>2 Devices:</b> Use on 2 phones simultaneously`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
-        [{ text: '💬 Chat with Support', url: TELEGRAM_URL }],
-        [{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }],
+        [{ text: '💬 Support', url: TELEGRAM_URL }],
+        [{ text: '⬅️ Back', callback_data: 'menu_main' }],
       ],
     };
 
@@ -372,17 +365,14 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
   // Live Support
   if (data === 'cb_support') {
     const supportText =
-      `💬 <b>Direct Support & Verification</b>\n\n` +
-      `Need help with key activation, have questions, or prefer custom payment methods (Crypto, Gift Cards)?\n\n` +
-      `• <b>Telegram:</b> @sleekfx3\n` +
-      `• <b>Discord:</b> <a href="${DISCORD_URL}">Official Discord Support</a>\n` +
-      `• <b>Response Time:</b> Usually within 5–15 minutes\n\n` +
-      `Tap below to message directly:`;
+      `💬 <b>Support</b>\n\n` +
+      `Need help or have questions?\n` +
+      `Direct message: @sleekfx3`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
-        [{ text: '💬 Open Chat with @sleekfx3', url: TELEGRAM_URL }],
-        [{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }],
+        [{ text: '💬 Message @sleekfx3', url: TELEGRAM_URL }],
+        [{ text: '⬅️ Back', callback_data: 'menu_main' }],
       ],
     };
 

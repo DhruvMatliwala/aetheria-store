@@ -53,10 +53,11 @@ export async function GET(request: NextRequest) {
 
     // 2. Set Bot Commands
     const commandsRes = await setTelegramCommands([
-      { command: 'start', description: '⚡ Launch the PGSharp key shop & menu' },
-      { command: 'stock', description: '📦 Check live available keys & slots' },
-      { command: 'buy', description: '🛒 Order 1 or 2 devices Standard Key' },
-      { command: 'help', description: '🛡️ Anti-ban guide, setup & support' },
+      { command: 'start', description: '⚡ Launch PGSharp key shop' },
+      { command: 'stock', description: '📦 Check available keys' },
+      { command: 'buy', description: '🛒 Order 1 or 2 device key' },
+      { command: 'keys', description: '👤 View my purchased keys' },
+      { command: 'help', description: '💬 Support & questions' },
     ]);
 
     // 3. Set Web App Menu Button (Telegram Mini App)
