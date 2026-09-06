@@ -11,6 +11,7 @@ import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 import { sendTelegramMessage } from '@/lib/telegram/bot';
 import { PLAN_MAP, PLANS, TELEGRAM_URL } from '@/lib/constants';
 import { broadcastOrderProof } from '@/lib/telegram/proofs';
+import { processReferralReward } from '@/lib/telegram/referrals';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -174,6 +175,9 @@ export async function POST(request: NextRequest) {
           customerEmail: orderData.customer_email,
         }).catch((err) => console.error('[webhook/paypal] Proof broadcast error:', err));
 
+        // Reward referrer if order was referred
+        processReferralReward(orderData).catch((err) => console.error('[webhook/paypal] Referral reward error:', err));
+
         console.log(`[webhook/paypal] ⚡ 24/7 AUTO-FULFILLED PayPal Order #${orderData.order_id} via IPN Tx: ${txnId}`);
       } catch (allocErr: any) {
         console.error('[webhook/paypal] IPN allocation error:', allocErr);
@@ -279,6 +283,9 @@ export async function POST(request: NextRequest) {
                 currency: order.currency || 'USD',
                 customerEmail: order.customer_email,
               }).catch((err) => console.error('[webhook/paypal] Proof broadcast error:', err));
+
+              // Reward referrer if order was referred
+              processReferralReward(order).catch((err) => console.error('[webhook/paypal] Referral reward error:', err));
             }
           }
         }

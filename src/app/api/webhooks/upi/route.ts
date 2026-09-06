@@ -9,6 +9,7 @@ import { sendAdminOrderAlert, sendPaymentVerificationAlert } from '@/lib/notific
 import { sendTelegramMessage } from '@/lib/telegram/bot';
 import { PLAN_MAP, PLANS, TELEGRAM_URL } from '@/lib/constants';
 import { broadcastOrderProof } from '@/lib/telegram/proofs';
+import { processReferralReward } from '@/lib/telegram/referrals';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -381,6 +382,11 @@ async function handleIncomingSms(data: Record<string, any>) {
         customerEmail: orderData.customer_email,
         customerUsername: orderData.telegram_username || orderData.customer_phone,
       }).catch((err) => console.error('[webhooks/upi] Proof broadcast error:', err));
+
+      // Process referral reward if order was referred
+      processReferralReward(orderData).catch((err) =>
+        console.error('[webhooks/upi] Referral reward processing error:', err)
+      );
 
       console.log(`[webhooks/upi] ⚡ 24/7 AUTO-FULFILLED Order #${orderData.order_id} via Bank SMS UTR: ${utr}`);
     } catch (allocErr: any) {

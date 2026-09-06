@@ -24,6 +24,8 @@ export interface Order {
   telegram_chat_id?: number | string;
   telegram_username?: string;
   telegram_user_id?: number;
+  applied_referral_from?: number;
+  referral_reward_processed?: boolean;
   created_at: FirebaseFirestore.Timestamp;
   updated_at?: FirebaseFirestore.Timestamp;
 }

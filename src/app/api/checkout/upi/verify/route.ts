@@ -6,6 +6,7 @@ import { sendKeyDeliveryEmail } from '@/lib/email/resend';
 import { sendPaymentVerificationAlert, sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 import { broadcastOrderProof } from '@/lib/telegram/proofs';
+import { processReferralReward } from '@/lib/telegram/referrals';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -116,6 +117,11 @@ export async function POST(request: NextRequest) {
         customerEmail: existingOrder.customer_email,
         customerUsername: existingOrder.customer_phone,
       }).catch((err) => console.error('[checkout/upi/verify] Proof broadcast error:', err));
+
+      // Process referral reward if order was referred
+      processReferralReward(existingOrder).catch((err) =>
+        console.error('[checkout/upi/verify] Referral reward processing error:', err)
+      );
 
       const updatedOrder = await getOrderById(orderId);
       return NextResponse.json({

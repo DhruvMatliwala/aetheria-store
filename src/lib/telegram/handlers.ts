@@ -17,8 +17,10 @@ import {
   PAYPAL_ME_URL,
   PAYPAL_EMAIL,
   TELEGRAM_URL,
+  TELEGRAM_BOT_USERNAME,
   DISCORD_URL,
 } from '@/lib/constants';
+import { Order } from '@/types/order';
 import { getAvailableCount } from '@/lib/firestore/keys';
 import { createOrder, getOrderById } from '@/lib/firestore/orders';
 import { getBankCredit, claimBankCredit } from '@/lib/firestore/bankCredits';
@@ -28,6 +30,16 @@ import { sendAdminOrderAlert, sendPaymentVerificationAlert } from '@/lib/notific
 import { getAdminFirestore, admin } from '@/lib/firebase/admin';
 import { randomUUID } from 'crypto';
 import { broadcastOrderProof } from './proofs';
+import {
+  getReferralStats,
+  validateReferralEligibility,
+  saveUserReferral,
+  getUserDiscountState,
+  getDiscountedPricing,
+  setUserCoupon,
+  processReferralReward,
+} from './referrals';
+import { validateAndApplyCoupon, incrementCouponUsage } from '@/lib/firestore/coupons';
 
 const STORE_URL =
   process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('https://')
@@ -51,6 +63,7 @@ export function getPersistentKeyboard(): ReplyKeyboardMarkup {
       ],
       [
         { text: '💬 Support' },
+        { text: '👥 Refer & Earn' },
       ],
     ],
     resize_keyboard: true,
@@ -58,8 +71,10 @@ export function getPersistentKeyboard(): ReplyKeyboardMarkup {
   };
 }
 
-function getPlanPickerContent() {
-  const text = `👇 <b>Select a plan:</b>`;
+function getPlanPickerContent(discountLabel?: string) {
+  const text = discountLabel
+    ? `${discountLabel}\n\n👇 <b>Select a plan:</b>`
+    : `👇 <b>Select a plan:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
@@ -141,6 +156,12 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
+  // Refer & Earn Dashboard
+  if (data === 'cb_refer_earn') {
+    await handleReferAndEarn(chatId);
+    return;
+  }
+
   // Stock Checker
   if (data === 'cb_stock') {
     const stock1 = await getAvailableCount('1_month_1_device');
@@ -190,11 +211,17 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       return;
     }
 
-    const amountInr = (plan.price_inr / 100).toFixed(0);
-    const amountUsd = (plan.price_usd / 100).toFixed(2);
+    const discountState = await getUserDiscountState(chatId);
+    const pricing = getDiscountedPricing(plan.id, discountState.hasDiscount);
+    const amountInr = pricing.priceInrRupees;
+    const amountUsd = pricing.priceUsdDollars;
+
+    const discountHeader = discountState.hasDiscount
+      ? `${discountState.discountLabel}\n\n`
+      : '';
 
     const paymentChoiceText =
-      `📱 <b>${plan.name} (${plan.duration})</b>\n\n` +
+      `${discountHeader}📱 <b>${plan.name} (${plan.duration})</b>\n\n` +
       `Choose payment method:`;
 
     const keyboard: InlineKeyboardMarkup = {
@@ -230,20 +257,22 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
   if (data.startsWith('cb_pay_upi_')) {
     const planId = data.replace('cb_pay_upi_', '');
     const plan = PLAN_MAP[planId] || PLANS[0];
-    const amountInr = (plan.price_inr / 100).toFixed(0);
+    const discountState = await getUserDiscountState(chatId);
+    const pricing = getDiscountedPricing(plan.id, discountState.hasDiscount);
+    const amountInr = pricing.priceInrRupees;
 
     // Create pending order
     const orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
     const db = getAdminFirestore();
 
-    const orderDoc = {
+    const orderDoc: Record<string, any> = {
       order_id: orderId,
       customer_email: query.from.username
         ? `${query.from.username.toLowerCase()}@telegram.user`
         : `tg_${query.from.id}@telegram.user`,
       customer_phone: '',
       plan_type: plan.id,
-      amount: plan.price_inr,
+      amount: pricing.priceInrPaise,
       currency: 'INR',
       payment_gateway: 'upi_direct',
       payment_status: 'pending',
@@ -255,14 +284,23 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       created_at: admin.firestore.FieldValue.serverTimestamp(),
     };
 
+    if (discountState.hasDiscount && discountState.discountType === 'referral' && discountState.referrerChatId) {
+      orderDoc.applied_referral_from = discountState.referrerChatId;
+    }
+    if (discountState.hasDiscount && discountState.discountType === 'coupon' && discountState.couponCode) {
+      orderDoc.coupon_code = discountState.couponCode;
+    }
+
     await db.collection('orders').doc(orderId).set(orderDoc);
 
     const upiQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(
       OFFICIAL_GPAY_URI
     )}`;
 
+    const discountMsg = discountState.hasDiscount ? `\n🎉 <i>Discount applied: Saved ₹${pricing.savingsInr}!</i>` : '';
+
     const upiText =
-      `⚡ <b>Pay ₹${amountInr} via UPI</b>\n\n` +
+      `⚡ <b>Pay ₹${amountInr} via UPI</b>${discountMsg}\n\n` +
       `UPI ID (tap to copy):\n` +
       `<code>${UPI_VPA}</code>\n\n` +
       `Pay exact <b>₹${amountInr}</b> in GPay, PhonePe, or Paytm.\n` +
@@ -292,20 +330,22 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
   if (data.startsWith('cb_pay_paypal_')) {
     const planId = data.replace('cb_pay_paypal_', '');
     const plan = PLAN_MAP[planId] || PLANS[0];
-    const amountUsd = (plan.price_usd / 100).toFixed(2);
+    const discountState = await getUserDiscountState(chatId);
+    const pricing = getDiscountedPricing(plan.id, discountState.hasDiscount);
+    const amountUsd = pricing.priceUsdDollars;
 
     // Create pending order
     const orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
     const db = getAdminFirestore();
 
-    const orderDoc = {
+    const orderDoc: Record<string, any> = {
       order_id: orderId,
       customer_email: query.from.username
         ? `${query.from.username.toLowerCase()}@telegram.user`
         : `tg_${query.from.id}@telegram.user`,
       customer_phone: '',
       plan_type: plan.id,
-      amount: plan.price_usd,
+      amount: pricing.priceUsdCents,
       currency: 'USD',
       payment_gateway: 'paypal_direct',
       payment_status: 'pending',
@@ -317,12 +357,20 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       created_at: admin.firestore.FieldValue.serverTimestamp(),
     };
 
+    if (discountState.hasDiscount && discountState.discountType === 'referral' && discountState.referrerChatId) {
+      orderDoc.applied_referral_from = discountState.referrerChatId;
+    }
+    if (discountState.hasDiscount && discountState.discountType === 'coupon' && discountState.couponCode) {
+      orderDoc.coupon_code = discountState.couponCode;
+    }
+
     await db.collection('orders').doc(orderId).set(orderDoc);
 
     const paypalUrl = `${PAYPAL_ME_URL}/${amountUsd}USD`;
+    const discountMsg = discountState.hasDiscount ? `\n🎉 <i>Discount applied: Saved $${pricing.savingsUsd}!</i>` : '';
 
     const paypalText =
-      `💳 <b>Pay $${amountUsd} USD via PayPal</b>\n\n` +
+      `💳 <b>Pay $${amountUsd} USD via PayPal</b>${discountMsg}\n\n` +
       `Send <b>$${amountUsd} USD</b> to:\n` +
       `<code>${PAYPAL_EMAIL}</code>\n\n` +
       `After paying, reply here with your <b>PayPal Transaction ID</b> or <b>PayPal Email</b> to get your key automatically!`;
@@ -471,6 +519,49 @@ async function handleMyKeys(chatId: number, username?: string) {
 }
 
 /**
+ * Handle Refer & Earn Dashboard
+ */
+async function handleReferAndEarn(chatId: number) {
+  const stats = await getReferralStats(chatId);
+  const botUsername = TELEGRAM_BOT_USERNAME || 'pgsharpkeystorebot';
+  const refLink = `https://t.me/${botUsername}?start=ref_${chatId}`;
+  const shareText = encodeURIComponent(
+    `⚡ Get your PGSharp Standard Key with ₹30 / $0.50 OFF instant discount here: ${refLink}`
+  );
+
+  const message =
+    `👥 <b>Refer & Earn</b>\n\n` +
+    `Invite fellow trainers and save together!\n` +
+    `• 🎁 <b>Your Friend Gets:</b> ₹30 / $0.50 OFF their first key\n` +
+    `• 🎟️ <b>You Get:</b> ₹30 / $0.50 OFF renewal coupon when they buy\n\n` +
+    `🔗 <b>Your Personal Referral Link:</b>\n` +
+    `<code>${refLink}</code>\n` +
+    `<i>(Tap link above to copy)</i>\n\n` +
+    `📊 <b>Your Referral Stats:</b>\n` +
+    `• Friends Clicked: <b>${stats.invitedCount}</b>\n` +
+    `• Completed Orders: <b>${stats.completedOrdersCount}</b>\n` +
+    `• Coupons Earned: <b>${stats.rewardsEarned}</b>\n\n` +
+    `<i>Coupons are delivered automatically via DM once your friend's payment is confirmed!</i>`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [
+        {
+          text: '📤 Share Link to Telegram',
+          url: `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${shareText}`,
+        },
+      ],
+      [
+        { text: '🛒 Buy / Renew Key', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '⬅️ Back to Menu', callback_data: 'menu_main' },
+      ],
+    ],
+  };
+
+  await sendTelegramMessage(chatId, message, { reply_markup: keyboard });
+}
+
+/**
  * Handle Inbound Text Messages (Persistent Keyboard buttons, Commands, UTR submissions)
  */
 async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>) {
@@ -532,14 +623,54 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     return;
   }
 
+  if (rawText === '👥 Refer & Earn' || rawText.startsWith('/refer')) {
+    await handleReferAndEarn(chatId);
+    return;
+  }
+
   // ── 2. Commands ───────────────────────────────────────────────────────────
   if (rawText.startsWith('/start')) {
+    const startParam = rawText.replace('/start', '').trim();
+    let discountBanner: string | undefined;
+
+    if (startParam.startsWith('ref_')) {
+      const referrerId = parseInt(startParam.replace('ref_', ''), 10);
+      if (!isNaN(referrerId)) {
+        const eligibility = await validateReferralEligibility(chatId, referrerId);
+        if (eligibility.eligible) {
+          await saveUserReferral(chatId, referrerId);
+          discountBanner =
+            `🎁 <b>SPECIAL REFERRAL DISCOUNT APPLIED!</b>\n` +
+            `Your friend invited you to PGSharp Store. You get an exclusive discount on your first key:\n` +
+            `• 📱 <b>1 Device:</b> <s>₹180 / $1.99</s> ➔ <b>₹150 / $1.50</b>\n` +
+            `• 🔋 <b>2 Devices:</b> <s>₹350 / $3.50</s> ➔ <b>₹320 / $3.00</b>`;
+        } else if (eligibility.reason === 'self_referral') {
+          await sendTelegramMessage(
+            chatId,
+            `⚠️ <b>Self-referrals are not allowed!</b>\nShare your link with other trainers in <b>👥 Refer & Earn</b> to earn ₹30 / $0.50 renewal coupons.`
+          );
+        } else {
+          await sendTelegramMessage(
+            chatId,
+            `👋 <b>Welcome back!</b>\nReferral discounts are reserved for new trainers' first purchase. Use <b>👥 Refer & Earn</b> below to invite friends and earn renewal coupons!`
+          );
+        }
+      }
+    }
+
+    if (!discountBanner) {
+      const userDiscount = await getUserDiscountState(chatId);
+      if (userDiscount.hasDiscount) {
+        discountBanner = userDiscount.discountLabel;
+      }
+    }
+
     // Send short welcome and attach persistent keyboard
     await sendTelegramMessage(chatId, getWelcomeMessage(firstName), {
       reply_markup: getPersistentKeyboard(),
     });
     // Send clean plan picker
-    const { text, keyboard } = getPlanPickerContent();
+    const { text, keyboard } = getPlanPickerContent(discountBanner);
     await sendTelegramMessage(chatId, text, {
       reply_markup: keyboard,
     });
@@ -568,6 +699,24 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     const cleanTx = paypalTxMatch[1].toUpperCase();
     await processTelegramPaypalSubmission(chatId, cleanTx, false, username);
     return;
+  }
+
+  // ── 6. Detect Coupon / Promo Code (e.g. REF30_ABCDEF, VIPDHRUV, /coupon ...) ──
+  const couponMatch = rawText.match(/^(?:\/coupon\s+)?(REF30_[A-Za-z0-9]+|VIPDHRUV|DISCORDMEMBER|[A-Za-z0-9_]{5,15})$/i);
+  if (couponMatch) {
+    const candidateCode = couponMatch[1].toUpperCase();
+    const couponValidation = await validateAndApplyCoupon(candidateCode, PLANS[0], 'INR');
+    if (couponValidation.valid) {
+      await setUserCoupon(chatId, candidateCode);
+      const discountText =
+        `🎟️ <b>Promo Code "${candidateCode}" Applied!</b>\n\n` +
+        `• 📱 <b>1 Device:</b> <s>₹180 / $1.99</s> ➔ <b>₹150 / $1.50</b>\n` +
+        `• 🔋 <b>2 Devices:</b> <s>₹350 / $3.50</s> ➔ <b>₹320 / $3.00</b>\n\n` +
+        `Choose your plan below:`;
+      const { keyboard } = getPlanPickerContent();
+      await sendTelegramMessage(chatId, discountText, { reply_markup: keyboard });
+      return;
+    }
   }
 
   // ── 4. Default Friendly Fallback with Persistent Keyboard ──────────────────
@@ -708,6 +857,14 @@ async function processTelegramUtrSubmission(
         currency: 'INR',
         customerUsername: username,
       }).catch((err) => console.error('[Telegram] Proof broadcast error:', err));
+
+      // Process referral reward if order was referred
+      processReferralReward({
+        ...targetOrder,
+        order_id: orderId,
+        utr_number: cleanUtr,
+        payment_status: 'paid',
+      } as Order).catch((err) => console.error('[Telegram] Referral reward error:', err));
 
       return;
     } catch (allocErr) {
@@ -904,6 +1061,15 @@ async function processTelegramPaypalSubmission(
         customerEmail: isEmail ? cleanInput.toLowerCase() : targetOrder.customer_email,
         customerUsername: username,
       }).catch((err) => console.error('[Telegram] Proof broadcast error:', err));
+
+      // Process referral reward if order was referred
+      processReferralReward({
+        ...targetOrder,
+        order_id: orderId,
+        customer_email: isEmail ? cleanInput.toLowerCase() : targetOrder.customer_email,
+        paypal_tx_id: matchedCredit.txn_id,
+        payment_status: 'paid',
+      } as Order).catch((err) => console.error('[Telegram] Referral reward error:', err));
 
       return;
     } catch (allocErr) {

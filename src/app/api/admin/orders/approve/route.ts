@@ -7,6 +7,7 @@ import { getAdminFirestore } from '@/lib/firebase/admin';
 import { sendTelegramMessage } from '@/lib/telegram/bot';
 import { PLAN_MAP, PLANS, TELEGRAM_URL } from '@/lib/constants';
 import { broadcastOrderProof } from '@/lib/telegram/proofs';
+import { processReferralReward } from '@/lib/telegram/referrals';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -115,6 +116,11 @@ export async function POST(request: NextRequest) {
       customerEmail: existingOrder.customer_email,
       customerUsername: existingOrder.telegram_username || existingOrder.customer_phone,
     }).catch((err) => console.error('[admin/orders/approve] Proof broadcast error:', err));
+
+    // Process referral reward if order was referred
+    processReferralReward(existingOrder).catch((err) =>
+      console.error('[admin/orders/approve] Referral reward processing error:', err)
+    );
 
     return NextResponse.json({
       success: true,
