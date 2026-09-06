@@ -41,6 +41,12 @@ import {
   processReferralReward,
 } from './referrals';
 import { validateAndApplyCoupon, incrementCouponUsage } from '@/lib/firestore/coupons';
+import {
+  getPokemonEvents,
+  formatEventsOverview,
+  formatRaidsMessage,
+  formatCommDaysMessage,
+} from '@/lib/pokemon/events';
 
 const STORE_URL =
   process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('https://')
@@ -60,18 +66,41 @@ export function getPersistentKeyboard(): ReplyKeyboardMarkup {
       ],
       [
         { text: '📦 Live Stock' },
+        { text: '📅 Live Events' },
+      ],
+      [
         { text: '📢 Proofs Channel' },
-      ],
-      [
         { text: '👥 Refer & Earn' },
-        { text: '💬 Support' },
       ],
       [
+        { text: '💬 Support' },
         { text: '🌐 Open Web Store', web_app: { url: STORE_URL } },
       ],
     ],
     resize_keyboard: true,
     is_persistent: true,
+  };
+}
+
+/**
+ * Interactive navigation bar for Pokemon GO live events & raid calendar
+ */
+export function getEventsInlineKeyboard(activeTab: 'overview' | 'raids' | 'commday' = 'overview'): InlineKeyboardMarkup {
+  return {
+    inline_keyboard: [
+      [
+        { text: activeTab === 'overview' ? '• 📅 Overview •' : '📅 Overview', callback_data: 'cb_events_overview' },
+        { text: activeTab === 'raids' ? '• ⚔️ Raids •' : '⚔️ Raids', callback_data: 'cb_events_raids' },
+        { text: activeTab === 'commday' ? '• 🌟 Comm Day •' : '🌟 Comm Day', callback_data: 'cb_events_commday' },
+      ],
+      [
+        { text: '⚡ Buy Key for Raids / Events', callback_data: 'cb_buy_1_month_1_device' },
+      ],
+      [
+        { text: '🔄 Refresh Schedule', callback_data: 'cb_events_refresh' },
+        { text: '📢 Proofs Channel', url: TELEGRAM_CHANNEL_URL },
+      ],
+    ],
   };
 }
 
@@ -87,6 +116,9 @@ function getPlanPickerContent(discountLabel?: string) {
       ],
       [
         { text: '🔋 2 Devices (30 Days)', callback_data: 'cb_buy_1_month_2_device' },
+      ],
+      [
+        { text: '📅 Pokémon GO Live Events', callback_data: 'cb_events_overview' },
       ],
       [
         { text: '📢 Live Proofs Channel', url: TELEGRAM_CHANNEL_URL },
@@ -195,6 +227,43 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       await editTelegramMessage(chatId, messageId, stockText, { reply_markup: keyboard });
     } else {
       await sendTelegramMessage(chatId, stockText, { reply_markup: keyboard });
+    }
+    return;
+  }
+
+  // ── Pokemon GO Live Events & Raids Navigation ─────────────────────────────
+  if (data.startsWith('cb_events_')) {
+    const subAction = data.replace('cb_events_', '');
+    const forceRefresh = subAction === 'refresh';
+    const events = await getPokemonEvents(forceRefresh);
+
+    let text = '';
+    let tab: 'overview' | 'raids' | 'commday' = 'overview';
+
+    if (subAction === 'raids') {
+      text = formatRaidsMessage(events);
+      tab = 'raids';
+    } else if (subAction === 'commday') {
+      text = formatCommDaysMessage(events);
+      tab = 'commday';
+    } else {
+      text = formatEventsOverview(events);
+      tab = 'overview';
+    }
+
+    const keyboard = getEventsInlineKeyboard(tab);
+
+    if (subAction === 'refresh') {
+      await answerTelegramCallbackQuery(query.id, '✅ Schedule refreshed with live events!');
+    }
+
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (!editRes.ok) {
+        await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+      }
+    } else {
+      await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     }
     return;
   }
@@ -672,6 +741,36 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
         },
       }
     );
+    return;
+  }
+
+  // ── Pokemon GO Live Events & Raid Calendar ────────────────────────────────
+  if (
+    rawText === '📅 Live Events' ||
+    rawText === '📅 Events' ||
+    rawText.startsWith('/events') ||
+    rawText.startsWith('/raids') ||
+    rawText.startsWith('/calendar') ||
+    rawText.startsWith('/spotlight') ||
+    rawText.startsWith('/community')
+  ) {
+    const isRaidsOnly = rawText.startsWith('/raids');
+    const isCommDayOnly = rawText.startsWith('/spotlight') || rawText.startsWith('/community');
+    const events = await getPokemonEvents();
+
+    let text = formatEventsOverview(events);
+    let tab: 'overview' | 'raids' | 'commday' = 'overview';
+
+    if (isRaidsOnly) {
+      text = formatRaidsMessage(events);
+      tab = 'raids';
+    } else if (isCommDayOnly) {
+      text = formatCommDaysMessage(events);
+      tab = 'commday';
+    }
+
+    const keyboard = getEventsInlineKeyboard(tab);
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     return;
   }
 
