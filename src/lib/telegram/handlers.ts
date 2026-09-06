@@ -18,6 +18,7 @@ import {
   PAYPAL_EMAIL,
   TELEGRAM_URL,
   TELEGRAM_BOT_USERNAME,
+  TELEGRAM_CHANNEL_URL,
   DISCORD_URL,
 } from '@/lib/constants';
 import { Order } from '@/types/order';
@@ -59,11 +60,14 @@ export function getPersistentKeyboard(): ReplyKeyboardMarkup {
       ],
       [
         { text: '📦 Live Stock' },
-        { text: '🌐 Open Web Store', web_app: { url: STORE_URL } },
+        { text: '📢 Proofs Channel' },
       ],
       [
-        { text: '💬 Support' },
         { text: '👥 Refer & Earn' },
+        { text: '💬 Support' },
+      ],
+      [
+        { text: '🌐 Open Web Store', web_app: { url: STORE_URL } },
       ],
     ],
     resize_keyboard: true,
@@ -83,6 +87,9 @@ function getPlanPickerContent(discountLabel?: string) {
       ],
       [
         { text: '🔋 2 Devices (30 Days)', callback_data: 'cb_buy_1_month_2_device' },
+      ],
+      [
+        { text: '📢 Live Proofs Channel', url: TELEGRAM_CHANNEL_URL },
       ],
       [
         { text: '🌐 Web Store (Cart)', web_app: { url: STORE_URL } },
@@ -625,6 +632,29 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
 
   if (rawText === '👥 Refer & Earn' || rawText.startsWith('/refer')) {
     await handleReferAndEarn(chatId);
+    return;
+  }
+
+  if (
+    rawText === '📢 Proofs Channel' ||
+    rawText === '📢 Live Proofs' ||
+    rawText.startsWith('/channel') ||
+    rawText.startsWith('/proofs')
+  ) {
+    await sendTelegramMessage(
+      chatId,
+      `📢 <b>Official Proofs & Vouches Channel</b>\n\n` +
+        `Every completed order is verified and posted live with transaction timestamps, masked customer tags, and live inventory count!\n\n` +
+        `👉 Join our official channel to see 100% genuine live order proofs and stock alerts:`,
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '👉 Join Proofs Channel 📢', url: TELEGRAM_CHANNEL_URL }],
+            [{ text: '🛒 Buy Standard Key', callback_data: 'cb_buy_1_month_1_device' }],
+          ],
+        },
+      }
+    );
     return;
   }
 
