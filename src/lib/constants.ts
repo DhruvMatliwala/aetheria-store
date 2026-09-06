@@ -59,7 +59,8 @@ export const TELEGRAM_URL =
   process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/sleekfx3';
 export const TELEGRAM_BOT_USERNAME =
   process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'pgsharpkeystorebot';
-export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+export const TELEGRAM_BOT_TOKEN =
+  process.env.TELEGRAM_BOT_TOKEN || '8678721674:AAGDmauFw7M_4NcVPK7G8U_Ty1eKHqCL_fI';
 export const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET || '';
 
 export interface SmartRoute {
