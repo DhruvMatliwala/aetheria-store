@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    body {
+      width: 1280px;
+      height: 720px;
+      background: #050813;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient Cyber Glows */
+    .bg-glow-cyan {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.28) 0%, rgba(14, 165, 233, 0) 70%);
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      filter: blur(75px);
+    }
+    .bg-glow-amber {
+      position: absolute;
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, rgba(245, 158, 11, 0) 70%);
+      bottom: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      filter: blur(75px);
+    }
+
+    /* Geometric Cyber Grid */
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(circle at center, black 45%, transparent 85%);
+    }
+
+    /* Outer Border Frame */
+    .frame-border {
+      position: absolute;
+      inset: 28px;
+      border: 1.5px solid rgba(56, 189, 248, 0.3);
+      border-radius: 36px;
+      pointer-events: none;
+      box-shadow: 
+        inset 0 0 50px rgba(14, 165, 233, 0.08),
+        0 0 50px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Center Content Container */
+    .center-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 10;
+      padding: 0 40px;
+    }
+
+    /* Glowing Star Badge */
+    .star-badge {
+      width: 124px;
+      height: 124px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+      border-radius: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        0 0 65px rgba(245, 158, 11, 0.65),
+        0 12px 35px rgba(0, 0, 0, 0.5),
+        inset 0 2px 4px rgba(255, 255, 255, 0.6);
+      border: 3px solid rgba(255, 255, 255, 0.45);
+      margin-bottom: 34px;
+    }
+    .star-badge svg {
+      width: 74px;
+      height: 74px;
+      fill: #ffffff;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+    }
+
+    /* Main Big Title */
+    h1.main-title {
+      font-size: 80px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      text-transform: uppercase;
+      line-height: 1.1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      text-shadow: 0 4px 25px rgba(0, 0, 0, 0.85);
+    }
+    h1.main-title .highlight {
+      background: linear-gradient(90deg, #38bdf8 0%, #06b6d4 50%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.5));
+    }
+
+    /* Subtitle Tag / Pill */
+    .subtitle-pill {
+      margin-top: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 40px;
+      background: rgba(13, 20, 36, 0.9);
+      border: 2px solid rgba(56, 189, 248, 0.55);
+      border-radius: 999px;
+      box-shadow: 
+        0 10px 35px rgba(0, 0, 0, 0.55),
+        0 0 35px rgba(14, 165, 233, 0.28),
+        inset 0 1px 1px rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(18px);
+    }
+    .subtitle-pill .icon {
+      font-size: 26px;
+      filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+    }
+    .subtitle-pill .text {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+    .subtitle-pill .dot {
+      width: 9px;
+      height: 9px;
+      background: #38bdf8;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #38bdf8;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow-cyan"></div>
+  <div class="bg-glow-amber"></div>
+  <div class="grid-lines"></div>
+  <div class="frame-border"></div>
+
+  <div class="center-box">
+    <!-- Center Star Badge -->
+    <div class="star-badge">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    </div>
+
+    <!-- Huge Bold Title -->
+    <h1 class="main-title">
+      <span>PGSHARP</span>
+      <span class="highlight">KEY STORE</span>
+    </h1>
+
+    <!-- Clean Centered Subtitle Pill -->
+    <div class="subtitle-pill">
+      <span class="icon">⚡</span>
+      <span class="text">Instant Key Delivery</span>
+      <span class="dot"></span>
+      <span class="text">30 Days Standard Edition</span>
+    </div>
+  </div>
+</body>
+</html>

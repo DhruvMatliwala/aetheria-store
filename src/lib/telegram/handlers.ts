@@ -21,6 +21,7 @@ import {
 import { getAvailableCount } from '@/lib/firestore/keys';
 import { createOrder, getOrderById } from '@/lib/firestore/orders';
 import { getBankCredit, claimBankCredit } from '@/lib/firestore/bankCredits';
+import { getPaypalCredit, claimPaypalCredit } from '@/lib/firestore/paypalCredits';
 import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendAdminOrderAlert, sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
 import { getAdminFirestore, admin } from '@/lib/firebase/admin';
@@ -56,18 +57,15 @@ export function getPersistentKeyboard(): ReplyKeyboardMarkup {
 }
 
 function getPlanPickerContent() {
-  const text =
-    `⚡ <b>PGSharp Standard Keys</b>\n` +
-    `Instant 24/7 key delivery directly in chat.\n\n` +
-    `👇 <b>Select a plan:</b>`;
+  const text = `👇 <b>Select a plan:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '📱 1 Device (30 Days) — ₹180', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '📱 1 Device (30 Days)', callback_data: 'cb_buy_1_month_1_device' },
       ],
       [
-        { text: '🔋 2 Devices (30 Days) — ₹350', callback_data: 'cb_buy_1_month_2_device' },
+        { text: '🔋 2 Devices (30 Days)', callback_data: 'cb_buy_1_month_2_device' },
       ],
       [
         { text: '🌐 Web Store (Cart)', web_app: { url: STORE_URL } },
@@ -190,8 +188,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     const amountUsd = (plan.price_usd / 100).toFixed(2);
 
     const paymentChoiceText =
-      `📱 <b>${plan.name} (${plan.duration})</b>\n` +
-      `Price: <b>₹${amountInr}</b> / <b>$${amountUsd} USD</b>\n\n` +
+      `📱 <b>${plan.name} (${plan.duration})</b>\n\n` +
       `Choose payment method:`;
 
     const keyboard: InlineKeyboardMarkup = {
@@ -317,7 +314,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       `💳 <b>Pay $${amountUsd} USD via PayPal</b>\n\n` +
       `Send <b>$${amountUsd} USD</b> to:\n` +
       `<code>${PAYPAL_EMAIL}</code>\n\n` +
-      `After paying, reply here with your <b>Transaction ID</b> to get your key.`;
+      `After paying, reply here with your <b>PayPal Transaction ID</b> or <b>PayPal Email</b> to get your key automatically!`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
@@ -534,6 +531,22 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     return;
   }
 
+  // ── 4. Detect PayPal Email Address ─────────────────────────────────────────
+  const emailMatch = rawText.match(/\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b/);
+  if (emailMatch) {
+    const cleanEmail = emailMatch[1].toLowerCase();
+    await processTelegramPaypalSubmission(chatId, cleanEmail, true, username);
+    return;
+  }
+
+  // ── 5. Detect PayPal Transaction ID (alphanumeric 13-22 characters) ─────────
+  const paypalTxMatch = rawText.match(/\b([A-Za-z0-9]{13,22})\b/);
+  if (paypalTxMatch && /[a-zA-Z]/.test(paypalTxMatch[1]) && /[0-9]/.test(paypalTxMatch[1])) {
+    const cleanTx = paypalTxMatch[1].toUpperCase();
+    await processTelegramPaypalSubmission(chatId, cleanTx, false, username);
+    return;
+  }
+
   // ── 4. Default Friendly Fallback with Persistent Keyboard ──────────────────
   await sendTelegramMessage(
     chatId,
@@ -693,6 +706,198 @@ async function processTelegramUtrSubmission(
     currency: 'INR',
     gateway: 'upi_direct',
     transactionId: cleanUtr,
+    customerPhone: username ? `@${username}` : `Telegram ID: ${chatId}`,
+  }).catch((err) => console.error('[Telegram] Verification alert error:', err));
+}
+
+/**
+ * Process a PayPal Transaction ID or Payer Email sent by the customer in chat
+ */
+async function processTelegramPaypalSubmission(
+  chatId: number,
+  cleanInput: string,
+  isEmail: boolean,
+  username?: string
+) {
+  const db = getAdminFirestore();
+
+  // Find recent pending or verifying order for this chat ID
+  const ordersSnap = await db
+    .collection('orders')
+    .where('telegram_chat_id', '==', chatId)
+    .where('payment_status', 'in', ['pending', 'verifying'])
+    .orderBy('created_at', 'desc')
+    .limit(1)
+    .get();
+
+  let targetOrder: Record<string, any> | null = null;
+  let orderId: string;
+
+  if (!ordersSnap.empty) {
+    targetOrder = ordersSnap.docs[0].data();
+    orderId = ordersSnap.docs[0].id;
+  } else {
+    // If no pending order exists, create one for the 1-device plan by default
+    const plan = PLANS[0];
+    orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
+    targetOrder = {
+      order_id: orderId,
+      customer_email: isEmail
+        ? cleanInput.toLowerCase()
+        : username
+        ? `${username.toLowerCase()}@telegram.user`
+        : `tg_${chatId}@telegram.user`,
+      customer_phone: '',
+      plan_type: plan.id,
+      amount: plan.price_usd,
+      currency: 'USD',
+      payment_gateway: 'paypal_direct',
+      payment_status: 'pending',
+      delivered_key: null,
+      gateway_order_id: `paypal_${orderId}`,
+      telegram_chat_id: chatId,
+      telegram_username: username || '',
+      telegram_user_id: chatId,
+      created_at: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    await db.collection('orders').doc(orderId).set(targetOrder);
+  }
+
+  // Check duplicate Tx ID usage across other orders
+  if (!isEmail) {
+    const dupSnap = await db
+      .collection('orders')
+      .where('paypal_tx_id', '==', cleanInput)
+      .limit(1)
+      .get();
+
+    if (!dupSnap.empty && dupSnap.docs[0].id !== orderId) {
+      const dupData = dupSnap.docs[0].data();
+      if (dupData.payment_status === 'paid' || dupData.payment_status === 'verifying') {
+        await sendTelegramMessage(
+          chatId,
+          `⚠️ <b>PayPal Transaction ID Already Used</b>\n\n` +
+            `The Transaction ID <code>${cleanInput}</code> has already been submitted for another order.\n` +
+            `If you believe this is an error, please contact @sleekfx3.`
+        );
+        return;
+      }
+    }
+  }
+
+  // Check automated PayPal IPN credit match
+  let matchedCredit: { txn_id: string } | null = null;
+
+  if (!isEmail) {
+    const credit = await getPaypalCredit(cleanInput);
+    if (credit && credit.status === 'unclaimed') {
+      matchedCredit = credit;
+    }
+  } else {
+    // Search verified_paypal_credits by payer_email
+    const creditSnap = await db
+      .collection('verified_paypal_credits')
+      .where('payer_email', '==', cleanInput.toLowerCase())
+      .where('status', '==', 'unclaimed')
+      .limit(1)
+      .get();
+    if (!creditSnap.empty) {
+      matchedCredit = creditSnap.docs[0].data() as { txn_id: string };
+    }
+  }
+
+  if (matchedCredit) {
+    // ── Instant Automated Match! ───────────────────────────────────────────
+    try {
+      const allocation = await allocateKeySlot(orderId, `TG_AUTO_PAYPAL_${matchedCredit.txn_id}`);
+
+      const updatePayload: Record<string, any> = {
+        payment_status: 'paid',
+        paypal_tx_id: matchedCredit.txn_id,
+        payment_gateway: 'paypal_direct',
+        updated_at: new Date(),
+      };
+      if (isEmail) {
+        updatePayload.customer_email = cleanInput.toLowerCase();
+      }
+
+      await db.collection('orders').doc(orderId).update(updatePayload);
+      await claimPaypalCredit(matchedCredit.txn_id, orderId);
+
+      const plan = PLAN_MAP[targetOrder.plan_type] || PLANS[0];
+
+      const deliveryMessage =
+        `🎉 <b>PAYMENT VERIFIED! YOUR KEY HAS BEEN DISPATCHED:</b>\n\n` +
+        `🔑 <b>License Key:</b>\n` +
+        `<code>${allocation.decryptedKey}</code>\n` +
+        `<i>(Tap key above to copy to clipboard)</i>\n\n` +
+        `📱 <b>Plan:</b> ${plan.name} (${plan.duration})\n` +
+        `⚡ <b>Device Slots:</b> ${plan.device_slots} Android Device(s)\n` +
+        `🆔 <b>Order ID:</b> <code>${orderId}</code>\n\n` +
+        `<b>How to Activate:</b>\n` +
+        `1. Open PGSharp on your Android device.\n` +
+        `2. Tap the floating Star icon ⭐ -> Go to <b>Settings ⚙️</b>.\n` +
+        `3. Tap <b>Activate</b>, paste your key, and tap OK!\n\n` +
+        `Need assistance or renewal? We're always here at @sleekfx3!`;
+
+      await sendTelegramMessage(chatId, deliveryMessage, {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '👤 View All My Keys', callback_data: 'cb_my_keys' }],
+            [{ text: '💬 Support & Questions', url: TELEGRAM_URL }],
+            [{ text: '🌐 Visit Web Store', web_app: { url: STORE_URL } }],
+          ],
+        },
+      });
+
+      sendAdminOrderAlert({
+        orderId,
+        customerEmail: isEmail ? cleanInput.toLowerCase() : targetOrder.customer_email,
+        planType: targetOrder.plan_type,
+        amount: targetOrder.amount,
+        currency: 'USD',
+        gateway: 'paypal_direct',
+        transactionId: matchedCredit.txn_id,
+        deliveredKey: allocation.decryptedKey,
+      }).catch((err) => console.error('[Telegram] Admin alert error:', err));
+
+      return;
+    } catch (allocErr) {
+      console.error('[Telegram] Key allocation error:', allocErr);
+    }
+  }
+
+  // ── PayPal credit not yet received or awaiting IPN/admin review ───────────
+  const updateData: Record<string, any> = {
+    payment_status: 'verifying',
+    payment_gateway: 'paypal_direct',
+    updated_at: new Date(),
+  };
+  if (isEmail) {
+    updateData.customer_email = cleanInput.toLowerCase();
+  } else {
+    updateData.paypal_tx_id = cleanInput;
+  }
+
+  await db.collection('orders').doc(orderId).update(updateData);
+
+  await sendTelegramMessage(
+    chatId,
+    `⏳ <b>PayPal Proof Received:</b> <code>${cleanInput}</code>\n\n` +
+      `We are confirming your payment with PayPal.\n` +
+      `Once confirmed (typically within 1–5 minutes), your <b>PGSharp Standard Key</b> will be delivered automatically right here in this chat!\n\n` +
+      `<i>Order ID: <code>${orderId}</code></i>`
+  );
+
+  // Send high-priority verification alert to Discord Admin with 1-click Approve
+  sendPaymentVerificationAlert({
+    orderId,
+    customerEmail: isEmail ? cleanInput.toLowerCase() : targetOrder.customer_email,
+    planType: targetOrder.plan_type,
+    amount: targetOrder.amount,
+    currency: 'USD',
+    gateway: 'paypal_direct',
+    transactionId: cleanInput,
     customerPhone: username ? `@${username}` : `Telegram ID: ${chatId}`,
   }).catch((err) => console.error('[Telegram] Verification alert error:', err));
 }

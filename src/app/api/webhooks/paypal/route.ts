@@ -8,6 +8,8 @@ import { Order } from '@/types/order';
 import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
 import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
+import { sendTelegramMessage } from '@/lib/telegram/bot';
+import { PLAN_MAP, PLANS, TELEGRAM_URL } from '@/lib/constants';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -136,6 +138,31 @@ export async function POST(request: NextRequest) {
           patreonEmail: allocation.patreonEmail,
         }).catch((err) => console.error('[webhook/paypal] Discord alert error:', err));
 
+        if (orderData.telegram_chat_id) {
+          const plan = PLAN_MAP[orderData.plan_type] || PLANS[0];
+          const deliveryMessage =
+            `🎉 <b>PAYMENT VERIFIED! YOUR KEY HAS BEEN DISPATCHED:</b>\n\n` +
+            `🔑 <b>License Key:</b>\n` +
+            `<code>${allocation.decryptedKey}</code>\n` +
+            `<i>(Tap key above to copy to clipboard)</i>\n\n` +
+            `📱 <b>Plan:</b> ${plan.name} (${plan.duration})\n` +
+            `⚡ <b>Device Slots:</b> ${plan.device_slots} Android Device(s)\n` +
+            `🆔 <b>Order ID:</b> <code>${orderData.order_id}</code>\n\n` +
+            `<b>How to Activate:</b>\n` +
+            `1. Open PGSharp on your Android device.\n` +
+            `2. Tap the floating Star icon ⭐ -> Go to <b>Settings ⚙️</b>.\n` +
+            `3. Tap <b>Activate</b>, paste your key, and tap OK!\n\n` +
+            `Need assistance or renewal? We're always here at @sleekfx3!`;
+
+          sendTelegramMessage(orderData.telegram_chat_id, deliveryMessage, {
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '💬 Support & Questions', url: TELEGRAM_URL }],
+              ],
+            },
+          }).catch((tgErr) => console.error('[webhook/paypal] Telegram deliver error:', tgErr));
+        }
+
         console.log(`[webhook/paypal] ⚡ 24/7 AUTO-FULFILLED PayPal Order #${orderData.order_id} via IPN Tx: ${txnId}`);
       } catch (allocErr: any) {
         console.error('[webhook/paypal] IPN allocation error:', allocErr);
@@ -206,6 +233,31 @@ export async function POST(request: NextRequest) {
                 deliveredKey: allocation.decryptedKey,
                 patreonEmail: allocation.patreonEmail,
               }).catch((err) => console.error('[webhook/paypal] Discord alert error:', err));
+
+              if (order.telegram_chat_id) {
+                const plan = PLAN_MAP[order.plan_type] || PLANS[0];
+                const deliveryMessage =
+                  `🎉 <b>PAYMENT VERIFIED! YOUR KEY HAS BEEN DISPATCHED:</b>\n\n` +
+                  `🔑 <b>License Key:</b>\n` +
+                  `<code>${allocation.decryptedKey}</code>\n` +
+                  `<i>(Tap key above to copy to clipboard)</i>\n\n` +
+                  `📱 <b>Plan:</b> ${plan.name} (${plan.duration})\n` +
+                  `⚡ <b>Device Slots:</b> ${plan.device_slots} Android Device(s)\n` +
+                  `🆔 <b>Order ID:</b> <code>${order.order_id}</code>\n\n` +
+                  `<b>How to Activate:</b>\n` +
+                  `1. Open PGSharp on your Android device.\n` +
+                  `2. Tap the floating Star icon ⭐ -> Go to <b>Settings ⚙️</b>.\n` +
+                  `3. Tap <b>Activate</b>, paste your key, and tap OK!\n\n` +
+                  `Need assistance or renewal? We're always here at @sleekfx3!`;
+
+                sendTelegramMessage(order.telegram_chat_id, deliveryMessage, {
+                  reply_markup: {
+                    inline_keyboard: [
+                      [{ text: '💬 Support & Questions', url: TELEGRAM_URL }],
+                    ],
+                  },
+                }).catch((tgErr) => console.error('[webhook/paypal] Telegram deliver error:', tgErr));
+              }
             }
           }
         }
