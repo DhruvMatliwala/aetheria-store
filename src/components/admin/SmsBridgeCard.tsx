@@ -24,7 +24,7 @@ export function SmsBridgeCard({ adminToken }: SmsBridgeCardProps) {
       ? `${window.location.origin}/api/webhooks/upi`
       : 'https://aetheria-store.vercel.app/api/webhooks/upi';
 
-  const bridgeSecret = adminToken || 'aetheria-sms-bridge-secret';
+  const bridgeSecret = adminToken || '';
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(webhookUrl);

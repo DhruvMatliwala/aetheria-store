@@ -17,9 +17,6 @@ function isValidSecret(providedSecret: string | null): boolean {
   const validSecrets = [
     process.env.SMS_BRIDGE_SECRET,
     process.env.ADMIN_API_SECRET,
-    'DhruvSleekAdminSecret2026',
-    'AETHERIA_BANK_SYNC_9942',
-    'aetheria-sms-bridge-secret',
   ]
     .filter(Boolean)
     .map((s) => s!.trim());
