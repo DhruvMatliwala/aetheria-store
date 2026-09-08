@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     const note = `AETHERIA_${orderId.slice(-8).toUpperCase()}`;
 
     // Standard PayPal.me payment link with pre-filled amount:
-    // e.g. https://www.paypal.me/MatliwalaYogesh/1.99USD or /3.50USD
+    // e.g. https://www.paypal.me/MatliwalaYogesh/1.79USD or /3.50USD
     const cleanBaseUrl = PAYPAL_ME_URL.replace(/\/+$/, '');
     const prefilledPaypalMeUrl = `${cleanBaseUrl}/${amountUsd}USD`;
 

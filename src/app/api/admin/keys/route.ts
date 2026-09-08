@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     };
 
     const { keys, patreonEmail, announceInChannel } = body;
-    const source = body.source || body.planType || 'patreon_2slot';
+    const source = body.source || body.planType || 'patreon_3slot';
 
     if (!Array.isArray(keys) || keys.length === 0) {
       return NextResponse.json(

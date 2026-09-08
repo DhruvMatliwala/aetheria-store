@@ -259,7 +259,7 @@ export function CheckoutModal({ isOpen, onClose, plan }: CheckoutModalProps) {
     setTimeout(() => setCopiedUpi(false), 2500);
   };
 
-  const amountRupeesRound = Math.round(upiSession?.amountRupees || 180);
+  const amountRupeesRound = Math.round(upiSession?.amountRupees || 130);
 
   const handleDownloadQr = () => {
     try {

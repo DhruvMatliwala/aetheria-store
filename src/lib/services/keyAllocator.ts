@@ -36,7 +36,7 @@ export interface SlotAllocationResult {
  * Atomically allocates device slot(s) for a paid order from inventory.
  *
  * Sourcing & Slot Strategy:
- * - Sourced keys have 2 slots (Patreon) or 3 slots (Official Web).
+ * - Sourced keys have 3 slots (Patreon & Official Web).
  * - Priority rule: Sort available candidate keys by `remainingSlots ASC`.
  *   This ensures partially-used keys (e.g. 1 slot remaining) are packed first
  *   before opening a fresh key.
@@ -66,8 +66,8 @@ export async function allocateKeySlot(
         keyId: orderData.key_id || 'already_assigned',
         decryptedKey: orderData.delivered_key,
         assignedSlots: orderData.slots_assigned ?? requiredSlots,
-        totalSlots: 2,
-        usedSlots: 2,
+        totalSlots: 3,
+        usedSlots: 3,
         remainingSlots: 0,
         status: 'full',
         patreonEmail: orderData.patreon_email,
@@ -87,7 +87,7 @@ export async function allocateKeySlot(
     const candidates = availableDocsSnap.docs
       .map((doc) => {
         const d = doc.data() as LicenseKeyDoc;
-        const total = d.totalSlots ?? (d.source === 'web_3slot' ? 3 : 2);
+        const total = d.totalSlots ?? 3;
         const used = d.usedSlots ?? 0;
         const remaining = d.remainingSlots ?? Math.max(0, total - used);
         return { doc, data: d, total, used, remaining };
@@ -202,7 +202,7 @@ async function checkLowStockAfterAllocation(planType: string): Promise<void> {
 
     snap.docs.forEach((doc) => {
       const data = doc.data() as LicenseKeyDoc;
-      const total = data.totalSlots ?? (data.source === 'web_3slot' ? 3 : 2);
+      const total = data.totalSlots ?? 3;
       const used = data.usedSlots ?? 0;
       const remaining = data.remainingSlots ?? Math.max(0, total - used);
       if (requiredSlots === 1) {

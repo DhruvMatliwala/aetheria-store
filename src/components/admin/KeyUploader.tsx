@@ -69,7 +69,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
           'x-admin-secret': adminToken,
         },
         body: JSON.stringify({
-          source: 'patreon_2slot',
+          source: 'patreon_3slot',
           keys,
           patreonEmail: patreonEmail.trim() || undefined,
           announceInChannel,

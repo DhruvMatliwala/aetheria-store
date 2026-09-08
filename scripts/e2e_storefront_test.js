@@ -83,8 +83,8 @@ async function runStorefrontTest() {
       testResults.failed.push("Lingering 'Instant Dispatch' detected on Scene 2");
     }
 
-    if (scene2Text.includes('180') && scene2Text.includes('350')) {
-      testResults.passed.push("Pricing correctly rendered: ₹180 ($1.99) & ₹350 ($3.50)");
+    if (scene2Text.includes('130') && scene2Text.includes('250')) {
+      testResults.passed.push("Pricing correctly rendered: ₹130 ($1.79) & ₹250 ($3.50)");
     } else {
       testResults.failed.push("Pricing numbers missing or incorrect");
     }

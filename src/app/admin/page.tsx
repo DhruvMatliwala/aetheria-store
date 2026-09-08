@@ -921,7 +921,7 @@ export default function AdminPage() {
                           </div>
                           <div className="flex justify-between text-[11px] text-slate-500 mt-2 font-mono">
                             <span>Sold: {plan1Sold}</span>
-                            <span>₹180 / $1.99</span>
+                            <span>₹130 / $1.79</span>
                           </div>
                         </div>
 
@@ -946,7 +946,7 @@ export default function AdminPage() {
                           </div>
                           <div className="flex justify-between text-[11px] text-slate-500 mt-2 font-mono">
                             <span>Sold: {plan2Sold}</span>
-                            <span>₹350 / $3.50</span>
+                            <span>₹250 / $3.50</span>
                           </div>
                         </div>
                       </div>

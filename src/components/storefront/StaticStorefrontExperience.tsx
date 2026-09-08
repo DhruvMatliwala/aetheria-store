@@ -41,7 +41,7 @@ const FAQS = [
   },
   {
     q: 'How do device slots work across 1-Device and 2-Device plans?',
-    a: 'The 1 Device Plan (₹180 / $1.99) activates 1 Android phone for 30 days. The 2 Devices Plan (₹350 / $3.50) allows up to 2 Android phones simultaneously. Keys bind to device hardware for the 30-day duration.',
+    a: 'The 1 Device Plan (₹130 / $1.79) activates 1 Android phone for 30 days. The 2 Devices Plan (₹250 / $3.50) allows up to 2 Android phones simultaneously. Keys bind to device hardware for the 30-day duration.',
   },
   {
     q: 'What payment methods are accepted?',
@@ -132,7 +132,7 @@ export function StaticStorefrontExperience({
               onClick={scrollToPricing}
               className="w-full sm:w-auto px-6 py-4 rounded-xl bg-surface-900/80 hover:bg-surface-800 text-gray-300 hover:text-white border border-white/15 text-sm font-semibold transition-all flex items-center justify-center gap-2"
             >
-              <span>View Pricing (From ₹180)</span>
+              <span>View Pricing (From ₹130)</span>
               <ArrowRight size={14} />
             </button>
           </div>

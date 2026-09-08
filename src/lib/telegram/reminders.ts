@@ -120,8 +120,8 @@ export async function checkAndSendExpiryReminders(): Promise<ReminderRunResult> 
           `${timeBadge}\n${discountLine}\n` +
           `⚠️ <b>Don't lose your spoofing joystick & 100% IV scanner mid-event!</b>\n` +
           `Get your fresh 30-day key now in 10 seconds:\n\n` +
-          `• 📱 <b>1 Device:</b> ₹180 / $1.99 <i>(or ₹150 / $1.50 with coupon)</i>\n` +
-          `• 🔋 <b>2 Devices:</b> ₹350 / $3.50 <i>(or ₹320 / $3.00 with coupon)</i>\n\n` +
+          `• 📱 <b>1 Device:</b> ₹130 / $1.79 <i>(or ₹100 / $1.49 with coupon)</i>\n` +
+          `• 🔋 <b>2 Devices:</b> ₹250 / $3.50 <i>(or ₹220 / $3.00 with coupon)</i>\n\n` +
           `Tap below to get your fresh key instantly:`;
 
         try {

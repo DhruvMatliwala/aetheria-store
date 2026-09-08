@@ -27,7 +27,6 @@ export async function GET(_req: NextRequest) {
         stock: {
           '1_month_1_device': 0,
           '1_month_2_device': 0,
-          '1_month_3_device': 0,
         },
         usableSlots: 0,
         activeKeys: 0,

@@ -178,12 +178,12 @@ export async function processReferralReward(order: Order): Promise<boolean> {
   const rewardMessage =
     `🎉 <b>REFERRAL REWARD EARNED!</b>\n\n` +
     `Your friend just purchased a PGSharp key!\n` +
-    `Here is your exclusive <b>₹30 / $0.50 OFF</b> discount coupon for your next key purchase:\n\n` +
+    `Here is your exclusive <b>₹30 / $0.30 OFF</b> discount coupon for your next key purchase:\n\n` +
     `🎟️ Coupon Code:\n` +
     `<code>${couponCode}</code>\n` +
     `<i>(Tap code above to copy to clipboard)</i>\n\n` +
-    `• <b>UPI Discount:</b> ₹30 OFF (₹180 ➔ ₹150 / ₹350 ➔ ₹320)\n` +
-    `• <b>PayPal Discount:</b> $0.50 OFF ($1.99 ➔ $1.50 / $3.50 ➔ $3.00)\n` +
+    `• <b>UPI Discount:</b> ₹30 OFF (₹130 ➔ ₹100 / ₹250 ➔ ₹220)\n` +
+    `• <b>PayPal Discount:</b> $0.30 / $0.50 OFF ($1.79 ➔ $1.49 / $3.50 ➔ $3.00)\n` +
     `• Single-use coupon — simply enter it in chat when buying your next key!\n\n` +
     `Keep inviting friends to earn more coupons! 🚀`;
 
@@ -205,25 +205,25 @@ export async function processReferralReward(order: Order): Promise<boolean> {
 }
 
 /**
- * Computes exact discounted prices (₹150 / $1.50 for 1 Device; ₹320 / $3.00 for 2 Devices)
+ * Computes exact discounted prices (₹100 / $1.49 for 1 Device; ₹220 / $3.00 for 2 Devices)
  */
 export function getDiscountedPricing(planId: string, hasDiscount: boolean) {
   const is2Device = planId.includes('2_device');
   if (hasDiscount) {
     return {
-      priceInrPaise: is2Device ? 32000 : 15000,
-      priceInrRupees: is2Device ? '320' : '150',
-      priceUsdCents: is2Device ? 300 : 150,
-      priceUsdDollars: is2Device ? '3.00' : '1.50',
+      priceInrPaise: is2Device ? 22000 : 10000,
+      priceInrRupees: is2Device ? '220' : '100',
+      priceUsdCents: is2Device ? 300 : 149,
+      priceUsdDollars: is2Device ? '3.00' : '1.49',
       savingsInr: '30',
-      savingsUsd: is2Device ? '0.50' : '0.49',
+      savingsUsd: is2Device ? '0.50' : '0.30',
     };
   }
   return {
-    priceInrPaise: is2Device ? 35000 : 18000,
-    priceInrRupees: is2Device ? '350' : '180',
-    priceUsdCents: is2Device ? 350 : 199,
-    priceUsdDollars: is2Device ? '3.50' : '1.99',
+    priceInrPaise: is2Device ? 25000 : 13000,
+    priceInrRupees: is2Device ? '250' : '130',
+    priceUsdCents: is2Device ? 350 : 179,
+    priceUsdDollars: is2Device ? '3.50' : '1.79',
     savingsInr: '0',
     savingsUsd: '0',
   };

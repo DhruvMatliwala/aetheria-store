@@ -126,8 +126,8 @@ export async function validateAndApplyCoupon(
   // Calculate USD discount
   let discountAmountUsd = 0;
   if (code.startsWith('REF30_')) {
-    // Clean USD pricing: $1.99 -> $1.50 (49c off), $3.50 -> $3.00 (50c off)
-    discountAmountUsd = plan.id.includes('2_device') ? 50 : 49;
+    // Clean USD pricing: $1.79 -> $1.49 (30c off), $3.50 -> $3.00 (50c off)
+    discountAmountUsd = plan.id.includes('2_device') ? 50 : 30;
   } else if (coupon.discount_type === 'percentage' && coupon.percentage) {
     discountAmountUsd = Math.round((plan.price_usd * coupon.percentage) / 100);
   } else {

@@ -52,7 +52,7 @@ export async function getAvailableCount(planId: string): Promise<number> {
     // 1-Device capacity = sum of all remainingSlots across available keys
     snap.docs.forEach((doc) => {
       const data = doc.data() as LicenseKeyDoc;
-      const remaining = data.remainingSlots ?? ((data.totalSlots ?? 2) - (data.usedSlots ?? 0));
+      const remaining = data.remainingSlots ?? ((data.totalSlots ?? 3) - (data.usedSlots ?? 0));
       if (remaining > 0) {
         count += remaining;
       }
@@ -61,7 +61,7 @@ export async function getAvailableCount(planId: string): Promise<number> {
     // 2-Device capacity = count of keys with remainingSlots >= requiredSlots
     snap.docs.forEach((doc) => {
       const data = doc.data() as LicenseKeyDoc;
-      const remaining = data.remainingSlots ?? ((data.totalSlots ?? 2) - (data.usedSlots ?? 0));
+      const remaining = data.remainingSlots ?? ((data.totalSlots ?? 3) - (data.usedSlots ?? 0));
       if (remaining >= requiredSlots) {
         count++;
       }
@@ -101,7 +101,7 @@ export async function getInventoryStats(): Promise<InventoryStatsSummary> {
     const data = doc.data() as LicenseKeyDoc;
     totalKeys++;
 
-    const totalSlots = data.totalSlots ?? 2;
+    const totalSlots = data.totalSlots ?? 3;
     const usedSlots = data.usedSlots ?? 0;
     const remainingSlots = data.remainingSlots ?? Math.max(0, totalSlots - usedSlots);
     const isAvailable = data.status === 'available' && remainingSlots > 0;
@@ -216,7 +216,7 @@ function parseKeyEntry(
 }
 
 /**
- * Bulk-inserts Patreon 2-slot license keys with optional Patreon account tagging.
+ * Bulk-inserts Patreon 3-slot license keys with optional Patreon account tagging.
  * Keys are encrypted with AES-256-GCM before storage.
  */
 export async function bulkInsertKeys(
@@ -227,8 +227,8 @@ export async function bulkInsertKeys(
   const db = getAdminFirestore();
   const result: BulkUploadResult = { inserted: 0, skipped: 0, errors: [] };
 
-  const source: KeySource = 'patreon_2slot';
-  const totalSlots = 2;
+  const source: KeySource = 'patreon_3slot';
+  const totalSlots = 3;
 
   // Parse and deduplicate by key string
   const parsedEntries: { cleanKey: string; patreonEmail?: string }[] = [];

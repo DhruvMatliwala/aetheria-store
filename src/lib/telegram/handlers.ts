@@ -788,8 +788,8 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
           discountBanner =
             `🎁 <b>SPECIAL REFERRAL DISCOUNT APPLIED!</b>\n` +
             `Your friend invited you to PGSharp Store. You get an exclusive discount on your first key:\n` +
-            `• 📱 <b>1 Device:</b> <s>₹180 / $1.99</s> ➔ <b>₹150 / $1.50</b>\n` +
-            `• 🔋 <b>2 Devices:</b> <s>₹350 / $3.50</s> ➔ <b>₹320 / $3.00</b>`;
+            `• 📱 <b>1 Device:</b> <s>₹130 / $1.79</s> ➔ <b>₹100 / $1.49</b>\n` +
+            `• 🔋 <b>2 Devices:</b> <s>₹250 / $3.50</s> ➔ <b>₹220 / $3.00</b>`;
         } else if (eligibility.reason === 'self_referral') {
           await sendTelegramMessage(
             chatId,
@@ -856,8 +856,8 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
       await setUserCoupon(chatId, candidateCode);
       const discountText =
         `🎟️ <b>Promo Code "${candidateCode}" Applied!</b>\n\n` +
-        `• 📱 <b>1 Device:</b> <s>₹180 / $1.99</s> ➔ <b>₹150 / $1.50</b>\n` +
-        `• 🔋 <b>2 Devices:</b> <s>₹350 / $3.50</s> ➔ <b>₹320 / $3.00</b>\n\n` +
+        `• 📱 <b>1 Device:</b> <s>₹130 / $1.79</s> ➔ <b>₹100 / $1.49</b>\n` +
+        `• 🔋 <b>2 Devices:</b> <s>₹250 / $3.50</s> ➔ <b>₹220 / $3.00</b>\n\n` +
         `Choose your plan below:`;
       const { keyboard } = getPlanPickerContent();
       await sendTelegramMessage(chatId, discountText, { reply_markup: keyboard });

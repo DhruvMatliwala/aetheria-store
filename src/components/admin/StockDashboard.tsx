@@ -154,7 +154,7 @@ export function StockDashboard({ stockCounts = {}, inventoryStats, revenueStats 
                   Standard Tier
                 </span>
                 <h4 className="text-base font-bold text-white mt-1.5">1 Android Device Key</h4>
-                <p className="text-xs text-slate-400">1 Device Slot per order • ₹180 / $1.99</p>
+                <p className="text-xs text-slate-400">1 Device Slot per order • ₹130 / $1.79</p>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-black text-cyan-300 font-mono">{count1}</span>
@@ -185,7 +185,7 @@ export function StockDashboard({ stockCounts = {}, inventoryStats, revenueStats 
                   Duo Tier
                 </span>
                 <h4 className="text-base font-bold text-white mt-1.5">2 Android Devices Key</h4>
-                <p className="text-xs text-slate-400">2 Device Slots per order • ₹350 / $3.50</p>
+                <p className="text-xs text-slate-400">2 Device Slots per order • ₹250 / $3.50</p>
               </div>
               <div className="text-right">
                 <span className="text-2xl font-black text-purple-300 font-mono">{count2}</span>
