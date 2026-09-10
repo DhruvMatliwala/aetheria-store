@@ -65,7 +65,7 @@ The viewport is pinned using GSAP `ScrollTrigger` across a **550vh runway**:
 - **Problem with Traditional UPI**: Requiring customers to manually copy and paste 12-digit UTR numbers leads to a 40%+ drop-off rate and human error.
 - **AETHERIA Innovation**: Dynamic Unique Paise Offset Allocation (`allocateUniquePaise`).
 - **How It Works**:
-  1. Base price (e.g. ₹130) receives a temporary unique fractional paise offset (e.g. `₹130.14`), reserved for 15 minutes.
+  1. Base price (e.g. ₹160) receives a temporary unique fractional paise offset (e.g. `₹160.14`), reserved for 15 minutes.
   2. The buyer scans the QR code or clicks the UPI link in GPay, PhonePe, or Paytm and taps "Pay".
   3. **Automated Bank SMS Bridge (`/api/webhooks/upi`)**: Incoming bank SMS notifications from an Android forwarder device are parsed in real time, matching the exact paise amount and instantly triggering key dispatch!
   4. The checkout modal polls `/api/order/[orderId]` every 2.5s and auto-redirects to `/order-success` in under 2 seconds.
@@ -81,7 +81,7 @@ The viewport is pinned using GSAP `ScrollTrigger` across a **550vh runway**:
 - **Discreet UI**: Clean, unprompted promo input field labeled *"Have a Promo Code?"* with placeholder *"Enter promo code"*, keeping secret codes safe from first-time visitors.
 - **Real-Time Validation API (`/api/coupons/validate`)**: Instant feedback displaying exact discount values in INR and USD, strikethrough pricing, and a glowing green `SAVED` badge.
 - **Dynamic Payment Integration**:
-  - The UPI engine applies the discount to the base amount before calculating the unique paise offset (e.g. ₹130 - ₹10 = `₹120.14`).
+  - The UPI engine applies the discount to the base amount before calculating the unique paise offset (e.g. ₹160 - ₹30 = `₹130.14`).
   - PayPal links adjust to the discounted USD total.
   - Server-side validation prevents price tampering.
 - **Private Secret Codes**:

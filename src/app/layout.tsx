@@ -96,8 +96,8 @@ export const metadata: Metadata = {
     'how to buy pgsharp key in india',
     'pgsharp key in rupees',
     'pgsharp price in india',
-    'pgsharp 130 inr',
-    'pgsharp 250 inr',
+    'pgsharp 160 inr',
+    'pgsharp 300 inr',
     // Feature & Spoofer Keywords
     'pokemon go spoofing key',
     'pokemon go joystick key',
@@ -162,7 +162,7 @@ const jsonLd = {
         'Official PGSharp Standard Edition 30-Day license keys with instant automated delivery. Buy PGSharp keys in India via UPI, GPay, Paytm, Cards, and PayPal.',
       currenciesAccepted: 'INR, USD',
       paymentAccepted: 'UPI, Google Pay, PhonePe, Paytm, Credit Card, Debit Card, NetBanking, PayPal',
-      priceRange: '₹130 - ₹250',
+      priceRange: '₹160 - ₹300',
     },
     {
       '@type': 'Product',
@@ -202,7 +202,7 @@ const jsonLd = {
       ],
       offers: {
         '@type': 'Offer',
-        price: '130.00',
+        price: '160.00',
         priceCurrency: 'INR',
         validFrom: '2026-01-01',
         priceValidUntil: '2027-12-31',
@@ -284,7 +284,7 @@ const jsonLd = {
       ],
       offers: {
         '@type': 'Offer',
-        price: '250.00',
+        price: '300.00',
         priceCurrency: 'INR',
         validFrom: '2026-01-01',
         priceValidUntil: '2027-12-31',
@@ -336,7 +336,7 @@ const jsonLd = {
           name: 'Are free PGSharp key generators real?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'No, automated key generators or free key crack websites are fake and unsafe. Official PGSharp keys require genuine cryptographic authentication. AETHERIA provides 100% genuine PGSharp Standard Edition keys starting at ₹130 with instant automated delivery.',
+            text: 'No, automated key generators or free key crack websites are fake and unsafe. Official PGSharp keys require genuine cryptographic authentication. AETHERIA provides 100% genuine PGSharp Standard Edition keys starting at ₹160 with instant automated delivery.',
           },
         },
         {

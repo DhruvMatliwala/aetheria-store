@@ -49,7 +49,7 @@ export interface PayPalOrderResponse {
 
 /**
  * Creates a PayPal order explicitly in USD with a 2-decimal string value.
- * @param amountCents  Amount in cents USD (e.g., 179 for $1.79, 350 for $3.50).
+ * @param amountCents  Amount in cents USD (e.g., 200 for $2.00, 360 for $3.60).
  * @param orderId      Your internal order ID used as custom_id.
  * @param planName     Optional human-readable plan name for transaction description.
  */
@@ -60,7 +60,7 @@ export async function createPayPalOrder(
 ): Promise<PayPalOrderResponse> {
   const token = await getAccessToken();
   
-  // Format as exact 2-decimal string in USD (e.g. "1.79", "3.50")
+  // Format as exact 2-decimal string in USD (e.g. "2.00", "3.60")
   const amountUsd = (amountCents / 100).toFixed(2);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://aetheria-store.vercel.app';

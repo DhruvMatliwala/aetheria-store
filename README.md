@@ -23,7 +23,7 @@ A luxury digital license key storefront engineered with **Next.js 14 (App Router
 
 ### 🌟 Key Highlights
 - **Multi-Theme Engine (`src/config/theme.ts` & `src/themes/`)**: 3 fully-isolated storefront themes (Obsidian, Motion, Nexus) switchable via single config variable or instant URL query parameter (`?theme=...`).
-- **Direct Native UPI Payment Flow**: Dynamic paise allocation (e.g., ₹130.14) preventing collision, instant QR code rendering via `qrcode.react`, and manual UTR verification or bank SMS auto-match.
+- **Direct Native UPI Payment Flow**: Dynamic paise allocation (e.g., ₹160.14) preventing collision, instant QR code rendering via `qrcode.react`, and manual UTR verification or bank SMS auto-match.
 - **Discord 1-Click Approval System**: Instant admin webhook notification with cryptographic 1-click `[Approve]` and `[Reject]` action buttons.
 - **PayPal Client & Webhook Integration**: Native PayPal JS SDK modal checkout with real-time server capture and IPN webhook listener.
 - **Customer Order Vault (`CustomerVaultModal.tsx`)**: Header lookup widget allowing customers to recover their purchased keys and view receipt history using their email or phone number.
@@ -63,12 +63,12 @@ export const ACTIVE_STORE_THEME: StoreThemeId = 'obsidian'; // 'obsidian' | 'mot
 
 | Plan Name | Device Slots | Price (INR) | Price (USD) | Delivery Speed | Features |
 |---|---|---|---|---|---|
-| **1 Device Plan** | 1 Device | ₹130 | $1.79 | < 10 Seconds | Teleport, Joystick, 100% IV Feed, Fast Catch, Auto-Walk |
-| **2 Devices Plan** (Popular) | 2 Devices | ₹250 | $3.50 | < 10 Seconds | Multi-device sync, Raid Radar, Spawn Booster, Priority Support |
+| **1 Device Plan** | 1 Device | ₹160 | $2.00 | < 10 Seconds | Teleport, Joystick, 100% IV Feed, Fast Catch, Auto-Walk |
+| **2 Devices Plan** (Popular) | 2 Devices | ₹300 | $3.60 | < 10 Seconds | Multi-device sync, Raid Radar, Spawn Booster, Priority Support |
 
 ### 1. Direct UPI Flow (India — INR)
 1. User selects plan in `CheckoutModal`.
-2. Server allocates dynamic paise offset via `allocateUniquePaise()` (e.g. ₹130.14) to uniquely identify the transfer without third-party gateway fees.
+2. Server allocates dynamic paise offset via `allocateUniquePaise()` (e.g. ₹160.14) to uniquely identify the transfer without third-party gateway fees.
 3. User scans dynamic UPI QR or taps deep-link for GPay, PhonePe, or Paytm.
 4. User submits 12-digit UTR transaction reference.
 5. System verifies transaction via SMS webhook auto-matching or sends instant Discord alert with 1-click `[Approve]` button.

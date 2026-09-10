@@ -36,3 +36,9 @@ tsconfig.tsbuildinfo
 # Test Outputs
 public/test-screenshots/
 .playwright-mcp/
+
+# Local Video / Audio Render Outputs
+public/videos/final*.mp4
+public/videos/YTshort/
+public/audio/short_voiceover.mp3
+public/audio/ElevenLabs*

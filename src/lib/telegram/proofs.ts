@@ -127,9 +127,9 @@ export async function broadcastRestockAlert(insertedCount: number = 0): Promise<
       `• 📱 <b>1 Device (30 Days):</b> ${stock1 > 0 ? `${stock1} keys available` : 'Limited'}\n` +
       `• 🔋 <b>2 Devices (30 Days):</b> ${stock2 > 0 ? `${stock2} keys available` : 'Limited'}\n\n` +
       `⚡ <b>Fast Auto-Delivery via UPI & PayPal:</b>\n` +
-      `• UPI (Instant Auto-Match): <b>₹130 / ₹250</b>\n` +
-      `• PayPal (Direct): <b>$1.79 / $3.50</b>\n` +
-      `<i>(First-time buyers get ₹30 / $0.50 OFF referral discount!)</i>\n\n` +
+      `• UPI (Instant Auto-Match): <b>₹160 / ₹300</b>\n` +
+      `• PayPal (Direct): <b>$2.00 / $3.60</b>\n` +
+      `<i>(First-time buyers get ₹30 / $0.60 OFF referral discount!)</i>\n\n` +
       `👉 <b>Order now before stock sells out:</b> @${botUsername}`;
 
     await sendTelegramMessage(channelTarget, restockText, {

@@ -315,7 +315,7 @@ export function formatEventsOverview(data: GroupedPokemonEvents): string {
   text += `Get your <b>PGSharp Standard Key</b> now:\n`;
   text += `• Instant Joystick + Teleport anywhere\n`;
   text += `• 100% IV Shiny Sniper & Auto-Catch\n`;
-  text += `• <b>₹130 / $1.79</b> (Auto-delivered in 15 seconds!)\n`;
+  text += `• <b>₹160 / $2.00</b> (Auto-delivered in 15 seconds!)\n`;
 
   return text;
 }
