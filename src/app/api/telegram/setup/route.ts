@@ -56,8 +56,9 @@ export async function GET(request: NextRequest) {
       { command: 'start', description: '⚡ Launch PGSharp key shop' },
       { command: 'stock', description: '📦 Check available keys' },
       { command: 'buy', description: '🛒 Order 1 or 2 device key' },
-      { command: 'proofs', description: '📢 View live order proofs & channel' },
+      { command: 'referral', description: '👥 Get your referral link & earn' },
       { command: 'refer', description: '👥 Refer friends & earn discounts' },
+      { command: 'proofs', description: '📢 View live order proofs & channel' },
       { command: 'keys', description: '👤 View my purchased keys' },
       { command: 'help', description: '💬 Support & questions' },
     ]);
