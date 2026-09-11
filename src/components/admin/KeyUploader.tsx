@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Upload, CheckCircle, AlertCircle, Key, Shield, Sparkles, Mail, Radio } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { TELEGRAM_PROOF_CHANNEL } from '@/lib/constants';
 
 interface UploadResult {
   inserted: number;
@@ -33,7 +34,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        toast.success('📢 Restock alert sent to @pgsharpkeys_official!');
+        toast.success(`📢 Restock alert sent to ${TELEGRAM_PROOF_CHANNEL}!`);
       } else {
         toast.error(data.error || 'Failed to send restock alert.');
       }
@@ -85,7 +86,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
       setRawKeys('');
       setPatreonEmail('');
       if (data.restockAnnounced) {
-        toast.success('📢 Restock alert posted to @pgsharpkeys_official!');
+        toast.success(`📢 Restock alert posted to ${TELEGRAM_PROOF_CHANNEL}!`);
       }
       if (onUploadSuccess) {
         onUploadSuccess();
@@ -131,7 +132,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
             onClick={handleManualAnnounce}
             disabled={broadcastingManual}
             className="px-3 py-1.5 rounded-xl bg-[#070b13] border border-cyan-700/50 hover:border-cyan-500 text-cyan-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Post a restock announcement to @pgsharpkeys_official channel right now"
+            title={`Post a restock announcement to ${TELEGRAM_PROOF_CHANNEL} channel right now`}
           >
             <Radio size={13} className={broadcastingManual ? 'animate-bounce text-amber-400' : 'text-cyan-400'} />
             <span>{broadcastingManual ? 'Broadcasting...' : 'Broadcast to Channel'}</span>
@@ -190,7 +191,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
             />
             <span className="flex items-center gap-1.5 font-medium">
               <span>📢 Post Restock Alert to</span>
-              <span className="text-cyan-400 font-bold">@pgsharpkeys_official</span>
+              <span className="text-cyan-400 font-bold">{TELEGRAM_PROOF_CHANNEL}</span>
               <span className="text-[10px] text-slate-500 hidden sm:inline">(Creates instant customer FOMO)</span>
             </span>
           </label>
@@ -239,7 +240,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
             {result.restockAnnounced && (
               <p className="text-cyan-300 font-semibold mt-1 flex items-center gap-1.5">
                 <span>📣</span>
-                <span>Restock alert broadcasted live to <strong>@pgsharpkeys_official</strong>!</span>
+                <span>Restock alert broadcasted live to <strong>{TELEGRAM_PROOF_CHANNEL}</strong>!</span>
               </p>
             )}
           </div>

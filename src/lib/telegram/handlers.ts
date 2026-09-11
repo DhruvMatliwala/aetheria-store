@@ -100,14 +100,18 @@ export function getEventsInlineKeyboard(activeTab: 'overview' | 'raids' | 'commd
         { text: '🔄 Refresh Schedule', callback_data: 'cb_events_refresh' },
         { text: '📢 Proofs Channel', url: TELEGRAM_CHANNEL_URL },
       ],
+      [
+        { text: '⬅️ Back to Menu', callback_data: 'menu_main' },
+      ],
     ],
   };
 }
 
-function getPlanPickerContent(discountLabel?: string) {
+function getPlanPickerContent(discountLabel?: string, firstName: string = 'Trainer') {
+  const greeting = `👋 Welcome <b>${firstName}</b> to <b>Aetheria Store</b>!`;
   const text = discountLabel
-    ? `${discountLabel}\n\n👇 <b>Select a plan:</b>`
-    : `👇 <b>Select a plan:</b>`;
+    ? `${greeting}\n\n${discountLabel}\n\n👇 <b>Select an option below:</b>`
+    : `${greeting}\n\n👇 <b>Select an option below:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
@@ -118,12 +122,15 @@ function getPlanPickerContent(discountLabel?: string) {
         { text: '🔋 2 Devices (30 Days)', callback_data: 'cb_buy_1_month_2_device' },
       ],
       [
+        { text: '📦 Live Stock', callback_data: 'cb_stock' },
+        { text: '🔑 My Keys', callback_data: 'cb_my_keys' },
+      ],
+      [
         { text: '📅 Pokémon GO Live Events', callback_data: 'cb_events_overview' },
+        { text: '👥 Refer & Earn', callback_data: 'cb_refer_earn' },
       ],
       [
         { text: '📢 Live Proofs Channel', url: TELEGRAM_CHANNEL_URL },
-      ],
-      [
         { text: '🌐 Web Store (Cart)', web_app: { url: STORE_URL } },
       ],
     ],
@@ -136,7 +143,7 @@ function getPlanPickerContent(discountLabel?: string) {
  * Welcome Message Card
  */
 function getWelcomeMessage(firstName: string = 'Trainer'): string {
-  return `👋 Welcome <b>${firstName}</b> to <b>PGSharp Key Store</b>!`;
+  return `👋 Welcome <b>${firstName}</b> to <b>Aetheria Store</b>!`;
 }
 
 /**
@@ -176,28 +183,24 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
   // Main menu navigation
   if (data === 'menu_main') {
-    const { text, keyboard } = getPlanPickerContent();
+    const { text, keyboard } = getPlanPickerContent(undefined, firstName);
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
-      if (!editRes.ok) {
-        await deleteTelegramMessage(chatId, messageId);
-        await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
-      }
-    } else {
-      await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
     }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     return;
   }
 
   // My Keys / My Profile
   if (data === 'cb_my_keys') {
-    await handleMyKeys(chatId, query.from.username);
+    await handleMyKeys(chatId, query.from.username, messageId);
     return;
   }
 
   // Refer & Earn Dashboard
   if (data === 'cb_refer_earn') {
-    await handleReferAndEarn(chatId);
+    await handleReferAndEarn(chatId, messageId);
     return;
   }
 
@@ -218,16 +221,16 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
           { text: '🔋 Buy 2 Devices', callback_data: 'cb_buy_1_month_2_device' },
         ],
         [
-          { text: '⬅️ Back', callback_data: 'menu_main' },
+          { text: '⬅️ Back to Menu', callback_data: 'menu_main' },
         ],
       ],
     };
 
     if (messageId) {
-      await editTelegramMessage(chatId, messageId, stockText, { reply_markup: keyboard });
-    } else {
-      await sendTelegramMessage(chatId, stockText, { reply_markup: keyboard });
+      const editRes = await editTelegramMessage(chatId, messageId, stockText, { reply_markup: keyboard });
+      if (editRes.ok) return;
     }
+    await sendTelegramMessage(chatId, stockText, { reply_markup: keyboard });
     return;
   }
 
@@ -275,15 +278,15 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     const available = await getAvailableCount(plan.id);
 
     if (available <= 0) {
-      await sendTelegramMessage(
-        chatId,
-        `⚠️ <b>Sorry!</b> ${plan.name} is temporarily sold out.`,
-        {
-          reply_markup: {
-            inline_keyboard: [[{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }]],
-          },
-        }
-      );
+      const soldOutText = `⚠️ <b>Sorry!</b> ${plan.name} is temporarily sold out.`;
+      const soldOutKeyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [[{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }]],
+      };
+      if (messageId) {
+        const editRes = await editTelegramMessage(chatId, messageId, soldOutText, { reply_markup: soldOutKeyboard });
+        if (editRes.ok) return;
+      }
+      await sendTelegramMessage(chatId, soldOutText, { reply_markup: soldOutKeyboard });
       return;
     }
 
@@ -312,20 +315,16 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
           { text: '🌐 Web Store (Cart)', web_app: { url: STORE_URL } },
         ],
         [
-          { text: '⬅️ Back', callback_data: 'menu_main' },
+          { text: '⬅️ Back to Menu', callback_data: 'menu_main' },
         ],
       ],
     };
 
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, paymentChoiceText, { reply_markup: keyboard });
-      if (!editRes.ok) {
-        await deleteTelegramMessage(chatId, messageId);
-        await sendTelegramMessage(chatId, paymentChoiceText, { reply_markup: keyboard });
-      }
-    } else {
-      await sendTelegramMessage(chatId, paymentChoiceText, { reply_markup: keyboard });
+      if (editRes.ok) return;
     }
+    await sendTelegramMessage(chatId, paymentChoiceText, { reply_markup: keyboard });
     return;
   }
 
@@ -377,28 +376,31 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     const upiText =
       `⚡ <b>Pay ₹${amountInr} via UPI</b>${discountMsg}\n\n` +
-      `UPI ID (tap to copy):\n` +
+      `<b>UPI ID (tap to copy):</b>\n` +
       `<code>${UPI_VPA}</code>\n\n` +
-      `Pay exact <b>₹${amountInr}</b> in GPay, PhonePe, or Paytm.\n` +
-      `Your key will be sent here automatically in seconds!`;
+      `👉 Tap <b>Open in UPI App</b> below to pay via GPay, PhonePe, or Paytm.\n` +
+      `<i>(Your key will be delivered automatically right here once confirmed)</i>`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
+          { text: '📱 Open in UPI App (GPay/PhonePe)', url: OFFICIAL_GPAY_URI },
+        ],
+        [
+          { text: '📷 View QR Code', url: upiQrUrl },
           { text: '💬 Support', url: TELEGRAM_URL },
+        ],
+        [
           { text: '⬅️ Back', callback_data: `cb_buy_${plan.id}` },
         ],
       ],
     };
 
     if (messageId) {
-      await deleteTelegramMessage(chatId, messageId);
+      const editRes = await editTelegramMessage(chatId, messageId, upiText, { reply_markup: keyboard });
+      if (editRes.ok) return;
     }
-
-    await sendTelegramPhoto(chatId, upiQrUrl, {
-      caption: upiText,
-      reply_markup: keyboard,
-    });
+    await sendTelegramMessage(chatId, upiText, { reply_markup: keyboard });
     return;
   }
 
@@ -532,30 +534,30 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 /**
  * Handle My Keys / My Profile
  */
-async function handleMyKeys(chatId: number, username?: string) {
-  const db = getAdminFirestore();
-
+async function handleMyKeys(chatId: number, username?: string, messageId?: number) {
   try {
+    const db = getAdminFirestore();
     const snap = await db
       .collection('orders')
       .where('telegram_chat_id', '==', chatId)
       .where('payment_status', '==', 'paid')
       .orderBy('created_at', 'desc')
-      .limit(10)
+      .limit(5)
       .get();
 
     if (snap.empty) {
-      await sendTelegramMessage(
-        chatId,
-        `👤 <b>My Keys</b>\n\nYou have no active keys yet.`,
-        {
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: '🛒 Buy Standard Key', callback_data: 'cb_buy_1_month_1_device' }],
-            ],
-          },
-        }
-      );
+      const emptyText = `👤 <b>My Keys</b>\n\nYou have no active keys yet.`;
+      const emptyKeyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [{ text: '🛒 Buy Standard Key', callback_data: 'cb_buy_1_month_1_device' }],
+          [{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }],
+        ],
+      };
+      if (messageId) {
+        const editRes = await editTelegramMessage(chatId, messageId, emptyText, { reply_markup: emptyKeyboard });
+        if (editRes.ok) return;
+      }
+      await sendTelegramMessage(chatId, emptyText, { reply_markup: emptyKeyboard });
       return;
     }
 
@@ -589,34 +591,44 @@ async function handleMyKeys(chatId: number, username?: string) {
       `${keysList}\n` +
       `<i>(Tap key code to copy)</i>`;
 
-    await sendTelegramMessage(chatId, profileText, {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: '🛒 Buy Another Key', callback_data: 'cb_buy_1_month_1_device' }],
-          [{ text: '💬 Support', url: TELEGRAM_URL }],
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [
+          { text: '🛒 Buy A Key', callback_data: 'cb_buy_1_month_1_device' },
+          { text: '⬅️ Back to Menu', callback_data: 'menu_main' },
         ],
-      },
-    });
+        [{ text: '💬 Support', url: TELEGRAM_URL }],
+      ],
+    };
+
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, profileText, { reply_markup: keyboard });
+      if (editRes.ok) return;
+    }
+    await sendTelegramMessage(chatId, profileText, { reply_markup: keyboard });
   } catch (err) {
     console.error('[Telegram] My Keys error:', err);
-    await sendTelegramMessage(
-      chatId,
-      `👤 <b>My Keys</b>\n\nTap below to purchase a key:`,
-      {
-        reply_markup: {
-          inline_keyboard: [[{ text: '🛒 Buy Standard Key', callback_data: 'cb_buy_1_month_1_device' }]],
-        },
-      }
-    );
+    const errText = `👤 <b>My Keys</b>\n\nTap below to purchase a key:`;
+    const errKeyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [{ text: '🛒 Buy Standard Key', callback_data: 'cb_buy_1_month_1_device' }],
+        [{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }],
+      ],
+    };
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, errText, { reply_markup: errKeyboard });
+      if (editRes.ok) return;
+    }
+    await sendTelegramMessage(chatId, errText, { reply_markup: errKeyboard });
   }
 }
 
 /**
  * Handle Refer & Earn Dashboard
  */
-async function handleReferAndEarn(chatId: number) {
+async function handleReferAndEarn(chatId: number, messageId?: number) {
   const stats = await getReferralStats(chatId);
-  const botUsername = TELEGRAM_BOT_USERNAME || 'pgsharpkeystorebot';
+  const botUsername = TELEGRAM_BOT_USERNAME || 'AetheriaStoreOfficialBot';
   const refLink = `https://t.me/${botUsername}?start=ref_${chatId}`;
   const shareText = encodeURIComponent(
     `⚡ Get your PGSharp Standard Key with ₹30 / $0.50 OFF instant discount here: ${refLink}`
@@ -651,6 +663,10 @@ async function handleReferAndEarn(chatId: number) {
     ],
   };
 
+  if (messageId) {
+    const editRes = await editTelegramMessage(chatId, messageId, message, { reply_markup: keyboard });
+    if (editRes.ok) return;
+  }
   await sendTelegramMessage(chatId, message, { reply_markup: keyboard });
 }
 
@@ -787,7 +803,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
           await saveUserReferral(chatId, referrerId);
           discountBanner =
             `🎁 <b>SPECIAL REFERRAL DISCOUNT APPLIED!</b>\n` +
-            `Your friend invited you to PGSharp Store. You get an exclusive discount on your first key:\n` +
+            `Your friend invited you to Aetheria Store. You get an exclusive discount on your first key:\n` +
             `• 📱 <b>1 Device:</b> <s>₹160 / $2.00</s> ➔ <b>₹130 / $1.70</b>\n` +
             `• 🔋 <b>2 Devices:</b> <s>₹300 / $3.60</s> ➔ <b>₹270 / $3.00</b>`;
         } else if (eligibility.reason === 'self_referral') {
@@ -811,12 +827,8 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
       }
     }
 
-    // Send short welcome and attach persistent keyboard
-    await sendTelegramMessage(chatId, getWelcomeMessage(firstName), {
-      reply_markup: getPersistentKeyboard(),
-    });
-    // Send clean plan picker
-    const { text, keyboard } = getPlanPickerContent(discountBanner);
+    // Send clean single-card welcome and plan picker with inline keyboard
+    const { text, keyboard } = getPlanPickerContent(discountBanner, firstName);
     await sendTelegramMessage(chatId, text, {
       reply_markup: keyboard,
     });

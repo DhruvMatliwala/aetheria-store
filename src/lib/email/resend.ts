@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { PLAN_MAP } from '@/lib/constants';
+import { PLAN_MAP, TELEGRAM_BOT_USERNAME } from '@/lib/constants';
 
 function getResendClient(): Resend {
   const apiKey = process.env.RESEND_API_KEY || 're_placeholder_key';
@@ -170,7 +170,7 @@ Your 30-day PGSharp Standard key from Aetheria Store is expiring in 48 hours.
 To avoid losing your teleport, auto-walk, and 100% IV scanner mid-event, visit our store to get your next key:
 ${storeUrl}
 
-Or order directly via our 24/7 Telegram bot: https://t.me/pgsharpkeystorebot
+Or order directly via our 24/7 Telegram bot: https://t.me/${TELEGRAM_BOT_USERNAME}
 
 Need assistance? Feel free to contact our support on Telegram: @sleekfx3
 
@@ -188,7 +188,7 @@ Aetheria-store`;
     <div style="margin:24px 0;text-align:center;">
       <a href="${storeUrl}" style="background:#0e7490;color:#ffffff;padding:12px 24px;text-decoration:none;border-radius:6px;font-weight:bold;font-size:16px;display:inline-block;">🛒 Get My Next Key</a>
     </div>
-    <p>Or order directly on Telegram via our 24/7 bot: <a href="https://t.me/pgsharpkeystorebot">@pgsharpkeystorebot</a></p>
+    <p>Or order directly on Telegram via our 24/7 bot: <a href="https://t.me/${TELEGRAM_BOT_USERNAME}">@${TELEGRAM_BOT_USERNAME}</a></p>
     <p>Regards,<br><strong>Aetheria-store</strong></p>
   </div>
 </body>

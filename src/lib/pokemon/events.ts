@@ -130,7 +130,7 @@ export async function getPokemonEvents(forceRefresh: boolean = false): Promise<G
 
     const res = await fetch(SCRAPED_DUCK_URL, {
       signal: controller.signal,
-      headers: { 'User-Agent': 'PGSharpKeyStoreBot/2.0' },
+      headers: { 'User-Agent': 'AetheriaStoreBot/2.0' },
       next: { revalidate: 3600 },
     });
     clearTimeout(timeoutId);

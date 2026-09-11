@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { broadcastOrderProof } from '@/lib/telegram/proofs';
-import { TELEGRAM_PROOF_CHANNEL } from '@/lib/constants';
+import { TELEGRAM_PROOF_CHANNEL, TELEGRAM_BOT_USERNAME } from '@/lib/constants';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
           success: false,
           channel: TELEGRAM_PROOF_CHANNEL,
           error:
-            'Could not post to Telegram channel. Make sure @pgsharpkeystorebot is added as an Administrator in ' +
+            `Could not post to Telegram channel. Make sure @${TELEGRAM_BOT_USERNAME} is added as an Administrator in ` +
             TELEGRAM_PROOF_CHANNEL +
             ' with "Post Messages" permission.',
         },

@@ -58,14 +58,14 @@ export const REDDIT_URL =
 export const TELEGRAM_URL =
   process.env.NEXT_PUBLIC_TELEGRAM_URL || 'https://t.me/sleekfx3';
 export const TELEGRAM_BOT_USERNAME =
-  process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'pgsharpkeystorebot';
+  process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || 'AetheriaStoreOfficialBot';
 export const TELEGRAM_BOT_TOKEN =
   process.env.TELEGRAM_BOT_TOKEN || '';
 export const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET || '';
 export const TELEGRAM_PROOF_CHANNEL =
-  process.env.TELEGRAM_PROOF_CHANNEL || '@pgsharpkeys_official';
+  process.env.TELEGRAM_PROOF_CHANNEL || '@AetheriaStoreOfficial';
 export const TELEGRAM_CHANNEL_URL =
-  process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL_URL || 'https://t.me/pgsharpkeys_official';
+  process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL_URL || 'https://t.me/AetheriaStoreOfficial';
 
 export interface SmartRoute {
   id: string;

@@ -47,7 +47,7 @@ function formatGateway(gateway?: string): string {
 
 /**
  * Broadcasts an authentic, high-converting "Order Fulfilled / Vouch" message
- * to the official public Telegram proofs channel (@pgsharpkeys_official).
+ * to the official public Telegram proofs channel (@AetheriaStoreOfficial).
  */
 export async function broadcastOrderProof(payload: OrderProofPayload): Promise<boolean> {
   const channelTarget = TELEGRAM_PROOF_CHANNEL?.trim();
@@ -62,20 +62,37 @@ export async function broadcastOrderProof(payload: OrderProofPayload): Promise<b
       getAvailableCount('1_month_2_device').catch(() => 0),
     ]);
 
-    const prettyGateway = formatGateway(payload.gateway);
-    const buyerDisplay = anonymizeIdentity(payload.customerEmail, payload.customerUsername);
-    const shortOrderId = payload.orderId.replace(/^ord_/, '').slice(0, 8).toUpperCase();
+    const formattedAmount =
+      payload.amount && payload.currency
+        ? payload.currency === 'USD'
+          ? `$${(payload.amount / 100).toFixed(2)}`
+          : `₹${(payload.amount / 100).toFixed(0)}`
+        : `₹${(plan.price_inr / 100).toFixed(0)}`;
+
+    const maskedUser = anonymizeIdentity(
+      payload.customerEmail,
+      payload.customerUsername
+    );
+
+    const gatewayBadge = formatGateway(payload.gateway);
+    const dateStr = new Date().toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'UTC',
+    });
 
     const proofText =
-      `⚡ <b>NEW ORDER FULFILLED!</b>\n\n` +
-      `📱 <b>Product:</b> PGSharp Standard Key (${plan.name})\n` +
-      `💳 <b>Payment:</b> ${prettyGateway}\n` +
-      `⚡ <b>Delivery:</b> Instant (~15s Auto-Dispatched)\n` +
-      `👤 <b>Customer:</b> <code>${buyerDisplay}</code>\n` +
-      `🆔 <b>Order:</b> <code>#${shortOrderId}</code>\n\n` +
-      `📦 <b>Live Stock:</b>\n` +
-      `• 1 Device : ${stock1 > 0 ? `${stock1} in stock` : '0 in stock'}\n` +
-      `• 2 Devices : ${stock2 > 0 ? `${stock2} in stock` : '0 in stock'}\n\n` +
+      `🎉 <b>NEW ORDER FULFILLED!</b>\n\n` +
+      `✅ <b>Status:</b> Key Dispatched & Activated\n` +
+      `📦 <b>Plan:</b> ${plan.name} (${plan.duration})\n` +
+      `👤 <b>Customer:</b> ${maskedUser}\n` +
+      `💳 <b>Payment:</b> ${gatewayBadge} (${formattedAmount})\n` +
+      `🕒 <b>Timestamp:</b> ${dateStr} UTC\n\n` +
+      `📊 <b>Remaining Keys in Stock:</b>\n` +
+      `• 📱 1 Device: <b>${stock1 > 0 ? `${stock1} keys` : 'Low Stock'}</b>\n` +
+      `• 🔋 2 Devices: <b>${stock2 > 0 ? `${stock2} keys` : 'Low Stock'}</b>\n\n` +
       `👉 <b>Order your key instantly:</b> @${TELEGRAM_BOT_USERNAME}`;
 
     await sendTelegramMessage(channelTarget, proofText, {
@@ -83,7 +100,7 @@ export async function broadcastOrderProof(payload: OrderProofPayload): Promise<b
         inline_keyboard: [
           [
             {
-              text: '⚡ Get Your Key Now | 24/7 Bot',
+              text: '⚡ Buy Instant Key | Auto Delivery 🤖',
               url: `https://t.me/${TELEGRAM_BOT_USERNAME}?start=channel_proof`,
             },
           ],
@@ -91,18 +108,16 @@ export async function broadcastOrderProof(payload: OrderProofPayload): Promise<b
       },
     });
 
-    console.log(`[proofs] Successfully broadcast order #${payload.orderId} to ${channelTarget}`);
     return true;
-  } catch (err: any) {
-    // Non-blocking: order fulfillment must never fail if channel post fails
-    console.warn(`[proofs] Failed to post proof to ${channelTarget}:`, err?.message || err);
+  } catch (error) {
+    console.error('Failed to broadcast order proof to Telegram:', error);
     return false;
   }
 }
 
 /**
  * Broadcasts an automated, flashy "Restock Alert" announcement
- * to the official public Telegram channel (@pgsharpkeys_official)
+ * to the official public Telegram channel (@AetheriaStoreOfficial)
  * whenever fresh keys are uploaded to the vault.
  */
 export async function broadcastRestockAlert(insertedCount: number = 0): Promise<boolean> {
@@ -117,7 +132,7 @@ export async function broadcastRestockAlert(insertedCount: number = 0): Promise<
       getAvailableCount('1_month_2_device').catch(() => 0),
     ]);
 
-    const botUsername = TELEGRAM_BOT_USERNAME || 'pgsharpkeystorebot';
+    const botUsername = TELEGRAM_BOT_USERNAME || 'AetheriaStoreOfficialBot';
     const countBadge = insertedCount > 0 ? ` (+${insertedCount} new slots added)` : '';
 
     const restockText =
@@ -127,9 +142,9 @@ export async function broadcastRestockAlert(insertedCount: number = 0): Promise<
       `• 📱 <b>1 Device (30 Days):</b> ${stock1 > 0 ? `${stock1} keys available` : 'Limited'}\n` +
       `• 🔋 <b>2 Devices (30 Days):</b> ${stock2 > 0 ? `${stock2} keys available` : 'Limited'}\n\n` +
       `⚡ <b>Fast Auto-Delivery via UPI & PayPal:</b>\n` +
-      `• UPI (Instant Auto-Match): <b>₹160 / ₹300</b>\n` +
-      `• PayPal (Direct): <b>$2.00 / $3.60</b>\n` +
-      `<i>(First-time buyers get ₹30 / $0.60 OFF referral discount!)</i>\n\n` +
+      `• UPI (Instant Auto-Match): <b>₹130 / ₹250</b>\n` +
+      `• PayPal (Direct): <b>$1.79 / $3.50</b>\n` +
+      `<i>(First-time buyers get ₹30 / $0.30 OFF referral discount!)</i>\n\n` +
       `👉 <b>Order now before stock sells out:</b> @${botUsername}`;
 
     await sendTelegramMessage(channelTarget, restockText, {
