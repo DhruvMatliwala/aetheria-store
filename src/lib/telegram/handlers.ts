@@ -456,7 +456,6 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     await db.collection('orders').doc(orderId).set(orderDoc);
 
-    const upiPayUrl = `${STORE_URL}/pay/upi?plan=${plan.id}&orderId=${orderId}&amount=${amountInr}`;
     const upiQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(
       `upi://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amountInr}&cu=INR&tn=${orderId}&aid=uGICAgMC507CUEg`
     )}`;
@@ -470,21 +469,18 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       `<b>2️⃣ Amount to Send:</b>\n` +
       `<code>₹${amountInr}</code>\n\n` +
       `<b>3️⃣ How to Pay:</b>\n` +
-      `• Tap UPI ID above to copy it, or tap <b>Open UPI App</b> below to launch Google Pay / PhonePe / Paytm.\n` +
-      `• Complete payment of <b>₹${amountInr}</b>.\n\n` +
+      `• Tap the UPI ID above to copy it.\n` +
+      `• Open Google Pay, PhonePe, or Paytm and send <b>₹${amountInr}</b> to the copied UPI ID (or tap <b>View / Scan QR Code</b> below).\n\n` +
       `<b>4️⃣ Instant Key Delivery:</b>\n` +
       `After paying, simply <b>reply here with your 12-digit UTR / Ref number</b> (e.g. <code>428901234567</code>) and your license key will be delivered automatically right here! 🚀`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
-          { text: '📱 Open in UPI App (GPay/PhonePe)', url: upiPayUrl },
+          { text: '📷 View / Scan QR Code', url: upiQrUrl },
         ],
         [
-          { text: '📷 View QR Code', url: upiQrUrl },
           { text: '💬 Support', url: TELEGRAM_URL },
-        ],
-        [
           { text: '⬅️ Back', callback_data: `cb_buy_${plan.id}` },
         ],
       ],
