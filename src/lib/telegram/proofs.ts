@@ -24,8 +24,11 @@ export interface OrderProofPayload {
 function anonymizeIdentity(email?: string, username?: string): string {
   if (username && username.trim()) {
     const clean = username.replace(/^@/, '').trim();
-    if (clean.length <= 2) return `@${clean}*`;
-    return `@${clean.slice(0, 2)}***`;
+    const isPhone = /^\+?[0-9\s-]{7,}$/.test(clean);
+    if (!isPhone) {
+      if (clean.length <= 2) return `@${clean}*`;
+      return `@${clean.slice(0, 2)}***`;
+    }
   }
   if (email && email.includes('@') && !email.includes('@telegram.user')) {
     const [name, domain] = email.split('@');

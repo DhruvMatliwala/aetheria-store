@@ -4,6 +4,7 @@ import { getPaypalCredit, claimPaypalCredit } from '@/lib/firestore/paypalCredit
 import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
 import { sendPaymentVerificationAlert, sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
+import { broadcastOrderProof } from '@/lib/telegram/proofs';
 import { getAdminFirestore } from '@/lib/firebase/admin';
 
 export const runtime = 'nodejs';
@@ -101,6 +102,18 @@ export async function POST(request: NextRequest) {
         deliveredKey: allocation.decryptedKey,
         patreonEmail: allocation.patreonEmail,
       }).catch((err) => console.error('[checkout/paypal/verify] Discord alert error:', err));
+
+      // Broadcast proof to official channel
+      broadcastOrderProof({
+        orderId: existingOrder.order_id,
+        planType: existingOrder.plan_type,
+        gateway: 'paypal_direct',
+        amount: existingOrder.amount,
+        currency: 'USD',
+        customerEmail: existingOrder.customer_email,
+      }).catch((broadcastErr) => {
+        console.error('[checkout/paypal/verify] Telegram proof broadcast error:', broadcastErr);
+      });
 
       const updatedOrder = await getOrderById(orderId);
       return NextResponse.json({

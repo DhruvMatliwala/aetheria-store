@@ -4,6 +4,7 @@ import { capturePayPalOrder } from '@/lib/payments/paypal';
 import { allocateKeySlot } from '@/lib/services/keyAllocator';
 import { sendKeyDeliveryEmail } from '@/lib/email/resend';
 import { sendAdminOrderAlert } from '@/lib/notifications/discordAdmin';
+import { broadcastOrderProof } from '@/lib/telegram/proofs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -85,6 +86,18 @@ export async function POST(request: NextRequest) {
       patreonEmail: allocation.patreonEmail,
     }).catch((alertErr) => {
       console.error('[paypal/capture] Discord admin alert error:', alertErr);
+    });
+
+    // ── 4C. Broadcast order vouch proof to official Telegram channel ────────
+    broadcastOrderProof({
+      orderId: existingOrder.order_id,
+      planType: existingOrder.plan_type,
+      gateway: 'paypal',
+      amount: existingOrder.amount,
+      currency: existingOrder.currency || 'USD',
+      customerEmail: existingOrder.customer_email,
+    }).catch((proofErr) => {
+      console.error('[paypal/capture] Telegram proof broadcast error:', proofErr);
     });
 
     // ── 5. Fetch and return fulfilled order details ──────────────────────────
