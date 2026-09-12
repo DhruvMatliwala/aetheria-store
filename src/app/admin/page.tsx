@@ -26,8 +26,10 @@ import {
   Star,
   Bell,
   Crosshair,
+  Send,
 } from 'lucide-react';
 import { KeyUploader } from '@/components/admin/KeyUploader';
+import { ManualKeyDispatcher } from '@/components/admin/ManualKeyDispatcher';
 import { StockDashboard } from '@/components/admin/StockDashboard';
 import { WaitlistWidget } from '@/components/admin/WaitlistWidget';
 import { TransactionTable } from '@/components/admin/TransactionTable';
@@ -67,6 +69,7 @@ interface StatsResponse {
 type AdminTab =
   | 'Dashboard'
   | 'Lead Radar'
+  | 'Direct Dispatch'
   | 'Inventory'
   | 'Bulk Upload'
   | 'Orders & Deliveries'
@@ -337,6 +340,13 @@ export default function AdminPage() {
         mobileLabel: 'Stock',
         icon: <Package size={17} />,
         badge: `${totalAvailable} Keys`,
+      },
+      {
+        id: 'Direct Dispatch',
+        label: 'Direct Dispatch',
+        mobileLabel: 'Give Key',
+        icon: <Send size={17} className="text-cyan-400" />,
+        badge: 'Manual',
       },
       {
         id: 'Bulk Upload',
@@ -1001,6 +1011,15 @@ export default function AdminPage() {
                   inventoryStats={stats?.inventoryStats}
                   revenueStats={stats?.revenueStats}
                 />
+              </div>
+            )}
+
+            {/* ════════════════════════════════════════════════════════════════
+                VIEW: DIRECT KEY DISPATCH (MANUAL CUSTOMER ALLOCATION)
+                ════════════════════════════════════════════════════════════════ */}
+            {activeTab === 'Direct Dispatch' && (
+              <div className="space-y-6">
+                <ManualKeyDispatcher adminToken={adminToken} onDispatchSuccess={() => fetchStats()} />
               </div>
             )}
 

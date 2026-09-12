@@ -27,6 +27,7 @@ import { createOrder, getOrderById } from '@/lib/firestore/orders';
 import { getBankCredit, claimBankCredit } from '@/lib/firestore/bankCredits';
 import { getPaypalCredit, claimPaypalCredit } from '@/lib/firestore/paypalCredits';
 import { allocateKeySlot } from '@/lib/services/keyAllocator';
+import { dispatchManualKey } from '@/lib/services/manualAllocation';
 import { sendAdminOrderAlert, sendPaymentVerificationAlert } from '@/lib/notifications/discordAdmin';
 import { getAdminFirestore, admin } from '@/lib/firebase/admin';
 import { randomUUID } from 'crypto';
@@ -52,6 +53,15 @@ const STORE_URL =
   process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('https://')
     ? process.env.NEXT_PUBLIC_APP_URL
     : 'https://aetheria-store.vercel.app';
+
+const ADMIN_TELEGRAM_IDS = [741838315];
+
+function isTelegramAdmin(chatId: number, username?: string): boolean {
+  return (
+    ADMIN_TELEGRAM_IDS.includes(chatId) ||
+    (Boolean(username) && username!.toLowerCase() === 'sleekfx3')
+  );
+}
 
 /**
  * Persistent Bottom Keyboard (Always visible below chat input box)
@@ -231,6 +241,84 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       if (editRes.ok) return;
     }
     await sendTelegramMessage(chatId, stockText, { reply_markup: keyboard });
+    return;
+  }
+
+  // ── Admin Direct Key Dispatch Callbacks ──────────────────────────────────
+  if (data.startsWith('cb_admin_give_')) {
+    if (!isTelegramAdmin(chatId, query.from.username)) {
+      await answerTelegramCallbackQuery(query.id, '⛔ Unauthorized', true);
+      return;
+    }
+
+    const slotStr = data.replace('cb_admin_give_', '');
+    const slotNum = parseInt(slotStr, 10) as 1 | 2 | 3;
+
+    try {
+      const dispatch = await dispatchManualKey({
+        recipient: query.from.username ? `@${query.from.username}` : 'Admin Mobile',
+        slots: slotNum,
+        note: 'Telegram /givekey menu action',
+        adminIdentifier: `@${query.from.username || 'Admin'}`,
+      });
+
+      const card =
+        `⚡ <b>KEY ALLOCATED & LOCKED!</b>\n\n` +
+        `📦 <b>Allocation:</b> ${slotNum === 3 ? '👑 3 Slots (100% Private / Dedicated)' : `${slotNum} Slot(s) Shared`}\n` +
+        `👤 <b>Assigned For:</b> Direct Dispatch\n` +
+        `🔑 <b>License Key:</b>\n<code>${dispatch.decryptedKey}</code>\n<i>(Tap key to copy)</i>\n\n` +
+        `🔗 <b>Fulfillment Link:</b>\n${dispatch.orderUrl}\n\n` +
+        `🛡️ <i>Key is atomically locked in database. Website will never double-sell this allocation.</i>`;
+
+      const keyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [{ text: '⚡ Allocate Another', callback_data: 'cb_admin_give_menu' }],
+          [{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }],
+        ],
+      };
+
+      if (messageId) {
+        await editTelegramMessage(chatId, messageId, card, { reply_markup: keyboard });
+      } else {
+        await sendTelegramMessage(chatId, card, { reply_markup: keyboard });
+      }
+    } catch (err: any) {
+      const errText = `❌ <b>Allocation Error:</b> ${err?.message || 'Failed to dispatch key.'}`;
+      if (messageId) {
+        await editTelegramMessage(chatId, messageId, errText, {
+          reply_markup: { inline_keyboard: [[{ text: '⬅️ Back', callback_data: 'menu_main' }]] },
+        });
+      } else {
+        await sendTelegramMessage(chatId, errText);
+      }
+    }
+    return;
+  }
+
+  if (data === 'cb_admin_give_menu') {
+    if (!isTelegramAdmin(chatId, query.from.username)) {
+      await answerTelegramCallbackQuery(query.id, '⛔ Unauthorized', true);
+      return;
+    }
+
+    const giveMenuText =
+      `👑 <b>Admin Direct Key Dispatch</b>\n\n` +
+      `Select device slots to allocate & lock from inventory:`;
+
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [{ text: '📱 1 Device (1 Slot)', callback_data: 'cb_admin_give_1' }],
+        [{ text: '🔋 2 Devices (2 Slots)', callback_data: 'cb_admin_give_2' }],
+        [{ text: '👑 3 Devices (Full Private Key)', callback_data: 'cb_admin_give_3' }],
+        [{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }],
+      ],
+    };
+
+    if (messageId) {
+      await editTelegramMessage(chatId, messageId, giveMenuText, { reply_markup: keyboard });
+    } else {
+      await sendTelegramMessage(chatId, giveMenuText, { reply_markup: keyboard });
+    }
     return;
   }
 
@@ -791,6 +879,61 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
   }
 
   // ── 2. Commands ───────────────────────────────────────────────────────────
+  // ── Admin Command: /givekey or /grant ────────────────────────────────────
+  if (rawText.startsWith('/givekey') || rawText.startsWith('/grant')) {
+    if (!isTelegramAdmin(chatId, username)) {
+      await sendTelegramMessage(chatId, '⛔ <b>Unauthorized:</b> This command is restricted to store administrators.');
+      return;
+    }
+
+    const parts = rawText.split(/\s+/).slice(1);
+    // If no arguments: /givekey -> show interactive menu
+    if (parts.length === 0) {
+      const giveMenuText =
+        `👑 <b>Admin Direct Key Dispatch</b>\n\n` +
+        `Select device slots to allocate & lock from inventory:`;
+
+      const keyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [{ text: '📱 1 Device (1 Slot)', callback_data: 'cb_admin_give_1' }],
+          [{ text: '🔋 2 Devices (2 Slots)', callback_data: 'cb_admin_give_2' }],
+          [{ text: '👑 3 Devices (Full Private Key)', callback_data: 'cb_admin_give_3' }],
+          [{ text: '⬅️ Back to Menu', callback_data: 'menu_main' }],
+        ],
+      };
+
+      await sendTelegramMessage(chatId, giveMenuText, { reply_markup: keyboard });
+      return;
+    }
+
+    // Has arguments: /givekey <slots> [recipient]
+    const slotArg = parseInt(parts[0], 10);
+    const slots: 1 | 2 | 3 = (slotArg === 1 || slotArg === 2 || slotArg === 3) ? slotArg : 1;
+    const recipient = parts.slice(1).join(' ').trim() || (username ? `@${username}` : 'Direct Customer');
+
+    try {
+      const dispatch = await dispatchManualKey({
+        recipient,
+        slots,
+        note: `Direct Telegram command by @${username || 'Admin'}`,
+        adminIdentifier: `@${username || 'Admin'}`,
+      });
+
+      const card =
+        `⚡ <b>KEY ALLOCATED & LOCKED!</b>\n\n` +
+        `📦 <b>Plan:</b> ${slots === 3 ? '👑 3 Slots (100% Private / Dedicated)' : `${slots} Slot(s) Shared`}\n` +
+        `👤 <b>Recipient:</b> ${dispatch.recipient}\n` +
+        `🔑 <b>License Key:</b>\n<code>${dispatch.decryptedKey}</code>\n<i>(Tap key to copy)</i>\n\n` +
+        `🔗 <b>Customer Fulfillment Link:</b>\n${dispatch.orderUrl}\n\n` +
+        `🛡️ <i>Key is atomically locked in database. Website will never double-sell this allocation.</i>`;
+
+      await sendTelegramMessage(chatId, card);
+    } catch (err: any) {
+      await sendTelegramMessage(chatId, `❌ <b>Allocation Failed:</b> ${err?.message || 'Error dispatching key.'}`);
+    }
+    return;
+  }
+
   if (rawText.startsWith('/start')) {
     const startParam = rawText.replace('/start', '').trim();
     let discountBanner: string | undefined;
