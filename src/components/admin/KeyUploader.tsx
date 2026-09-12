@@ -20,7 +20,7 @@ interface KeyUploaderProps {
 export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
   const [rawKeys, setRawKeys] = useState('');
   const [patreonEmail, setPatreonEmail] = useState('');
-  const [slotType, setSlotType] = useState<number>(1); // 1 = Dedicated (Default), 2 = Duo, 3 = Patreon
+  const [slotType, setSlotType] = useState<number>(3); // 3 = Official Patreon 3-Slot (Default)
   const [announceInChannel, setAnnounceInChannel] = useState(true);
   const [broadcastingManual, setBroadcastingManual] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -172,6 +172,26 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <button
               type="button"
+              onClick={() => setSlotType(3)}
+              className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                slotType === 3
+                  ? 'bg-cyan-950/70 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.2)]'
+                  : 'bg-[#080e1a] border-[#1b2b48] text-slate-400 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bold text-xs text-cyan-300">3 Devices (Official Key)</span>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 border border-cyan-700/60">
+                  Default
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-snug">
+                Standard Patreon key. Sells 3 times (1 slot per buyer) or fulfills 2-Device plan.
+              </p>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setSlotType(1)}
               className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                 slotType === 1
@@ -181,12 +201,9 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-bold text-xs text-cyan-300">1 Device Dedicated</span>
-                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 border border-cyan-700/60">
-                  Recommended
-                </span>
               </div>
               <p className="text-[11px] text-slate-400 leading-snug">
-                1 Key = 1 Customer. Retired immediately after purchase. Never shared with strangers.
+                1 Key = 1 Customer. Key is marked sold after 1 sale. Never shared.
               </p>
             </button>
 
@@ -204,23 +221,6 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
               </div>
               <p className="text-[11px] text-slate-400 leading-snug">
                 Key has 2 device slots. Fulfills 2-Device plan or two 1-device sales.
-              </p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setSlotType(3)}
-              className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
-                slotType === 3
-                  ? 'bg-cyan-950/70 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.2)]'
-                  : 'bg-[#080e1a] border-[#1b2b48] text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-xs text-cyan-300">3 Devices (Patreon)</span>
-              </div>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Shared across up to three 1-device buyers. All 3 buyers receive the same key string.
               </p>
             </button>
           </div>

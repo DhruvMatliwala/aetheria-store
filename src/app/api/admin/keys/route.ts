@@ -22,8 +22,8 @@ export async function POST(request: NextRequest) {
     };
 
     const { keys, patreonEmail, announceInChannel } = body;
-    const slots = body.slots ?? (body.source === 'patreon_3slot' ? 3 : body.source === 'patreon_2slot' ? 2 : 1);
-    const source = body.source || (slots === 3 ? 'patreon_3slot' : slots === 2 ? 'patreon_2slot' : 'single_1slot');
+    const slots = body.slots ?? (body.source === 'single_1slot' ? 1 : body.source === 'patreon_2slot' ? 2 : 3);
+    const source = body.source || (slots === 1 ? 'single_1slot' : slots === 2 ? 'patreon_2slot' : 'patreon_3slot');
 
     if (!Array.isArray(keys) || keys.length === 0) {
       return NextResponse.json(

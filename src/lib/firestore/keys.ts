@@ -230,11 +230,11 @@ export async function bulkInsertKeys(
 
   const slotParam =
     explicitSlots ??
-    (sourceOrPlan === '3' || sourceOrPlan === 'patreon_3slot'
-      ? 3
+    (sourceOrPlan === '1' || sourceOrPlan === 'single_1slot'
+      ? 1
       : sourceOrPlan === '2' || sourceOrPlan === 'patreon_2slot'
       ? 2
-      : 1);
+      : 3);
 
   const totalSlots = slotParam === 3 ? 3 : slotParam === 2 ? 2 : 1;
   const source: KeySource =
