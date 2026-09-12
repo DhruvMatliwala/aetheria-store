@@ -36,17 +36,17 @@ def create_document():
     p_title = doc.add_paragraph()
     p_title.paragraph_format.space_before = Pt(0)
     p_title.paragraph_format.space_after = Pt(4)
-    run_title = p_title.add_run("AETHERIA — PGSharp Digital Storefront")
+    run_title = p_title.add_run("AETHERIA — PGSharp Digital Key Distribution Platform")
     run_title.font.name = "Arial"
-    run_title.font.size = Pt(24)
+    run_title.font.size = Pt(22)
     run_title.font.bold = True
     run_title.font.color.rgb = COLOR_DARK
 
     p_sub = doc.add_paragraph()
     p_sub.paragraph_format.space_after = Pt(14)
-    run_sub = p_sub.add_run("Comprehensive Technical, Architectural & Engineering Production Manual")
+    run_sub = p_sub.add_run("Comprehensive Technical, Operational & System Architecture Documentation")
     run_sub.font.name = "Arial"
-    run_sub.font.size = Pt(13)
+    run_sub.font.size = Pt(12)
     run_sub.font.color.rgb = COLOR_PRIMARY
 
     # Metadata banner table
@@ -55,7 +55,7 @@ def create_document():
     meta_table.autofit = False
     
     col_widths = [Inches(1.6), Inches(1.6), Inches(1.6), Inches(1.7)]
-    headers = ["Version: 1.0.0 Prod", "Framework: Next.js 14", "Security: AES-256-GCM", f"Date: {datetime.datetime.now().strftime('%B %Y')}"]
+    headers = ["Version: 3.2.0 Prod", "Framework: Next.js 14", "Security: AES-256-GCM", f"Updated: {datetime.datetime.now().strftime('%B %Y')}"]
     
     for i, cell in enumerate(meta_table.rows[0].cells):
         cell.width = col_widths[i]
@@ -74,24 +74,24 @@ def create_document():
     # ── Helper Functions ────────────────────────────────────────────────────────
     def add_h1(text):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(18)
+        p.paragraph_format.space_before = Pt(16)
         p.paragraph_format.space_after = Pt(6)
         p.paragraph_format.keep_with_next = True
         r = p.add_run(text)
         r.font.name = "Arial"
-        r.font.size = Pt(15)
+        r.font.size = Pt(14)
         r.font.bold = True
         r.font.color.rgb = COLOR_PRIMARY
         return p
 
     def add_h2(text):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(12)
+        p.paragraph_format.space_before = Pt(11)
         p.paragraph_format.space_after = Pt(4)
         p.paragraph_format.keep_with_next = True
         r = p.add_run(text)
         r.font.name = "Arial"
-        r.font.size = Pt(12)
+        r.font.size = Pt(11.5)
         r.font.bold = True
         r.font.color.rgb = COLOR_DARK
         return p
@@ -102,7 +102,7 @@ def create_document():
         p.paragraph_format.line_spacing = 1.15
         r = p.add_run(text)
         r.font.name = "Arial"
-        r.font.size = Pt(10)
+        r.font.size = Pt(9.5)
         r.font.color.rgb = COLOR_DARK
         return p
 
@@ -112,13 +112,13 @@ def create_document():
         p.paragraph_format.line_spacing = 1.15
         r_bold = p.add_run(bold_prefix)
         r_bold.font.name = "Arial"
-        r_bold.font.size = Pt(10)
+        r_bold.font.size = Pt(9.5)
         r_bold.font.bold = True
         r_bold.font.color.rgb = COLOR_DARK
         
         r_text = p.add_run(text)
         r_text.font.name = "Arial"
-        r_text.font.size = Pt(10)
+        r_text.font.size = Pt(9.5)
         r_text.font.color.rgb = COLOR_DARK
         return p
 
@@ -135,7 +135,7 @@ def create_document():
             p = cell.paragraphs[0]
             r = p.add_run(h_text)
             r.font.name = "Arial"
-            r.font.size = Pt(9.5)
+            r.font.size = Pt(9)
             r.font.bold = True
             r.font.color.rgb = RGBColor(255, 255, 255)
             
@@ -150,130 +150,110 @@ def create_document():
                 p = cell.paragraphs[0]
                 r = p.add_run(cell_value)
                 r.font.name = "Arial"
-                r.font.size = Pt(9)
+                r.font.size = Pt(8.5)
                 r.font.color.rgb = COLOR_DARK
 
-    # ── 1. Executive Summary & Brand Identity ───────────────────────────────────
-    add_h1("1. Executive Summary & System Overview")
-    add_body("AETHERIA is a next-generation, high-performance digital storefront engineered specifically for official PGSharp Standard Edition key distribution. It merges luxury dark-mode aesthetics (Obsidian Glassmorphism, Neon Cyan & Emerald accoutrements) with an interactive 550vh image-sequence scrollytelling runway, dual-rail automated checkout, cryptographic key security, ambient spatial audio, and an instant zero-latency customer fulfillment portal.")
-    
-    add_bullet("Core Brand Proposition: ", "Institutional-grade reliability, instantaneous automated key dispatch, zero ban risk advisory, and 1-on-1 VIP concierge support.")
-    add_bullet("Technology Stack: ", "Next.js 14 App Router, TypeScript, Tailwind CSS, GSAP 3 (ScrollTrigger), HTML5 Canvas Particle Engine, Firebase Firestore / Admin SDK, Razorpay UPI, and PayPal v2 Checkout API.")
+    # ── 1. Executive Summary & Ecosystem Overview ──────────────────────────────
+    add_h1("1. Executive Summary & Multi-Channel Ecosystem")
+    add_body("AETHERIA is a high-performance, automated digital distribution engine engineered specifically for official PGSharp Standard Edition license keys. The platform operates across multiple synchronous channels:")
+    add_bullet("Web Storefront: ", "Cyberpunk luxury dark-mode experience featuring a 550vh GSAP scrollytelling visual runway, ambient spatial audio, and an instant client-side key delivery modal.")
+    add_bullet("Admin Command Center (/admin): ", "Encrypted portal for live vault monitoring, direct key dispatch, bulk license ingestion, order proof management, and automated expiry reminders.")
+    add_bullet("Telegram Bot Engine (@AetheriaStoreOfficialBot): ", "Autonomous multi-device purchasing bot supporting instant UPI/PayPal checkouts, key delivery in DMs, and an integrated viral referral reward program.")
+    add_bullet("Telegram Proof Channel (@AetheriaStoreOfficial): ", "Real-time automated restock announcements and privacy-masked order verification proofs.")
+    add_bullet("Discord Lead Notifier (discord-key-notifier): ", "Dedicated gateway microservice monitoring 23 Discord servers in real time, routing high-intent buyer alerts directly to the owner's Telegram.")
 
-    # ── 2. Interactive Scrollytelling Architecture ──────────────────────────────
-    add_h1("2. Cinematic Scrollytelling Engine")
-    add_body("The storefront experience is driven by CinematicScrollExperience.tsx, utilizing a pinned 550vh scroll runway that orchestrates 3 cinematic video scenes with synchronous HUD text reveals:")
+    # ── 2. Pricing & Plan Structure ───────────────────────────────────────────
+    add_h1("2. Active Pricing & License Tier Structure")
+    add_body("The store offers two distinct consumer editions, priced dynamically in INR and USD:")
 
-    scene_table = doc.add_table(rows=1, cols=4)
+    plan_table = doc.add_table(rows=1, cols=5)
     format_table(
-        scene_table,
-        [Inches(1.2), Inches(1.8), Inches(1.8), Inches(1.7)],
-        ["Scene", "Theme & Asset", "Headline & Narrative", "Interaction / CTAs"],
+        plan_table,
+        [Inches(1.3), Inches(1.3), Inches(1.1), Inches(1.1), Inches(1.7)],
+        ["Tier Name", "Device Capacity", "Price (INR)", "Price (USD)", "Duration & Features"],
         [
-            ["Scene 1 (0–28%)", "Mewtwo Cryo-Awakening (/videos/mewtwo.mp4)", "Break every limit. Unleash raw power across dimensions.", "Instant Dispatch, 30-Day License, 'Buy License Key →'"],
-            ["Scene 2 (28–62%)", "Cyberpunk Shibuya (/videos/shibuya.mp4)", "Roam anywhere. Seamless virtual teleportation.", "Cooldown Radar, 60 FPS Emulation, 100% IV Sniping"],
-            ["Scene 3 (62–100%)", "Mewtwo Showdown (/videos/mewtwo_2.mp4)", "Master every raid. Instant VIP key allocation.", "Dual Obsidian Pricing Cards (1-Device & 2-Device)"]
+            ["Standard Tier", "1 Android Device", "₹160", "$2.00", "30 Days • Joystick, Teleport, 100% IV Checker, Auto-Walk"],
+            ["Duo Tier (Best Value)", "2 Android Devices", "₹300 (was ₹320)", "$3.60 (was $4.00)", "30 Days • 2 Concurrent Device Slots, Priority Support"]
         ]
     )
 
     doc.add_paragraph().paragraph_format.space_after = Pt(8)
-    add_h2("2.1 Dual-Player Optical Dissolve Video Loop Engine")
-    add_body("Standard HTML5 video looping produces hard, jarring visual jump cuts. AETHERIA implements DissolveSceneVideo, a dual-player optical cross-fading engine:")
-    add_bullet("Seamless Transition: ", "When Player A reaches 0.35s before video completion, Player B automatically resets to frame 0 and begins playback. Player A cross-fades opacity to 0 over 300ms while Player B fades to 1, creating an infinite, seamless optical loop.")
-    add_bullet("Hardware-Event Optimization: ", "Driven by native HTML5 onTimeUpdate event listeners rather than continuous requestAnimationFrame polling loops, reducing CPU and battery consumption by over 90%.")
+    add_bullet("Cryptographic Slot Partitioning: ", "Raw keys (3-device Patreon licenses) are safely segmented into 1-slot or 2-slot allocations. Keys are only retired from the vault when all 3 usable slots are consumed, guaranteeing zero device-sharing collisions between buyers.")
 
-    # ── 3. Full-Screen Brand Preloader & Splash Intro ───────────────────────────
-    add_h1("3. Full-Screen Cinematic Brand Preloader")
-    add_body("To establish an immediate AAA gaming atmosphere and eliminate all flashes of unstyled content, Preloader.tsx executes a high-impact intro sequence on first page load:")
-    add_bullet("Phase 1 (0.0s – 0.6s): ", "Frosted Delta Logo Badge scales in with a glowing neon cyan drop shadow (scale: 0.8 -> 1, filter: drop-shadow(0 0 25px rgba(6,182,212,0.85))).")
-    add_bullet("Phase 2 (0.35s – 1.1s): ", "Character-split 'AETHERIA' wordmark slides up with staggered timing (stagger: 0.04s), accompanied by the monospace 'VAULT ACCESS PROTOCOL' subtitle and a glowing horizontal cyber progress line.")
-    add_bullet("Phase 3 (1.6s – 2.2s): ", "Brand elements scale slightly and fade out while the solid black curtain pulls upward like a shutter (yPercent: -100, ease: power4.inOut), seamlessly revealing Scene 1.")
-    add_bullet("Zero-FOUC Guarantee: ", "All preloader elements are styled with baseline opacity-0 classes in JSX/CSS, completely eliminating initial frame flashes.")
-    add_bullet("Session Persistence: ", "Leverages sessionStorage.getItem('hasSeenIntro') so the intro sequence only runs once per browser session, ensuring returning users navigate instantly.")
+    # ── 3. Payment Processing & Whole-Rupee Matching Engine ───────────────────
+    add_h1("3. Payment Rails & Whole-Rupee Automated Verification")
+    add_body("AETHERIA operates on a dual-rail payment architecture combining domestic Indian UPI with international PayPal checkouts:")
+    add_bullet("Clean Whole-Rupee Architecture: ", "Completely eliminated fractional decimal paise (e.g., .14 paise). Customers pay exact whole rupee figures (₹160 or ₹300), preventing bank payment filters (e.g. SBI, Google Pay, PhonePe) from rejecting transfers.")
+    add_bullet("Smart-Routing UPI VPAs: ", "Direct integration with four resilient banking handles: dhruvmatliwala123@oksbi (Primary), okicici (Fastest), okaxis (High Uptime), and okhdfcbank (Reliable).")
+    add_bullet("24/7 Bank SMS Bridge (/api/webhooks/upi): ", "Automated Android forwarder integration that parses incoming credit SMS notifications in real time. Features strict anti-fraud rules blocking personal 10-digit mobile senders and automatic suppression of sensitive 2FA/OTPs.")
+    add_bullet("International PayPal Rail: ", "Integrated PayPal.me direct checkout with automated capture and customer vault fulfillment.")
 
-    # ── 4. Ambient Background Audio Subsystem ───────────────────────────────────
-    add_h1("4. Ambient Background Audio Engine")
-    add_body("Managed by AmbientAudioContext.tsx and mounted at the root layout (src/app/layout.tsx), providing continuous background spatial atmosphere:")
-    add_bullet("Persistent Singleton: ", "A single persistent HTML5 Audio instance loads /public/audio/ambient.mp3 and maintains uninterrupted playback across all route navigations.")
-    add_bullet("Volume Calibration & Fade Ramps: ", "Volume is strictly capped at a comfortable 25% ceiling (TARGET_VOLUME = 0.25) with smooth 300ms volume cross-fade ramps on play/pause toggles.")
-    add_bullet("Frosted HUD Toggle: ", "Integrated in Header.tsx alongside 'Buy Key →' with dynamic glowing cyan sound wave indicators.")
+    # ── 4. Direct Key Dispatch (Manual Allocation System) ─────────────────────
+    add_h1("4. Direct Key Dispatch (Manual Allocation System)")
+    add_body("To enable the administrator to fulfill private sales directly in Telegram or Discord DMs without forcing customers through public checkout:")
+    add_bullet("Web Admin Dispatcher: ", "Available in the admin portal under 'Direct Dispatch'. Allows 1-click allocation of 1 Slot, 2 Slots, or a 100% Dedicated Private Key (3 Slots). Decrypts the key instantly on screen, generates an official order record, and decrements vault stock.")
+    add_bullet("Telegram Admin Command (/givekey): ", "The owner (Telegram ID: 741838315) can execute '/givekey 1 @username', '/givekey 2 @username', or '/givekey 3' directly inside Telegram for instant mobile fulfillment.")
 
-    # ── 5. Zero-Lag Performance & Algorithmic Optimizations ─────────────────────
-    add_h1("5. High-Performance Engineering & Optimizations")
-    add_body("The storefront has undergone rigorous GPU, memory, and main-thread profiling to guarantee buttery-smooth 60–120 FPS performance:")
-    add_bullet("React State Reconciliation Guard: ", "handleScrollProgress employs an equality check (prev !== newIdx ? newIdx : prev), eliminating hundreds of unnecessary React component reconciliation passes during fast scrolling.")
-    add_bullet("GSAP Timeline Conflict Resolution: ", "Configured with overwrite: 'auto', clearProps: 'transform', anticipatePin: 1, and invalidateOnRefresh: true, ensuring zero property collisions between intro entrance animations and scroll scrubbing.")
-    add_bullet("Canvas Tab Visibility Throttling: ", "AmbientMistParticles.tsx listens to document.visibilitychange, halting the animation loop when the browser tab is inactive (0% CPU/GPU overhead) and resuming instantaneously upon focus.")
-    add_bullet("Media Subsystem Flags: ", "Added disablePictureInPicture and disableRemotePlayback to all video elements, preventing Chromium and WebKit from attaching background media controllers.")
-    add_bullet("Immutable Asset Caching: ", "next.config.mjs delivers Cache-Control: public, max-age=31536000, immutable for all video, audio, and image assets.")
-    add_bullet("Sub-5ms Stock API Caching: ", "/api/stock returns Cache-Control: public, s-maxage=10, stale-while-revalidate=30 for lightning-fast inventory responses with background Firestore revalidation.")
+    # ── 5. Automated 48-Hour Expiry Reminders ─────────────────────────────────
+    add_h1("5. Automated License Expiry & Renewal Subsystem")
+    add_body("To maximize customer retention and lifetime value (LTV), an automated reminder engine tracks order lifecycles:")
+    add_bullet("Automated Cron (/api/cron/expiry-reminders): ", "Scans active orders nearing the 30-day mark (specifically 48 hours before license expiration).")
+    add_bullet("Direct Customer Notification: ", "Dispatches renewal reminders to Telegram buyers with 1-click renewal links and priority renewal instructions.")
+    add_bullet("Admin 1-Click Trigger: ", "Integrated 'RUN REMINDERS' button in the Admin Portal header enables instant on-demand scanning with live toast statistics.")
 
-    # ── 6. Redesigned Luxury Order Success Page ─────────────────────────────────
-    add_h1("6. Order Confirmation & Fulfillment Experience")
-    add_body("Located at /order-success/[orderId], the order fulfillment portal delivers an institutional-grade customer experience:")
-    add_bullet("Holographic Key Vault: ", "Pulsing emerald status badge, blurred click-to-reveal key card, 1-click copy with confetti particle burst, and strict device binding notice.")
-    add_bullet("Transaction Receipt Breakdown: ", "4-column breakdown detailing Plan Type, Allocated Slots, Capture Reference, and License Duration.")
-    add_bullet("1-on-1 VIP Support Portal: ", "Direct messaging buttons linking to Discord Profile and Reddit Profile for instant concierge assistance.")
-    add_bullet("4-Step Interactive Activation Guide: ", "Stepped luxury obsidian cards detailing APK download, key entry, activation, and spoofing setup, with an official pgsharp.com download button.")
+    # ── 6. Discord Gateway Notifier Microservice ──────────────────────────────
+    add_h1("6. Discord Live Buyer Radar (discord-key-notifier)")
+    add_body("A dedicated standalone Node.js microservice (located in /discord-key-notifier) operating independently from website serverless limitations:")
+    add_bullet("Direct WebSocket Gateway: ", "Maintains a persistent authenticated WebSocket connection to Discord's live gateway, bypassing Cloudflare anti-bot blocks.")
+    add_bullet("23-Channel Active Surveillance: ", "Monitors 23 premier Pokemon GO spoofing, trading, and gaming Discord channels simultaneously.")
+    add_bullet("Regex Keyword Matching: ", "Detects high-intent keywords ('key', 'buy key', 'pgsharp key', 'wtb', 'need key') and instantly formats rich alerts.")
+    add_bullet("Telegram Mobile Alerts: ", "Pushes real-time alerts to the owner's Telegram with user details, matched message snippets, and 1-click 'Open in Discord' jump buttons.")
 
-    # ── 7. Cryptographic Key Engine & Security ──────────────────────────────────
-    add_h1("7. Cryptographic Security & Vault Architecture")
-    add_body("AETHERIA implements military-grade cryptographic protection for all digital assets:")
-    add_bullet("AES-256-GCM Encryption: ", "All raw PGSharp license keys are encrypted at rest using AES-256-GCM with unique initialization vectors (IV) and authentication tags.")
-    add_bullet("Device Slot Partitioning: ", "Keys are dynamically tracked by usableSlots (1-Device, 2-Device, 3-Device). When a user purchases a 1-Device plan, exactly 1 slot is consumed. Keys are retired only when all slots are exhausted.")
-    add_bullet("Webhook Signature Verification: ", "All payment webhooks (PayPal HMAC & Razorpay SHA256) are cryptographically validated before key release.")
+    # ── 7. Admin Portal Modernization & Optimization ──────────────────────────
+    add_h1("7. Admin Portal Architecture & Clean-up")
+    add_body("The administrative center has been thoroughly refined, optimized, and de-bloated:")
+    add_bullet("Decommissioned Obsolete Lead Radar: ", "Completely removed web/Reddit scrapers that were experiencing 429/403 rate limiting. Deleted over 3,000 lines of dead code, dropping the admin bundle size from 32.8 kB down to 23.9 kB.")
+    add_bullet("Waitlist Timestamp Bug Fix: ", "Resolved a JavaScript Date parser bug where restock alert dates defaulted to the year 2001. Enforced ISO 8601 timestamps and added resilient year-guards for accurate 2026 reporting.")
+    add_bullet("Streamlined Tab Layout: ", "Dashboard, Inventory & Stock, Direct Dispatch, Bulk Key Uploader, Orders & Deliveries, 24/7 UPI Bridge, Coupons, Waitlist & Demand, and Buyer Reviews.")
 
-    # ── 8. Route Inventory & System Architecture Map ────────────────────────────
+    # ── 8. Complete Route & API Architecture Map ──────────────────────────────
     add_h1("8. Complete Route & API Architecture Map")
-    add_body("The application comprises 15 optimized production routes:")
+    add_body("Summary of all 17 active production routes and API endpoints:")
 
     route_table = doc.add_table(rows=1, cols=3)
     format_table(
         route_table,
-        [Inches(1.8), Inches(1.5), Inches(3.2)],
+        [Inches(2.0), Inches(1.4), Inches(3.1)],
         ["Route / Endpoint", "Rendering Type", "Purpose & Functionality"],
         [
             ["/", "Static / Client", "Main 3-Scene Scrollytelling Storefront, Preloader & HUD"],
             ["/order-success/[orderId]", "Dynamic SSR", "Encrypted Key Vault, Confetti Reveal & Activation Guide"],
             ["/admin", "Static / Client", "Admin Key Ingestion, Slot Tier Analytics & Waitlist Manager"],
+            ["/contact, /refund, /terms", "Static", "Customer Support, Refund Policy & Terms of Service"],
             ["/api/stock", "Dynamic API (Cached)", "Real-time Tier Stock, Usable Slots & Active Inventory Counts"],
-            ["/api/stock/[planId]", "Dynamic API", "Individual Plan Stock Availability Check"],
-            ["/api/checkout/upi", "Dynamic API", "Razorpay UPI QR Code / Payment Intent Generation"],
-            ["/api/checkout/upi/verify", "Dynamic API", "UPI Payment Signature Verification & Key Allocation"],
+            ["/api/checkout/upi", "Dynamic API", "UPI Smart Routing & Clean Whole-Rupee Intent Generation"],
+            ["/api/checkout/upi/verify", "Dynamic API", "UPI Payment Verification & Instant Key Allocation"],
             ["/api/checkout/paypal", "Dynamic API", "PayPal v2 Order Creation Endpoint"],
             ["/api/checkout/paypal/capture", "Dynamic API", "PayPal Order Capture & Key Dispatch"],
-            ["/api/webhooks/paypal", "Dynamic API", "PayPal Asynchronous Webhook Verification"],
-            ["/api/webhooks/upi", "Dynamic API", "Razorpay Asynchronous Webhook Verification"],
-            ["/api/restock-notify", "Dynamic API", "Customer Restock Notification Waitlist Ingestion"],
-            ["/api/admin/keys", "Dynamic API", "Secure Batch Key Ingestion & Slot Allocation API"],
-            ["/api/admin/stats", "Dynamic API", "Administrative Inventory Metrics & Revenue Analytics"],
-            ["/terms, /privacy, /refund", "Static", "Legal Compliance, Terms of Service & Privacy Policy"]
+            ["/api/webhooks/upi", "Dynamic API", "24/7 Bank SMS Bridge Webhook with Anti-Fraud Filtering"],
+            ["/api/admin/keys/dispatch", "Dynamic API", "Manual 1, 2, or 3-Slot Direct Customer Key Dispatch"],
+            ["/api/admin/orders/approve", "Dynamic API", "1-Click Manual Proof Approval & Instant Key Release"],
+            ["/api/admin/orders/reject", "Dynamic API", "1-Click Manual Proof Rejection & Status Update"],
+            ["/api/cron/expiry-reminders", "Dynamic API", "Automated 48h License Expiry Scanner & Renewals"],
+            ["/api/telegram/webhook", "Dynamic API", "Telegram Bot Handler (Checkout, Proofs, Referrals, /givekey)"],
+            ["/api/coupons/validate", "Dynamic API", "Private VIP Promo Code Server-Side Validation"],
+            ["/api/restock-notify", "Dynamic API", "Customer Out-of-Stock Email Waitlist Registration"]
         ]
     )
 
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
-    # ── 9. Operational Runbook & Deployment Guide ───────────────────────────────
-    add_h1("9. Operational Runbook & Deployment Guide")
-    add_body("Instructions for running and deploying the production storefront:")
-    add_bullet("Environment Configuration: ", "Ensure .env.local contains FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, KEY_ENCRYPTION_SECRET (32-byte hex), PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, and RAZORPAY_KEY_ID / SECRET.")
-    add_bullet("Production Build Command: ", "Execute 'npm run build' (validates all 15 routes, types, and bundle optimizations).")
-    add_bullet("Production Server Start: ", "Execute 'npm run start' on port 3000 behind NGINX or deploy seamlessly to Vercel.")
-
-    # ── 10. VIP Private Promo Code & Discount Engine ───────────────────────────
-    add_h1("10. VIP Promo Code & Private Discount Architecture")
-    add_body("To reward trusted repeat buyers without public coupon exploitation, AETHERIA features a private promo engine:")
-    add_bullet("Private Code Distribution: ", "No public hints or auto-fill codes appear on the storefront. The promo input uses an unhinted '[ Enter Promo Code ]' placeholder, allowing admins to distribute private codes (e.g., VIPDHRUV, DISCORD10) via Discord/Telegram DMs.")
-    add_bullet("Real-time Server Validation: ", "Endpoint /api/coupons/validate queries Firestore collection 'coupons' to cryptographically check code validity, minimum cart thresholds, and expiry dates before applying reductions.")
-    add_bullet("Dual Discount Modes: ", "Supports both fixed rupee reductions (e.g. ₹10 OFF) and percentage discounts (e.g. 10% OFF), updating live checkout summaries in INR and converted USD seamlessly.")
-
-    # ── 11. Modernized Cyberpunk Admin Command Center & Cyan Palette Overhaul ───
-    add_h1("11. Modernized Admin Dashboard & Universal Theme Architecture")
-    add_body("The administrative interface and visual design language underwent a complete architectural modernization:")
-    add_bullet("Obsidian & Electric Cyan Theme: ", "Completely eradicated legacy saffron gold and terracotta yellow styling across the entire application. Standardized on Obsidian Deep Navy (#070B13, #0C1424), Electric Cyan (#06B6D4, #22D3EE), and Auroral Emerald (#10B981).")
-    add_bullet("Strict Zero-Leak Auth Lockdown: ", "When signed out or unauthenticated, the admin route /admin returns strictly an encrypted Vault Locked card. Tabs, navigation sidebars, order tables, and coupon management components are completely unmounted from the DOM.")
-    add_bullet("Hard Session Revocation: ", "Sign-out securely clears both sessionStorage ('pgsharp_admin_secret') and Firebase client authentication, guaranteeing reload persistence cannot bypass authentication.")
-    add_bullet("Streamlined Proof Approval Modal: ", "Replaced complex math and cluttered tables with sleek, 1-click quick-approval and quick-reject action cards for UPI manual transaction proofs.")
+    # ── 9. Security & Cryptographic Specifications ────────────────────────────
+    add_h1("9. Security & Cryptographic Specifications")
+    add_body("Institutional-grade data protection standards enforced across all transactions:")
+    add_bullet("AES-256-GCM Encryption: ", "All raw license keys stored in Firestore collection 'keys' are encrypted at rest using unique 12-byte IVs and 16-byte authentication tags.")
+    add_bullet("Zero Sensitive Data Retention: ", "The SMS Bridge explicitly drops all incoming OTPs and login codes, storing only validated bank credit references.")
+    add_bullet("Admin Secret Authentication: ", "Admin API endpoints require authenticated 'x-admin-secret' headers matching ADMIN_API_SECRET in environment variables.")
 
     doc.save("F:/Pgsharp/docs/Documentation.docx")
     print("Successfully generated master documentation at: F:/Pgsharp/docs/Documentation.docx")

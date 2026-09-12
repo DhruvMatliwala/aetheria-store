@@ -1,130 +1,138 @@
 # 📜 AETHERIA — Complete Technical & Engineering Manual
 
-This document provides an exhaustive, in-depth architectural breakdown of the **AETHERIA / PGSharp Storefront** web application.
+This document provides an exhaustive, in-depth architectural breakdown of the **AETHERIA / PGSharp Storefront** web platform and multi-channel ecosystem.
 
 ---
 
-## 1. Architectural Architecture & Design Vision
+## 1. Architectural Vision & Multi-Channel Ecosystem
 
 ### 1.1 Brand Identity & Design System
 - **Brand Title**: `AETHERIA`
 - **Color Palette**:
-  - **Base Background**: Deep Onyx / Void Black (`#080403`)
-  - **Primary Accent**: Cyber Cyan (`#38bdf8` / `rgba(56, 189, 248, 1)`)
-  - **Secondary Accent**: Auroral Emerald (`#10b981` / `rgba(16, 185, 129, 1)`)
-  - **Surface & Cards**: Frosted Obsidian Glass (`bg-neutral-950/85 backdrop-blur-md border border-white/10`)
-  - **Text Typography**: High-contrast Serif headings (`font-serif`) with clean monospaced subheadings and technical tags (`font-mono`).
+  - **Base Background**: Deep Obsidian Navy / Void Black (`#070B13`, `#0C1424`)
+  - **Primary Accent**: Electric Cyber Cyan (`#06B6D4` / `#22D3EE`)
+  - **Secondary Accent**: Auroral Emerald (`#10B981` / `#059669`)
+  - **Surface & Cards**: Frosted Obsidian Glass (`bg-[#0c1424]/85 backdrop-blur-md border border-[#16243d]`)
+  - **Typography**: High-contrast Serif headings (`font-serif`) with clean monospaced technical tags and pricing (`font-mono`).
+
+### 1.2 Multi-Channel Distribution Architecture
+AETHERIA operates across multiple synchronous channels:
+1. **Web Storefront**: Luxury dark-mode experience featuring a 550vh GSAP scrollytelling visual runway, ambient spatial audio, and an instant key delivery modal.
+2. **Admin Command Center (`/admin`)**: Protected dashboard for inventory metrics, direct key dispatch, bulk key ingestion, order approvals, and automated renewal triggers.
+3. **Telegram Bot Engine (`@AetheriaStoreOfficialBot`)**: Autonomous conversational bot supporting multi-tier checkout, instant UPI/PayPal payment generation, automated key delivery in DMs, and viral referral tracking (`/ref`).
+4. **Telegram Proof Channel (`@AetheriaStoreOfficial`)**: Real-time restock broadcasting and privacy-masked order verification proofs.
+5. **Discord Real-Time Buyer Radar (`discord-key-notifier`)**: Standalone gateway microservice monitoring 23 Discord servers in real time, routing high-intent buyer alerts directly to the owner's Telegram.
 
 ---
 
-## 2. Scrollytelling & Visual Engineering
+## 2. Active Pricing & License Tier Structure
 
-### 2.1 Pinned 550vh Timeline Sequence
-The viewport is pinned using GSAP `ScrollTrigger` across a **550vh runway**:
+| Tier Name | Device Capacity | Price (INR) | Price (USD) | Included Features |
+|---|---|---|---|---|
+| **Standard Tier** | 1 Android Device | **₹160** | **$2.00** | 30 Days • Joystick, Teleport, 100% IV Checker, Quick Catch, Auto-Walk |
+| **Duo Tier (Best Value)** | 2 Android Devices | **₹300** *(was ₹320)* | **$3.60** *(was $4.00)* | 30 Days • 2 Concurrent Device Slots, Priority Direct Support |
 
-```
-[0.00 - 0.36]  Scene 1: Mewtwo Cryo-Awakening (/videos/scene5.mp4)
-               • Overlay 1: 01 / 03 • AWAKEN ACCESS ("Break every limit.")
-               • Action: "Buy License Key →" button with auto-scroll to plans.
-
-[0.36 - 0.68]  Scene 2: Shibuya Street Walk (/videos/Scene2.mp4)
-               • Overlay 2: 02 / 03 • GLOBAL EXPEDITION ("Roam anywhere.")
-               • Badges: GPS Joystick • Auto-Walk • Cooldown Radar
-
-[0.68 - 1.00]  Scene 3: Charizard vs Greninja Battle Arena (/videos/Scene3.mp4)
-               • Overlay 3: 03 / 03 • COMBAT SHOWDOWN ("Master every raid.")
-               • Pricing Cards: Standard & Dual Tier Options
-               • Collapsible Trainer FAQ & Support Drawer
-```
-
-### 2.2 Single-Active Video Decoder Pipeline
-- **Problem**: Playing multiple 1080p/1440p videos simultaneously causes extreme GPU thermal throttling and frame drops on smartphones.
-- **Solution**:
-  - Exactly **one video** decodes in hardware VRAM at any given time.
-  - Off-screen videos are actively paused and placed in low-power idle mode, cutting GPU decode consumption by 67%.
-  - When returning to an earlier scene, the video seamlessly resets and replays from the beginning (`0.0s`).
-
-### 2.3 Anticipatory Lookahead Preloader (77% Initial Bandwidth Cut)
-- Initial page load fetches **only Scene 1** (5.2 MB); Scenes 2 and 3 start at `preload="none"`.
-- When the user scrolls past 5%, Scene 2 begins buffering silently in the background; at 32% scroll, Scene 3 begins buffering.
-- Total initial load drops from 22.6 MB down to 5.2 MB with **zero black screen delay**.
-
-### 2.4 Mobile Responsive Framing (iPhone X+ Optimized)
-- `object-contain object-[center_24%]` on mobile ensures the entire 16:9 widescreen video is 100% visible without head cropping.
-- `sm:object-cover sm:object-center` smoothly expands to edge-to-edge immersion on tablets and desktop monitors.
-- Restored desktop HUD width `w-[calc(100vw-2rem)] sm:w-[85vw] md:w-full max-w-2xl` with majestic 4.75rem typography.
-
-### 2.5 Zero-Lag Click Architecture
-- Background video wrappers utilize `pointer-events-none`, completely bypassing mobile browser media inspection delay (250ms) and frame-buffer flushes.
+### 2.1 Cryptographic Slot Partitioning
+- Raw licenses (3-device Patreon keys) are dynamically partitioned into 1-slot or 2-slot allocations.
+- Keys remain active in the vault until all 3 usable slots are consumed, guaranteeing zero device-sharing collisions between independent buyers.
 
 ---
 
-## 3. Automated E-Commerce & Payment Engine
+## 3. Payment Rails & Whole-Rupee Verification Engine
 
-### 3.1 Zero-Effort Paise-Matching UPI Engine (Instant & UTR-Free)
-- **Problem with Traditional UPI**: Requiring customers to manually copy and paste 12-digit UTR numbers leads to a 40%+ drop-off rate and human error.
-- **AETHERIA Innovation**: Dynamic Unique Paise Offset Allocation (`allocateUniquePaise`).
-- **How It Works**:
-  1. Base price (e.g. ₹160) receives a temporary unique fractional paise offset (e.g. `₹160.14`), reserved for 15 minutes.
-  2. The buyer scans the QR code or clicks the UPI link in GPay, PhonePe, or Paytm and taps "Pay".
-  3. **Automated Bank SMS Bridge (`/api/webhooks/upi`)**: Incoming bank SMS notifications from an Android forwarder device are parsed in real time, matching the exact paise amount and instantly triggering key dispatch!
-  4. The checkout modal polls `/api/order/[orderId]` every 2.5s and auto-redirects to `/order-success` in under 2 seconds.
+### 3.1 Clean Whole-Rupee Architecture
+- **Eradication of Fractional Paise**: Completely dropped the decimal paise model (`.14`, `.28`). Customers pay clean whole rupees (exact **₹160** or **₹300**), preventing bank payment filters (e.g. SBI, Google Pay, PhonePe, Paytm) from rejecting transactions.
+- **Smart-Routing UPI VPAs**:
+  - `dhruvmatliwala123@oksbi` (Primary)
+  - `dhruvmatliwala123@okicici` (Fastest)
+  - `dhruvmatliwala123@okaxis` (High Uptime)
+  - `dhruvmatliwala123@okhdfcbank` (Reliable)
 
-### 3.2 International PayPal Direct Rail
-- `/api/checkout/paypal` generates a pre-filled direct PayPal.me URL.
-- One-click transaction ID submission with instant verification and order fulfillment.
+### 3.2 24/7 Automated Bank SMS Bridge (`/api/webhooks/upi`)
+- Accepts incoming bank credit SMS notifications from Android forwarder apps (e.g., MacroDroid / SMS Forwarder).
+- **Anti-Fraud Guard**: Automatically rejects and flags payloads originating from personal 10-digit mobile numbers.
+- **Security Guard**: Strictly drops sensitive authentication OTPs and 2FA messages to maintain complete banking privacy.
+- **Instant Dual Matching**: Matches either via 12-digit bank UTR reference or whole-rupee FIFO order matching.
 
----
-
-## 4. Discount Coupon & Private Promo Code Engine
-
-- **Discreet UI**: Clean, unprompted promo input field labeled *"Have a Promo Code?"* with placeholder *"Enter promo code"*, keeping secret codes safe from first-time visitors.
-- **Real-Time Validation API (`/api/coupons/validate`)**: Instant feedback displaying exact discount values in INR and USD, strikethrough pricing, and a glowing green `SAVED` badge.
-- **Dynamic Payment Integration**:
-  - The UPI engine applies the discount to the base amount before calculating the unique paise offset (e.g. ₹160 - ₹30 = `₹130.14`).
-  - PayPal links adjust to the discounted USD total.
-  - Server-side validation prevents price tampering.
-- **Private Secret Codes**:
-  - Pre-configured secret codes: `VIPDHRUV` (₹10 OFF), `DISCORDMEMBER` (₹10 OFF).
-  - Supports unlimited custom codes directly via Firestore `coupons` collection.
+### 3.3 International PayPal Direct Rail
+- Direct PayPal.me integration (`/api/checkout/paypal` and `/api/checkout/paypal/capture`).
+- Instant automated transaction capture and key dispatch.
 
 ---
 
-## 5. Security & Cryptographic Architecture
+## 4. Direct Key Dispatch (Manual Allocation System)
 
-### 5.1 AES-256-GCM Encryption at Rest (`crypto.ts`)
-- Master key: 32-byte secret (`KEY_ENCRYPTION_SECRET`).
-- Encryption Format: `iv:authTag:encryptedData` (hex encoded).
-- Raw plaintext keys are never stored in the database.
-
-### 5.2 Atomic Race-Condition Protection (`transaction.ts`)
-- Atomic Firestore transactions ensure that simultaneous buyers never receive duplicate keys.
-- Keys transition atomically from `status: 'available'` to `status: 'sold'`.
+Allows the administrator to fulfill private sales directly in Telegram or Discord DMs without requiring the customer to go through public checkout:
+- **Web Admin Dispatcher**: Available in `/admin` under **Direct Dispatch**. Supports 1-click allocation of 1 Slot, 2 Slots, or 3 Slots (Dedicated Private Key). Instantly decrypts the key on screen, creates an official order record, and updates vault statistics.
+- **Telegram Admin Command (`/givekey`)**: The administrator (`ID: 741838315`) can run `/givekey 1 @customer`, `/givekey 2 @customer`, or `/givekey 3` directly inside Telegram for mobile fulfillment.
 
 ---
 
-## 6. Route Summary & Verification Matrix
+## 5. Automated 48-Hour Expiry & Renewal Subsystem
 
-All routes compiled and verified cleanly in production build (`npm run build`, exit code `0`):
+To maximize customer lifetime value (LTV) and ensure continuous trainer coverage:
+- **Automated Cron (`/api/cron/expiry-reminders`)**: Scans active orders nearing the 30-day mark (specifically 48 hours before license expiration).
+- **Direct Renewal Links**: Dispatches personalized renewal reminders to Telegram buyers with 1-click renewal instructions.
+- **Admin 1-Click Trigger**: Integrated `RUN REMINDERS` button in the Admin Portal header enables instant on-demand scanning with live toast metrics.
+
+---
+
+## 6. Discord Live Buyer Radar (`discord-key-notifier`)
+
+A dedicated standalone Node.js microservice located in `/discord-key-notifier`:
+- **Direct WebSocket Gateway**: Connects directly to Discord's live gateway using user credentials, bypassing Cloudflare anti-bot blocks.
+- **23-Channel Active Surveillance**: Monitors 23 premier Pokemon GO spoofing, trading, and gaming Discord channels simultaneously.
+- **Regex Keyword Matching**: Detects high-intent keywords (`key`, `buy key`, `pgsharp key`, `wtb`) in real time.
+- **Telegram Mobile Alerts**: Pushes real-time alerts to the owner's Telegram with user details, matched message snippets, and 1-click "Open in Discord" jump buttons.
+
+---
+
+## 7. Admin Command Center Modernization & Optimization
+
+- **Decommissioned Obsolete Lead Radar**: Removed rate-limited web/Reddit scrapers. Wiped out 3,086 lines of dead code, dropping the admin bundle size from `32.8 kB` to `23.9 kB` (~27% faster load).
+- **Waitlist Timestamp Bug Fix**: Resolved a JavaScript Date parser bug where restock alert dates defaulted to the year 2001. Enforced ISO 8601 timestamps with resilient year-guards for accurate 2026 reporting.
+- **Streamlined Tab Layout**:
+  - Dashboard (Overview & Pending Approvals)
+  - Inventory (Tier stock & Usable slots)
+  - Direct Dispatch (Manual Key Allocation)
+  - Bulk Upload (3-Slot Key Vault Ingestion)
+  - Orders & Deliveries (Transaction ledger with 1-click Patreon device clearing)
+  - 24/7 UPI Bank Bridge (Live SMS simulation & Webhook status)
+  - Coupons (VIP secret promo management)
+  - Waitlist & Demand (Restock notification subscribers)
+  - Buyer Reviews (Storefront testimonials moderation)
+
+---
+
+## 8. Cryptographic Vault Security
+
+- **AES-256-GCM Encryption at Rest (`crypto.ts`)**: All raw keys stored in Firestore are encrypted using unique 12-byte IVs and 16-byte authentication tags. Raw keys are never stored in plaintext.
+- **Atomic Race-Condition Protection**: Firestore transactions guarantee simultaneous buyers never receive the same device slot or duplicate keys.
+- **Admin Secret Authentication**: Admin endpoints require authenticated `x-admin-secret` headers matching `ADMIN_API_SECRET` in environment variables.
+
+---
+
+## 9. Production Route Summary
 
 | Route Path | Method | Type | Core Functionality |
 |---|---|---|---|
 | `/` | GET | Static | 3-Scene Pinned Cinematic Scrollytelling Showcase |
 | `/order-success/[orderId]` | GET | Dynamic | Instant Key Reveal & AES-256-GCM Decryption Screen |
-| `/admin` | GET | Static | Protected Key Management & Analytics Dashboard |
-| `/contact` | GET | Static | Discord, Telegram & Concierge Support Channels |
-| `/terms, /privacy, /refund` | GET | Static | Legal Compliance & Warranty Policy Pages |
-| `/api/stock` | GET | Dynamic | Live Inventory Counters for Vault Cards |
-| `/api/restock-notify` | POST | Dynamic | Waitlist Registration & Email Alerts |
-| `/api/coupons/validate` | POST | Dynamic | Promo Code Validation & Discount Engine |
-| `/api/checkout/upi` | POST | Dynamic | UPI Order & Unique Paise Allocation Engine |
-| `/api/checkout/upi/verify` | POST | Dynamic | Manual/Fallback UTR Verification Endpoint |
-| `/api/checkout/paypal` | POST | Dynamic | PayPal Order & Prefilled URL Generator |
-| `/api/checkout/paypal/verify` | POST | Dynamic | PayPal Transaction ID Verification |
-| `/api/webhooks/upi` | POST | Dynamic | Bank SMS Forwarder Automated Matching Webhook |
-| `/api/order/[orderId]` | GET | Dynamic | Client Polling Endpoint for Instant Payment Detection |
-| `/api/admin/keys` | POST | Dynamic | AES-256-GCM Bulk Key Encryption & Ingestion |
-| `/api/admin/stats` | GET | Dynamic | Financial, Waitlist & Vault Inventory Analytics |
+| `/admin` | GET | Static | Protected Key Management, Dispatch & Analytics Dashboard |
+| `/contact, /terms, /refund` | GET | Static | Support & Compliance Pages |
+| `/api/stock` | GET | Dynamic | Real-time Stock Counters (Cached) |
+| `/api/checkout/upi` | POST | Dynamic | Smart Routing & Clean Whole-Rupee Intent Generation |
+| `/api/checkout/upi/verify` | POST | Dynamic | UPI Payment Verification & Instant Key Allocation |
+| `/api/checkout/paypal` | POST | Dynamic | PayPal v2 Order Creation Endpoint |
+| `/api/checkout/paypal/capture` | POST | Dynamic | PayPal Order Capture & Key Dispatch |
+| `/api/webhooks/upi` | POST | Dynamic | 24/7 Bank SMS Bridge Webhook with Anti-Fraud Filtering |
+| `/api/admin/keys/dispatch` | POST | Dynamic | Manual 1, 2, or 3-Slot Direct Customer Key Dispatch |
+| `/api/admin/orders/approve` | POST | Dynamic | 1-Click Manual Proof Approval & Instant Key Release |
+| `/api/admin/orders/reject` | POST | Dynamic | 1-Click Manual Proof Rejection & Status Update |
+| `/api/cron/expiry-reminders` | GET | Dynamic | Automated 48h License Expiry Scanner & Renewals |
+| `/api/telegram/webhook` | POST | Dynamic | Telegram Bot Handler (Checkout, Proofs, Referrals, /givekey) |
+| `/api/coupons/validate` | POST | Dynamic | Private VIP Promo Code Server-Side Validation |
+| `/api/restock-notify` | POST | Dynamic | Customer Out-of-Stock Email Waitlist Registration |
 
 ---
 
