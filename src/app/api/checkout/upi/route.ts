@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { PLAN_MAP, UPI_VPA, UPI_PAYEE_NAME, SMART_ROUTING_UPI_IDS, OFFICIAL_GPAY_URI } from '@/lib/constants';
-import { createOrder } from '@/lib/firestore/orders';
+import { createOrder, getRecentPendingOrder } from '@/lib/firestore/orders';
+import { getAdminFirestore, admin } from '@/lib/firebase/admin';
 import { getAvailableCount } from '@/lib/firestore/keys';
 import { allocateUniquePaise } from '@/lib/orders/paiseAllocator';
 import { validateAndApplyCoupon, incrementCouponUsage } from '@/lib/firestore/coupons';
@@ -60,29 +61,56 @@ export async function POST(request: NextRequest) {
       discountAmountInr = couponResult.discountAmountInr;
     }
 
-    // ── Create internal order ID & unique paise amount for zero-UTR matching ─
-    const orderId = `ord_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
-    const { totalPaisa, amountRupees, paiseOffset } = await allocateUniquePaise(basePriceInr);
-    const priceRupeesStr = Math.round(amountRupees).toString();
+    // ── Check if customer already has an active pending order for this plan ──
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingOrder = await getRecentPendingOrder(normalizedEmail, planId, 'upi_direct', 20);
+
+    let orderId: string;
+    let totalPaisa: number;
+    let amountRupees: number;
+    let paiseOffset: number;
+
+    const upiString = OFFICIAL_GPAY_URI;
     const note = '';
 
-    // ── Official Authenticated GPay P2P URI with cryptographic aid token ────────
-    const upiString = OFFICIAL_GPAY_URI;
+    if (existingOrder) {
+      orderId = existingOrder.order_id;
+      totalPaisa = basePriceInr;
+      amountRupees = Math.round(basePriceInr / 100);
+      paiseOffset = 0;
 
-    // ── Persist pending order to Firestore ───────────────────────────────────
-    await createOrder({
-      order_id: orderId,
-      customer_email: email.toLowerCase().trim(),
-      customer_phone: (phone || '').trim(),
-      plan_type: planId,
-      amount: totalPaisa,
-      currency: 'INR',
-      payment_gateway: 'upi_direct',
-      gateway_order_id: `upi_${orderId}`,
-      coupon_code: appliedCouponCode,
-      discount_amount: discountAmountInr,
-      original_amount: plan.price_inr,
-    });
+      const db = getAdminFirestore();
+      const updateData: Record<string, any> = {
+        amount: totalPaisa,
+        customer_phone: (phone || '').trim(),
+        updated_at: admin.firestore.FieldValue.serverTimestamp(),
+      };
+      if (appliedCouponCode) {
+        updateData.coupon_code = appliedCouponCode;
+        updateData.discount_amount = discountAmountInr;
+      }
+      await db.collection('orders').doc(orderId).update(updateData);
+    } else {
+      orderId = `ord_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
+      const alloc = await allocateUniquePaise(basePriceInr);
+      totalPaisa = alloc.totalPaisa;
+      amountRupees = alloc.amountRupees;
+      paiseOffset = alloc.paiseOffset;
+
+      await createOrder({
+        order_id: orderId,
+        customer_email: normalizedEmail,
+        customer_phone: (phone || '').trim(),
+        plan_type: planId,
+        amount: totalPaisa,
+        currency: 'INR',
+        payment_gateway: 'upi_direct',
+        gateway_order_id: `upi_${orderId}`,
+        coupon_code: appliedCouponCode,
+        discount_amount: discountAmountInr,
+        original_amount: plan.price_inr,
+      });
+    }
 
     return NextResponse.json({
       orderId,

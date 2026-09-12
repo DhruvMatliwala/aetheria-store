@@ -236,7 +236,7 @@ export function TransactionTable({ orders }: TransactionTableProps) {
                     {/* Plan */}
                     <td className="px-4 py-3 text-slate-400 whitespace-nowrap">
                       {plan
-                        ? `${plan.name} (${plan.device_slots} Device${plan.device_slots > 1 ? 's' : ''})`
+                        ? plan.name
                         : order.plan_type?.includes('2_device')
                         ? '2 Devices'
                         : '1 Device'}

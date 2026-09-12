@@ -72,6 +72,38 @@ export async function getOrderByGatewayId(gatewayOrderId: string): Promise<Order
   return { ...(doc.data() as Order), order_id: doc.id };
 }
 
+export async function getRecentPendingOrder(
+  email: string,
+  planType: string,
+  gateway: PaymentGateway,
+  maxAgeMinutes = 20
+): Promise<Order | null> {
+  const db = getAdminFirestore();
+  const snap = await db
+    .collection(COLLECTION)
+    .where('customer_email', '==', email.toLowerCase().trim())
+    .where('plan_type', '==', planType)
+    .where('payment_status', '==', 'pending')
+    .where('payment_gateway', '==', gateway)
+    .limit(5)
+    .get();
+
+  if (snap.empty) return null;
+
+  const now = Date.now();
+  for (const doc of snap.docs) {
+    const data = doc.data() as Order;
+    if (data.created_at) {
+      const createdAtMs = (data.created_at as any)?.toDate?.()?.getTime?.() ?? 0;
+      if (createdAtMs > 0 && now - createdAtMs <= maxAgeMinutes * 60 * 1000) {
+        return { ...data, order_id: doc.id };
+      }
+    }
+  }
+
+  return null;
+}
+
 export async function getRecentOrders(limit = 50): Promise<OrderPublic[]> {
   const db = getAdminFirestore();
   const snap = await db
