@@ -456,23 +456,29 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     await db.collection('orders').doc(orderId).set(orderDoc);
 
+    const upiPayUrl = `${STORE_URL}/pay/upi?plan=${plan.id}&orderId=${orderId}&amount=${amountInr}`;
     const upiQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(
-      OFFICIAL_GPAY_URI
+      `upi://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amountInr}&cu=INR&tn=${orderId}&aid=uGICAgMC507CUEg`
     )}`;
 
     const discountMsg = discountState.hasDiscount ? `\n🎉 <i>Discount applied: Saved ₹${pricing.savingsInr}!</i>` : '';
 
     const upiText =
       `⚡ <b>Pay ₹${amountInr} via UPI</b>${discountMsg}\n\n` +
-      `<b>UPI ID (tap to copy):</b>\n` +
+      `<b>1️⃣ Tap to Copy UPI ID:</b>\n` +
       `<code>${UPI_VPA}</code>\n\n` +
-      `👉 Tap <b>Open in UPI App</b> below to pay via GPay, PhonePe, or Paytm.\n` +
-      `<i>(Your key will be delivered automatically right here once confirmed)</i>`;
+      `<b>2️⃣ Amount to Send:</b>\n` +
+      `<code>₹${amountInr}</code>\n\n` +
+      `<b>3️⃣ How to Pay:</b>\n` +
+      `• Tap UPI ID above to copy it, or tap <b>Open UPI App</b> below to launch Google Pay / PhonePe / Paytm.\n` +
+      `• Complete payment of <b>₹${amountInr}</b>.\n\n` +
+      `<b>4️⃣ Instant Key Delivery:</b>\n` +
+      `After paying, simply <b>reply here with your 12-digit UTR / Ref number</b> (e.g. <code>428901234567</code>) and your license key will be delivered automatically right here! 🚀`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
-          { text: '📱 Open in UPI App (GPay/PhonePe)', url: OFFICIAL_GPAY_URI },
+          { text: '📱 Open in UPI App (GPay/PhonePe)', url: upiPayUrl },
         ],
         [
           { text: '📷 View QR Code', url: upiQrUrl },
@@ -487,6 +493,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, upiText, { reply_markup: keyboard });
       if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
     }
     await sendTelegramMessage(chatId, upiText, { reply_markup: keyboard });
     return;
