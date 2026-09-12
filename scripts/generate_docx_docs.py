@@ -218,6 +218,14 @@ def create_document():
     add_bullet("Streamlined Order Completed Proofs: ", "Real-time purchase proofs are automatically dispatched upon payment capture to @AetheriaStoreOfficial with zero receipt clutter: '✅ ORDER COMPLETED 📦 30-Day PGSharp Key dispatched to dh***@gmail.com (or @sl*** for bot buyers) 🛡️ Key verified and activated successfully.' Includes a direct '⚡ Order via Bot' inline button.")
     add_bullet("Dual Storefront Channel Synchronization: ", "Both Telegram bot purchases and website purchases (automated Bank SMS Bridge UPI, website UTR verification, PayPal Express capture, and PayPal IPN direct matching) are unified and trigger live social proofs in the channel automatically.")
 
+    add_h2("7.1 Viral Telegram Referral & Reward Engine ('Refer & Earn')")
+    add_body("The bot features a self-sustaining viral growth loop designed for zero checkout friction:")
+    add_bullet("Personal Tracking Links: ", "Tapping '👥 Refer & Earn' provides the user with their personalized deep link ('https://t.me/AetheriaStoreOfficialBot?start=ref_<chatId>') alongside real-time metrics tracking clicks, paid orders, and reward coupons earned.")
+    add_bullet("100% Automated Friend Discount (No Code Needed): ", "When an invited friend clicks the referral link and taps Start, the bot records the referrer attribution in Firestore. The friend automatically receives ₹30 OFF their first key (₹130 for 1 Device / ₹270 for 2 Devices). No coupon entry or promo codes are required; the discount is applied directly to their checkout intent.")
+    add_bullet("Automated Single-Use Reward Coupon Issuance: ", "Upon completion and verification of the friend's order, an anti-fraud check verifies unique payment identifiers and generates a single-use coupon in Firestore ('REF30_XXXXXX', ₹30 / $0.50 OFF, max_uses: 1).")
+    add_bullet("Direct Telegram Notification: ", "The bot dispatches a private DM to the referrer with their coupon code. Referrers can stack multiple earned coupons and redeem them on future key renewals simply by sending or tapping the code in chat.")
+    add_bullet("Centralized Admin Visibility & Deletion: ", "All issued referral coupons are stored in Firestore and sync live to the Admin Coupons panel, giving the administrator real-time monitoring and 1-click permanent deletion capabilities.")
+
     # ── 8. Admin Portal Modernization & Optimization ──────────────────────────
     add_h1("8. Admin Portal Architecture & Clean-up")
     add_body("The administrative center has been thoroughly refined, optimized, and de-bloated:")
@@ -226,11 +234,11 @@ def create_document():
     add_bullet("Dual Unlock Vectors: ", "Secret URL bookmark (?key=...) for 1-click device authorization with automatic address-bar cleanup, plus emergency unlock via triple-click or Ctrl+Shift+A keyboard shortcut.")
     add_bullet("Anti-Brute-Force Rate Limiter: ", "Failed passcode attempts are tracked per client IP. Reaching 5 failed attempts locks the IP out for 15 minutes with HTTP 429 Too Many Requests.")
     add_bullet("Timing-Safe Cryptographic Verification: ", "All admin operations use constant-time crypto.timingSafeEqual with SHA-256 digests.")
-    add_bullet("Streamlined Tab Layout: ", "Dashboard, Inventory & Stock, Direct Dispatch, Bulk Key Uploader, Orders & Deliveries, 24/7 UPI Bridge, Coupons, Waitlist & Demand, and Buyer Reviews.")
+    add_bullet("Streamlined Tab Layout: ", "Dashboard, Inventory & Stock, Direct Dispatch, Bulk Key Uploader, Orders & Deliveries, 24/7 UPI Bridge, Coupons (Live Firestore CRUD & Deletion), Waitlist & Demand, and Buyer Reviews.")
 
     # ── 9. Complete Route & API Architecture Map ──────────────────────────────
     add_h1("9. Complete Route & API Architecture Map")
-    add_body("Summary of all 17 active production routes and API endpoints:")
+    add_body("Summary of all 18 active production routes and API endpoints:")
 
     route_table = doc.add_table(rows=1, cols=3)
     format_table(
@@ -254,6 +262,7 @@ def create_document():
             ["/api/cron/expiry-reminders", "Dynamic API", "Automated 48h License Expiry Scanner & Renewals"],
             ["/api/telegram/webhook", "Dynamic API", "Telegram Bot Handler (Checkout, Proofs, Referrals, /givekey)"],
             ["/api/coupons/validate", "Dynamic API", "Private VIP Promo Code Server-Side Validation"],
+            ["/api/admin/coupons", "Dynamic API", "Live Admin Coupon CRUD with Instant Permanent Deletion"],
             ["/api/restock-notify", "Dynamic API", "Customer Out-of-Stock Email Waitlist Registration"]
         ]
     )

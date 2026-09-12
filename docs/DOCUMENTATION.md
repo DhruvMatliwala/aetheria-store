@@ -106,6 +106,15 @@ The public Telegram infrastructure (`@AetheriaStoreOfficial` and `@AetheriaStore
   > **[ Button: ⚡ Order via Bot ]**
 - **Dual Storefront Channel Synchronization**: Both Telegram bot purchases and website purchases (automated Bank SMS Bridge UPI, website UTR verification, PayPal Express capture, and PayPal IPN direct matching) are unified and trigger live social proofs in the channel automatically.
 
+### 7.1 Viral Telegram Referral & Reward Engine ("Refer & Earn")
+The Telegram bot features an autonomous multi-tier customer acquisition and reward engine (`referrals.ts` and `handlers.ts`):
+- **Deep Tracking Links**: Any user tapping **`👥 Refer & Earn`** receives their unique personal link (`https://t.me/AetheriaStoreOfficialBot?start=ref_<chatId>`) with 1-tap Telegram native sharing and real-time conversion stats (Friends Clicked, Completed Orders, Rewards Earned).
+- **100% Automated Friend Discount (Zero Coupon Required)**: When an invited friend joins via a referral link and hits Start, the bot records the referrer attribution in Firestore. The friend automatically receives **₹30 OFF** on their first purchase (1 Device: **₹130** / $1.70; 2 Devices: **₹270** / $3.00) without needing to copy, paste, or enter any promo code. Both UPI and PayPal payment flows automatically bill the discounted rate.
+- **Automated Reward Coupon Issuance**: When the friend's order is verified and completed (via Bank SMS Bridge, PayPal webhook, or manual approval), `processReferralReward` executes anti-abuse validation (blocking self-referral and matching payment identifiers) and creates a unique single-use coupon in Firestore (`REF30_XXXXXX`, ₹30 / $0.50 OFF, `max_uses: 1`).
+- **Instant DM Delivery**: The bot instantly messages the referrer with their coupon code.
+- **Stackable Renewal Credits**: Referrers can stack multiple earned reward coupons and redeem them on future key renewals by simply sending or tapping the code in the bot chat.
+- **Admin Visibility & Deletion**: All referral coupons are stored directly in Firestore, allowing the administrator to inspect, monitor, or permanently delete them from `/admin` at any time.
+
 ---
 
 ## 8. Admin Command Center Modernization & Optimization
@@ -125,7 +134,7 @@ The public Telegram infrastructure (`@AetheriaStoreOfficial` and `@AetheriaStore
   - Bulk Upload (3-Slot Key Vault Ingestion)
   - Orders & Deliveries (Transaction ledger with 1-click Patreon device clearing)
   - 24/7 UPI Bank Bridge (Live SMS simulation & Webhook status)
-  - Coupons (VIP secret promo management)
+  - Coupons (Live Firestore CRUD, promo generation, and 1-click permanent deletion)
   - Waitlist & Demand (Restock notification subscribers)
   - Buyer Reviews (Storefront testimonials moderation)
 
