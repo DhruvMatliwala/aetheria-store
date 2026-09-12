@@ -6,10 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "radar": "tsx radar/run.ts",
-    "radar:once": "tsx radar/run.ts --once",
-    "radar:test": "tsx radar/run.ts --test"
+    "lint": "next lint"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

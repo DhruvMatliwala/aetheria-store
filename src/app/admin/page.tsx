@@ -25,7 +25,6 @@ import {
   LogOut,
   Star,
   Bell,
-  Crosshair,
   Send,
 } from 'lucide-react';
 import { KeyUploader } from '@/components/admin/KeyUploader';
@@ -37,7 +36,6 @@ import { PendingApprovals } from '@/components/admin/PendingApprovals';
 import { SmsBridgeCard } from '@/components/admin/SmsBridgeCard';
 import { CouponManager } from '@/components/admin/CouponManager';
 import { ReviewsManager } from '@/components/admin/ReviewsManager';
-import { LeadRadarDashboard } from '@/components/admin/LeadRadarDashboard';
 import { OrderPublic } from '@/types/order';
 import { InventoryStatsSummary } from '@/lib/firestore/keys';
 import { RestockStats } from '@/lib/firestore/restock';
@@ -68,7 +66,6 @@ interface StatsResponse {
 
 type AdminTab =
   | 'Dashboard'
-  | 'Lead Radar'
   | 'Direct Dispatch'
   | 'Inventory'
   | 'Bulk Upload'
@@ -326,13 +323,6 @@ export default function AdminPage() {
         mobileLabel: 'Overview',
         icon: <LayoutDashboard size={17} />,
         badge: pendingOrders.length > 0 ? `${pendingOrders.length} Pending` : undefined,
-      },
-      {
-        id: 'Lead Radar',
-        label: 'Lead Radar',
-        mobileLabel: 'Radar',
-        icon: <Crosshair size={17} className="text-amber-400 animate-pulse" />,
-        badge: 'Live',
       },
       {
         id: 'Inventory',
@@ -1084,14 +1074,6 @@ export default function AdminPage() {
               </div>
             )}
 
-            {/* ════════════════════════════════════════════════════════════════
-                VIEW 8: LEAD RADAR (INTERNET LEAD GENERATOR)
-                ════════════════════════════════════════════════════════════════ */}
-            {activeTab === 'Lead Radar' && (
-              <div className="space-y-6">
-                <LeadRadarDashboard adminToken={adminToken} />
-              </div>
-            )}
           </main>
 
           {/* ══════════════════════════════════════════════════════════════════
