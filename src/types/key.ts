@@ -1,4 +1,4 @@
-export type KeySource = 'patreon_3slot' | 'patreon_2slot' | 'web_3slot';
+export type KeySource = 'patreon_3slot' | 'patreon_2slot' | 'web_3slot' | 'single_1slot';
 export type KeyStatus = 'available' | 'full' | 'revoked';
 
 export interface KeyAssignmentEntry {

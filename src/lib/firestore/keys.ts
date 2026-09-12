@@ -220,15 +220,25 @@ function parseKeyEntry(
  * Keys are encrypted with AES-256-GCM before storage.
  */
 export async function bulkInsertKeys(
-  _sourceOrPlan: string,
+  sourceOrPlan: string,
   rawKeys: (string | KeyUploadEntry)[],
-  defaultPatreonEmail?: string
+  defaultPatreonEmail?: string,
+  explicitSlots?: number
 ): Promise<BulkUploadResult> {
   const db = getAdminFirestore();
   const result: BulkUploadResult = { inserted: 0, skipped: 0, errors: [] };
 
-  const source: KeySource = 'patreon_3slot';
-  const totalSlots = 3;
+  const slotParam =
+    explicitSlots ??
+    (sourceOrPlan === '3' || sourceOrPlan === 'patreon_3slot'
+      ? 3
+      : sourceOrPlan === '2' || sourceOrPlan === 'patreon_2slot'
+      ? 2
+      : 1);
+
+  const totalSlots = slotParam === 3 ? 3 : slotParam === 2 ? 2 : 1;
+  const source: KeySource =
+    slotParam === 3 ? 'patreon_3slot' : slotParam === 2 ? 'patreon_2slot' : 'single_1slot';
 
   // Parse and deduplicate by key string
   const parsedEntries: { cleanKey: string; patreonEmail?: string }[] = [];

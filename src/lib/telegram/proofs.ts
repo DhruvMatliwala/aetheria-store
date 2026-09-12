@@ -1,4 +1,5 @@
 import { sendTelegramMessage } from '@/lib/telegram/bot';
+import { getAdminFirestore } from '@/lib/firebase/admin';
 import {
   TELEGRAM_PROOF_CHANNEL,
   TELEGRAM_BOT_USERNAME,
@@ -47,6 +48,29 @@ export async function broadcastOrderProof(payload: OrderProofPayload): Promise<b
   const channelTarget = TELEGRAM_PROOF_CHANNEL?.trim();
   if (!channelTarget) {
     return false;
+  }
+
+  // Atomically guard against duplicate proof broadcasts for the same order
+  if (payload.orderId && !payload.orderId.startsWith('test_')) {
+    try {
+      const db = getAdminFirestore();
+      const orderRef = db.collection('orders').doc(payload.orderId);
+      const isDuplicate = await db.runTransaction(async (txn) => {
+        const snap = await txn.get(orderRef);
+        if (snap.exists && snap.data()?.proof_broadcasted) {
+          return true;
+        }
+        txn.set(orderRef, { proof_broadcasted: true }, { merge: true });
+        return false;
+      });
+
+      if (isDuplicate) {
+        console.log(`[proofs] Skipped duplicate proof broadcast for Order #${payload.orderId}`);
+        return false;
+      }
+    } catch (dbErr) {
+      console.warn('[proofs] Idempotency lock check warning:', dbErr);
+    }
   }
 
   try {

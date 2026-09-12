@@ -20,6 +20,7 @@ interface KeyUploaderProps {
 export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
   const [rawKeys, setRawKeys] = useState('');
   const [patreonEmail, setPatreonEmail] = useState('');
+  const [slotType, setSlotType] = useState<number>(1); // 1 = Dedicated (Default), 2 = Duo, 3 = Patreon
   const [announceInChannel, setAnnounceInChannel] = useState(true);
   const [broadcastingManual, setBroadcastingManual] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +71,8 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
           'x-admin-secret': adminToken,
         },
         body: JSON.stringify({
-          source: 'patreon_3slot',
+          slots: slotType,
+          source: slotType === 3 ? 'patreon_3slot' : slotType === 2 ? 'patreon_2slot' : 'single_1slot',
           keys,
           patreonEmail: patreonEmail.trim() || undefined,
           announceInChannel,
@@ -159,6 +161,69 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
             placeholder="e.g. pgsharpdeal60@gmail.com (or write inline per key below)"
             className="w-full bg-[#080e1a] border border-[#1b2b48] rounded-xl px-4 py-2.5 text-xs font-mono text-cyan-300 placeholder-slate-600 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
           />
+        </div>
+
+        {/* Key Slot Capacity Selector */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+            <Key size={13} className="text-cyan-400" />
+            <span>Key Allocation Policy</span>
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <button
+              type="button"
+              onClick={() => setSlotType(1)}
+              className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                slotType === 1
+                  ? 'bg-cyan-950/70 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.2)]'
+                  : 'bg-[#080e1a] border-[#1b2b48] text-slate-400 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bold text-xs text-cyan-300">1 Device Dedicated</span>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 border border-cyan-700/60">
+                  Recommended
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-snug">
+                1 Key = 1 Customer. Retired immediately after purchase. Never shared with strangers.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSlotType(2)}
+              className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                slotType === 2
+                  ? 'bg-cyan-950/70 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.2)]'
+                  : 'bg-[#080e1a] border-[#1b2b48] text-slate-400 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bold text-xs text-cyan-300">2 Devices (Duo)</span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-snug">
+                Key has 2 device slots. Fulfills 2-Device plan or two 1-device sales.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSlotType(3)}
+              className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                slotType === 3
+                  ? 'bg-cyan-950/70 border-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.2)]'
+                  : 'bg-[#080e1a] border-[#1b2b48] text-slate-400 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-bold text-xs text-cyan-300">3 Devices (Patreon)</span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-snug">
+                Shared across up to three 1-device buyers. All 3 buyers receive the same key string.
+              </p>
+            </button>
+          </div>
         </div>
 
         {/* Keys Input Textarea */}

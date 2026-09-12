@@ -15,13 +15,15 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as {
       source?: string;
       planType?: string;
+      slots?: number;
       keys: string[];
       patreonEmail?: string;
       announceInChannel?: boolean;
     };
 
     const { keys, patreonEmail, announceInChannel } = body;
-    const source = body.source || body.planType || 'patreon_3slot';
+    const slots = body.slots ?? (body.source === 'patreon_3slot' ? 3 : body.source === 'patreon_2slot' ? 2 : 1);
+    const source = body.source || (slots === 3 ? 'patreon_3slot' : slots === 2 ? 'patreon_2slot' : 'single_1slot');
 
     if (!Array.isArray(keys) || keys.length === 0) {
       return NextResponse.json(
@@ -30,7 +32,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await bulkInsertKeys(source, keys, patreonEmail);
+    const result = await bulkInsertKeys(source, keys, patreonEmail, slots);
 
     // Broadcast flashy restock alert to Telegram channel
     let announced = false;
