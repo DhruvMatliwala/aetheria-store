@@ -196,9 +196,13 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     const { text, keyboard } = getPlanPickerContent(undefined, firstName);
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
-      if (editRes.ok) return;
+      if (!editRes.ok) {
+        await deleteTelegramMessage(chatId, messageId);
+        await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+      }
+    } else {
+      await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     }
-    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     return;
   }
 
@@ -410,9 +414,13 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, paymentChoiceText, { reply_markup: keyboard });
-      if (editRes.ok) return;
+      if (!editRes.ok) {
+        await deleteTelegramMessage(chatId, messageId);
+        await sendTelegramMessage(chatId, paymentChoiceText, { reply_markup: keyboard });
+      }
+    } else {
+      await sendTelegramMessage(chatId, paymentChoiceText, { reply_markup: keyboard });
     }
-    await sendTelegramMessage(chatId, paymentChoiceText, { reply_markup: keyboard });
     return;
   }
 
@@ -456,29 +464,25 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     await db.collection('orders').doc(orderId).set(orderDoc);
 
-    const upiQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(
+    const upiQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(
       `upi://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amountInr}&cu=INR&tn=${orderId}&aid=uGICAgMC507CUEg`
     )}`;
 
     const discountMsg = discountState.hasDiscount ? `\n🎉 <i>Discount applied: Saved ₹${pricing.savingsInr}!</i>` : '';
 
-    const upiText =
+    const upiCaption =
       `⚡ <b>Pay ₹${amountInr} via UPI</b>${discountMsg}\n\n` +
-      `<b>1️⃣ Tap to Copy UPI ID:</b>\n` +
+      `<b>1️⃣ Scan QR Code above or tap to copy UPI ID:</b>\n` +
       `<code>${UPI_VPA}</code>\n\n` +
       `<b>2️⃣ Amount to Send:</b>\n` +
       `<code>₹${amountInr}</code>\n\n` +
-      `<b>3️⃣ How to Pay:</b>\n` +
-      `• Tap the UPI ID above to copy it.\n` +
-      `• Open Google Pay, PhonePe, or Paytm and send <b>₹${amountInr}</b> to the copied UPI ID (or tap <b>View / Scan QR Code</b> below).\n\n` +
-      `<b>4️⃣ Instant Key Delivery:</b>\n` +
-      `After paying, simply <b>reply here with your 12-digit UTR / Ref number</b> (e.g. <code>428901234567</code>) and your license key will be delivered automatically right here! 🚀`;
+      `⚡ <b>Instant Auto-Delivery Active:</b>\n` +
+      `Pay using Google Pay, PhonePe, or Paytm.\n` +
+      `Once paid, your license key will be delivered right here automatically in <b>2–5 seconds</b>! 🚀\n` +
+      `<i>(Zero manual steps required. In rare delay cases, you can paste your 12-digit UTR)</i>`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
-        [
-          { text: '📷 View / Scan QR Code', url: upiQrUrl },
-        ],
         [
           { text: '💬 Support', url: TELEGRAM_URL },
           { text: '⬅️ Back', callback_data: `cb_buy_${plan.id}` },
@@ -487,11 +491,12 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     };
 
     if (messageId) {
-      const editRes = await editTelegramMessage(chatId, messageId, upiText, { reply_markup: keyboard });
-      if (editRes.ok) return;
       await deleteTelegramMessage(chatId, messageId);
     }
-    await sendTelegramMessage(chatId, upiText, { reply_markup: keyboard });
+    await sendTelegramPhoto(chatId, upiQrUrl, {
+      caption: upiCaption,
+      reply_markup: keyboard,
+    });
     return;
   }
 
