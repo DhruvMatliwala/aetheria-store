@@ -97,13 +97,14 @@ The public Telegram infrastructure (`@AetheriaStoreOfficial` and `@AetheriaStore
   > **[ Button: 🚀 Get Your Key Instantly ]**
 - **Intentional Price-Free Copy**: Pricing was intentionally eliminated from announcement posts to eliminate message clutter, prevent repetitive price spam (since prices are prominently pinned in the channel and website), and ensure restock alerts never become outdated if store pricing evolves.
 - **1-Tap Conversion CTA**: Includes an interactive inline button linking directly to `https://t.me/AetheriaStoreOfficialBot?start=restock`, taking customers straight into checkout with 0 friction.
-- **Streamlined Order Fulfilled Vouches**: Real-time purchase proofs are automatically dispatched upon payment capture to `@AetheriaStoreOfficial`, masking sensitive buyer tags (e.g. `@sl***` or `dh***@gmail.com`) to build community trust while preserving buyer privacy with zero unnecessary receipt clutter:
+- **Streamlined Order Fulfilled Vouches**: Real-time purchase proofs are automatically dispatched upon payment capture to `@AetheriaStoreOfficial`, masking sensitive buyer tags (e.g. `@sl***` for bot buyers or `dh***@gmail.com` for website buyers) to build community trust while preserving buyer privacy with zero unnecessary receipt clutter:
   > ✅ **ORDER COMPLETED**
   > 
-  > 📦 **30-Day PGSharp Key** dispatched to **@sl\*\*\***  
+  > 📦 **30-Day PGSharp Key** dispatched to **dh\*\*\*@gmail.com**  
   > 🛡️ Key verified and activated successfully.
   > 
   > **[ Button: ⚡ Order via Bot ]**
+- **Dual Storefront Channel Synchronization**: Both Telegram bot purchases and website purchases (automated Bank SMS Bridge UPI, website UTR verification, PayPal Express capture, and PayPal IPN direct matching) are unified and trigger live social proofs in the channel automatically.
 
 ---
 
