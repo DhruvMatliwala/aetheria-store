@@ -5,7 +5,6 @@ import {
   PLAN_MAP,
   PLANS,
 } from '@/lib/constants';
-import { getAvailableCount } from '@/lib/firestore/keys';
 
 export interface OrderProofPayload {
   orderId: string;
@@ -36,14 +35,6 @@ function anonymizeIdentity(email?: string, username?: string): string {
   return 'Verified Trainer 🎮';
 }
 
-function formatGateway(gateway?: string): string {
-  if (!gateway) return 'Instant Verified';
-  const lower = gateway.toLowerCase();
-  if (lower.includes('upi')) return 'UPI (Instant Auto-Match)';
-  if (lower.includes('paypal')) return 'PayPal (Instant Auto-Match)';
-  if (lower.includes('card')) return 'Card (Auto-Verified)';
-  return 'Instant Checkout';
-}
 
 /**
  * Broadcasts an authentic, high-converting "Order Fulfilled / Vouch" message
@@ -57,50 +48,24 @@ export async function broadcastOrderProof(payload: OrderProofPayload): Promise<b
 
   try {
     const plan = PLAN_MAP[payload.planType] || PLANS[0];
-    const [stock1, stock2] = await Promise.all([
-      getAvailableCount('1_month_1_device').catch(() => 0),
-      getAvailableCount('1_month_2_device').catch(() => 0),
-    ]);
-
-    const formattedAmount =
-      payload.amount && payload.currency
-        ? payload.currency === 'USD'
-          ? `$${(payload.amount / 100).toFixed(2)}`
-          : `₹${(payload.amount / 100).toFixed(0)}`
-        : `₹${(plan.price_inr / 100).toFixed(0)}`;
+    const planDesc = plan.device_slots === 2 ? '30-Day PGSharp Key (2 Devices)' : '30-Day PGSharp Key';
 
     const maskedUser = anonymizeIdentity(
       payload.customerEmail,
       payload.customerUsername
     );
 
-    const gatewayBadge = formatGateway(payload.gateway);
-    const dateStr = new Date().toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'UTC',
-    });
-
     const proofText =
-      `🎉 <b>NEW ORDER FULFILLED!</b>\n\n` +
-      `✅ <b>Status:</b> Key Dispatched & Activated\n` +
-      `📦 <b>Plan:</b> ${plan.name} (${plan.duration})\n` +
-      `👤 <b>Customer:</b> ${maskedUser}\n` +
-      `💳 <b>Payment:</b> ${gatewayBadge} (${formattedAmount})\n` +
-      `🕒 <b>Timestamp:</b> ${dateStr} UTC\n\n` +
-      `📊 <b>Remaining Keys in Stock:</b>\n` +
-      `• 📱 1 Device: <b>${stock1 > 0 ? `${stock1} keys` : 'Low Stock'}</b>\n` +
-      `• 🔋 2 Devices: <b>${stock2 > 0 ? `${stock2} keys` : 'Low Stock'}</b>\n\n` +
-      `👉 <b>Order your key instantly:</b> @${TELEGRAM_BOT_USERNAME}`;
+      `✅ <b>ORDER COMPLETED</b>\n\n` +
+      `📦 <b>${planDesc}</b> dispatched to <b>${maskedUser}</b>\n` +
+      `🛡️ Key verified and activated successfully.`;
 
     await sendTelegramMessage(channelTarget, proofText, {
       reply_markup: {
         inline_keyboard: [
           [
             {
-              text: '⚡ Buy Instant Key | Auto Delivery 🤖',
+              text: '⚡ Order via Bot',
               url: `https://t.me/${TELEGRAM_BOT_USERNAME}?start=channel_proof`,
             },
           ],
