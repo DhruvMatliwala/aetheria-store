@@ -127,32 +127,19 @@ export async function broadcastRestockAlert(insertedCount: number = 0): Promise<
   }
 
   try {
-    const [stock1, stock2] = await Promise.all([
-      getAvailableCount('1_month_1_device').catch(() => 0),
-      getAvailableCount('1_month_2_device').catch(() => 0),
-    ]);
-
     const botUsername = TELEGRAM_BOT_USERNAME || 'AetheriaStoreOfficialBot';
-    const countBadge = insertedCount > 0 ? ` (+${insertedCount} new slots added)` : '';
 
     const restockText =
-      `🚨 <b>RESTOCK ALERT!</b>\n\n` +
-      `📦 <b>Fresh batch of 1-Device & 2-Device PGSharp keys just loaded!</b>${countBadge}\n\n` +
-      `📊 <b>Live Stock in Vault:</b>\n` +
-      `• 📱 <b>1 Device (30 Days):</b> ${stock1 > 0 ? `${stock1} keys available` : 'Limited'}\n` +
-      `• 🔋 <b>2 Devices (30 Days):</b> ${stock2 > 0 ? `${stock2} keys available` : 'Limited'}\n\n` +
-      `⚡ <b>Fast Auto-Delivery via UPI & PayPal:</b>\n` +
-      `• UPI (Instant Auto-Match): <b>₹130 / ₹250</b>\n` +
-      `• PayPal (Direct): <b>$1.79 / $3.50</b>\n` +
-      `<i>(First-time buyers get ₹30 / $0.30 OFF referral discount!)</i>\n\n` +
-      `👉 <b>Order now before stock sells out:</b> @${botUsername}`;
+      `⚡ <b>KEYS ARE BACK IN STOCK!</b>\n\n` +
+      `📦 <b>Fresh 30-Day keys just loaded into the vault.</b>\n` +
+      `Grab yours before this batch runs out! 🚀`;
 
     await sendTelegramMessage(channelTarget, restockText, {
       reply_markup: {
         inline_keyboard: [
           [
             {
-              text: '⚡ Order Key Now | 24/7 Auto Bot 🤖',
+              text: '🚀 Get Your Key Instantly',
               url: `https://t.me/${botUsername}?start=restock`,
             },
           ],
