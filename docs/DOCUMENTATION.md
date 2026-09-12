@@ -112,6 +112,12 @@ The public Telegram infrastructure (`@AetheriaStoreOfficial` and `@AetheriaStore
 
 - **Decommissioned Obsolete Lead Radar**: Removed rate-limited web/Reddit scrapers. Wiped out 3,086 lines of dead code, dropping the admin bundle size from `32.8 kB` to `23.9 kB` (~27% faster load).
 - **Waitlist Timestamp Bug Fix**: Resolved a JavaScript Date parser bug where restock alert dates defaulted to the year 2001. Enforced ISO 8601 timestamps with resilient year-guards for accurate 2026 reporting.
+- **Stealth 404 Camouflage ("Ghost Admin")**: Anyone navigating directly to `/admin` without authorization is presented with a convincing, realistic `404 - Page Not Found` error. To automated bots, port scanners, and unauthorized visitors, the admin portal appears non-existent.
+- **Dual Unlock Vectors**:
+  - **Secret Bookmark (Primary)**: Navigating to `/admin?key=YOUR_SECRET_KEY` validates credentials, persists authorization in secure browser storage, and immediately scrubs the secret parameter from the address bar via `window.history.replaceState`.
+  - **Discrete Emergency Modal (Secondary)**: Triple-clicking the "404" badge or pressing `Ctrl + Shift + A` (or `Cmd + Shift + A`) reveals an unobtrusive terminal unlock modal.
+- **Anti-Brute-Force IP Rate Limiter (`adminAuth.ts`)**: Failed passcode attempts are tracked per client IP. Reaching 5 failed attempts locks the IP out for 15 minutes (`HTTP 429 Too Many Requests`).
+- **Timing-Safe Cryptographic Verification**: All admin authentication comparisons use constant-time `crypto.timingSafeEqual` with SHA-256 digests, eliminating side-channel timing attacks.
 - **Streamlined Tab Layout**:
   - Dashboard (Overview & Pending Approvals)
   - Inventory (Tier stock & Usable slots)
@@ -125,11 +131,12 @@ The public Telegram infrastructure (`@AetheriaStoreOfficial` and `@AetheriaStore
 
 ---
 
-## 9. Cryptographic Vault Security
+## 9. Cryptographic Vault & API Security
 
 - **AES-256-GCM Encryption at Rest (`crypto.ts`)**: All raw keys stored in Firestore are encrypted using unique 12-byte IVs and 16-byte authentication tags. Raw keys are never stored in plaintext.
 - **Atomic Race-Condition Protection**: Firestore transactions guarantee simultaneous buyers never receive the same device slot or duplicate keys.
-- **Admin Secret Authentication**: Admin endpoints require authenticated `x-admin-secret` headers matching `ADMIN_API_SECRET` in environment variables.
+- **Centralized Constant-Time Admin Guard (`adminAuth.ts`)**: All admin API endpoints (`/api/admin/*`) use constant-time SHA-256 cryptographic verification against `ADMIN_API_SECRET`.
+- **UI Information Masking**: Stripped all developer environment variable names and internal IDs from user-facing screens.
 
 ---
 

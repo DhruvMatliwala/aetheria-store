@@ -222,7 +222,10 @@ def create_document():
     add_h1("8. Admin Portal Architecture & Clean-up")
     add_body("The administrative center has been thoroughly refined, optimized, and de-bloated:")
     add_bullet("Decommissioned Obsolete Lead Radar: ", "Completely removed web/Reddit scrapers that were experiencing 429/403 rate limiting. Deleted over 3,000 lines of dead code, dropping the admin bundle size from 32.8 kB down to 23.9 kB.")
-    add_bullet("Waitlist Timestamp Bug Fix: ", "Resolved a JavaScript Date parser bug where restock alert dates defaulted to the year 2001. Enforced ISO 8601 timestamps and added resilient year-guards for accurate 2026 reporting.")
+    add_bullet("Stealth 404 Camouflage ('Ghost Admin'): ", "Anyone navigating directly to /admin without authorization is presented with a convincing, realistic 404 Page Not Found error, keeping the admin portal invisible to automated bots and scanners.")
+    add_bullet("Dual Unlock Vectors: ", "Secret URL bookmark (?key=...) for 1-click device authorization with automatic address-bar cleanup, plus emergency unlock via triple-click or Ctrl+Shift+A keyboard shortcut.")
+    add_bullet("Anti-Brute-Force Rate Limiter: ", "Failed passcode attempts are tracked per client IP. Reaching 5 failed attempts locks the IP out for 15 minutes with HTTP 429 Too Many Requests.")
+    add_bullet("Timing-Safe Cryptographic Verification: ", "All admin operations use constant-time crypto.timingSafeEqual with SHA-256 digests.")
     add_bullet("Streamlined Tab Layout: ", "Dashboard, Inventory & Stock, Direct Dispatch, Bulk Key Uploader, Orders & Deliveries, 24/7 UPI Bridge, Coupons, Waitlist & Demand, and Buyer Reviews.")
 
     # ── 9. Complete Route & API Architecture Map ──────────────────────────────
