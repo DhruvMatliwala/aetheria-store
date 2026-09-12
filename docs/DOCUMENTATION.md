@@ -32,9 +32,11 @@ AETHERIA operates across multiple synchronous channels:
 | **Standard Tier** | 1 Android Device | **₹160** | **$2.00** | 30 Days • Joystick, Teleport, 100% IV Checker, Quick Catch, Auto-Walk |
 | **Duo Tier (Best Value)** | 2 Android Devices | **₹300** *(was ₹320)* | **$3.60** *(was $4.00)* | 30 Days • 2 Concurrent Device Slots, Priority Direct Support |
 
-### 2.1 Cryptographic Slot Partitioning
-- Raw licenses (3-device Patreon keys) are dynamically partitioned into 1-slot or 2-slot allocations.
-- Keys remain active in the vault until all 3 usable slots are consumed, guaranteeing zero device-sharing collisions between independent buyers.
+### 2.1 Key Allocation Policies & Dedicated Vault Control
+The vault uploader in `/admin` provides configurable slot allocation policies based on your inventory strategy:
+- **1 Device Dedicated (Default & Recommended)**: `1 Key = 1 Customer`. Each key is allocated to exactly one buyer and retired immediately as `full`. Guarantees private, dedicated keys with zero device collisions or sharing between strangers.
+- **2 Devices (Duo Tier)**: Key has 2 device slots for 2-device orders or dual-device buyers.
+- **3 Devices (Patreon Shared)**: Raw 3-device Patreon licenses dynamically partitioned across up to 3 individual 1-device buyers.
 
 ---
 
@@ -105,6 +107,7 @@ The public Telegram infrastructure (`@AetheriaStoreOfficial` and `@AetheriaStore
   > 
   > **[ Button: ⚡ Order via Bot ]**
 - **Dual Storefront Channel Synchronization**: Both Telegram bot purchases and website purchases (automated Bank SMS Bridge UPI, website UTR verification, PayPal Express capture, and PayPal IPN direct matching) are unified and trigger live social proofs in the channel automatically.
+- **Atomic Channel Proof Idempotency Guard**: Proof broadcasts are protected by an atomic Firestore transaction lock (`proof_broadcasted: true`). Regardless of webhook retries or multiple manual UTR submissions, each order is guaranteed to broadcast to the channel exactly once.
 
 ### 7.1 Viral Telegram Referral & Reward Engine ("Refer & Earn")
 The Telegram bot features an autonomous multi-tier customer acquisition and reward engine (`referrals.ts` and `handlers.ts`):

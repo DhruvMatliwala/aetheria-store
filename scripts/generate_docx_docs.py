@@ -178,7 +178,7 @@ def create_document():
     )
 
     doc.add_paragraph().paragraph_format.space_after = Pt(8)
-    add_bullet("Cryptographic Slot Partitioning: ", "Raw keys (3-device Patreon licenses) are safely segmented into 1-slot or 2-slot allocations. Keys are only retired from the vault when all 3 usable slots are consumed, guaranteeing zero device-sharing collisions between buyers.")
+    add_bullet("Key Allocation Policies & Dedicated Vault Control: ", "The uploader in /admin provides flexible slot allocation policies: 1 Device Dedicated (1 Key = 1 Customer, retired immediately upon sale, never shared), 2 Devices (Duo tier), or 3 Devices (Patreon shared across 3 buyers).")
 
     # ── 3. Payment Processing & Whole-Rupee Matching Engine ───────────────────
     add_h1("3. Payment Rails & Whole-Rupee Automated Verification")
@@ -217,6 +217,7 @@ def create_document():
     add_bullet("1-Tap Conversion CTA: ", "Includes an interactive inline button linking directly to 'https://t.me/AetheriaStoreOfficialBot?start=restock', taking customers straight into checkout with 0 friction.")
     add_bullet("Streamlined Order Completed Proofs: ", "Real-time purchase proofs are automatically dispatched upon payment capture to @AetheriaStoreOfficial with zero receipt clutter: '✅ ORDER COMPLETED 📦 30-Day PGSharp Key dispatched to dh***@gmail.com (or @sl*** for bot buyers) 🛡️ Key verified and activated successfully.' Includes a direct '⚡ Order via Bot' inline button.")
     add_bullet("Dual Storefront Channel Synchronization: ", "Both Telegram bot purchases and website purchases (automated Bank SMS Bridge UPI, website UTR verification, PayPal Express capture, and PayPal IPN direct matching) are unified and trigger live social proofs in the channel automatically.")
+    add_bullet("Atomic Channel Proof Idempotency Guard: ", "Proof broadcasts are locked using an atomic Firestore transaction ('proof_broadcasted: true'). Even during duplicate SMS forwards or multiple UTR submissions, each order is guaranteed to broadcast to the channel exactly once.")
 
     add_h2("7.1 Viral Telegram Referral & Reward Engine ('Refer & Earn')")
     add_body("The bot features a self-sustaining viral growth loop designed for zero checkout friction:")
