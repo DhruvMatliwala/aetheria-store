@@ -160,6 +160,7 @@ The public Telegram infrastructure (`@AetheriaStoreOfficial` and `@AetheriaStore
 | `/api/cron/expiry-reminders` | GET | Dynamic | Automated 48h License Expiry Scanner & Renewals |
 | `/api/telegram/webhook` | POST | Dynamic | Telegram Bot Handler (Checkout, Proofs, Referrals, /givekey) |
 | `/api/coupons/validate` | POST | Dynamic | Private VIP Promo Code Server-Side Validation |
+| `/api/admin/coupons` | GET/POST/DELETE | Dynamic | Live Admin Coupon CRUD with Instant Permanent Deletion |
 | `/api/restock-notify` | POST | Dynamic | Customer Out-of-Stock Email Waitlist Registration |
 
 ---
