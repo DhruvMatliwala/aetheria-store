@@ -1034,17 +1034,20 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     return;
   }
 
-  // ── 6. Detect Coupon / Promo Code (e.g. REF30_ABCDEF, VIPDHRUV, /coupon ...) ──
-  const couponMatch = rawText.match(/^(?:\/coupon\s+)?(REF30_[A-Za-z0-9]+|VIPDHRUV|DISCORDMEMBER|[A-Za-z0-9_]{5,15})$/i);
+  // ── 6. Detect Coupon / Promo Code (e.g. REF30_ABCDEF, VIP20, /coupon ...) ──
+  const couponMatch = rawText.match(/^(?:\/coupon\s+)?([A-Za-z0-9_]{3,25})$/i);
   if (couponMatch) {
     const candidateCode = couponMatch[1].toUpperCase();
     const couponValidation = await validateAndApplyCoupon(candidateCode, PLANS[0], 'INR');
     if (couponValidation.valid) {
       await setUserCoupon(chatId, candidateCode);
+      const discountRs = Math.round((couponValidation.discountAmountInr || 1000) / 100);
+      const p1Inr = Math.max(0, 160 - discountRs);
+      const p2Inr = Math.max(0, 300 - discountRs);
       const discountText =
         `🎟️ <b>Promo Code "${candidateCode}" Applied!</b>\n\n` +
-        `• 📱 <b>1 Device:</b> <s>₹160 / $2.00</s> ➔ <b>₹130 / $1.70</b>\n` +
-        `• 🔋 <b>2 Devices:</b> <s>₹300 / $3.60</s> ➔ <b>₹270 / $3.00</b>\n\n` +
+        `• 📱 <b>1 Device:</b> <s>₹160</s> ➔ <b>₹${p1Inr}</b>\n` +
+        `• 🔋 <b>2 Devices:</b> <s>₹300</s> ➔ <b>₹${p2Inr}</b>\n\n` +
         `Choose your plan below:`;
       const { keyboard } = getPlanPickerContent();
       await sendTelegramMessage(chatId, discountText, { reply_markup: keyboard });

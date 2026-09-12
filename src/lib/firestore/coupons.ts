@@ -5,31 +5,6 @@ import { Coupon, CouponValidationResult } from '@/types/coupon';
 const COUPONS_COLLECTION = 'coupons';
 
 /**
- * Built-in private secret coupons for trusted buyers.
- * Strangers cannot guess these without being given them directly!
- */
-const DEFAULT_COUPONS: Record<string, Coupon> = {
-  VIPDHRUV: {
-    code: 'VIPDHRUV',
-    discount_type: 'flat',
-    discount_value_inr: 1000, // ₹10 (1000 paise)
-    discount_value_usd: 15,   // $0.15 (15 cents)
-    times_used: 0,
-    active: true,
-    description: 'Private VIP Trainer Discount (₹10 OFF)',
-  },
-  DISCORDMEMBER: {
-    code: 'DISCORDMEMBER',
-    discount_type: 'flat',
-    discount_value_inr: 1000, // ₹10 (1000 paise)
-    discount_value_usd: 15,   // $0.15 (15 cents)
-    times_used: 0,
-    active: true,
-    description: 'Exclusive Discord Member Discount (₹10 OFF)',
-  },
-};
-
-/**
  * Normalize coupon string for case-insensitive matching
  */
 export function normalizeCouponCode(code: string): string {
@@ -37,7 +12,72 @@ export function normalizeCouponCode(code: string): string {
 }
 
 /**
- * Fetch a coupon from Firestore, falling back to built-in default coupons
+ * Fetch all coupons from Firestore (for Admin Dashboard)
+ */
+export async function getAllCoupons(): Promise<Coupon[]> {
+  try {
+    const db = getAdminFirestore();
+    const snap = await db.collection(COUPONS_COLLECTION).get();
+    if (snap.empty) return [];
+
+    return snap.docs.map((doc) => {
+      const data = doc.data() as Partial<Coupon>;
+      return {
+        code: doc.id,
+        discount_type: data.discount_type || 'flat',
+        discount_value_inr: data.discount_value_inr ?? 1000,
+        discount_value_usd: data.discount_value_usd ?? 15,
+        percentage: data.percentage,
+        min_order_inr: data.min_order_inr,
+        max_uses: data.max_uses,
+        times_used: data.times_used ?? 0,
+        active: data.active ?? true,
+        description: data.description || `${doc.id} Promo Code`,
+      };
+    });
+  } catch (err) {
+    console.error('[getAllCoupons] Firestore fetch error:', err);
+    return [];
+  }
+}
+
+/**
+ * Save or update a coupon in Firestore
+ */
+export async function saveCoupon(coupon: Coupon): Promise<void> {
+  const code = normalizeCouponCode(coupon.code);
+  if (!code) throw new Error('Valid coupon code is required.');
+
+  const db = getAdminFirestore();
+  await db.collection(COUPONS_COLLECTION).doc(code).set(
+    {
+      ...coupon,
+      code,
+      updated_at: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+/**
+ * Delete a coupon from Firestore
+ */
+export async function deleteCoupon(rawCode: string): Promise<boolean> {
+  const code = normalizeCouponCode(rawCode);
+  if (!code) return false;
+
+  try {
+    const db = getAdminFirestore();
+    await db.collection(COUPONS_COLLECTION).doc(code).delete();
+    return true;
+  } catch (err) {
+    console.error(`[deleteCoupon] Failed to delete coupon "${code}":`, err);
+    return false;
+  }
+}
+
+/**
+ * Fetch a single coupon from Firestore
  */
 export async function getCoupon(rawCode: string): Promise<Coupon | null> {
   const code = normalizeCouponCode(rawCode);
@@ -65,11 +105,6 @@ export async function getCoupon(rawCode: string): Promise<Coupon | null> {
     }
   } catch (err) {
     console.error('[getCoupon] Firestore check error:', err);
-  }
-
-  // Fallback to built-in default coupons
-  if (DEFAULT_COUPONS[code]) {
-    return DEFAULT_COUPONS[code];
   }
 
   return null;

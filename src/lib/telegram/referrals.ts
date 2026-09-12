@@ -2,6 +2,7 @@ import { getAdminFirestore, admin } from '@/lib/firebase/admin';
 import { sendTelegramMessage } from '@/lib/telegram/bot';
 import { Order } from '@/types/order';
 import { randomBytes } from 'crypto';
+import { getCoupon } from '@/lib/firestore/coupons';
 
 export interface ReferralStats {
   invitedCount: number;
@@ -269,12 +270,26 @@ export async function getUserDiscountState(chatId: number): Promise<{
 
   // Check active coupon
   if (data.active_coupon) {
-    return {
-      hasDiscount: true,
-      discountType: 'coupon',
-      couponCode: data.active_coupon,
-      discountLabel: `🎟️ Coupon ${data.active_coupon} Applied (₹30 / $0.50 OFF)`,
-    };
+    const couponDoc = await getCoupon(data.active_coupon);
+    if (couponDoc && couponDoc.active) {
+      const valRs = Math.round((couponDoc.discount_value_inr || 1000) / 100);
+      const valUsd = couponDoc.discount_value_usd ? (couponDoc.discount_value_usd / 100).toFixed(2) : '0.15';
+      return {
+        hasDiscount: true,
+        discountType: 'coupon',
+        couponCode: data.active_coupon,
+        discountLabel: `🎟️ Coupon ${data.active_coupon} Applied (₹${valRs} / $${valUsd} OFF)`,
+      };
+    } else {
+      // Coupon was deleted from database or inactive: clean up to remove discount
+      await db
+        .collection('telegram_users')
+        .doc(String(chatId))
+        .update({
+          active_coupon: admin.firestore.FieldValue.delete(),
+        })
+        .catch(() => {});
+    }
   }
 
   // Check referral eligibility
