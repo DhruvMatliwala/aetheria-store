@@ -112,7 +112,20 @@ export function WaitlistWidget({ waitlistStats }: WaitlistWidgetProps) {
                       {req.plan_id.includes('2_device') ? '2 Android Devices' : '1 Android Device'}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono text-slate-500 text-[10px]">
-                      {new Date(req.created_at).toLocaleString()}
+                      {(() => {
+                        if (!req.created_at) return 'Recent';
+                        try {
+                          let str = req.created_at;
+                          if (!/\b20\d{2}\b/.test(str) && !str.includes('T')) {
+                            str = `${str} ${new Date().getFullYear()}`;
+                          }
+                          const d = new Date(str);
+                          if (!isNaN(d.getTime())) {
+                            return d.toLocaleString();
+                          }
+                        } catch {}
+                        return req.created_at;
+                      })()}
                     </td>
                   </tr>
                 ))}

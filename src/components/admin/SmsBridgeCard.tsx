@@ -14,7 +14,7 @@ export function SmsBridgeCard({ adminToken }: SmsBridgeCardProps) {
 
   // Simulator states
   const [sampleSms, setSampleSms] = useState(
-    'Dear SBI User, A/C ... credited by Rs 130.14 on 02Sep26 transfer from UPI/423819284719/Payment Ref No. 423819284719.'
+    'Dear SBI User, A/C ... credited by Rs 160.00 on 12Sep26 transfer from UPI/423819284719/Payment Ref No. 423819284719.'
   );
   const [simulating, setSimulating] = useState(false);
   const [simResult, setSimResult] = useState<any | null>(null);
@@ -62,7 +62,7 @@ export function SmsBridgeCard({ adminToken }: SmsBridgeCardProps) {
       if (res.ok && data.matched) {
         toast.success(`Success! Order #${data.order_id} matched and key dispatched.`);
       } else if (res.ok) {
-        toast('Webhook received (No pending order matched this exact paise amount).');
+        toast('Webhook received (No pending order matched this exact amount).');
       } else {
         toast.error(data.error || 'Simulation failed.');
       }
@@ -146,7 +146,7 @@ export function SmsBridgeCard({ adminToken }: SmsBridgeCardProps) {
           <h3 className="text-sm font-bold text-white">Live SMS Match Simulator</h3>
         </div>
         <p className="text-xs text-slate-400">
-          Simulate an incoming bank SMS to test your regex parser, paise matching, and automated key delivery.
+          Simulate an incoming bank SMS to test your regex parser, order matching, and automated key delivery.
         </p>
 
         <form onSubmit={handleSimulate} className="space-y-3">

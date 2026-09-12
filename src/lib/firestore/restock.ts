@@ -117,12 +117,7 @@ export async function getRestockStats(limit = 20): Promise<RestockStats> {
       plan_id: planId,
       email: data.email || 'unknown',
       created_at_ms: timestamp,
-      created_at: new Date(timestamp).toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
+      created_at: new Date(timestamp).toISOString(),
     });
   });
 
