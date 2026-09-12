@@ -209,15 +209,23 @@ def create_document():
     add_bullet("Regex Keyword Matching: ", "Detects high-intent keywords ('key', 'buy key', 'pgsharp key', 'wtb', 'need key') and instantly formats rich alerts.")
     add_bullet("Telegram Mobile Alerts: ", "Pushes real-time alerts to the owner's Telegram with user details, matched message snippets, and 1-click 'Open in Discord' jump buttons.")
 
-    # ── 7. Admin Portal Modernization & Optimization ──────────────────────────
-    add_h1("7. Admin Portal Architecture & Clean-up")
+    # ── 7. Telegram Bot & Channel Announcement Architecture ───────────────────
+    add_h1("7. Telegram Bot & Automated Proof Broadcasting")
+    add_body("The public Telegram infrastructure (@AetheriaStoreOfficial and @AetheriaStoreOfficialBot) features automated community broadcast hooks:")
+    add_bullet("Streamlined Restock Flash Alerts: ", "Whenever keys are uploaded, broadcastRestockAlert posts a punchy, high-urgency announcement: '⚡ KEYS ARE BACK IN STOCK! 📦 Fresh 30-Day keys just loaded into the vault. Grab yours before this batch runs out! 🚀'")
+    add_bullet("Intentional Price-Free Copy: ", "Pricing figures were intentionally eliminated from announcement posts. This eliminates message clutter, avoids repetitive price spam (since prices are prominently pinned in the channel and website), and ensures restock alerts never become outdated if store pricing evolves.")
+    add_bullet("1-Tap Conversion CTA: ", "Includes an interactive inline button linking directly to 'https://t.me/AetheriaStoreOfficialBot?start=restock', taking customers straight into checkout with 0 friction.")
+    add_bullet("Privacy-Masked Order Vouches: ", "Real-time purchase proofs are automatically dispatched upon payment capture, masking sensitive buyer emails (e.g. 'dh***@gmail.com') to build trust while preserving buyer anonymity.")
+
+    # ── 8. Admin Portal Modernization & Optimization ──────────────────────────
+    add_h1("8. Admin Portal Architecture & Clean-up")
     add_body("The administrative center has been thoroughly refined, optimized, and de-bloated:")
     add_bullet("Decommissioned Obsolete Lead Radar: ", "Completely removed web/Reddit scrapers that were experiencing 429/403 rate limiting. Deleted over 3,000 lines of dead code, dropping the admin bundle size from 32.8 kB down to 23.9 kB.")
     add_bullet("Waitlist Timestamp Bug Fix: ", "Resolved a JavaScript Date parser bug where restock alert dates defaulted to the year 2001. Enforced ISO 8601 timestamps and added resilient year-guards for accurate 2026 reporting.")
     add_bullet("Streamlined Tab Layout: ", "Dashboard, Inventory & Stock, Direct Dispatch, Bulk Key Uploader, Orders & Deliveries, 24/7 UPI Bridge, Coupons, Waitlist & Demand, and Buyer Reviews.")
 
-    # ── 8. Complete Route & API Architecture Map ──────────────────────────────
-    add_h1("8. Complete Route & API Architecture Map")
+    # ── 9. Complete Route & API Architecture Map ──────────────────────────────
+    add_h1("9. Complete Route & API Architecture Map")
     add_body("Summary of all 17 active production routes and API endpoints:")
 
     route_table = doc.add_table(rows=1, cols=3)
@@ -248,8 +256,8 @@ def create_document():
 
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
-    # ── 9. Security & Cryptographic Specifications ────────────────────────────
-    add_h1("9. Security & Cryptographic Specifications")
+    # ── 10. Security & Cryptographic Specifications ───────────────────────────
+    add_h1("10. Security & Cryptographic Specifications")
     add_body("Institutional-grade data protection standards enforced across all transactions:")
     add_bullet("AES-256-GCM Encryption: ", "All raw license keys stored in Firestore collection 'keys' are encrypted at rest using unique 12-byte IVs and 16-byte authentication tags.")
     add_bullet("Zero Sensitive Data Retention: ", "The SMS Bridge explicitly drops all incoming OTPs and login codes, storing only validated bank credit references.")

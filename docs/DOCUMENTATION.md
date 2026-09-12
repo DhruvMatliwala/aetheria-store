@@ -85,9 +85,23 @@ A dedicated standalone Node.js microservice located in `/discord-key-notifier`:
 - **Regex Keyword Matching**: Detects high-intent keywords (`key`, `buy key`, `pgsharp key`, `wtb`) in real time.
 - **Telegram Mobile Alerts**: Pushes real-time alerts to the owner's Telegram with user details, matched message snippets, and 1-click "Open in Discord" jump buttons.
 
+## 7. Telegram Bot & Channel Announcement Architecture
+
+The public Telegram infrastructure (`@AetheriaStoreOfficial` and `@AetheriaStoreOfficialBot`) features automated broadcast hooks:
+- **Streamlined Restock Flash Alerts**: Whenever keys are uploaded, `broadcastRestockAlert` posts a punchy, high-urgency announcement:
+  > ⚡ **KEYS ARE BACK IN STOCK!**
+  > 
+  > 📦 **Fresh 30-Day keys just loaded into the vault.**
+  > Grab yours before this batch runs out! 🚀
+  > 
+  > **[ Button: 🚀 Get Your Key Instantly ]**
+- **Intentional Price-Free Copy**: Pricing was intentionally eliminated from announcement posts to eliminate message clutter, prevent repetitive price spam (since prices are prominently pinned in the channel and website), and ensure restock alerts never become outdated if store pricing evolves.
+- **1-Tap Conversion CTA**: Includes an interactive inline button linking directly to `https://t.me/AetheriaStoreOfficialBot?start=restock`, taking customers straight into checkout with 0 friction.
+- **Privacy-Masked Order Vouches**: Real-time purchase proofs are automatically dispatched upon payment capture, masking sensitive buyer emails (e.g. `dh***@gmail.com`) to build community trust while preserving buyer anonymity.
+
 ---
 
-## 7. Admin Command Center Modernization & Optimization
+## 8. Admin Command Center Modernization & Optimization
 
 - **Decommissioned Obsolete Lead Radar**: Removed rate-limited web/Reddit scrapers. Wiped out 3,086 lines of dead code, dropping the admin bundle size from `32.8 kB` to `23.9 kB` (~27% faster load).
 - **Waitlist Timestamp Bug Fix**: Resolved a JavaScript Date parser bug where restock alert dates defaulted to the year 2001. Enforced ISO 8601 timestamps with resilient year-guards for accurate 2026 reporting.
@@ -104,7 +118,7 @@ A dedicated standalone Node.js microservice located in `/discord-key-notifier`:
 
 ---
 
-## 8. Cryptographic Vault Security
+## 9. Cryptographic Vault Security
 
 - **AES-256-GCM Encryption at Rest (`crypto.ts`)**: All raw keys stored in Firestore are encrypted using unique 12-byte IVs and 16-byte authentication tags. Raw keys are never stored in plaintext.
 - **Atomic Race-Condition Protection**: Firestore transactions guarantee simultaneous buyers never receive the same device slot or duplicate keys.
@@ -112,7 +126,7 @@ A dedicated standalone Node.js microservice located in `/discord-key-notifier`:
 
 ---
 
-## 9. Production Route Summary
+## 10. Production Route Summary
 
 | Route Path | Method | Type | Core Functionality |
 |---|---|---|---|
