@@ -8,21 +8,13 @@ import { sendTelegramMessage } from '@/lib/telegram/bot';
 import { PLAN_MAP, PLANS, TELEGRAM_URL } from '@/lib/constants';
 import { broadcastOrderProof } from '@/lib/telegram/proofs';
 import { processReferralReward } from '@/lib/telegram/referrals';
+import { verifyAdminSecret } from '@/lib/admin/adminAuth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-function isAdminRequest(request: NextRequest): boolean {
-  const adminSecret = request.headers.get('x-admin-secret');
-  return Boolean(
-    adminSecret &&
-    process.env.ADMIN_API_SECRET &&
-    adminSecret.trim() === process.env.ADMIN_API_SECRET.trim()
-  );
-}
-
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) {
+  if (!verifyAdminSecret(request)) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 

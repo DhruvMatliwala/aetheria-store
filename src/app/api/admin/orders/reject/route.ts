@@ -1,21 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrderById } from '@/lib/firestore/orders';
 import { getAdminFirestore } from '@/lib/firebase/admin';
+import { verifyAdminSecret } from '@/lib/admin/adminAuth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-function isAdminRequest(request: NextRequest): boolean {
-  const adminSecret = request.headers.get('x-admin-secret');
-  return Boolean(
-    adminSecret &&
-    process.env.ADMIN_API_SECRET &&
-    adminSecret.trim() === process.env.ADMIN_API_SECRET.trim()
-  );
-}
-
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) {
+  if (!verifyAdminSecret(request)) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 

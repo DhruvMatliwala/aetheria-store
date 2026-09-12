@@ -1,23 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { bulkInsertKeys } from '@/lib/firestore/keys';
 import { broadcastRestockAlert } from '@/lib/telegram/proofs';
+import { verifyAdminSecret } from '@/lib/admin/adminAuth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-function isAdminRequest(request: NextRequest): boolean {
-  const adminSecret =
-    request.headers.get('x-admin-secret') ||
-    request.nextUrl.searchParams.get('secret');
-  return Boolean(
-    adminSecret &&
-    process.env.ADMIN_API_SECRET &&
-    adminSecret.trim() === process.env.ADMIN_API_SECRET.trim()
-  );
-}
-
 export async function POST(request: NextRequest) {
-  if (!isAdminRequest(request)) {
+  if (!verifyAdminSecret(request)) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 
@@ -60,7 +50,7 @@ export async function POST(request: NextRequest) {
 
 // Allow manual trigger of restock announcement via GET ?action=announce
 export async function GET(request: NextRequest) {
-  if (!isAdminRequest(request)) {
+  if (!verifyAdminSecret(request)) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 

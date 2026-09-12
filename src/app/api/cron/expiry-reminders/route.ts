@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkAndSendExpiryReminders } from '@/lib/telegram/reminders';
+import { verifyAdminSecret } from '@/lib/admin/adminAuth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,10 +14,7 @@ function isAuthorized(request: NextRequest): boolean {
   }
 
   // 2. Check Admin API Secret
-  const adminSecret =
-    request.headers.get('x-admin-secret') ||
-    request.nextUrl.searchParams.get('secret');
-  if (process.env.ADMIN_API_SECRET && adminSecret === process.env.ADMIN_API_SECRET) {
+  if (verifyAdminSecret(request)) {
     return true;
   }
 

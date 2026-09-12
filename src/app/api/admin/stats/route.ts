@@ -2,21 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getInventoryStats } from '@/lib/firestore/keys';
 import { getRecentOrders, getRevenueStats } from '@/lib/firestore/orders';
 import { getRestockStats } from '@/lib/firestore/restock';
+import { verifyAdminSecret } from '@/lib/admin/adminAuth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-function isAdminRequest(request: NextRequest): boolean {
-  const adminSecret = request.headers.get('x-admin-secret');
-  return Boolean(
-    adminSecret &&
-    process.env.ADMIN_API_SECRET &&
-    adminSecret.trim() === process.env.ADMIN_API_SECRET.trim()
-  );
-}
-
 export async function GET(request: NextRequest) {
-  if (!isAdminRequest(request)) {
+  if (!verifyAdminSecret(request)) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 
