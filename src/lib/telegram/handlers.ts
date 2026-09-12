@@ -468,18 +468,12 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       `upi://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amountInr}&cu=INR&tn=${orderId}&aid=uGICAgMC507CUEg`
     )}`;
 
-    const discountMsg = discountState.hasDiscount ? `\n🎉 <i>Discount applied: Saved ₹${pricing.savingsInr}!</i>` : '';
+    const discountMsg = discountState.hasDiscount ? `\n🎉 <i>Discount applied: Saved ₹${pricing.savingsInr}!</i>\n` : '';
 
     const upiCaption =
-      `⚡ <b>Pay ₹${amountInr} via UPI</b>${discountMsg}\n\n` +
-      `<b>1️⃣ Scan QR Code above or tap to copy UPI ID:</b>\n` +
-      `<code>${UPI_VPA}</code>\n\n` +
-      `<b>2️⃣ Amount to Send:</b>\n` +
-      `<code>₹${amountInr}</code>\n\n` +
-      `⚡ <b>Instant Auto-Delivery Active:</b>\n` +
-      `Pay using Google Pay, PhonePe, or Paytm.\n` +
-      `Once paid, your license key will be delivered right here automatically in <b>2–5 seconds</b>! 🚀\n` +
-      `<i>(Zero manual steps required. In rare delay cases, you can paste your 12-digit UTR)</i>`;
+      `📦 <b>${plan.name} (~30 Days) — ₹${amountInr}</b>${discountMsg}\n` +
+      `🔑 <b>UPI ID:</b> <code>${UPI_VPA}</code>\n\n` +
+      `Scan QR or pay via UPI. Key is auto-delivered instantly! ⚡`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
