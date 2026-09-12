@@ -293,7 +293,7 @@ export default function AdminPage() {
   }, [stats]);
 
   const pendingOrders = useMemo(() => {
-    return (stats?.recentOrders || []).filter((o) => o.payment_status === 'pending' || o.payment_status === 'verifying');
+    return (stats?.recentOrders || []).filter((o) => o.payment_status === 'verifying');
   }, [stats]);
 
   const totalRevenueDisplay = useMemo(() => {

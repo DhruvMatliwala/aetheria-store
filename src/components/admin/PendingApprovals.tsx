@@ -15,7 +15,8 @@ export function PendingApprovals({ orders, adminToken, onRefresh }: PendingAppro
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const pendingOrders = orders.filter((o) => o.payment_status === 'verifying' || o.payment_status === 'pending');
+  // Only show orders where the customer actually submitted payment proof/UTR awaiting review
+  const pendingOrders = orders.filter((o) => o.payment_status === 'verifying');
 
   if (pendingOrders.length === 0) {
     return null;

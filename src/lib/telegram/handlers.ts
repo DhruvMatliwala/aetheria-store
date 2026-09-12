@@ -432,12 +432,17 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     const pricing = getDiscountedPricing(plan.id, discountState.hasDiscount);
     const amountInr = pricing.priceInrRupees;
 
-    // Create pending order
-    const orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
+    // Check if user already has an active pending order in this chat to avoid duplicate orders on every tap
     const db = getAdminFirestore();
+    const existingSnap = await db
+      .collection('orders')
+      .where('telegram_chat_id', '==', chatId)
+      .where('payment_status', '==', 'pending')
+      .limit(1)
+      .get();
 
+    let orderId: string;
     const orderDoc: Record<string, any> = {
-      order_id: orderId,
       customer_email: query.from.username
         ? `${query.from.username.toLowerCase()}@telegram.user`
         : `tg_${query.from.id}@telegram.user`,
@@ -448,11 +453,10 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       payment_gateway: 'upi_direct',
       payment_status: 'pending',
       delivered_key: null,
-      gateway_order_id: `upi_${orderId}`,
       telegram_chat_id: chatId,
       telegram_username: query.from.username || '',
       telegram_user_id: query.from.id,
-      created_at: admin.firestore.FieldValue.serverTimestamp(),
+      updated_at: admin.firestore.FieldValue.serverTimestamp(),
     };
 
     if (discountState.hasDiscount && discountState.discountType === 'referral' && discountState.referrerChatId) {
@@ -462,7 +466,18 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       orderDoc.coupon_code = discountState.couponCode;
     }
 
-    await db.collection('orders').doc(orderId).set(orderDoc);
+    if (!existingSnap.empty) {
+      orderId = existingSnap.docs[0].id;
+      orderDoc.order_id = orderId;
+      orderDoc.gateway_order_id = `upi_${orderId}`;
+      await db.collection('orders').doc(orderId).update(orderDoc);
+    } else {
+      orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
+      orderDoc.order_id = orderId;
+      orderDoc.gateway_order_id = `upi_${orderId}`;
+      orderDoc.created_at = admin.firestore.FieldValue.serverTimestamp();
+      await db.collection('orders').doc(orderId).set(orderDoc);
+    }
 
     const upiQrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(
       `upi://pay?pa=${UPI_VPA}&pn=${encodeURIComponent(UPI_PAYEE_NAME)}&am=${amountInr}&cu=INR&tn=${orderId}&aid=uGICAgMC507CUEg`
@@ -502,12 +517,17 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     const pricing = getDiscountedPricing(plan.id, discountState.hasDiscount);
     const amountUsd = pricing.priceUsdDollars;
 
-    // Create pending order
-    const orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
+    // Check if user already has an active pending order in this chat to avoid duplicate orders on every tap
     const db = getAdminFirestore();
+    const existingSnap = await db
+      .collection('orders')
+      .where('telegram_chat_id', '==', chatId)
+      .where('payment_status', '==', 'pending')
+      .limit(1)
+      .get();
 
+    let orderId: string;
     const orderDoc: Record<string, any> = {
-      order_id: orderId,
       customer_email: query.from.username
         ? `${query.from.username.toLowerCase()}@telegram.user`
         : `tg_${query.from.id}@telegram.user`,
@@ -518,11 +538,10 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       payment_gateway: 'paypal_direct',
       payment_status: 'pending',
       delivered_key: null,
-      gateway_order_id: `paypal_${orderId}`,
       telegram_chat_id: chatId,
       telegram_username: query.from.username || '',
       telegram_user_id: query.from.id,
-      created_at: admin.firestore.FieldValue.serverTimestamp(),
+      updated_at: admin.firestore.FieldValue.serverTimestamp(),
     };
 
     if (discountState.hasDiscount && discountState.discountType === 'referral' && discountState.referrerChatId) {
@@ -532,7 +551,18 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       orderDoc.coupon_code = discountState.couponCode;
     }
 
-    await db.collection('orders').doc(orderId).set(orderDoc);
+    if (!existingSnap.empty) {
+      orderId = existingSnap.docs[0].id;
+      orderDoc.order_id = orderId;
+      orderDoc.gateway_order_id = `paypal_${orderId}`;
+      await db.collection('orders').doc(orderId).update(orderDoc);
+    } else {
+      orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
+      orderDoc.order_id = orderId;
+      orderDoc.gateway_order_id = `paypal_${orderId}`;
+      orderDoc.created_at = admin.firestore.FieldValue.serverTimestamp();
+      await db.collection('orders').doc(orderId).set(orderDoc);
+    }
 
     const paypalUrl = `${PAYPAL_ME_URL}/${amountUsd}USD`;
     const discountMsg = discountState.hasDiscount ? `\n🎉 <i>Discount applied: Saved $${pricing.savingsUsd}!</i>` : '';
