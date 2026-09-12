@@ -226,6 +226,13 @@ def create_document():
     add_bullet("Direct Telegram Notification: ", "The bot dispatches a private DM to the referrer with their coupon code. Referrers can stack multiple earned coupons and redeem them on future key renewals simply by sending or tapping the code in chat.")
     add_bullet("Centralized Admin Visibility & Deletion: ", "All issued referral coupons are stored in Firestore and sync live to the Admin Coupons panel, giving the administrator real-time monitoring and 1-click permanent deletion capabilities.")
 
+    add_h2("7.2 Native In-Chat UPI QR Delivery & Session Reuse")
+    add_body("To guarantee seamless, zero-friction mobile checkouts in Telegram:")
+    add_bullet("Dynamic Native QR Photo Delivery: ", "Rather than relying on fragile 3rd-party UPI intent deep links (which often trigger bank app limits or browser blocks on mobile), the bot dynamically generates and delivers a native high-resolution QR photo PNG buffer directly inside the Telegram chat.")
+    add_bullet("Compact Non-Redundant Card Copy: ", "Single clean card featuring UPI ID, key details, auto-delivery instructions, and 'Support' / 'Back' buttons without repetitive amount spam.")
+    add_bullet("Approximate Duration (~30 Days) Notation: ", "Acknowledges rare 28–29 day upstream vendor key duration variances to set accurate customer expectations and prevent false disputes.")
+    add_bullet("Pending Order Session Reuse: ", "Prevents database clutter by checking for existing active pending orders for that user/chat before creating a new order. Repeated button clicks update the existing order session instead of generating duplicate abandoned rows in Firestore.")
+
     # ── 8. Admin Portal Modernization & Optimization ──────────────────────────
     add_h1("8. Admin Portal Architecture & Clean-up")
     add_body("The administrative center has been thoroughly refined, optimized, and de-bloated:")
@@ -234,6 +241,8 @@ def create_document():
     add_bullet("Dual Unlock Vectors: ", "Secret URL bookmark (?key=...) for 1-click device authorization with automatic address-bar cleanup, plus emergency unlock via triple-click or Ctrl+Shift+A keyboard shortcut.")
     add_bullet("Anti-Brute-Force Rate Limiter: ", "Failed passcode attempts are tracked per client IP. Reaching 5 failed attempts locks the IP out for 15 minutes with HTTP 429 Too Many Requests.")
     add_bullet("Timing-Safe Cryptographic Verification: ", "All admin operations use constant-time crypto.timingSafeEqual with SHA-256 digests.")
+    add_bullet("Pending Approvals Verification Filter: ", "Restricted the admin pending approvals queue to strictly display orders with payment_status == 'verifying' or orders where proof/UTR was submitted, eliminating casual abandoned clicks from cluttering the queue.")
+    add_bullet("Live Firestore Coupon Engine & Deletion: ", "Completely eliminated static mock data and hardcoded coupon fallbacks (VIPDHRUV, DISCORDMEMBER). Built a real-time Firestore synchronization engine with an interactive [ Delete ] button, live creation modal, and empty-state notifications.")
     add_bullet("Streamlined Tab Layout: ", "Dashboard, Inventory & Stock, Direct Dispatch, Bulk Key Uploader, Orders & Deliveries, 24/7 UPI Bridge, Coupons (Live Firestore CRUD & Deletion), Waitlist & Demand, and Buyer Reviews.")
 
     # ── 9. Complete Route & API Architecture Map ──────────────────────────────

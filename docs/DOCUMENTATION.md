@@ -115,6 +115,18 @@ The Telegram bot features an autonomous multi-tier customer acquisition and rewa
 - **Stackable Renewal Credits**: Referrers can stack multiple earned reward coupons and redeem them on future key renewals by simply sending or tapping the code in the bot chat.
 - **Admin Visibility & Deletion**: All referral coupons are stored directly in Firestore, allowing the administrator to inspect, monitor, or permanently delete them from `/admin` at any time.
 
+### 7.2 Native In-Chat UPI QR Delivery & Session Reuse
+To guarantee seamless, zero-friction mobile checkouts in Telegram:
+- **Dynamic Native QR Photo Delivery**: Rather than relying on fragile 3rd-party UPI intent deep links (which often trigger bank app limits or browser blocks on mobile), the bot dynamically generates and delivers a native high-resolution QR photo PNG buffer directly inside the Telegram chat.
+- **Compact Non-Redundant Card Copy**: Features an ultra-clean, minimal checkout interface:
+  > **[ 📷 QR Code ]**  
+  > 📦 **1 Device (~30 Days)** — **₹160**  
+  > 🔑 **UPI ID:** `dhruvmatliwala123@oksbi`  
+  > Scan QR or pay via UPI. Key is auto-delivered instantly! ⚡  
+  > **[ 💬 Support ]** &nbsp;&nbsp;&nbsp;&nbsp; **[ ⬅️ Back ]**
+- **Approximate Duration (~30 Days) Notation**: Acknowledges rare 28–29 day upstream vendor key duration variances to set accurate customer expectations and prevent false disputes.
+- **Pending Order Session Reuse**: Prevents database clutter by checking for existing active pending orders for that user/chat before creating a new order. Repeated button clicks update the existing order session instead of generating duplicate abandoned rows in Firestore.
+
 ---
 
 ## 8. Admin Command Center Modernization & Optimization
@@ -127,6 +139,8 @@ The Telegram bot features an autonomous multi-tier customer acquisition and rewa
   - **Discrete Emergency Modal (Secondary)**: Triple-clicking the "404" badge or pressing `Ctrl + Shift + A` (or `Cmd + Shift + A`) reveals an unobtrusive terminal unlock modal.
 - **Anti-Brute-Force IP Rate Limiter (`adminAuth.ts`)**: Failed passcode attempts are tracked per client IP. Reaching 5 failed attempts locks the IP out for 15 minutes (`HTTP 429 Too Many Requests`).
 - **Timing-Safe Cryptographic Verification**: All admin authentication comparisons use constant-time `crypto.timingSafeEqual` with SHA-256 digests, eliminating side-channel timing attacks.
+- **Pending Approvals Verification Filter**: The admin dashboard's pending approvals queue was refined to strictly display orders with `payment_status == 'verifying'` or orders where the customer actually submitted a UTR / payment proof screenshot. Casual button clicks or abandoned checkout screens are automatically excluded from cluttering the queue.
+- **Live Firestore Coupon Engine & Deletion**: Completely eliminated static mock data and hardcoded coupon fallbacks (`VIPDHRUV`, `DISCORDMEMBER`). Built a real-time Firestore synchronization engine with an interactive **`[ Delete ]`** button with confirmation prompts, live creation modal, and empty-state notifications.
 - **Streamlined Tab Layout**:
   - Dashboard (Overview & Pending Approvals)
   - Inventory (Tier stock & Usable slots)
