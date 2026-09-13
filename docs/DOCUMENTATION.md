@@ -157,6 +157,24 @@ To guarantee seamless, zero-friction mobile checkouts in Telegram:
 
 ---
 
+## 8.1. Pokémon Radar, Live IV Sniper & Scanner Webhook Ingestion
+
+- **Direct Scanner Webhook (`/api/pokemon/spawns`)**:
+  - High-performance ingestion endpoint for raw scanner telemetry (Golbat, Poracle, MAD, RDM formats).
+  - In-memory 20-minute de-duplication cache preventing repeat alerts for the same spawn ID.
+  - Automatically filters out expired spawns or spawns with `< 3 minutes` remaining.
+  - Matches live spawns against user watchlists in Firestore and dispatches private Telegram pings in `< 1 second`.
+- **Option A ("Don't let it flee") Catch-Rate Booster Hook**:
+  - Every spawn alert incorporates real-time despawn timers, 1-tap copy coordinates, Google Maps navigation links, and a contextual CTA (*"100% Excellent Throw + Instant Quick Catch: 👉 Unlock PGSharp Standard (₹160)"*).
+  - Integrates in-place `[ ⏸️ Pause Alerts ]` / `[ ▶️ Resume Alerts ]` buttons directly on the alert notification without wiping map or coordinate data.
+- **National Pokédex Database (1,025 Species) & Fuzzy Typo Tolerant Search**:
+  - Houses the complete official National Pokédex from Gen 1 through Gen 9 (`Bulbasaur` to `Pecharunt`).
+  - Levenshtein distance matching with adaptive word-length thresholds (e.g. `Greyninja` ➔ `Greninja`, `swampart` ➔ `Swampert`, `charzard` ➔ `Charizard`).
+  - Natural chat typing support: users can set IV spreads directly in chat (`1/14/15`, `0 15 14`, `100`, `hundo`, `any`, `all`) or combined species targets (`Swampert 1/14/15`).
+  - 1-tap meta quick picks for popular sniped species (`💧 Swampert`, `🥋 Lucario`, `🐸 Greninja`, `🔥 Charizard`, `🐲 Garchomp`, `⚡ Metagross`, `🛡️ Bastiodon`, `🐉 Dragonite`).
+
+---
+
 ## 9. Cryptographic Vault & API Security
 
 - **AES-256-GCM Encryption at Rest (`crypto.ts`)**: All raw keys stored in Firestore are encrypted using unique 12-byte IVs and 16-byte authentication tags. Raw keys are never stored in plaintext.
@@ -184,11 +202,14 @@ To guarantee seamless, zero-friction mobile checkouts in Telegram:
 | `/api/admin/orders/approve` | POST | Dynamic | 1-Click Manual Proof Approval & Instant Key Release |
 | `/api/admin/orders/reject` | POST | Dynamic | 1-Click Manual Proof Rejection & Status Update |
 | `/api/cron/expiry-reminders` | GET | Dynamic | Automated 48h License Expiry Scanner & Renewals |
-| `/api/telegram/webhook` | POST | Dynamic | Telegram Bot Handler (Checkout, Proofs, Referrals, /givekey) |
+| `/api/telegram/webhook` | POST | Dynamic | Telegram Bot Handler (Checkout, Proofs, Referrals, /givekey, Radar) |
 | `/api/coupons/validate` | POST | Dynamic | Private VIP Promo Code Server-Side Validation |
 | `/api/admin/coupons` | GET/POST/DELETE | Dynamic | Live Admin Coupon CRUD with Instant Permanent Deletion |
 | `/api/restock-notify` | POST | Dynamic | Customer Out-of-Stock Email Waitlist Registration |
+| `/api/pokemon/spawns` | GET/POST | Dynamic | Live Pokémon Scanner Webhook Ingestion & Alert Dispatch |
+| `/api/pokemon/events` | GET | Dynamic | Pokémon GO Live Events & Raid Boss Rotation Calendar |
 
 ---
 
 *AETHERIA Systems • Complete Technical Manual • Updated September 2026*
+
