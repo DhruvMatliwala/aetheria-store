@@ -272,6 +272,10 @@ export function getRadarSpecificPokemonContent() {
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
+        { text: '🐸 Greninja', callback_data: 'radar_set_poke:Greninja' },
+        { text: '🔥 Charizard', callback_data: 'radar_set_poke:Charizard' },
+      ],
+      [
         { text: '💧 Swampert', callback_data: 'radar_set_poke:Swampert' },
         { text: '🥋 Lucario', callback_data: 'radar_set_poke:Lucario' },
       ],
@@ -1569,11 +1573,21 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
   }
 
   // ── Standalone Pokémon Name Detection (Fuzzy Matching + Typo Auto-Correction) ──
-  if (!rawText.startsWith('/') && rawText.length <= 25) {
-    const matchedPoke = tryFuzzyMatchPokemon(rawText);
-    if (matchedPoke) {
+  const NON_POKEMON_KEYWORDS = new Set([
+    'hi', 'hello', 'hey', 'help', 'support', 'buy', 'price', 'key', 'keys',
+    'stock', 'thanks', 'thank', 'thx', 'yes', 'no', 'ok', 'okay', 'menu',
+    'start', 'cancel', 'refund', 'proof', 'proofs', 'admin', 'test', 'login',
+    'how', 'what', 'who', 'when', 'where', 'why'
+  ]);
+
+  if (!rawText.startsWith('/') && rawText.length <= 30 && /^[a-zA-Z\s\.\-':]+$/.test(rawText.trim())) {
+    const lowerTrim = rawText.toLowerCase().trim();
+    if (!NON_POKEMON_KEYWORDS.has(lowerTrim)) {
+      const matchedPoke = tryFuzzyMatchPokemon(rawText);
+      const targetSpecies = matchedPoke ? matchedPoke.name : formatPokemonName(rawText);
+      const isCorrected = matchedPoke ? matchedPoke.corrected : false;
+
       const existing = await getRadarRule(chatId);
-      const targetSpecies = matchedPoke.name;
       const targetAtk = existing?.target_atk ?? -1;
       const targetDef = existing?.target_def ?? -1;
       const targetSta = existing?.target_sta ?? -1;
@@ -1601,7 +1615,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
 
       const speciesBadge = targetSpecies === 'ALL'
         ? 'All Pokémon'
-        : matchedPoke.corrected
+        : isCorrected
         ? `${targetSpecies} (auto-corrected from "${rawText}")`
         : targetSpecies;
 
