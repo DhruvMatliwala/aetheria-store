@@ -710,17 +710,11 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
       if (editRes.ok) {
-        setTimeout(() => {
-          dispatchFirstLiveSpawnAlert(chatId, updatedRule).catch(console.error);
-        }, 1500);
         return;
       }
       await deleteTelegramMessage(chatId, messageId);
     }
     await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
-    setTimeout(() => {
-      dispatchFirstLiveSpawnAlert(chatId, updatedRule).catch(console.error);
-    }, 1500);
     return;
   }
 
@@ -1585,9 +1579,6 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     };
 
     await sendTelegramMessage(chatId, confirmText, { reply_markup: keyboard });
-    setTimeout(() => {
-      dispatchFirstLiveSpawnAlert(chatId, updatedRule).catch(console.error);
-    }, 1500);
     return;
   }
 
@@ -1659,9 +1650,6 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
       };
 
       await sendTelegramMessage(chatId, confirmText, { reply_markup: keyboard });
-      setTimeout(() => {
-        dispatchFirstLiveSpawnAlert(chatId, updatedRule).catch(console.error);
-      }, 1500);
       return;
     }
   }
