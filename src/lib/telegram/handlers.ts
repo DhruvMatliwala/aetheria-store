@@ -1205,14 +1205,14 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       `🔑 <b>UPI ID:</b> <code>${UPI_VPA}</code>\n` +
       `🔖 <b>Order ID:</b> <code>${orderId}</code>\n\n` +
       `<b>⚡ How to complete your purchase:</b>\n` +
-      `1️⃣ Scan QR or send <b>₹${amountInr}</b> via PhonePe, GPay, Paytm, or BHIM.\n` +
-      `2️⃣ After paying, reply here with the <b>12-digit UTR / Ref No.</b> or send a <b>screenshot</b>.\n\n` +
-      `<i>⏳ Note: Most bank SMS notifications arrive within 10–60s. If your bank has a slight SMS queue delay, submitting your 12-digit UTR guarantees instant key delivery!</i>`;
+      `1️⃣ Send <b>₹${amountInr}</b> via Google Pay, PhonePe, Paytm, or FamPay.\n` +
+      `2️⃣ <b>To fast-track your key instantly:</b> Send a screenshot of your <b>Transaction Details</b> (in Google Pay/FamPay, tap on the payment to view full details with the 12-digit UPI ID) or reply with the 12 digits directly here!\n\n` +
+      `<i>⏳ Bank SMS alerts usually arrive within 30–60s. Submitting your screenshot or 12-digit ID guarantees instant delivery even if your bank experiences network delays!</i>`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
-          { text: '✍️ Submit 12-Digit UTR', callback_data: `cb_prompt_utr_${orderId}` },
+          { text: '📸 Submit Screenshot / 12-Digit ID', callback_data: `cb_prompt_utr_${orderId}` },
         ],
         [
           { text: '💬 Support', url: TELEGRAM_URL },
@@ -1231,16 +1231,16 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // ── Step 2A-2: User Tapped Submit 12-Digit UTR ────────────────────────────
+  // ── Step 2A-2: User Tapped Submit Screenshot / 12-Digit ID ────────────────
   if (data.startsWith('cb_prompt_utr_')) {
     const orderId = data.replace('cb_prompt_utr_', '');
     const promptText =
-      `✍️ <b>Submit Your 12-Digit UTR / Ref Number:</b>\n\n` +
-      `Open your payment app (PhonePe, GPay, Paytm) and check the completed transaction:\n` +
-      `• <b>PhonePe:</b> Open transaction ➔ Look for <b>UTR</b> (e.g. <code>326282062667</code>)\n` +
-      `• <b>Google Pay:</b> Look for <b>UPI transaction ID</b> (12 digits)\n` +
-      `• <b>Paytm:</b> Look for <b>UPI Ref No.</b> (12 digits)\n\n` +
-      `👉 <b>Simply type and send the 12 digits directly in this chat</b>, or send a screenshot of the payment receipt!\n\n` +
+      `📸 <b>How to Fast-Track Your Order:</b>\n\n` +
+      `• <b>Google Pay:</b> Tap the completed payment in your chat/history ➔ Screenshot the page showing <b>UPI transaction ID</b> <i>(12 digits starting with 3...)</i>\n` +
+      `• <b>FamPay / FamApp:</b> Tap <b>"View Details"</b> on your receipt ➔ Screenshot the 12-digit UPI reference\n` +
+      `• <b>PhonePe:</b> Screenshot the receipt showing <b>UTR</b>\n` +
+      `• <b>Paytm:</b> Screenshot the receipt showing <b>UPI Ref No.</b>\n\n` +
+      `👉 <b>Simply drop that screenshot directly in this chat</b>, or type the 12 digits directly!\n\n` +
       `<i>🔖 Order ID: <code>${orderId}</code></i>`;
 
     const keyboard: InlineKeyboardMarkup = {
@@ -1458,11 +1458,11 @@ async function handleMyKeys(chatId: number, username?: string, messageId?: numbe
 
         pendingOrderId = doc.id;
         activeOrderSection +=
-          `${isVerifying ? '⏳ <b>Payment Verifying with Bank:</b>' : '🟡 <b>Order Awaiting Confirmation:</b>'}\n` +
+          `${isVerifying ? '⏳ <b>Payment Verifying with Bank:</b>' : '🟡 <b>Order Awaiting Bank Confirmation:</b>'}\n` +
           `• <b>Order ID:</b> <code>${doc.id}</code>\n` +
           `• <b>Plan:</b> ${plan.name} (${formattedAmount})\n` +
-          `• <b>Status:</b> ${isVerifying ? 'Verifying payment with bank network...' : 'Waiting for UTR / Bank SMS'}\n` +
-          `💡 <i>If already paid, reply here with your 12-digit UTR or screenshot for instant key delivery!</i>\n\n`;
+          `• <b>Status:</b> ${isVerifying ? 'Verifying payment with bank network...' : 'Waiting for bank confirmation alert...'}\n` +
+          `💡 <b>To fast-track your key:</b> Send a screenshot of your <b>Transaction Details</b> (in Google Pay/FamPay, tap the payment to view details with the 12-digit UPI ID) or reply with the 12 digits!\n\n`;
       });
     }
 
@@ -1504,7 +1504,7 @@ async function handleMyKeys(chatId: number, username?: string, messageId?: numbe
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         ...(pendingOrderId
-          ? [[{ text: '✍️ Submit 12-Digit UTR', callback_data: `cb_prompt_utr_${pendingOrderId}` }]]
+          ? [[{ text: '📸 Submit Screenshot / 12-Digit ID', callback_data: `cb_prompt_utr_${pendingOrderId}` }]]
           : []),
         [
           { text: '🛒 Buy A Key', callback_data: 'cb_buy_1_month_1_device' },
@@ -1682,13 +1682,12 @@ async function handlePhotoMessage(message: NonNullable<TelegramUpdate['message']
     `📸 <b>Payment Screenshot Received!</b>\n\n` +
     `We have received your payment proof for Order <code>${orderId}</code>.\n\n` +
     `⚡ <b>Fast-Track Tip for Instant Key Delivery:</b>\n` +
-    `Open your payment receipt (PhonePe / GPay / Paytm) and check the <b>12-digit UTR / Ref No.</b> (e.g. <code>326282062667</code>).\n\n` +
-    `👉 Simply reply in this chat with the <b>12 digits</b>, and our automated system will verify and deliver your key <b>instantly</b>!\n\n` +
-    `<i>Otherwise, our system will auto-dispatch as soon as the bank confirmation arrives or admin approves.</i>`;
+    `If your screenshot shows the <b>12-digit UPI transaction ID / UTR</b> (e.g. <code>326282062667</code>), you can also reply with those 12 digits for zero-wait automated delivery!\n\n` +
+    `<i>Otherwise, our automated system will deliver your key the moment bank confirmation arrives or admin approves.</i>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
-      [{ text: '✍️ Submit 12-Digit UTR', callback_data: `cb_prompt_utr_${orderId}` }],
+      [{ text: '📸 Submit Screenshot / 12-Digit ID', callback_data: `cb_prompt_utr_${orderId}` }],
       [{ text: '👤 Check Order in My Keys', callback_data: 'cb_my_keys' }],
       [{ text: '💬 Contact Support', url: TELEGRAM_URL }],
     ],
@@ -1753,15 +1752,15 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
 
       const ackText =
         `✅ <b>Payment Acknowledged!</b>\n\n` +
-        `Thank you for purchasing <b>${plan.name} (₹${amountInr})</b>!\n\n` +
-        `To dispatch your <b>PGSharp Standard Key</b> immediately:\n` +
-        `👉 <b>Please reply with your 12-digit UTR / Ref No.</b> (e.g. <code>326282062667</code>) or send a <b>screenshot</b> of your payment receipt directly in this chat.\n\n` +
+        `⏳ <i>Awaiting Bank Confirmation... Your bank's network is taking a moment to send the credit alert.</i>\n\n` +
+        `💡 <b>To fast-track your key instantly:</b>\n` +
+        `Send a screenshot of your <b>Transaction Details</b> (in Google Pay/FamPay, tap on the payment to view full details with the 12-digit UPI ID), or reply with the 12 digits!\n\n` +
         `<i>🔖 Order ID: <code>${orderId}</code></i>\n` +
-        `<i>As soon as you send the 12 digits, our automated system verifies it and delivers your key instantly!</i>`;
+        `<i>Our automated system will verify and deliver your <b>PGSharp Standard Key</b> right here in this chat!</i>`;
 
       const keyboard: InlineKeyboardMarkup = {
         inline_keyboard: [
-          [{ text: '✍️ Submit 12-Digit UTR', callback_data: `cb_prompt_utr_${orderId}` }],
+          [{ text: '📸 Submit Screenshot / 12-Digit ID', callback_data: `cb_prompt_utr_${orderId}` }],
           [{ text: '👤 Check Order in My Keys', callback_data: 'cb_my_keys' }],
           [{ text: '💬 Support', url: TELEGRAM_URL }],
         ],
@@ -1772,7 +1771,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     } else {
       const promptNewOrder =
         `👋 Did you just complete a payment?\n\n` +
-        `• If you already paid via UPI, please send the <b>12-digit UTR / Ref No.</b> or payment screenshot directly here in chat for instant key delivery.\n` +
+        `• If you already paid via UPI, please send a screenshot of your <b>Transaction Details</b> or the <b>12-digit UPI transaction ID</b> directly here in chat for instant key delivery.\n` +
         `• If you want to purchase a PGSharp Standard Key, tap below:`;
 
       const keyboard: InlineKeyboardMarkup = {
