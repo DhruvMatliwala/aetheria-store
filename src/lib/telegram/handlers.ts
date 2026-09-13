@@ -48,6 +48,8 @@ import {
   formatRaidsMessage,
   formatCommDaysMessage,
 } from '@/lib/pokemon/events';
+import { saveRadarRule, getRadarRule, toggleRadarRule } from '@/lib/firestore/radar';
+import { PokemonSpawn } from '@/types/pokemon';
 
 const STORE_URL =
   process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('https://')
@@ -71,19 +73,19 @@ export function getPersistentKeyboard(): ReplyKeyboardMarkup {
   return {
     keyboard: [
       [
-        { text: '🛒 Buy Standard Key' },
-        { text: '👤 My Keys' },
+        { text: '🔑 PGSharp Store' },
+        { text: '🎯 Pokémon Radar' },
       ],
       [
-        { text: '📦 Live Stock' },
         { text: '📅 Live Events' },
-      ],
-      [
-        { text: '📢 Proofs Channel' },
         { text: '👥 Refer & Earn' },
       ],
       [
-        { text: '💬 Support' },
+        { text: '📦 Live Stock' },
+        { text: '👤 My Keys' },
+      ],
+      [
+        { text: '📢 Proofs Channel' },
         { text: '🌐 Open Web Store', web_app: { url: STORE_URL } },
       ],
     ],
@@ -117,36 +119,218 @@ export function getEventsInlineKeyboard(activeTab: 'overview' | 'raids' | 'commd
   };
 }
 
+/**
+ * Clean 4-Hub Main Menu
+ */
 function getPlanPickerContent(discountLabel?: string, firstName: string = 'Trainer') {
-  const greeting = `👋 Welcome <b>${firstName}</b> to <b>Aetheria Store</b>!`;
+  const greeting = `👋 Welcome <b>${firstName}</b> to <b>Aetheria Hub</b>!`;
   const text = discountLabel
-    ? `${greeting}\n\n${discountLabel}\n\n👇 <b>Select an option below:</b>`
-    : `${greeting}\n\n👇 <b>Select an option below:</b>`;
+    ? `${greeting}\n\n${discountLabel}\n\n⚡ <i>Fast automated delivery • Instant PGSharp keys • Live Pokémon Radar</i>\n\n👇 <b>Select a department below:</b>`
+    : `${greeting}\n\n⚡ <i>Fast automated delivery • Instant PGSharp keys • Live Pokémon Radar</i>\n\n👇 <b>Select a department below:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '📱 1 Device (30 Days)', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '🔑 PGSharp Store & Keys', callback_data: 'menu_store' },
       ],
       [
-        { text: '🔋 2 Devices (30 Days)', callback_data: 'cb_buy_1_month_2_device' },
+        { text: '🎯 Pokémon Radar & Sniper', callback_data: 'menu_radar' },
       ],
       [
-        { text: '📦 Live Stock', callback_data: 'cb_stock' },
-        { text: '🔑 My Keys', callback_data: 'cb_my_keys' },
-      ],
-      [
-        { text: '📅 Pokémon GO Live Events', callback_data: 'cb_events_overview' },
+        { text: '📅 Events & Raids', callback_data: 'cb_events_overview' },
         { text: '👥 Refer & Earn', callback_data: 'cb_refer_earn' },
       ],
       [
         { text: '📢 Live Proofs Channel', url: TELEGRAM_CHANNEL_URL },
-        { text: '🌐 Web Store (Cart)', web_app: { url: STORE_URL } },
       ],
     ],
   };
 
   return { text, keyboard };
+}
+
+/**
+ * Clean Dedicated Store & Keys Hub
+ */
+export function getStoreMenuContent(discountLabel?: string) {
+  const text =
+    `🔑 <b>PGSharp Standard Keys & Store</b>\n\n` +
+    `⚡ <i>100% Catch Booster • Instant Quick Catch • Auto Walk • Live IV Encounter Preview</i>\n` +
+    (discountLabel ? `\n${discountLabel}\n` : '') +
+    `\n👇 <b>Choose your edition or check stock:</b>`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [
+        { text: '📱 1 Device (30 Days) — ₹160', callback_data: 'cb_buy_1_month_1_device' },
+      ],
+      [
+        { text: '🔋 2 Devices (30 Days) — ₹300', callback_data: 'cb_buy_1_month_2_device' },
+      ],
+      [
+        { text: '📦 Live Stock', callback_data: 'cb_stock' },
+        { text: '🔑 My Active Keys', callback_data: 'cb_my_keys' },
+      ],
+      [
+        { text: '🌐 Web Store (Cart)', web_app: { url: STORE_URL } },
+      ],
+      [
+        { text: '⬅️ Back to Main Menu', callback_data: 'menu_main' },
+      ],
+    ],
+  };
+
+  return { text, keyboard };
+}
+
+/**
+ * Pokémon Radar & Live IV Sniper Hub
+ */
+export async function getRadarMenuContent(chatId: number) {
+  const rule = await getRadarRule(chatId);
+  const statusIcon = rule?.enabled !== false ? '🟢 Active' : '⚪ Paused';
+  const targetSpecies = rule?.pokemon_name || 'All Pokémon';
+  const targetAtk = rule?.target_atk ?? 15;
+  const targetDef = rule?.target_def ?? 15;
+  const targetSta = rule?.target_sta ?? 15;
+
+  const ivDisplay = rule?.is_hundo_only
+    ? '💯 15 / 15 / 15 (Hundo)'
+    : rule?.is_nundo_only
+    ? '0️⃣ 0 / 0 / 0 (Nundo)'
+    : `⚔️ ${targetAtk} / 🛡️ ${targetDef} / ❤️ ${targetSta}`;
+
+  const text =
+    `🎯 <b>Pokémon Radar & Live IV Sniper</b>\n\n` +
+    `📡 <b>Status:</b> ${statusIcon}\n` +
+    `🐾 <b>Tracking Species:</b> <code>${targetSpecies}</code>\n` +
+    `📊 <b>Target IV:</b> <code>${ivDisplay}</code>\n\n` +
+    `Whenever a matching Pokémon spawns worldwide, the bot will immediately alert you with coordinates and despawn timer!\n\n` +
+    `👇 <b>Tune your tracker settings below:</b>`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [
+        { text: '⚙️ Set Target IV (_/_/_)', callback_data: `radar_tune:${targetAtk}:${targetDef}:${targetSta}` },
+      ],
+      [
+        { text: '🐾 Change Target Pokémon', callback_data: 'radar_prompt_poke' },
+      ],
+      [
+        {
+          text: rule?.enabled !== false ? '⏸️ Pause Alerts' : '▶️ Enable Alerts',
+          callback_data: rule?.enabled !== false ? 'radar_toggle:0' : 'radar_toggle:1',
+        },
+        { text: '🧪 Send Test Ping', callback_data: 'radar_test_ping' },
+      ],
+      [
+        { text: '⬅️ Back to Main Menu', callback_data: 'menu_main' },
+      ],
+    ],
+  };
+
+  return { text, keyboard };
+}
+
+/**
+ * Interactive _/_/_ IV Tuner Form (Method B)
+ */
+export function getRadarIvTunerContent(atk: number, def: number, sta: number, pokeName = 'ALL') {
+  const clampedAtk = Math.max(0, Math.min(15, atk));
+  const clampedDef = Math.max(0, Math.min(15, def));
+  const clampedSta = Math.max(0, Math.min(15, sta));
+
+  const isHundo = clampedAtk === 15 && clampedDef === 15 && clampedSta === 15;
+  const isNundo = clampedAtk === 0 && clampedDef === 0 && clampedSta === 0;
+
+  const text =
+    `🎯 <b>Custom IV Filter</b>\n` +
+    `🐾 Target: <b>${pokeName === 'ALL' ? 'All Pokémon' : pokeName}</b>\n\n` +
+    `Current Target: <b>⚔️ ${clampedAtk} / 🛡️ ${clampedDef} / ❤️ ${clampedSta}</b>\n` +
+    (isHundo ? `✨ <i>Universal 100% IV Hundo</i>\n` : isNundo ? `0️⃣ <i>Universal 0% IV Nundo</i>\n` : '') +
+    `\nTap <b>[ - ]</b> or <b>[ + ]</b> to dial your exact IV spread:`;
+
+  const aDown = Math.max(0, clampedAtk - 1);
+  const aUp = Math.min(15, clampedAtk + 1);
+  const dDown = Math.max(0, clampedDef - 1);
+  const dUp = Math.min(15, clampedDef + 1);
+  const sDown = Math.max(0, clampedSta - 1);
+  const sUp = Math.min(15, clampedSta + 1);
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [
+        { text: `⚔️ ATK: ${clampedAtk}`, callback_data: 'noop' },
+        { text: '➖', callback_data: `radar_tune:${aDown}:${clampedDef}:${clampedSta}` },
+        { text: '➕', callback_data: `radar_tune:${aUp}:${clampedDef}:${clampedSta}` },
+        { text: '0', callback_data: `radar_tune:0:${clampedDef}:${clampedSta}` },
+        { text: '15', callback_data: `radar_tune:15:${clampedDef}:${clampedSta}` },
+      ],
+      [
+        { text: `🛡️ DEF: ${clampedDef}`, callback_data: 'noop' },
+        { text: '➖', callback_data: `radar_tune:${clampedAtk}:${dDown}:${clampedSta}` },
+        { text: '➕', callback_data: `radar_tune:${clampedAtk}:${dUp}:${clampedSta}` },
+        { text: '0', callback_data: `radar_tune:${clampedAtk}:0:${clampedSta}` },
+        { text: '15', callback_data: `radar_tune:${clampedAtk}:15:${clampedSta}` },
+      ],
+      [
+        { text: `❤️ HP: ${clampedSta}`, callback_data: 'noop' },
+        { text: '➖', callback_data: `radar_tune:${clampedAtk}:${clampedDef}:${sDown}` },
+        { text: '➕', callback_data: `radar_tune:${clampedAtk}:${clampedDef}:${sUp}` },
+        { text: '0', callback_data: `radar_tune:${clampedAtk}:${clampedDef}:0` },
+        { text: '15', callback_data: `radar_tune:${clampedAtk}:${clampedDef}:15` },
+      ],
+      [
+        { text: '💯 15/15/15 (Hundo)', callback_data: 'radar_tune:15:15:15' },
+        { text: '0️⃣ 0/0/0 (Nundo)', callback_data: 'radar_tune:0:0:0' },
+      ],
+      [
+        { text: '💾 Save Target & Alert Me', callback_data: `radar_save:${clampedAtk}:${clampedDef}:${clampedSta}` },
+      ],
+      [
+        { text: '⬅️ Back to Radar', callback_data: 'menu_radar' },
+      ],
+    ],
+  };
+
+  return { text, keyboard };
+}
+
+/**
+ * Dispatches real-time spawn alert with Option A high-converting catch booster hook
+ */
+export async function sendPokemonSpawnAlert(chatId: number, spawn: PokemonSpawn): Promise<boolean> {
+  const now = Date.now();
+  const despawnMs = spawn.despawn_time > 10000000000 ? spawn.despawn_time : spawn.despawn_time * 1000;
+  const minsLeft = Math.max(1, Math.round((despawnMs - now) / 60000));
+  const ivPercent = Math.round(((spawn.atk + spawn.def + spawn.sta) / 45) * 100);
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${spawn.latitude},${spawn.longitude}`;
+
+  const text =
+    `🎯 <b>TARGET DETECTED: ${spawn.name.toUpperCase()}</b>\n` +
+    `📊 <b>IV:</b> ${spawn.atk} / ${spawn.def} / ${spawn.sta} (${ivPercent}%) | <b>CP:</b> ${spawn.cp ?? '—'}\n` +
+    `📍 <b>Coords:</b> <code>${spawn.latitude.toFixed(6)}, ${spawn.longitude.toFixed(6)}</code>\n` +
+    `<i>(Tap coords to copy instantly)</i>\n` +
+    `⏳ <b>Despawns in:</b> ~${minsLeft} mins${spawn.city ? ` in ${spawn.city}` : ''}\n` +
+    `─────────────────────────────\n` +
+    `🛡️ <b>Don't let it flee!</b>\n` +
+    `100% Excellent Throw + Instant Quick Catch:\n` +
+    `👉 <b>Unlock PGSharp Standard (₹160)</b>`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [
+        { text: '🗺️ Open in Google Maps', url: mapsUrl },
+        { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
+      ],
+      [
+        { text: '🎯 Radar Settings', callback_data: 'menu_radar' },
+      ],
+    ],
+  };
+
+  const res = await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+  return res.ok;
 }
 
 /**
@@ -203,6 +387,144 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     } else {
       await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     }
+    return;
+  }
+
+  // No-op for informational buttons
+  if (data === 'noop') {
+    await answerTelegramCallbackQuery(query.id);
+    return;
+  }
+
+  // ── Store & Keys Sub-Menu ────────────────────────────────────────────────
+  if (data === 'menu_store') {
+    const userDiscount = await getUserDiscountState(chatId);
+    const { text, keyboard } = getStoreMenuContent(userDiscount.hasDiscount ? userDiscount.discountLabel : undefined);
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // ── Pokémon Radar & Sniper Sub-Menu ──────────────────────────────────────
+  if (data === 'menu_radar') {
+    const { text, keyboard } = await getRadarMenuContent(chatId);
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // Interactive IV Tuner Form (_/_/_)
+  if (data.startsWith('radar_tune:')) {
+    const parts = data.replace('radar_tune:', '').split(':');
+    const atk = parseInt(parts[0] || '15', 10);
+    const def = parseInt(parts[1] || '15', 10);
+    const sta = parseInt(parts[2] || '15', 10);
+
+    const rule = await getRadarRule(chatId);
+    const { text, keyboard } = getRadarIvTunerContent(atk, def, sta, rule?.pokemon_name || 'ALL');
+
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // Save Target IV
+  if (data.startsWith('radar_save:')) {
+    const parts = data.replace('radar_save:', '').split(':');
+    const atk = parseInt(parts[0] || '15', 10);
+    const def = parseInt(parts[1] || '15', 10);
+    const sta = parseInt(parts[2] || '15', 10);
+
+    await saveRadarRule(chatId, {
+      target_atk: atk,
+      target_def: def,
+      target_sta: sta,
+      username: query.from.username || '',
+      enabled: true,
+    });
+
+    await answerTelegramCallbackQuery(query.id, '✅ Target IV Saved & Alerts Enabled!', true);
+
+    const { text, keyboard } = await getRadarMenuContent(chatId);
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // Toggle Alerts ON/OFF
+  if (data.startsWith('radar_toggle:')) {
+    const enable = data.replace('radar_toggle:', '') === '1';
+    await toggleRadarRule(chatId, enable);
+    await answerTelegramCallbackQuery(query.id, enable ? '🔔 Alerts Activated!' : '⏸️ Alerts Paused', false);
+    const { text, keyboard } = await getRadarMenuContent(chatId);
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // Prompt Target Species
+  if (data === 'radar_prompt_poke') {
+    const promptText =
+      `🐾 <b>Set Target Pokémon Species</b>\n\n` +
+      `To track a specific Pokémon, simply send a message with:\n` +
+      `<code>/track &lt;name&gt;</code>\n\n` +
+      `<b>Examples:</b>\n` +
+      `• <code>/track Swampert</code>\n` +
+      `• <code>/track Lucario 15/15/15</code>\n` +
+      `• <code>/track Gible 0/14/14</code>\n` +
+      `• <code>/track ALL</code> (Tracks all species)\n\n` +
+      `<i>Type your command in the chat box below!</i>`;
+
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [{ text: '⬅️ Back to Radar', callback_data: 'menu_radar' }],
+      ],
+    };
+
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, promptText, { reply_markup: keyboard });
+      if (editRes.ok) return;
+    }
+    await sendTelegramMessage(chatId, promptText, { reply_markup: keyboard });
+    return;
+  }
+
+  // Test Ping
+  if (data === 'radar_test_ping') {
+    await answerTelegramCallbackQuery(query.id, '🧪 Dispatching test alert...', false);
+    const rule = await getRadarRule(chatId);
+    const samplePoke = rule?.pokemon_name && rule.pokemon_name !== 'ALL' ? rule.pokemon_name : 'Swampert';
+    const sampleAtk = rule?.target_atk ?? 0;
+    const sampleDef = rule?.target_def ?? 14;
+    const sampleSta = rule?.target_sta ?? 14;
+
+    await sendPokemonSpawnAlert(chatId, {
+      name: samplePoke,
+      latitude: 41.66112,
+      longitude: -0.89291,
+      atk: sampleAtk,
+      def: sampleDef,
+      sta: sampleSta,
+      cp: 1485,
+      level: 25,
+      despawn_time: Date.now() + 14 * 60 * 1000,
+      city: 'Zaragoza, Spain',
+    });
     return;
   }
 
@@ -800,11 +1122,91 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
   const username = message.from?.username;
 
   // ── 1. Persistent Keyboard Actions ────────────────────────────────────────
-  if (rawText === '🛒 Buy Standard Key' || rawText.startsWith('/buy')) {
-    const { text, keyboard } = getPlanPickerContent();
+  if (rawText === '🔑 PGSharp Store' || rawText === '🛒 Buy Standard Key' || rawText.startsWith('/store') || rawText.startsWith('/buy')) {
+    const userDiscount = await getUserDiscountState(chatId);
+    const { text, keyboard } = getStoreMenuContent(userDiscount.hasDiscount ? userDiscount.discountLabel : undefined);
     await sendTelegramMessage(chatId, text, {
       reply_markup: keyboard,
     });
+    return;
+  }
+
+  if (rawText === '🎯 Pokémon Radar' || rawText.startsWith('/radar')) {
+    const { text, keyboard } = await getRadarMenuContent(chatId);
+    await sendTelegramMessage(chatId, text, {
+      reply_markup: keyboard,
+    });
+    return;
+  }
+
+  // ── /track <species> [atk/def/sta] ─────────────────────────────────────────
+  if (rawText.startsWith('/track')) {
+    const parts = rawText.split(/\s+/).slice(1);
+    if (parts.length === 0) {
+      const { text, keyboard } = await getRadarMenuContent(chatId);
+      await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+      return;
+    }
+
+    const species = parts[0].toUpperCase() === 'ALL' ? 'ALL' : parts[0];
+    let targetAtk = 15;
+    let targetDef = 15;
+    let targetSta = 15;
+
+    if (parts[1]) {
+      const ivStr = parts[1].trim();
+      if (ivStr === '100' || ivStr === 'hundo') {
+        targetAtk = 15;
+        targetDef = 15;
+        targetSta = 15;
+      } else if (ivStr === '0' || ivStr === 'nundo') {
+        targetAtk = 0;
+        targetDef = 0;
+        targetSta = 0;
+      } else if (ivStr.includes('/')) {
+        const ivParts = ivStr.split('/');
+        targetAtk = Math.max(0, Math.min(15, parseInt(ivParts[0] || '15', 10)));
+        targetDef = Math.max(0, Math.min(15, parseInt(ivParts[1] || '15', 10)));
+        targetSta = Math.max(0, Math.min(15, parseInt(ivParts[2] || '15', 10)));
+      }
+    } else {
+      const existing = await getRadarRule(chatId);
+      if (existing) {
+        targetAtk = existing.target_atk;
+        targetDef = existing.target_def;
+        targetSta = existing.target_sta;
+      }
+    }
+
+    await saveRadarRule(chatId, {
+      pokemon_name: species,
+      target_atk: targetAtk,
+      target_def: targetDef,
+      target_sta: targetSta,
+      username: username || '',
+      enabled: true,
+    });
+
+    const isHundo = targetAtk === 15 && targetDef === 15 && targetSta === 15;
+    const isNundo = targetAtk === 0 && targetDef === 0 && targetSta === 0;
+    const ivBadge = isHundo ? '💯 15 / 15 / 15 (Hundo)' : isNundo ? '0️⃣ 0 / 0 / 0 (Nundo)' : `⚔️ ${targetAtk} / 🛡️ ${targetDef} / ❤️ ${targetSta}`;
+
+    const confirmText =
+      `✅ <b>Radar Alert Configured!</b>\n\n` +
+      `🐾 <b>Tracking Species:</b> <code>${species}</code>\n` +
+      `📊 <b>Target IV:</b> <code>${ivBadge}</code>\n` +
+      `🔔 <b>Status:</b> 🟢 Active\n\n` +
+      `You will receive an instant private ping with coordinates and despawn timer when a match spawns!`;
+
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [{ text: '⚙️ Tune Target IV (_/_/_)', callback_data: `radar_tune:${targetAtk}:${targetDef}:${targetSta}` }],
+        [{ text: '🧪 Test Alert Ping', callback_data: 'radar_test_ping' }],
+        [{ text: '🎯 Open Radar Dashboard', callback_data: 'menu_radar' }],
+      ],
+    };
+
+    await sendTelegramMessage(chatId, confirmText, { reply_markup: keyboard });
     return;
   }
 
