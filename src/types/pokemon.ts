@@ -25,6 +25,7 @@ export interface RadarWatchlistRule {
   is_hundo_only?: boolean; // 15/15/15
   is_nundo_only?: boolean; // 0/0/0
   enabled: boolean;
+  last_alert_at?: number; // Timestamp ms of last dispatched alert to prevent spam
   created_at?: string;
   updated_at?: string;
 }

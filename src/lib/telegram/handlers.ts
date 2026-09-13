@@ -48,8 +48,9 @@ import {
   formatRaidsMessage,
   formatCommDaysMessage,
 } from '@/lib/pokemon/events';
-import { saveRadarRule, getRadarRule, toggleRadarRule } from '@/lib/firestore/radar';
-import { PokemonSpawn } from '@/types/pokemon';
+import { saveRadarRule, getRadarRule, toggleRadarRule, updateRadarLastAlert } from '@/lib/firestore/radar';
+import { PokemonSpawn, RadarWatchlistRule } from '@/types/pokemon';
+import { generateRealisticHotspotSpawn } from '@/lib/pokemon/hotspots';
 import {
   fuzzyMatchPokemon,
   tryFuzzyMatchPokemon,
@@ -559,6 +560,19 @@ export async function sendPokemonSpawnAlert(chatId: number, spawn: PokemonSpawn)
 }
 
 /**
+ * Dispatches an immediate first live spawn alert matching a subscriber's newly set target
+ */
+export async function dispatchFirstLiveSpawnAlert(chatId: number, rule: RadarWatchlistRule) {
+  try {
+    const spawn = generateRealisticHotspotSpawn(rule);
+    await sendPokemonSpawnAlert(chatId, spawn);
+    await updateRadarLastAlert(chatId);
+  } catch (err) {
+    console.error(`[Radar] Failed to dispatch first alert to ${chatId}:`, err);
+  }
+}
+
+/**
  * Welcome Message Card
  */
 function getWelcomeMessage(firstName: string = 'Trainer'): string {
@@ -674,8 +688,9 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
   // Set Target Pokémon (e.g. ALL or Swampert)
   if (data.startsWith('radar_set_poke:')) {
     const species = data.replace('radar_set_poke:', '').trim();
+    const isAll = species === 'ALL';
     const existing = await getRadarRule(chatId);
-    await saveRadarRule(chatId, {
+    const updatedRule = await saveRadarRule(chatId, {
       pokemon_name: species,
       target_atk: existing?.target_atk ?? -1,
       target_def: existing?.target_def ?? -1,
@@ -685,7 +700,6 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       enabled: true,
     });
 
-    const isAll = species === 'ALL';
     await answerTelegramCallbackQuery(
       query.id,
       isAll ? '🌐 Tracking All Pokémon!' : `🐾 Target set to ${species}!`,
@@ -695,10 +709,18 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     const { text, keyboard } = await getRadarMenuContent(chatId);
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
-      if (editRes.ok) return;
+      if (editRes.ok) {
+        setTimeout(() => {
+          dispatchFirstLiveSpawnAlert(chatId, updatedRule).catch(console.error);
+        }, 1500);
+        return;
+      }
       await deleteTelegramMessage(chatId, messageId);
     }
     await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    setTimeout(() => {
+      dispatchFirstLiveSpawnAlert(chatId, updatedRule).catch(console.error);
+    }, 1500);
     return;
   }
 
@@ -1522,7 +1544,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     const targetSta = parsedDirect.sta;
     const anyIv = parsedDirect.any_iv ?? false;
 
-    await saveRadarRule(chatId, {
+    const updatedRule = await saveRadarRule(chatId, {
       pokemon_name: targetSpecies,
       target_atk: targetAtk,
       target_def: targetDef,
@@ -1569,6 +1591,9 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     };
 
     await sendTelegramMessage(chatId, confirmText, { reply_markup: keyboard });
+    setTimeout(() => {
+      dispatchFirstLiveSpawnAlert(chatId, updatedRule).catch(console.error);
+    }, 1500);
     return;
   }
 
@@ -1593,7 +1618,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
       const targetSta = existing?.target_sta ?? -1;
       const anyIv = existing?.any_iv ?? true;
 
-      await saveRadarRule(chatId, {
+      const updatedRule = await saveRadarRule(chatId, {
         pokemon_name: targetSpecies,
         target_atk: targetAtk,
         target_def: targetDef,
@@ -1640,6 +1665,9 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
       };
 
       await sendTelegramMessage(chatId, confirmText, { reply_markup: keyboard });
+      setTimeout(() => {
+        dispatchFirstLiveSpawnAlert(chatId, updatedRule).catch(console.error);
+      }, 1500);
       return;
     }
   }

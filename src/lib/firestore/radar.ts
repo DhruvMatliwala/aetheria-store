@@ -30,6 +30,7 @@ export async function saveRadarRule(
     is_hundo_only: rule.is_hundo_only !== undefined ? rule.is_hundo_only : isHundo,
     is_nundo_only: rule.is_nundo_only !== undefined ? rule.is_nundo_only : isNundo,
     enabled: rule.enabled !== undefined ? rule.enabled : true,
+    last_alert_at: rule.last_alert_at !== undefined ? rule.last_alert_at : existingData?.last_alert_at ?? 0,
     updated_at: new Date().toISOString(),
   };
 
@@ -63,6 +64,30 @@ export async function toggleRadarRule(chatId: number, enabled: boolean): Promise
     },
     { merge: true }
   );
+}
+
+/**
+ * Updates the last alert timestamp for a subscriber.
+ */
+export async function updateRadarLastAlert(chatId: number): Promise<void> {
+  const db = getAdminFirestore();
+  await db.collection(COLLECTION).doc(String(chatId)).set(
+    {
+      last_alert_at: Date.now(),
+      updated_at: new Date().toISOString(),
+    },
+    { merge: true }
+  );
+}
+
+/**
+ * Retrieves all subscribers whose radar alerts are active.
+ */
+export async function getAllActiveRadarSubscribers(): Promise<RadarWatchlistRule[]> {
+  const db = getAdminFirestore();
+  const snap = await db.collection(COLLECTION).where('enabled', '==', true).get();
+  if (snap.empty) return [];
+  return snap.docs.map((d) => d.data() as RadarWatchlistRule);
 }
 
 /**
