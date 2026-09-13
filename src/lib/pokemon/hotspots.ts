@@ -57,6 +57,108 @@ export const SPOOFING_HOTSPOTS: SpoofingHotspot[] = [
     lng: -0.16573,
     landmark: 'Hyde Park',
   },
+  {
+    city: 'Paris, France',
+    lat: 48.85837,
+    lng: 2.29448,
+    landmark: 'Eiffel Tower & Tuileries',
+  },
+  {
+    city: 'Singapore',
+    lat: 1.28337,
+    lng: 103.86072,
+    landmark: 'Marina Bay Sands & Gardens by the Bay',
+  },
+  {
+    city: 'Seoul, South Korea',
+    lat: 37.52187,
+    lng: 126.92429,
+    landmark: 'Gangnam & Yeouido Park',
+  },
+  {
+    city: 'Honolulu, Hawaii, USA',
+    lat: 21.27663,
+    lng: -157.82736,
+    landmark: 'Waikiki Beach',
+  },
+  {
+    city: 'Dubai, UAE',
+    lat: 25.19720,
+    lng: 55.27438,
+    landmark: 'Burj Khalifa & Dubai Mall',
+  },
+  {
+    city: 'Hong Kong',
+    lat: 22.29875,
+    lng: 114.17222,
+    landmark: 'Tsim Sha Tsui Promenade',
+  },
+  {
+    city: 'Berlin, Germany',
+    lat: 52.52192,
+    lng: 13.41321,
+    landmark: 'Alexanderplatz & Tiergarten',
+  },
+  {
+    city: 'Rio de Janeiro, Brazil',
+    lat: -22.97072,
+    lng: -43.18236,
+    landmark: 'Copacabana Beach',
+  },
+  {
+    city: 'Toronto, Canada',
+    lat: 43.64257,
+    lng: -79.38706,
+    landmark: 'Harbourfront & CN Tower',
+  },
+  {
+    city: 'Melbourne, Australia',
+    lat: -37.81798,
+    lng: 144.96909,
+    landmark: 'Federation Square',
+  },
+  {
+    city: 'Los Angeles, USA',
+    lat: 34.00992,
+    lng: -118.49601,
+    landmark: 'Santa Monica Pier',
+  },
+  {
+    city: 'Auckland, New Zealand',
+    lat: -36.85871,
+    lng: 174.77583,
+    landmark: 'Auckland Domain',
+  },
+  {
+    city: 'Rome, Italy',
+    lat: 41.89021,
+    lng: 12.49223,
+    landmark: 'Colosseum & Villa Borghese',
+  },
+  {
+    city: 'Mumbai, India',
+    lat: 18.92198,
+    lng: 72.83465,
+    landmark: 'Gateway of India & Marine Drive',
+  },
+  {
+    city: 'Bangkok, Thailand',
+    lat: 13.73142,
+    lng: 100.54146,
+    landmark: 'Lumpini Park & Siam',
+  },
+  {
+    city: 'Chicago, USA',
+    lat: 41.89172,
+    lng: -87.60862,
+    landmark: 'Navy Pier & Millennium Park',
+  },
+  {
+    city: 'Osaka, Japan',
+    lat: 34.68731,
+    lng: 135.52594,
+    landmark: 'Osaka Castle & Umeda',
+  },
 ];
 
 /**
