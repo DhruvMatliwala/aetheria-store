@@ -6,6 +6,7 @@ import {
   editTelegramMessageReplyMarkup,
   deleteTelegramMessage,
   answerTelegramCallbackQuery,
+  getTelegramFile,
   InlineKeyboardMarkup,
   ReplyKeyboardMarkup,
 } from './bot';
@@ -593,7 +594,13 @@ export async function handleTelegramUpdate(update: TelegramUpdate) {
       return;
     }
 
-    // ── 2. Handle Text Messages ──────────────────────────────────────────────
+    // ── 2. Handle Photo Messages (Screenshots / UPI Receipts) ─────────────────
+    if (update.message && update.message.photo && update.message.photo.length > 0) {
+      await handlePhotoMessage(update.message);
+      return;
+    }
+
+    // ── 3. Handle Text Messages ──────────────────────────────────────────────
     if (update.message && update.message.text) {
       await handleTextMessage(update.message);
       return;
@@ -1195,11 +1202,18 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     const upiCaption =
       `📦 <b>${plan.name} (~30 Days) — ₹${amountInr}</b>${discountMsg}\n` +
-      `🔑 <b>UPI ID:</b> <code>${UPI_VPA}</code>\n\n` +
-      `Scan QR or pay via UPI. Key is auto-delivered instantly! ⚡`;
+      `🔑 <b>UPI ID:</b> <code>${UPI_VPA}</code>\n` +
+      `🔖 <b>Order ID:</b> <code>${orderId}</code>\n\n` +
+      `<b>⚡ How to complete your purchase:</b>\n` +
+      `1️⃣ Scan QR or send <b>₹${amountInr}</b> via PhonePe, GPay, Paytm, or BHIM.\n` +
+      `2️⃣ After paying, reply here with the <b>12-digit UTR / Ref No.</b> or send a <b>screenshot</b>.\n\n` +
+      `<i>⏳ Note: Most bank SMS notifications arrive within 10–60s. If your bank has a slight SMS queue delay, submitting your 12-digit UTR guarantees instant key delivery!</i>`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
+        [
+          { text: '✍️ Submit 12-Digit UTR', callback_data: `cb_prompt_utr_${orderId}` },
+        ],
         [
           { text: '💬 Support', url: TELEGRAM_URL },
           { text: '⬅️ Back', callback_data: `cb_buy_${plan.id}` },
@@ -1214,6 +1228,30 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       caption: upiCaption,
       reply_markup: keyboard,
     });
+    return;
+  }
+
+  // ── Step 2A-2: User Tapped Submit 12-Digit UTR ────────────────────────────
+  if (data.startsWith('cb_prompt_utr_')) {
+    const orderId = data.replace('cb_prompt_utr_', '');
+    const promptText =
+      `✍️ <b>Submit Your 12-Digit UTR / Ref Number:</b>\n\n` +
+      `Open your payment app (PhonePe, GPay, Paytm) and check the completed transaction:\n` +
+      `• <b>PhonePe:</b> Open transaction ➔ Look for <b>UTR</b> (e.g. <code>326282062667</code>)\n` +
+      `• <b>Google Pay:</b> Look for <b>UPI transaction ID</b> (12 digits)\n` +
+      `• <b>Paytm:</b> Look for <b>UPI Ref No.</b> (12 digits)\n\n` +
+      `👉 <b>Simply type and send the 12 digits directly in this chat</b>, or send a screenshot of the payment receipt!\n\n` +
+      `<i>🔖 Order ID: <code>${orderId}</code></i>`;
+
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [{ text: '👤 Check Order in My Keys', callback_data: 'cb_my_keys' }],
+        [{ text: '💬 Need Help? Contact Support', url: TELEGRAM_URL }],
+        [{ text: '⬅️ Back to Payment', callback_data: 'cb_buy_1_month_1_device' }],
+      ],
+    };
+
+    await sendTelegramMessage(chatId, promptText, { reply_markup: keyboard });
     return;
   }
 
@@ -1365,7 +1403,23 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 async function handleMyKeys(chatId: number, username?: string, messageId?: number) {
   try {
     const db = getAdminFirestore();
-    const snap = await db
+
+    // 1. Check for active pending or verifying orders
+    let activeDocs: FirebaseFirestore.QueryDocumentSnapshot[] = [];
+    try {
+      const activeSnap = await db
+        .collection('orders')
+        .where('telegram_chat_id', '==', chatId)
+        .where('payment_status', 'in', ['pending', 'verifying'])
+        .limit(2)
+        .get();
+      activeDocs = activeSnap.docs;
+    } catch (activeErr) {
+      console.warn('[Telegram] Could not fetch active orders for My Keys:', activeErr);
+    }
+
+    // 2. Check for completed paid orders
+    const paidSnap = await db
       .collection('orders')
       .where('telegram_chat_id', '==', chatId)
       .where('payment_status', '==', 'paid')
@@ -1373,7 +1427,7 @@ async function handleMyKeys(chatId: number, username?: string, messageId?: numbe
       .limit(5)
       .get();
 
-    if (snap.empty) {
+    if (activeDocs.length === 0 && paidSnap.empty) {
       const emptyText = `👤 <b>My Keys</b>\n\nYou have no active keys yet.`;
       const emptyKeyboard: InlineKeyboardMarkup = {
         inline_keyboard: [
@@ -1389,38 +1443,69 @@ async function handleMyKeys(chatId: number, username?: string, messageId?: numbe
       return;
     }
 
+    let activeOrderSection = '';
+    let pendingOrderId: string | null = null;
+
+    if (activeDocs.length > 0) {
+      activeDocs.forEach((doc) => {
+        const order = doc.data();
+        const plan = PLAN_MAP[order.plan_type] || PLANS[0];
+        const isVerifying = order.payment_status === 'verifying';
+        const formattedAmount =
+          order.currency === 'USD'
+            ? `$${(order.amount / 100).toFixed(2)}`
+            : `₹${Math.round(order.amount / 100)}`;
+
+        pendingOrderId = doc.id;
+        activeOrderSection +=
+          `${isVerifying ? '⏳ <b>Payment Verifying with Bank:</b>' : '🟡 <b>Order Awaiting Confirmation:</b>'}\n` +
+          `• <b>Order ID:</b> <code>${doc.id}</code>\n` +
+          `• <b>Plan:</b> ${plan.name} (${formattedAmount})\n` +
+          `• <b>Status:</b> ${isVerifying ? 'Verifying payment with bank network...' : 'Waiting for UTR / Bank SMS'}\n` +
+          `💡 <i>If already paid, reply here with your 12-digit UTR or screenshot for instant key delivery!</i>\n\n`;
+      });
+    }
+
     const nowMs = Date.now();
     let keysList = '';
-    snap.docs.forEach((doc, idx) => {
-      const order = doc.data();
-      const plan = PLAN_MAP[order.plan_type] || PLANS[0];
-      const key = order.delivered_key || 'Processing';
+    if (!paidSnap.empty) {
+      paidSnap.docs.forEach((doc, idx) => {
+        const order = doc.data();
+        const plan = PLAN_MAP[order.plan_type] || PLANS[0];
+        const key = order.delivered_key || 'Processing';
 
-      const createdAtMs =
-        order.created_at?.toDate?.()?.getTime?.() ||
-        (typeof order.created_at === 'number' ? order.created_at : nowMs);
-      const expiresAtMs = createdAtMs + 30 * 24 * 60 * 60 * 1000;
-      const daysLeft = Math.ceil((expiresAtMs - nowMs) / (1000 * 60 * 60 * 24));
+        const createdAtMs =
+          order.created_at?.toDate?.()?.getTime?.() ||
+          (typeof order.created_at === 'number' ? order.created_at : nowMs);
+        const expiresAtMs = createdAtMs + 30 * 24 * 60 * 60 * 1000;
+        const daysLeft = Math.ceil((expiresAtMs - nowMs) / (1000 * 60 * 60 * 24));
 
-      let statusBadge = '';
-      if (daysLeft <= 0) {
-        statusBadge = '🔴 <i>Expired (30 days completed)</i>';
-      } else if (daysLeft <= 3) {
-        statusBadge = `⚠️ <b>Expiring soon: ${daysLeft} day${daysLeft === 1 ? '' : 's'} left!</b>`;
-      } else {
-        statusBadge = `🟢 <i>Active (${daysLeft} days remaining)</i>`;
-      }
+        let statusBadge = '';
+        if (daysLeft <= 0) {
+          statusBadge = '🔴 <i>Expired (30 days completed)</i>';
+        } else if (daysLeft <= 3) {
+          statusBadge = `⚠️ <b>Expiring soon: ${daysLeft} day${daysLeft === 1 ? '' : 's'} left!</b>`;
+        } else {
+          statusBadge = `🟢 <i>Active (${daysLeft} days remaining)</i>`;
+        }
 
-      keysList += `\n${idx + 1}. <b>${plan.name} (${plan.duration}):</b>\n<code>${key}</code>\n${statusBadge}\n`;
-    });
+        keysList += `\n${idx + 1}. <b>${plan.name} (${plan.duration}):</b>\n<code>${key}</code>\n${statusBadge}\n`;
+      });
+    }
 
-    const profileText =
-      `🔑 <b>Your Purchased Keys:</b>\n` +
-      `${keysList}\n` +
-      `<i>(Tap key code to copy)</i>`;
+    let profileText = '👤 <b>My Keys Dashboard</b>\n\n';
+    if (activeOrderSection) {
+      profileText += `${activeOrderSection}─────────────────────────────\n`;
+    }
+    if (keysList) {
+      profileText += `🔑 <b>Your Purchased Keys:</b>\n${keysList}\n<i>(Tap key code to copy)</i>`;
+    }
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
+        ...(pendingOrderId
+          ? [[{ text: '✍️ Submit 12-Digit UTR', callback_data: `cb_prompt_utr_${pendingOrderId}` }]]
+          : []),
         [
           { text: '🛒 Buy A Key', callback_data: 'cb_buy_1_month_1_device' },
           { text: '⬅️ Back to Menu', callback_data: 'menu_main' },
@@ -1499,6 +1584,120 @@ async function handleReferAndEarn(chatId: number, messageId?: number) {
 }
 
 /**
+ * Handle incoming Photo messages (Screenshots / UPI Receipts / QR Proofs)
+ */
+async function handlePhotoMessage(message: NonNullable<TelegramUpdate['message']>) {
+  const chatId = message.chat.id;
+  const username = message.from?.username;
+  const caption = (message.caption || '').trim();
+  const photos = message.photo || [];
+
+  if (photos.length === 0) return;
+
+  // 1. Check if caption contains 12-digit UTR
+  const utrMatch = caption.match(/\b(\d{12})\b/);
+  const cleanUtr = utrMatch ? utrMatch[1] : null;
+
+  // 2. Fetch the highest resolution photo (last item in the array)
+  const highestResPhoto = photos[photos.length - 1];
+  let photoUrl: string | undefined;
+
+  try {
+    const fileRes = await getTelegramFile(highestResPhoto.file_id);
+    if (fileRes.ok && fileRes.file_url) {
+      photoUrl = fileRes.file_url;
+    }
+  } catch (err) {
+    console.error('[Telegram] Failed to resolve photo URL from Telegram API:', err);
+  }
+
+  // If user included 12-digit UTR in caption, process UTR submission directly!
+  if (cleanUtr) {
+    await processTelegramUtrSubmission(chatId, cleanUtr, username, photoUrl);
+    return;
+  }
+
+  // 3. Find active pending or verifying order for this user
+  const db = getAdminFirestore();
+  const pendingSnap = await db
+    .collection('orders')
+    .where('telegram_chat_id', '==', chatId)
+    .where('payment_status', 'in', ['pending', 'verifying'])
+    .limit(1)
+    .get();
+
+  let orderId: string;
+  let targetOrder: Record<string, any>;
+
+  if (!pendingSnap.empty) {
+    const doc = pendingSnap.docs[0];
+    orderId = doc.id;
+    targetOrder = doc.data();
+
+    await db.collection('orders').doc(orderId).update({
+      payment_status: 'verifying',
+      ...(photoUrl ? { payment_proof_url: photoUrl } : {}),
+      updated_at: new Date(),
+    });
+  } else {
+    const plan = PLANS[0];
+    orderId = `ord_tg_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
+    targetOrder = {
+      order_id: orderId,
+      customer_email: username ? `${username.toLowerCase()}@telegram.user` : `tg_${chatId}@telegram.user`,
+      customer_phone: username ? `@${username}` : `Telegram ID: ${chatId}`,
+      plan_type: plan.id,
+      amount: plan.price_inr,
+      currency: 'INR',
+      payment_gateway: 'upi_direct',
+      payment_status: 'verifying',
+      delivered_key: null,
+      gateway_order_id: `upi_${orderId}`,
+      telegram_chat_id: chatId,
+      telegram_username: username || '',
+      telegram_user_id: message.from?.id || chatId,
+      ...(photoUrl ? { payment_proof_url: photoUrl } : {}),
+      created_at: admin.firestore.FieldValue.serverTimestamp(),
+      updated_at: new Date(),
+    };
+    await db.collection('orders').doc(orderId).set(targetOrder);
+  }
+
+  // 4. Send alert to Discord Admin with 1-click Approve / Reject buttons + Screenshot preview
+  sendPaymentVerificationAlert({
+    orderId,
+    customerEmail: targetOrder.customer_email,
+    customerPhone: username ? `@${username}` : `Telegram ID: ${chatId}`,
+    planType: targetOrder.plan_type || '1_month_1_device',
+    amount: targetOrder.amount || 16000,
+    currency: targetOrder.currency || 'INR',
+    gateway: 'upi_direct',
+    transactionId: 'Screenshot Submitted',
+    screenshotUrl: photoUrl,
+    notes: `Customer sent payment screenshot in Telegram chat.${caption ? ` Caption: "${caption}"` : ''}`,
+  }).catch((err) => console.error('[Telegram] Screenshot verification alert error:', err));
+
+  // 5. Send reassuring reply to the user with fast-track UTR tip
+  const ackText =
+    `📸 <b>Payment Screenshot Received!</b>\n\n` +
+    `We have received your payment proof for Order <code>${orderId}</code>.\n\n` +
+    `⚡ <b>Fast-Track Tip for Instant Key Delivery:</b>\n` +
+    `Open your payment receipt (PhonePe / GPay / Paytm) and check the <b>12-digit UTR / Ref No.</b> (e.g. <code>326282062667</code>).\n\n` +
+    `👉 Simply reply in this chat with the <b>12 digits</b>, and our automated system will verify and deliver your key <b>instantly</b>!\n\n` +
+    `<i>Otherwise, our system will auto-dispatch as soon as the bank confirmation arrives or admin approves.</i>`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [{ text: '✍️ Submit 12-Digit UTR', callback_data: `cb_prompt_utr_${orderId}` }],
+      [{ text: '👤 Check Order in My Keys', callback_data: 'cb_my_keys' }],
+      [{ text: '💬 Contact Support', url: TELEGRAM_URL }],
+    ],
+  };
+
+  await sendTelegramMessage(chatId, ackText, { reply_markup: keyboard });
+}
+
+/**
  * Handle Inbound Text Messages (Persistent Keyboard buttons, Commands, UTR submissions)
  */
 async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>) {
@@ -1523,6 +1722,69 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
       reply_markup: keyboard,
     });
     return;
+  }
+
+  // ── Conversational Payment Intent Detection (Panic Prevention & Instant Guidance) ──
+  const lowerText = rawText.toLowerCase().trim();
+  const PAYMENT_INTENT_PHRASES = [
+    'done', 'paid', 'payment done', 'i paid', 'i have paid', 'sent', 'money sent',
+    'ho gaya', 'maine pay kar diya', 'pay kar diya', 'payment sent', 'paid 160',
+    'paid 300', 'screenshot', 'check payment', 'verify payment', 'utr', 'ref no',
+    'receipt', 'bill', 'already paid', 'paid already', 'amount sent'
+  ];
+  const isPaymentIntent =
+    PAYMENT_INTENT_PHRASES.includes(lowerText) ||
+    /^(i\s+)?(paid|done|sent)(\s+(160|300|money|payment|upi|gpay|phonepe))?$/i.test(lowerText);
+
+  if (isPaymentIntent) {
+    const db = getAdminFirestore();
+    const pendingSnap = await db
+      .collection('orders')
+      .where('telegram_chat_id', '==', chatId)
+      .where('payment_status', 'in', ['pending', 'verifying'])
+      .limit(1)
+      .get();
+
+    if (!pendingSnap.empty) {
+      const order = pendingSnap.docs[0].data();
+      const orderId = pendingSnap.docs[0].id;
+      const plan = PLAN_MAP[order.plan_type] || PLANS[0];
+      const amountInr = Math.round(order.amount / 100);
+
+      const ackText =
+        `✅ <b>Payment Acknowledged!</b>\n\n` +
+        `Thank you for purchasing <b>${plan.name} (₹${amountInr})</b>!\n\n` +
+        `To dispatch your <b>PGSharp Standard Key</b> immediately:\n` +
+        `👉 <b>Please reply with your 12-digit UTR / Ref No.</b> (e.g. <code>326282062667</code>) or send a <b>screenshot</b> of your payment receipt directly in this chat.\n\n` +
+        `<i>🔖 Order ID: <code>${orderId}</code></i>\n` +
+        `<i>As soon as you send the 12 digits, our automated system verifies it and delivers your key instantly!</i>`;
+
+      const keyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [{ text: '✍️ Submit 12-Digit UTR', callback_data: `cb_prompt_utr_${orderId}` }],
+          [{ text: '👤 Check Order in My Keys', callback_data: 'cb_my_keys' }],
+          [{ text: '💬 Support', url: TELEGRAM_URL }],
+        ],
+      };
+
+      await sendTelegramMessage(chatId, ackText, { reply_markup: keyboard });
+      return;
+    } else {
+      const promptNewOrder =
+        `👋 Did you just complete a payment?\n\n` +
+        `• If you already paid via UPI, please send the <b>12-digit UTR / Ref No.</b> or payment screenshot directly here in chat for instant key delivery.\n` +
+        `• If you want to purchase a PGSharp Standard Key, tap below:`;
+
+      const keyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [{ text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' }],
+          [{ text: '💬 Contact Support', url: TELEGRAM_URL }],
+        ],
+      };
+
+      await sendTelegramMessage(chatId, promptNewOrder, { reply_markup: keyboard });
+      return;
+    }
   }
 
   // ── Format 1: Smart Direct Chat IV / Species Detection (Zero Commands Needed) ──
@@ -1590,7 +1852,8 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     'hi', 'hello', 'hey', 'help', 'support', 'buy', 'price', 'key', 'keys',
     'stock', 'thanks', 'thank', 'thx', 'yes', 'no', 'ok', 'okay', 'menu',
     'start', 'cancel', 'refund', 'proof', 'proofs', 'admin', 'test', 'login',
-    'how', 'what', 'who', 'when', 'where', 'why'
+    'how', 'what', 'who', 'when', 'where', 'why', 'done', 'paid', 'sent',
+    'screenshot', 'receipt', 'utr', 'payment', 'bill', 'verify'
   ]);
 
   if (!rawText.startsWith('/') && rawText.length <= 30 && /^[a-zA-Z\s\.\-':]+$/.test(rawText.trim())) {
@@ -2011,7 +2274,8 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
 async function processTelegramUtrSubmission(
   chatId: number,
   cleanUtr: string,
-  username?: string
+  username?: string,
+  photoUrl?: string
 ) {
   const db = getAdminFirestore();
 
@@ -2081,6 +2345,7 @@ async function processTelegramUtrSubmission(
       await db.collection('orders').doc(orderId).update({
         payment_status: 'paid',
         utr_number: cleanUtr,
+        ...(photoUrl ? { payment_proof_url: photoUrl } : {}),
         updated_at: new Date(),
       });
 
@@ -2152,6 +2417,7 @@ async function processTelegramUtrSubmission(
   await db.collection('orders').doc(orderId).update({
     payment_status: 'verifying',
     utr_number: cleanUtr,
+    ...(photoUrl ? { payment_proof_url: photoUrl } : {}),
     updated_at: new Date(),
   });
 
@@ -2159,8 +2425,17 @@ async function processTelegramUtrSubmission(
     chatId,
     `⏳ <b>UTR Received:</b> <code>${cleanUtr}</code>\n\n` +
       `We are currently verifying your payment with the bank.\n` +
-      `Once confirmed (typically within 1–5 minutes), your <b>PGSharp Standard Key</b> will be delivered automatically right here in this chat!\n\n` +
-      `<i>Order ID: <code>${orderId}</code></i>`
+      `Once confirmed (typically within 1–3 minutes), your <b>PGSharp Standard Key</b> will be delivered automatically right here in this chat!\n\n` +
+      `<i>🔖 Order ID: <code>${orderId}</code></i>\n` +
+      `<i>(If your bank SMS is taking a moment, don't worry! Your order is active and our system will deliver your key as soon as the bank confirms.)</i>`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '👤 Check Order in My Keys', callback_data: 'cb_my_keys' }],
+          [{ text: '💬 Support', url: TELEGRAM_URL }],
+        ],
+      },
+    }
   );
 
   // Send high-priority verification alert to Discord Admin
@@ -2173,6 +2448,8 @@ async function processTelegramUtrSubmission(
     gateway: 'upi_direct',
     transactionId: cleanUtr,
     customerPhone: username ? `@${username}` : `Telegram ID: ${chatId}`,
+    screenshotUrl: photoUrl,
+    notes: `Customer submitted 12-digit UTR ${cleanUtr} in Telegram chat.`,
   }).catch((err) => console.error('[Telegram] Verification alert error:', err));
 }
 

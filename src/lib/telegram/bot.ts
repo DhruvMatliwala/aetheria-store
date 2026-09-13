@@ -60,6 +60,14 @@ export interface TelegramChat {
   last_name?: string;
 }
 
+export interface TelegramPhotoSize {
+  file_id: string;
+  file_unique_id: string;
+  width: number;
+  height: number;
+  file_size?: number;
+}
+
 export interface TelegramMessage {
   message_id: number;
   from?: TelegramUser;
@@ -67,6 +75,7 @@ export interface TelegramMessage {
   date: number;
   text?: string;
   caption?: string;
+  photo?: TelegramPhotoSize[];
   reply_markup?: InlineKeyboardMarkup;
 }
 
@@ -304,4 +313,23 @@ export async function setTelegramChatMenuButton(
   token?: string
 ) {
   return callTelegramApi('setChatMenuButton', { menu_button: menuButton }, token);
+}
+
+/**
+ * Fetch downloadable URL for a file stored by Telegram
+ */
+export async function getTelegramFile(
+  fileId: string,
+  token?: string
+): Promise<{ ok: boolean; file_path?: string; file_url?: string }> {
+  const t = token || TELEGRAM_BOT_TOKEN;
+  const res = await callTelegramApi('getFile', { file_id: fileId }, t);
+  if (res.ok && res.result?.file_path) {
+    return {
+      ok: true,
+      file_path: res.result.file_path,
+      file_url: `https://api.telegram.org/file/bot${t}/${res.result.file_path}`,
+    };
+  }
+  return { ok: false };
 }

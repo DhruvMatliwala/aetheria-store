@@ -23,6 +23,8 @@ export interface AdminVerificationAlertParams {
   currency: string;
   gateway: string;
   transactionId: string;
+  screenshotUrl?: string;
+  notes?: string;
 }
 
 /**
@@ -72,8 +74,8 @@ export async function sendPaymentVerificationAlert(params: AdminVerificationAler
               inline: true,
             },
             {
-              name: '👤 Customer Email',
-              value: `\`${params.customerEmail}\``,
+              name: '👤 Customer Email / Info',
+              value: `\`${params.customerEmail}\`${params.customerPhone ? ` (${params.customerPhone})` : ''}`,
               inline: true,
             },
             {
@@ -91,7 +93,23 @@ export async function sendPaymentVerificationAlert(params: AdminVerificationAler
               value: `\`${params.transactionId || 'N/A'}\``,
               inline: true,
             },
+            ...(params.notes
+              ? [
+                  {
+                    name: '📝 Note',
+                    value: params.notes,
+                    inline: false,
+                  },
+                ]
+              : []),
           ],
+          ...(params.screenshotUrl
+            ? {
+                image: {
+                  url: params.screenshotUrl,
+                },
+              }
+            : {}),
           footer: {
             text: 'Aetheria Store • 1-Click Verification System',
           },
