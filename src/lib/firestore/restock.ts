@@ -1,4 +1,5 @@
 import { getAdminFirestore } from '@/lib/firebase/admin';
+import { sendRestockAlertEmail } from '@/lib/email/resend';
 
 const RESTOCK_COLLECTION = 'restock_requests';
 
@@ -137,3 +138,71 @@ export async function getRestockStats(limit = 20): Promise<RestockStats> {
     recentRequests,
   };
 }
+
+/**
+ * Dispatches restock notification emails to customers on the waitlist.
+ * If planId is provided, notifies subscribers for that plan (or all subscribers if planId is omitted).
+ * Automatically removes notified users from the waitlist to prevent duplicate emails.
+ */
+export async function notifyWaitlistSubscribers(options?: {
+  planId?: string;
+  limit?: number;
+}): Promise<{
+  success: boolean;
+  notifiedCount: number;
+  totalPending: number;
+  errors: string[];
+}> {
+  const db = getAdminFirestore();
+  let query: FirebaseFirestore.Query = db.collection(RESTOCK_COLLECTION);
+
+  if (options?.planId) {
+    query = query.where('plan_id', '==', options.planId);
+  }
+
+  const snap = await query.get();
+  const totalPending = snap.size;
+
+  if (totalPending === 0) {
+    return {
+      success: true,
+      notifiedCount: 0,
+      totalPending: 0,
+      errors: [],
+    };
+  }
+
+  const docs = options?.limit ? snap.docs.slice(0, options.limit) : snap.docs;
+  let notifiedCount = 0;
+  const errors: string[] = [];
+
+  for (const doc of docs) {
+    const data = doc.data() as RestockRequest;
+    const email = data.email?.trim();
+    if (!email || !email.includes('@')) {
+      await doc.ref.delete().catch(() => {});
+      continue;
+    }
+
+    try {
+      await sendRestockAlertEmail({
+        to: email,
+        planId: data.plan_id || '1_month_1_device',
+      });
+      notifiedCount++;
+      // Once successfully emailed, delete from waitlist so they don't get duplicate emails
+      await doc.ref.delete();
+    } catch (err: any) {
+      console.error(`[restock/notify] Error notifying ${email}:`, err?.message || err);
+      errors.push(`${email}: ${err?.message || 'Failed to send'}`);
+    }
+  }
+
+  return {
+    success: errors.length === 0,
+    notifiedCount,
+    totalPending,
+    errors,
+  };
+}
+

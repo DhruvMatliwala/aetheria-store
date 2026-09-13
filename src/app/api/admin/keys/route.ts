@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { bulkInsertKeys } from '@/lib/firestore/keys';
 import { broadcastRestockAlert } from '@/lib/telegram/proofs';
 import { verifyAdminSecret } from '@/lib/admin/adminAuth';
+import { notifyWaitlistSubscribers } from '@/lib/firestore/restock';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -19,9 +20,10 @@ export async function POST(request: NextRequest) {
       keys: string[];
       patreonEmail?: string;
       announceInChannel?: boolean;
+      notifyWaitlist?: boolean;
     };
 
-    const { keys, patreonEmail, announceInChannel } = body;
+    const { keys, patreonEmail, announceInChannel, notifyWaitlist } = body;
     const slots = body.slots ?? (body.source === 'single_1slot' ? 1 : body.source === 'patreon_2slot' ? 2 : 3);
     const source = body.source || (slots === 1 ? 'single_1slot' : slots === 2 ? 'patreon_2slot' : 'patreon_3slot');
 
@@ -41,6 +43,15 @@ export async function POST(request: NextRequest) {
         console.error('[admin/keys] Failed to broadcast restock alert:', err)
       );
       announced = true;
+    }
+
+    // Automatically dispatch restock alert emails to waitlist customers
+    if (result.inserted > 0 && notifyWaitlist !== false) {
+      notifyWaitlistSubscribers().then((waitlistRes) => {
+        if (waitlistRes.notifiedCount > 0) {
+          console.log(`[admin/keys] Notified ${waitlistRes.notifiedCount} waitlist subscribers via email`);
+        }
+      }).catch((err) => console.error('[admin/keys] Failed to notify waitlist:', err));
     }
 
     return NextResponse.json({ ...result, restockAnnounced: announced });

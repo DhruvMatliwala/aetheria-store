@@ -1,23 +1,71 @@
 'use client';
 
-import { Users, Bell, Mail, Clock } from 'lucide-react';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { Users, Bell, Mail, Send } from 'lucide-react';
 import { RestockStats } from '@/lib/firestore/restock';
 
 interface WaitlistWidgetProps {
   waitlistStats?: RestockStats;
+  adminToken?: string;
+  onNotified?: () => void;
 }
 
-export function WaitlistWidget({ waitlistStats }: WaitlistWidgetProps) {
+export function WaitlistWidget({ waitlistStats, adminToken, onNotified }: WaitlistWidgetProps) {
+  const [isNotifying, setIsNotifying] = useState(false);
   const count1 = waitlistStats?.counts?.['1_month_1_device'] ?? 0;
   const count2 = waitlistStats?.counts?.['1_month_2_device'] ?? 0;
   const totalWaitlist = waitlistStats?.totalRequests ?? count1 + count2;
 
   const recentList = waitlistStats?.recentRequests ?? [];
 
+  async function handleNotifyAll() {
+    if (!adminToken) {
+      toast.error('Admin authentication token missing.');
+      return;
+    }
+    if (totalWaitlist === 0) {
+      toast('No customers currently on the waitlist.');
+      return;
+    }
+
+    const confirmSend = window.confirm(
+      `Send restock notification emails to all ${totalWaitlist} waiting customer(s) right now?`
+    );
+    if (!confirmSend) return;
+
+    setIsNotifying(true);
+    try {
+      const res = await fetch('/api/admin/waitlist/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-secret': adminToken,
+        },
+        body: JSON.stringify({}),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to dispatch restock notifications.');
+      }
+
+      toast.success(`📧 Successfully sent restock emails to ${data.notifiedCount} customer(s)!`);
+      if (onNotified) {
+        onNotified();
+      }
+    } catch (err: any) {
+      console.error('[WaitlistWidget] Notification error:', err);
+      toast.error(err?.message || 'Error dispatching emails.');
+    } finally {
+      setIsNotifying(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-800/60 flex items-center justify-center text-cyan-400">
             <Users size={20} />
@@ -36,6 +84,17 @@ export function WaitlistWidget({ waitlistStats }: WaitlistWidgetProps) {
             </p>
           </div>
         </div>
+
+        {totalWaitlist > 0 && adminToken && (
+          <button
+            onClick={handleNotifyAll}
+            disabled={isNotifying}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] disabled:opacity-50 flex-shrink-0"
+          >
+            <Send size={14} className={isNotifying ? 'animate-spin' : ''} />
+            <span>{isNotifying ? 'Sending Emails...' : `📧 Notify All Waiting (${totalWaitlist})`}</span>
+          </button>
+        )}
       </div>
 
       {/* Demand Metrics Grid */}

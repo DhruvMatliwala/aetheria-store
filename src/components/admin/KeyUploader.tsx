@@ -22,6 +22,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
   const [patreonEmail, setPatreonEmail] = useState('');
   const slotType = 3; // Official Patreon 3-Device Keys
   const [announceInChannel, setAnnounceInChannel] = useState(true);
+  const [notifyWaitlist, setNotifyWaitlist] = useState(true);
   const [broadcastingManual, setBroadcastingManual] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
@@ -76,6 +77,7 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
           keys,
           patreonEmail: patreonEmail.trim() || undefined,
           announceInChannel,
+          notifyWaitlist,
         }),
       });
 
@@ -200,6 +202,25 @@ export function KeyUploader({ adminToken, onUploadSuccess }: KeyUploaderProps) {
           </label>
           <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-2 py-0.5 rounded-full">
             Auto-Broadcast
+          </span>
+        </div>
+
+        {/* Email Restock Notification Checkbox */}
+        <div className="bg-[#070b13]/60 border border-[#142238] rounded-xl p-3 flex items-center justify-between">
+          <label className="flex items-center gap-2.5 cursor-pointer select-none text-xs text-slate-300">
+            <input
+              type="checkbox"
+              checked={notifyWaitlist}
+              onChange={(e) => setNotifyWaitlist(e.target.checked)}
+              className="w-4 h-4 rounded bg-[#070b13] border-[#1b2b48] text-cyan-500 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+            />
+            <span className="flex items-center gap-1.5 font-medium">
+              <span>📧 Email Restock Alert to Waiting Customers</span>
+              <span className="text-[10px] text-slate-500 hidden sm:inline">(Notifies subscribers on waitlist)</span>
+            </span>
+          </label>
+          <span className="text-[10px] font-mono font-bold text-cyan-400 bg-cyan-950/80 border border-cyan-800/60 px-2 py-0.5 rounded-full">
+            Auto-Email
           </span>
         </div>
 

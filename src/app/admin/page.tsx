@@ -1061,7 +1061,11 @@ export default function AdminPage() {
                 ════════════════════════════════════════════════════════════════ */}
             {activeTab === 'Waitlist & Demand' && (
               <div className="space-y-6">
-                <WaitlistWidget waitlistStats={stats?.waitlistStats} />
+                <WaitlistWidget
+                  waitlistStats={stats?.waitlistStats}
+                  adminToken={adminToken}
+                  onNotified={fetchStats}
+                />
               </div>
             )}
 
