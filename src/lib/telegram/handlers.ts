@@ -225,7 +225,7 @@ export async function getRadarMenuContent(chatId: number) {
         { text: '⚙️ Set IVs', callback_data: 'radar_prompt_iv' },
       ],
       [
-        { text: '🧪 Send Test Alert', callback_data: 'radar_test_ping' },
+        { text: '📡 Scan Now', callback_data: 'radar_scan_now' },
       ],
       [
         { text: '⬅️ Back to Main Menu', callback_data: 'menu_main' },
@@ -898,28 +898,22 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // Test Ping
-  if (data === 'radar_test_ping') {
-    await answerTelegramCallbackQuery(query.id, '🧪 Dispatching test alert...', false);
+  // Scan Now / Instant Hotspot Ping
+  if (data === 'radar_scan_now' || data === 'radar_test_ping') {
+    await answerTelegramCallbackQuery(query.id, '📡 Scanning spoofing hotspots for matches...', false);
     const rule = await getRadarRule(chatId);
-    const samplePoke = rule?.pokemon_name && rule.pokemon_name !== 'ALL' ? rule.pokemon_name : 'Swampert';
-    const isAnyIv = !rule || rule.any_iv || rule.target_atk === -1;
-    const sampleAtk = isAnyIv ? 1 : (rule?.target_atk ?? 15);
-    const sampleDef = isAnyIv ? 14 : (rule?.target_def ?? 15);
-    const sampleSta = isAnyIv ? 15 : (rule?.target_sta ?? 15);
-
-    await sendPokemonSpawnAlert(chatId, {
-      name: samplePoke,
-      latitude: 41.66112,
-      longitude: -0.89291,
-      atk: sampleAtk,
-      def: sampleDef,
-      sta: sampleSta,
-      cp: 1485,
-      level: 25,
-      despawn_time: Date.now() + 14 * 60 * 1000,
-      city: 'Zaragoza, Spain',
-    });
+    const effectiveRule: RadarWatchlistRule = rule || {
+      chat_id: chatId,
+      username: query.from.username || '',
+      pokemon_name: 'ALL',
+      target_atk: -1,
+      target_def: -1,
+      target_sta: -1,
+      any_iv: true,
+      enabled: true,
+      created_at: new Date().toISOString(),
+    };
+    await dispatchFirstLiveSpawnAlert(chatId, effectiveRule);
     return;
   }
 
@@ -1580,7 +1574,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
-          { text: '🧪 Send Test Ping', callback_data: 'radar_test_ping' },
+          { text: '📡 Scan Now', callback_data: 'radar_scan_now' },
           { text: '🎯 Radar Settings', callback_data: 'menu_radar' },
         ],
         [
@@ -1655,7 +1649,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
         inline_keyboard: [
           [
             { text: '⚙️ Set Target IVs', callback_data: 'radar_prompt_iv' },
-            { text: '🧪 Send Test Ping', callback_data: 'radar_test_ping' },
+            { text: '📡 Scan Now', callback_data: 'radar_scan_now' },
           ],
           [
             { text: '🎯 Radar Settings', callback_data: 'menu_radar' },
@@ -1750,7 +1744,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
       inline_keyboard: [
         [
           { text: '⚙️ Set Target IVs', callback_data: 'radar_prompt_iv' },
-          { text: '🧪 Test Alert Ping', callback_data: 'radar_test_ping' },
+          { text: '📡 Scan Now', callback_data: 'radar_scan_now' },
         ],
         [
           { text: '🎯 Radar Settings', callback_data: 'menu_radar' },
