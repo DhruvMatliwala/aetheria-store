@@ -205,16 +205,25 @@ export async function getRadarMenuContent(chatId: number) {
     `📡 <b>Status:</b> ${statusIcon}\n` +
     `🐾 <b>Tracking Species:</b> <code>${targetSpecies}</code>\n` +
     `📊 <b>Target IV:</b> <code>${ivDisplay}</code>\n\n` +
-    `Whenever a matching Pokémon spawns worldwide, the bot will immediately alert you with coordinates and despawn timer!\n\n` +
-    `👇 <b>Tune your tracker settings below:</b>`;
+    `⚡ <b>Smart Direct Chat:</b>\n` +
+    `Just type your numbers in chat to update instantly:\n` +
+    `• <code>1/14/15</code> (PvP Great/Ultra Spread)\n` +
+    `• <code>Swampert 0/14/14</code> (Species + IV)\n` +
+    `• <code>100</code> or <code>hundo</code> (15/15/15)\n\n` +
+    `👇 <b>Or select a quick option:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '⚙️ Set Target IV (_/_/_)', callback_data: `radar_tune:${targetAtk}:${targetDef}:${targetSta}` },
+        { text: '✍️ How to Type Custom IV', callback_data: 'radar_prompt_iv' },
       ],
       [
-        { text: '🐾 Change Target Pokémon', callback_data: 'radar_prompt_poke' },
+        { text: '💯 Set 15/15/15 (Hundo)', callback_data: 'radar_preset:15:15:15' },
+        { text: '0️⃣ Set 0/0/0 (Nundo)', callback_data: 'radar_preset:0:0:0' },
+      ],
+      [
+        { text: '🐾 Change Pokémon', callback_data: 'radar_prompt_poke' },
+        { text: '⚙️ Stepper (+/-)', callback_data: `radar_tune:${targetAtk}:${targetDef}:${targetSta}` },
       ],
       [
         {
@@ -285,6 +294,93 @@ export function getRadarIvTunerContent(atk: number, def: number, sta: number, po
   };
 
   return { text, keyboard };
+}
+
+export interface ParsedIvInput {
+  species?: string;
+  atk: number;
+  def: number;
+  sta: number;
+  isExplicit: boolean;
+}
+
+export function formatPokemonName(name: string): string {
+  const trimmed = name.trim();
+  if (trimmed.toUpperCase() === 'ALL') return 'ALL';
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+}
+
+/**
+ * Parses smart direct chat inputs: "1/14/15", "0 14 15", "Swampert 1/14/15", "100", "hundo", etc.
+ */
+export function parseDirectIvInput(input: string): ParsedIvInput | null {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+
+  // 1. Pure IV: "1/14/15", "0 14 15", "1, 14, 15", "1-14-15", "1.14.15"
+  const pureIvMatch = trimmed.match(/^(\d{1,2})[\/\s,\.\-](\d{1,2})[\/\s,\.\-](\d{1,2})$/);
+  if (pureIvMatch) {
+    const a = parseInt(pureIvMatch[1], 10);
+    const d = parseInt(pureIvMatch[2], 10);
+    const s = parseInt(pureIvMatch[3], 10);
+    if (a <= 15 && d <= 15 && s <= 15) {
+      return { atk: a, def: d, sta: s, isExplicit: true };
+    }
+  }
+
+  // 2. Standalone Slang: "100", "100%", "hundo", "4*", "0", "0%", "nundo", "0*"
+  const lower = trimmed.toLowerCase();
+  if (lower === '100' || lower === '100%' || lower === 'hundo' || lower === '4*') {
+    return { atk: 15, def: 15, sta: 15, isExplicit: true };
+  }
+  if (lower === '0' || lower === '0%' || lower === 'nundo' || lower === '0*') {
+    return { atk: 0, def: 0, sta: 0, isExplicit: true };
+  }
+
+  // 3. Species + IV: "Swampert 1/14/15", "Lucario 15 15 15", "Deoxys 0/15/14"
+  // (strips optional "/track " or "track " prefix)
+  const cleanInput = trimmed.replace(/^(?:\/track|track)\s+/i, '');
+  const speciesIvMatch = cleanInput.match(/^([a-zA-Z\s\.\-']+?)\s+(\d{1,2})[\/\s,\.\-](\d{1,2})[\/\s,\.\-](\d{1,2})$/);
+  if (speciesIvMatch) {
+    const speciesCandidate = speciesIvMatch[1].trim();
+    const a = parseInt(speciesIvMatch[2], 10);
+    const d = parseInt(speciesIvMatch[3], 10);
+    const s = parseInt(speciesIvMatch[4], 10);
+    if (a <= 15 && d <= 15 && s <= 15 && speciesCandidate.length >= 2) {
+      return { species: formatPokemonName(speciesCandidate), atk: a, def: d, sta: s, isExplicit: true };
+    }
+  }
+
+  // 4. Inverted: "1/14/15 Swampert"
+  const invertedMatch = cleanInput.match(/^(\d{1,2})[\/\s,\.\-](\d{1,2})[\/\s,\.\-](\d{1,2})\s+([a-zA-Z\s\.\-']+)$/);
+  if (invertedMatch) {
+    const a = parseInt(invertedMatch[1], 10);
+    const d = parseInt(invertedMatch[2], 10);
+    const s = parseInt(invertedMatch[3], 10);
+    const speciesCandidate = invertedMatch[4].trim();
+    if (a <= 15 && d <= 15 && s <= 15 && speciesCandidate.length >= 2) {
+      return { species: formatPokemonName(speciesCandidate), atk: a, def: d, sta: s, isExplicit: true };
+    }
+  }
+
+  // 5. Species + Slang: "Swampert 100", "Lucario hundo", "Gible 0", "Magikarp nundo"
+  const speciesSlangMatch = cleanInput.match(/^([a-zA-Z\s\.\-']+?)\s+(100%|100|hundo|4\*|0%|0|nundo|0\*)$/i);
+  if (speciesSlangMatch) {
+    const speciesCandidate = speciesSlangMatch[1].trim();
+    const slang = speciesSlangMatch[2].toLowerCase();
+    const isHundo = slang === '100' || slang === '100%' || slang === 'hundo' || slang === '4*';
+    if (speciesCandidate.length >= 2) {
+      return {
+        species: formatPokemonName(speciesCandidate),
+        atk: isHundo ? 15 : 0,
+        def: isHundo ? 15 : 0,
+        sta: isHundo ? 15 : 0,
+        isExplicit: true,
+      };
+    }
+  }
+
+  return null;
 }
 
 /**
@@ -474,18 +570,79 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
+  // 1-Tap Preset IV Selection (e.g. 15/15/15 Hundo or 0/0/0 Nundo)
+  if (data.startsWith('radar_preset:')) {
+    const parts = data.replace('radar_preset:', '').split(':');
+    const atk = parseInt(parts[0] || '15', 10);
+    const def = parseInt(parts[1] || '15', 10);
+    const sta = parseInt(parts[2] || '15', 10);
+
+    const existing = await getRadarRule(chatId);
+    await saveRadarRule(chatId, {
+      pokemon_name: existing?.pokemon_name || 'ALL',
+      target_atk: atk,
+      target_def: def,
+      target_sta: sta,
+      username: query.from.username || '',
+      enabled: true,
+    });
+
+    const isHundo = atk === 15 && def === 15 && sta === 15;
+    await answerTelegramCallbackQuery(
+      query.id,
+      isHundo ? '💯 Target set to 15/15/15 Hundo!' : '0️⃣ Target set to 0/0/0 Nundo!',
+      false
+    );
+
+    const { text, keyboard } = await getRadarMenuContent(chatId);
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // How to Type Custom IV Guide
+  if (data === 'radar_prompt_iv') {
+    const promptText =
+      `✍️ <b>Type Your Custom IV Directly in Chat</b>\n\n` +
+      `No commands needed! Simply send a message in this chat with your numbers:\n\n` +
+      `<b>Quick Examples:</b>\n` +
+      `• <code>1/14/15</code> ➔ PvP Great/Ultra League\n` +
+      `• <code>0/15/14</code> ➔ PvP Top Rank Spread\n` +
+      `• <code>15/15/15</code> ➔ 100% IV Hundo\n` +
+      `• <code>Swampert 1/14/15</code> ➔ Species + IV\n` +
+      `• <code>Lucario 15/15/15</code> ➔ Species + IV\n` +
+      `• <code>hundo</code> or <code>100</code> ➔ Universal Hundo\n\n` +
+      `👇 <i>Type your numbers in the chat box below and hit Send!</i>`;
+
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [{ text: '⬅️ Back to Radar', callback_data: 'menu_radar' }],
+      ],
+    };
+
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, promptText, { reply_markup: keyboard });
+      if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
+    }
+    await sendTelegramMessage(chatId, promptText, { reply_markup: keyboard });
+    return;
+  }
+
   // Prompt Target Species
   if (data === 'radar_prompt_poke') {
     const promptText =
       `🐾 <b>Set Target Pokémon Species</b>\n\n` +
-      `To track a specific Pokémon, simply send a message with:\n` +
-      `<code>/track &lt;name&gt;</code>\n\n` +
-      `<b>Examples:</b>\n` +
-      `• <code>/track Swampert</code>\n` +
-      `• <code>/track Lucario 15/15/15</code>\n` +
-      `• <code>/track Gible 0/14/14</code>\n` +
-      `• <code>/track ALL</code> (Tracks all species)\n\n` +
-      `<i>Type your command in the chat box below!</i>`;
+      `You can simply type the Pokémon name or send:\n` +
+      `• <code>Swampert</code>\n` +
+      `• <code>Swampert 1/14/15</code>\n` +
+      `• <code>Lucario 15/15/15</code>\n` +
+      `• <code>/track ALL</code> (Track all species)\n\n` +
+      `👇 <i>Type your Pokémon in the chat box below and hit Send!</i>`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
@@ -1134,6 +1291,56 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     await sendTelegramMessage(chatId, text, {
       reply_markup: keyboard,
     });
+    return;
+  }
+
+  // ── Format 1: Smart Direct Chat IV / Species Detection (Zero Commands Needed) ──
+  const parsedDirect = parseDirectIvInput(rawText);
+  if (parsedDirect) {
+    const existing = await getRadarRule(chatId);
+    const targetSpecies = parsedDirect.species || existing?.pokemon_name || 'ALL';
+    const targetAtk = parsedDirect.atk;
+    const targetDef = parsedDirect.def;
+    const targetSta = parsedDirect.sta;
+
+    await saveRadarRule(chatId, {
+      pokemon_name: targetSpecies,
+      target_atk: targetAtk,
+      target_def: targetDef,
+      target_sta: targetSta,
+      username: username || '',
+      enabled: true,
+    });
+
+    const isHundo = targetAtk === 15 && targetDef === 15 && targetSta === 15;
+    const isNundo = targetAtk === 0 && targetDef === 0 && targetSta === 0;
+    const ivBadge = isHundo
+      ? '💯 15 / 15 / 15 (Hundo)'
+      : isNundo
+      ? '0️⃣ 0 / 0 / 0 (Nundo)'
+      : `⚔️ ${targetAtk} / 🛡️ ${targetDef} / ❤️ ${targetSta}`;
+
+    const confirmText =
+      `🎯 <b>Target IV Updated!</b>\n\n` +
+      `📊 <b>Target IV:</b> <code>${ivBadge}</code>\n` +
+      `🐾 <b>Species:</b> <code>${targetSpecies === 'ALL' ? 'All Pokémon' : targetSpecies}</code>\n` +
+      `📡 <b>Alerts:</b> 🟢 Active & Ready\n\n` +
+      `Whenever a matching Pokémon spawns anywhere in the world, the bot will immediately alert you with coordinates and despawn timer!`;
+
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [
+          { text: '🧪 Send Test Ping', callback_data: 'radar_test_ping' },
+          { text: '🎯 Radar Settings', callback_data: 'menu_radar' },
+        ],
+        [
+          { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
+          { text: '⬅️ Main Menu', callback_data: 'menu_main' },
+        ],
+      ],
+    };
+
+    await sendTelegramMessage(chatId, confirmText, { reply_markup: keyboard });
     return;
   }
 
