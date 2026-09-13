@@ -198,6 +198,26 @@ export async function editTelegramMessage(
 }
 
 /**
+ * Edit only reply markup of existing message
+ */
+export async function editTelegramMessageReplyMarkup(
+  chatId: number | string,
+  messageId: number,
+  replyMarkup: InlineKeyboardMarkup,
+  token?: string
+) {
+  return callTelegramApi(
+    'editMessageReplyMarkup',
+    {
+      chat_id: chatId,
+      message_id: messageId,
+      reply_markup: replyMarkup,
+    },
+    token
+  );
+}
+
+/**
  * Delete message from chat
  */
 export async function deleteTelegramMessage(

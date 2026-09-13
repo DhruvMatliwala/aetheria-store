@@ -3,6 +3,7 @@ import {
   sendTelegramMessage,
   sendTelegramPhoto,
   editTelegramMessage,
+  editTelegramMessageReplyMarkup,
   deleteTelegramMessage,
   answerTelegramCallbackQuery,
   InlineKeyboardMarkup,
@@ -529,14 +530,16 @@ export async function sendPokemonSpawnAlert(chatId: number, spawn: PokemonSpawn)
   const despawnMs = spawn.despawn_time > 10000000000 ? spawn.despawn_time : spawn.despawn_time * 1000;
   const minsLeft = Math.max(1, Math.round((despawnMs - now) / 60000));
   const ivPercent = Math.round(((spawn.atk + spawn.def + spawn.sta) / 45) * 100);
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${spawn.latitude},${spawn.longitude}`;
-
   const text =
     `🎯 <b>TARGET DETECTED: ${spawn.name.toUpperCase()}</b>\n` +
     `📊 <b>IV:</b> ${spawn.atk} / ${spawn.def} / ${spawn.sta} (${ivPercent}%) | <b>CP:</b> ${spawn.cp ?? '—'}\n` +
     `📍 <b>Coords:</b> <code>${spawn.latitude.toFixed(6)}, ${spawn.longitude.toFixed(6)}</code>\n` +
-    `<i>(Tap coords to copy instantly)</i>\n` +
-    `⏳ <b>Despawns in:</b> ~${minsLeft} mins${spawn.city ? ` in ${spawn.city}` : ''}\n` +
+    `<i>(Tap coords above to copy & paste into PGSharp Teleport)</i>\n` +
+    `⏳ <b>Despawns in:</b> ~${minsLeft} mins${spawn.city ? ` in ${spawn.city}` : ''}\n\n` +
+    `💡 <b>Quick Guide:</b>\n` +
+    `• <b>[ 📡 Scan Again ]</b> — Get the next live spawn immediately (zero wait)\n` +
+    `• <b>[ ⏸️ Pause Alerts ]</b> — Stop background alerts when you stop playing\n` +
+    `• <b>Auto-Radar:</b> Automatically scans & sends a new target every 5 mins\n` +
     `─────────────────────────────\n` +
     `🛡️ <b>Don't let it flee!</b>\n` +
     `100% Excellent Throw + Instant Quick Catch:\n` +
@@ -545,7 +548,7 @@ export async function sendPokemonSpawnAlert(chatId: number, spawn: PokemonSpawn)
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '🗺️ Open in Google Maps', url: mapsUrl },
+        { text: '📡 Scan Again', callback_data: 'radar_scan_now' },
         { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
       ],
       [
@@ -733,7 +736,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
           })
         ),
       };
-      await editTelegramMessage(chatId, messageId, query.message.text || '', { reply_markup: newMarkup });
+      await editTelegramMessageReplyMarkup(chatId, messageId, newMarkup);
     }
     return;
   }
@@ -753,7 +756,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
           })
         ),
       };
-      await editTelegramMessage(chatId, messageId, query.message.text || '', { reply_markup: newMarkup });
+      await editTelegramMessageReplyMarkup(chatId, messageId, newMarkup);
     }
     return;
   }

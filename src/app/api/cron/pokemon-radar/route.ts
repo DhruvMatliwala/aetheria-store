@@ -6,8 +6,8 @@ import { sendPokemonSpawnAlert } from '@/lib/telegram/handlers';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Minimum time between automated alerts per subscriber (15 minutes)
-const MIN_ALERT_INTERVAL_MS = 15 * 60 * 1000;
+// Minimum time between automated alerts per subscriber (5 minutes)
+const MIN_ALERT_INTERVAL_MS = 5 * 60 * 1000;
 
 export async function GET(request: NextRequest) {
   try {
