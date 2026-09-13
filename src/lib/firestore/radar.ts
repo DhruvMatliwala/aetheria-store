@@ -26,6 +26,7 @@ export async function saveRadarRule(
     target_atk: rule.target_atk !== undefined ? rule.target_atk : existingData?.target_atk ?? 15,
     target_def: rule.target_def !== undefined ? rule.target_def : existingData?.target_def ?? 15,
     target_sta: rule.target_sta !== undefined ? rule.target_sta : existingData?.target_sta ?? 15,
+    any_iv: rule.any_iv !== undefined ? rule.any_iv : (rule.target_atk === -1 ? true : existingData?.any_iv ?? false),
     is_hundo_only: rule.is_hundo_only !== undefined ? rule.is_hundo_only : isHundo,
     is_nundo_only: rule.is_nundo_only !== undefined ? rule.is_nundo_only : isNundo,
     enabled: rule.enabled !== undefined ? rule.enabled : true,
@@ -86,6 +87,12 @@ export async function findMatchingSubscribers(spawn: PokemonSpawn): Promise<numb
       if (rule.pokemon_name.toLowerCase().trim() !== spawnNameLower) {
         continue;
       }
+    }
+
+    // Match any IV (all IVs allowed)
+    if (rule.any_iv || rule.target_atk === -1) {
+      matchedChatIds.push(rule.chat_id);
+      continue;
     }
 
     // Universal 100% IV Hundo match

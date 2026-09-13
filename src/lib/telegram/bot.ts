@@ -67,6 +67,7 @@ export interface TelegramMessage {
   date: number;
   text?: string;
   caption?: string;
+  reply_markup?: InlineKeyboardMarkup;
 }
 
 export interface TelegramCallbackQuery {

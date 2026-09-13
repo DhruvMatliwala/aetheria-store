@@ -50,6 +50,11 @@ import {
 } from '@/lib/pokemon/events';
 import { saveRadarRule, getRadarRule, toggleRadarRule } from '@/lib/firestore/radar';
 import { PokemonSpawn } from '@/types/pokemon';
+import {
+  fuzzyMatchPokemon,
+  tryFuzzyMatchPokemon,
+  TOP_SNIPED_POKEMON,
+} from '@/lib/pokemon/names';
 
 const STORE_URL =
   process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('https://')
@@ -131,7 +136,7 @@ function getPlanPickerContent(discountLabel?: string, firstName: string = 'Train
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '🔑 PGSharp Store & Keys', callback_data: 'menu_store' },
+        { text: '🔑 Buy PGSharp Keys', callback_data: 'menu_store' },
       ],
       [
         { text: '🎯 Pokémon Radar & Sniper', callback_data: 'menu_radar' },
@@ -189,12 +194,15 @@ export function getStoreMenuContent(discountLabel?: string) {
 export async function getRadarMenuContent(chatId: number) {
   const rule = await getRadarRule(chatId);
   const statusIcon = rule?.enabled !== false ? '🟢 Active' : '⚪ Paused';
-  const targetSpecies = rule?.pokemon_name || 'All Pokémon';
+  const targetSpecies = (!rule?.pokemon_name || rule.pokemon_name === 'ALL') ? 'All Pokémon' : rule.pokemon_name;
+  const isAnyIv = !rule || rule.any_iv || rule.target_atk === -1;
   const targetAtk = rule?.target_atk ?? 15;
   const targetDef = rule?.target_def ?? 15;
   const targetSta = rule?.target_sta ?? 15;
 
-  const ivDisplay = rule?.is_hundo_only
+  const ivDisplay = isAnyIv
+    ? 'All IVs (Any)'
+    : rule?.is_hundo_only
     ? '💯 15 / 15 / 15 (Hundo)'
     : rule?.is_nundo_only
     ? '0️⃣ 0 / 0 / 0 (Nundo)'
@@ -203,38 +211,112 @@ export async function getRadarMenuContent(chatId: number) {
   const text =
     `🎯 <b>Pokémon Radar & Live IV Sniper</b>\n\n` +
     `📡 <b>Status:</b> ${statusIcon}\n` +
-    `🐾 <b>Tracking Species:</b> <code>${targetSpecies}</code>\n` +
+    `🐾 <b>Tracking:</b> <code>${targetSpecies}</code>\n` +
     `📊 <b>Target IV:</b> <code>${ivDisplay}</code>\n\n` +
-    `⚡ <b>Smart Direct Chat:</b>\n` +
-    `Just type your numbers in chat to update instantly:\n` +
-    `• <code>1/14/15</code> (PvP Great/Ultra Spread)\n` +
-    `• <code>Swampert 0/14/14</code> (Species + IV)\n` +
-    `• <code>100</code> or <code>hundo</code> (15/15/15)\n\n` +
-    `👇 <b>Or select a quick option:</b>`;
+    `👇 <b>Tap an option or type directly in chat:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '✍️ How to Type Custom IV', callback_data: 'radar_prompt_iv' },
+        { text: '🐾 Select Pokémon', callback_data: 'radar_poke_menu' },
       ],
       [
-        { text: '💯 Set 15/15/15 (Hundo)', callback_data: 'radar_preset:15:15:15' },
-        { text: '0️⃣ Set 0/0/0 (Nundo)', callback_data: 'radar_preset:0:0:0' },
+        { text: '⚙️ Set IVs', callback_data: 'radar_prompt_iv' },
       ],
       [
-        { text: '🐾 Change Pokémon', callback_data: 'radar_prompt_poke' },
-        { text: '⚙️ Stepper (+/-)', callback_data: `radar_tune:${targetAtk}:${targetDef}:${targetSta}` },
-      ],
-      [
-        {
-          text: rule?.enabled !== false ? '⏸️ Pause Alerts' : '▶️ Enable Alerts',
-          callback_data: rule?.enabled !== false ? 'radar_toggle:0' : 'radar_toggle:1',
-        },
-        { text: '🧪 Send Test Ping', callback_data: 'radar_test_ping' },
+        { text: '🧪 Send Test Alert', callback_data: 'radar_test_ping' },
       ],
       [
         { text: '⬅️ Back to Main Menu', callback_data: 'menu_main' },
       ],
+    ],
+  };
+
+  return { text, keyboard };
+}
+
+/**
+ * Screen 1: All Pokémon or Specific Pokémon Selection
+ */
+export function getRadarPokemonSelectionContent() {
+  const text =
+    `🐾 <b>Select Pokémon Target</b>\n\n` +
+    `Choose whether you want live alerts for all Pokémon matching your IV, or a specific species:`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [
+        { text: '🌐 All Pokémon (Any matching IV)', callback_data: 'radar_set_poke:ALL' },
+      ],
+      [
+        { text: '🔍 Specific Pokémon (Pick or Type)', callback_data: 'radar_specific_poke_menu' },
+      ],
+      [
+        { text: '⬅️ Back to Radar', callback_data: 'menu_radar' },
+      ],
+    ],
+  };
+
+  return { text, keyboard };
+}
+
+/**
+ * Screen 2: Specific Pokémon Meta Picks & Custom Type Prompt
+ */
+export function getRadarSpecificPokemonContent() {
+  const text =
+    `🔍 <b>Choose a Specific Pokémon</b>\n\n` +
+    `Tap a popular meta species below, or send any name directly in chat:\n` +
+    `<i>(Typo auto-correction is active: e.g. "charzard" ➔ Charizard)</i>`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [
+        { text: '💧 Swampert', callback_data: 'radar_set_poke:Swampert' },
+        { text: '🥋 Lucario', callback_data: 'radar_set_poke:Lucario' },
+      ],
+      [
+        { text: '🐲 Garchomp', callback_data: 'radar_set_poke:Garchomp' },
+        { text: '⚡ Metagross', callback_data: 'radar_set_poke:Metagross' },
+      ],
+      [
+        { text: '🛡️ Bastiodon', callback_data: 'radar_set_poke:Bastiodon' },
+        { text: '🐉 Dragonite', callback_data: 'radar_set_poke:Dragonite' },
+      ],
+      [
+        { text: '👻 Gengar', callback_data: 'radar_set_poke:Gengar' },
+        { text: '🔮 Medicham', callback_data: 'radar_set_poke:Medicham' },
+      ],
+      [
+        { text: '✍️ Type Another Pokémon Name', callback_data: 'radar_prompt_poke' },
+      ],
+      [
+        { text: '⬅️ Back to Radar', callback_data: 'menu_radar' },
+      ],
+    ],
+  };
+
+  return { text, keyboard };
+}
+
+/**
+ * Screen 3: Set Target IV Instruction Prompt
+ */
+export function getRadarSetIvPromptContent() {
+  const text =
+    `⚙️ <b>Set Target IV</b>\n\n` +
+    `Type the IV of the Pokémon you want in chat:\n\n` +
+    `<b>Examples:</b>\n` +
+    `• <code>1/14/15</code> (Great / Ultra League PvP spread)\n` +
+    `• <code>0/15/14</code> (Top rank PvP stat product)\n` +
+    `• <code>15/15/15</code> or <code>100</code> (Universal Hundo)\n` +
+    `• <code>0/0/0</code> or <code>0</code> (Universal Nundo)\n` +
+    `• <code>any</code> or <code>all</code> (All IVs)\n\n` +
+    `👇 <i>Type your numbers in chat below and hit Send:</i>`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [{ text: '⬅️ Back to Radar', callback_data: 'menu_radar' }],
     ],
   };
 
@@ -298,9 +380,11 @@ export function getRadarIvTunerContent(atk: number, def: number, sta: number, po
 
 export interface ParsedIvInput {
   species?: string;
+  speciesCorrected?: boolean;
   atk: number;
   def: number;
   sta: number;
+  any_iv?: boolean;
   isExplicit: boolean;
 }
 
@@ -311,13 +395,28 @@ export function formatPokemonName(name: string): string {
 }
 
 /**
- * Parses smart direct chat inputs: "1/14/15", "0 14 15", "Swampert 1/14/15", "100", "hundo", etc.
+ * Parses smart direct chat inputs: "1/14/15", "0 14 15", "Swampert 1/14/15", "any", "hundo", etc.
  */
 export function parseDirectIvInput(input: string): ParsedIvInput | null {
   const trimmed = input.trim();
   if (!trimmed) return null;
 
-  // 1. Pure IV: "1/14/15", "0 14 15", "1, 14, 15", "1-14-15", "1.14.15"
+  // 1. Standalone "any", "all", "random", "any iv", "all iv", "all ivs"
+  const lower = trimmed.toLowerCase();
+  if (
+    lower === 'any' ||
+    lower === 'all' ||
+    lower === 'any iv' ||
+    lower === 'all iv' ||
+    lower === 'all ivs' ||
+    lower === 'random' ||
+    lower === 'random iv' ||
+    lower === 'random ivs'
+  ) {
+    return { atk: -1, def: -1, sta: -1, any_iv: true, isExplicit: true };
+  }
+
+  // 2. Pure IV: "1/14/15", "0 14 15", "1, 14, 15", "1-14-15", "1.14.15"
   const pureIvMatch = trimmed.match(/^(\d{1,2})[\/\s,\.\-](\d{1,2})[\/\s,\.\-](\d{1,2})$/);
   if (pureIvMatch) {
     const a = parseInt(pureIvMatch[1], 10);
@@ -328,8 +427,7 @@ export function parseDirectIvInput(input: string): ParsedIvInput | null {
     }
   }
 
-  // 2. Standalone Slang: "100", "100%", "hundo", "4*", "0", "0%", "nundo", "0*"
-  const lower = trimmed.toLowerCase();
+  // 3. Standalone Slang: "100", "100%", "hundo", "4*", "0", "0%", "nundo", "0*"
   if (lower === '100' || lower === '100%' || lower === 'hundo' || lower === '4*') {
     return { atk: 15, def: 15, sta: 15, isExplicit: true };
   }
@@ -337,9 +435,26 @@ export function parseDirectIvInput(input: string): ParsedIvInput | null {
     return { atk: 0, def: 0, sta: 0, isExplicit: true };
   }
 
-  // 3. Species + IV: "Swampert 1/14/15", "Lucario 15 15 15", "Deoxys 0/15/14"
-  // (strips optional "/track " or "track " prefix)
+  // Clean optional track prefix
   const cleanInput = trimmed.replace(/^(?:\/track|track)\s+/i, '');
+
+  // 4. Species + "any" or "all" (e.g. "Swampert any", "Lucario all ivs")
+  const speciesAnyMatch = cleanInput.match(/^([a-zA-Z\s\.\-']+?)\s+(any|all|any\s+iv|all\s+iv|all\s+ivs|random)$/i);
+  if (speciesAnyMatch) {
+    const speciesCandidate = speciesAnyMatch[1].trim();
+    const matched = fuzzyMatchPokemon(speciesCandidate);
+    return {
+      species: matched.name,
+      speciesCorrected: matched.corrected,
+      atk: -1,
+      def: -1,
+      sta: -1,
+      any_iv: true,
+      isExplicit: true,
+    };
+  }
+
+  // 5. Species + IV: "Swampert 1/14/15", "Lucario 15 15 15", "Deoxys 0/15/14"
   const speciesIvMatch = cleanInput.match(/^([a-zA-Z\s\.\-']+?)\s+(\d{1,2})[\/\s,\.\-](\d{1,2})[\/\s,\.\-](\d{1,2})$/);
   if (speciesIvMatch) {
     const speciesCandidate = speciesIvMatch[1].trim();
@@ -347,11 +462,19 @@ export function parseDirectIvInput(input: string): ParsedIvInput | null {
     const d = parseInt(speciesIvMatch[3], 10);
     const s = parseInt(speciesIvMatch[4], 10);
     if (a <= 15 && d <= 15 && s <= 15 && speciesCandidate.length >= 2) {
-      return { species: formatPokemonName(speciesCandidate), atk: a, def: d, sta: s, isExplicit: true };
+      const matched = fuzzyMatchPokemon(speciesCandidate);
+      return {
+        species: matched.name,
+        speciesCorrected: matched.corrected,
+        atk: a,
+        def: d,
+        sta: s,
+        isExplicit: true,
+      };
     }
   }
 
-  // 4. Inverted: "1/14/15 Swampert"
+  // 6. Inverted: "1/14/15 Swampert"
   const invertedMatch = cleanInput.match(/^(\d{1,2})[\/\s,\.\-](\d{1,2})[\/\s,\.\-](\d{1,2})\s+([a-zA-Z\s\.\-']+)$/);
   if (invertedMatch) {
     const a = parseInt(invertedMatch[1], 10);
@@ -359,19 +482,29 @@ export function parseDirectIvInput(input: string): ParsedIvInput | null {
     const s = parseInt(invertedMatch[3], 10);
     const speciesCandidate = invertedMatch[4].trim();
     if (a <= 15 && d <= 15 && s <= 15 && speciesCandidate.length >= 2) {
-      return { species: formatPokemonName(speciesCandidate), atk: a, def: d, sta: s, isExplicit: true };
+      const matched = fuzzyMatchPokemon(speciesCandidate);
+      return {
+        species: matched.name,
+        speciesCorrected: matched.corrected,
+        atk: a,
+        def: d,
+        sta: s,
+        isExplicit: true,
+      };
     }
   }
 
-  // 5. Species + Slang: "Swampert 100", "Lucario hundo", "Gible 0", "Magikarp nundo"
+  // 7. Species + Slang: "Swampert 100", "Lucario hundo", "Gible 0", "Magikarp nundo"
   const speciesSlangMatch = cleanInput.match(/^([a-zA-Z\s\.\-']+?)\s+(100%|100|hundo|4\*|0%|0|nundo|0\*)$/i);
   if (speciesSlangMatch) {
     const speciesCandidate = speciesSlangMatch[1].trim();
     const slang = speciesSlangMatch[2].toLowerCase();
     const isHundo = slang === '100' || slang === '100%' || slang === 'hundo' || slang === '4*';
     if (speciesCandidate.length >= 2) {
+      const matched = fuzzyMatchPokemon(speciesCandidate);
       return {
-        species: formatPokemonName(speciesCandidate),
+        species: matched.name,
+        speciesCorrected: matched.corrected,
         atk: isHundo ? 15 : 0,
         def: isHundo ? 15 : 0,
         sta: isHundo ? 15 : 0,
@@ -411,6 +544,7 @@ export async function sendPokemonSpawnAlert(chatId: number, spawn: PokemonSpawn)
         { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
       ],
       [
+        { text: '⏸️ Pause Alerts', callback_data: 'radar_spawn_pause' },
         { text: '🎯 Radar Settings', callback_data: 'menu_radar' },
       ],
     ],
@@ -508,7 +642,142 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // Interactive IV Tuner Form (_/_/_) - Format 2 Minimal Stepper
+  // ── Pokémon Selection & IV Setup Callbacks ───────────────────────────────
+  // Screen 1: All Pokémon or Specific Pokémon Selection
+  if (data === 'radar_poke_menu') {
+    const { text, keyboard } = getRadarPokemonSelectionContent();
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // Screen 2: Specific Pokémon Meta Picks
+  if (data === 'radar_specific_poke_menu') {
+    const { text, keyboard } = getRadarSpecificPokemonContent();
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // Set Target Pokémon (e.g. ALL or Swampert)
+  if (data.startsWith('radar_set_poke:')) {
+    const species = data.replace('radar_set_poke:', '').trim();
+    const existing = await getRadarRule(chatId);
+    await saveRadarRule(chatId, {
+      pokemon_name: species,
+      target_atk: existing?.target_atk ?? -1,
+      target_def: existing?.target_def ?? -1,
+      target_sta: existing?.target_sta ?? -1,
+      any_iv: existing?.any_iv ?? true,
+      username: query.from.username || '',
+      enabled: true,
+    });
+
+    const isAll = species === 'ALL';
+    await answerTelegramCallbackQuery(
+      query.id,
+      isAll ? '🌐 Tracking All Pokémon!' : `🐾 Target set to ${species}!`,
+      false
+    );
+
+    const { text, keyboard } = await getRadarMenuContent(chatId);
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // Spawn Alert: Pause Alerts in-place
+  if (data === 'radar_spawn_pause') {
+    await toggleRadarRule(chatId, false);
+    await answerTelegramCallbackQuery(query.id, '⏸️ Live alerts paused. Tap Resume to restart anytime.', true);
+    if (messageId && query.message?.reply_markup) {
+      const newMarkup: InlineKeyboardMarkup = {
+        inline_keyboard: query.message.reply_markup.inline_keyboard.map((row) =>
+          row.map((btn) => {
+            if (btn.callback_data === 'radar_spawn_pause') {
+              return { text: '▶️ Resume Alerts', callback_data: 'radar_spawn_resume' };
+            }
+            return btn;
+          })
+        ),
+      };
+      await editTelegramMessage(chatId, messageId, query.message.text || '', { reply_markup: newMarkup });
+    }
+    return;
+  }
+
+  // Spawn Alert: Resume Alerts in-place
+  if (data === 'radar_spawn_resume') {
+    await toggleRadarRule(chatId, true);
+    await answerTelegramCallbackQuery(query.id, '🔔 Live alerts resumed! You will receive matching spawns.', true);
+    if (messageId && query.message?.reply_markup) {
+      const newMarkup: InlineKeyboardMarkup = {
+        inline_keyboard: query.message.reply_markup.inline_keyboard.map((row) =>
+          row.map((btn) => {
+            if (btn.callback_data === 'radar_spawn_resume') {
+              return { text: '⏸️ Pause Alerts', callback_data: 'radar_spawn_pause' };
+            }
+            return btn;
+          })
+        ),
+      };
+      await editTelegramMessage(chatId, messageId, query.message.text || '', { reply_markup: newMarkup });
+    }
+    return;
+  }
+
+  // Set IVs Prompt (Method 1: Smart Direct Chat)
+  if (data === 'radar_prompt_iv') {
+    const { text: promptText, keyboard } = getRadarSetIvPromptContent();
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, promptText, { reply_markup: keyboard });
+      if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
+    }
+    await sendTelegramMessage(chatId, promptText, { reply_markup: keyboard });
+    return;
+  }
+
+  // Prompt Custom Species Input
+  if (data === 'radar_prompt_poke') {
+    const promptText =
+      `✍️ <b>Type Pokémon Name in Chat</b>\n\n` +
+      `Type any Pokémon name in chat below and hit Send:\n` +
+      `• <code>Charizard</code>\n` +
+      `• <code>Tyranitar</code>\n` +
+      `• <code>Rayquaza</code>\n` +
+      `• <code>Mewtwo</code>\n\n` +
+      `💡 <i>Typo auto-correction is active: Even if you type "charzard" or "swampart", the bot will recognize and correct it!</i>`;
+
+    const keyboard: InlineKeyboardMarkup = {
+      inline_keyboard: [
+        [{ text: '⬅️ Back to Pokémon Selection', callback_data: 'radar_specific_poke_menu' }],
+        [{ text: '🎯 Back to Radar', callback_data: 'menu_radar' }],
+      ],
+    };
+
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, promptText, { reply_markup: keyboard });
+      if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
+    }
+    await sendTelegramMessage(chatId, promptText, { reply_markup: keyboard });
+    return;
+  }
+
+  // Interactive IV Tuner Form (_/_/_) - Format 2 Minimal Stepper (Fallback)
   if (data.startsWith('radar_tune:')) {
     const parts = data.replace('radar_tune:', '').split(':');
     const atk = parseInt(parts[0] || '15', 10);
@@ -520,7 +789,6 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
-      // Always return on existing message to prevent duplicate message creation
       if (editRes.ok) return;
       return;
     }
@@ -570,7 +838,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // 1-Tap Preset IV Selection (e.g. 15/15/15 Hundo or 0/0/0 Nundo)
+  // 1-Tap Preset IV Selection (Fallback)
   if (data.startsWith('radar_preset:')) {
     const parts = data.replace('radar_preset:', '').split(':');
     const atk = parseInt(parts[0] || '15', 10);
@@ -604,69 +872,15 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // How to Type Custom IV Guide
-  if (data === 'radar_prompt_iv') {
-    const promptText =
-      `✍️ <b>Type Your Custom IV Directly in Chat</b>\n\n` +
-      `No commands needed! Simply send a message in this chat with your numbers:\n\n` +
-      `<b>Quick Examples:</b>\n` +
-      `• <code>1/14/15</code> ➔ PvP Great/Ultra League\n` +
-      `• <code>0/15/14</code> ➔ PvP Top Rank Spread\n` +
-      `• <code>15/15/15</code> ➔ 100% IV Hundo\n` +
-      `• <code>Swampert 1/14/15</code> ➔ Species + IV\n` +
-      `• <code>Lucario 15/15/15</code> ➔ Species + IV\n` +
-      `• <code>hundo</code> or <code>100</code> ➔ Universal Hundo\n\n` +
-      `👇 <i>Type your numbers in the chat box below and hit Send!</i>`;
-
-    const keyboard: InlineKeyboardMarkup = {
-      inline_keyboard: [
-        [{ text: '⬅️ Back to Radar', callback_data: 'menu_radar' }],
-      ],
-    };
-
-    if (messageId) {
-      const editRes = await editTelegramMessage(chatId, messageId, promptText, { reply_markup: keyboard });
-      if (editRes.ok) return;
-      await deleteTelegramMessage(chatId, messageId);
-    }
-    await sendTelegramMessage(chatId, promptText, { reply_markup: keyboard });
-    return;
-  }
-
-  // Prompt Target Species
-  if (data === 'radar_prompt_poke') {
-    const promptText =
-      `🐾 <b>Set Target Pokémon Species</b>\n\n` +
-      `You can simply type the Pokémon name or send:\n` +
-      `• <code>Swampert</code>\n` +
-      `• <code>Swampert 1/14/15</code>\n` +
-      `• <code>Lucario 15/15/15</code>\n` +
-      `• <code>/track ALL</code> (Track all species)\n\n` +
-      `👇 <i>Type your Pokémon in the chat box below and hit Send!</i>`;
-
-    const keyboard: InlineKeyboardMarkup = {
-      inline_keyboard: [
-        [{ text: '⬅️ Back to Radar', callback_data: 'menu_radar' }],
-      ],
-    };
-
-    if (messageId) {
-      const editRes = await editTelegramMessage(chatId, messageId, promptText, { reply_markup: keyboard });
-      if (editRes.ok) return;
-      await deleteTelegramMessage(chatId, messageId);
-    }
-    await sendTelegramMessage(chatId, promptText, { reply_markup: keyboard });
-    return;
-  }
-
   // Test Ping
   if (data === 'radar_test_ping') {
     await answerTelegramCallbackQuery(query.id, '🧪 Dispatching test alert...', false);
     const rule = await getRadarRule(chatId);
     const samplePoke = rule?.pokemon_name && rule.pokemon_name !== 'ALL' ? rule.pokemon_name : 'Swampert';
-    const sampleAtk = rule?.target_atk ?? 0;
-    const sampleDef = rule?.target_def ?? 14;
-    const sampleSta = rule?.target_sta ?? 14;
+    const isAnyIv = !rule || rule.any_iv || rule.target_atk === -1;
+    const sampleAtk = isAnyIv ? 1 : (rule?.target_atk ?? 15);
+    const sampleDef = isAnyIv ? 14 : (rule?.target_def ?? 15);
+    const sampleSta = isAnyIv ? 15 : (rule?.target_sta ?? 15);
 
     await sendPokemonSpawnAlert(chatId, {
       name: samplePoke,
@@ -1302,28 +1516,38 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     const targetAtk = parsedDirect.atk;
     const targetDef = parsedDirect.def;
     const targetSta = parsedDirect.sta;
+    const anyIv = parsedDirect.any_iv ?? false;
 
     await saveRadarRule(chatId, {
       pokemon_name: targetSpecies,
       target_atk: targetAtk,
       target_def: targetDef,
       target_sta: targetSta,
+      any_iv: anyIv,
       username: username || '',
       enabled: true,
     });
 
     const isHundo = targetAtk === 15 && targetDef === 15 && targetSta === 15;
     const isNundo = targetAtk === 0 && targetDef === 0 && targetSta === 0;
-    const ivBadge = isHundo
+    const ivBadge = (anyIv || targetAtk === -1)
+      ? 'All IVs (Any)'
+      : isHundo
       ? '💯 15 / 15 / 15 (Hundo)'
       : isNundo
       ? '0️⃣ 0 / 0 / 0 (Nundo)'
       : `⚔️ ${targetAtk} / 🛡️ ${targetDef} / ❤️ ${targetSta}`;
 
+    const speciesBadge = targetSpecies === 'ALL'
+      ? 'All Pokémon'
+      : parsedDirect.speciesCorrected
+      ? `${targetSpecies} (auto-corrected)`
+      : targetSpecies;
+
     const confirmText =
-      `🎯 <b>Target IV Updated!</b>\n\n` +
+      `🎯 <b>Target Updated!</b>\n\n` +
       `📊 <b>Target IV:</b> <code>${ivBadge}</code>\n` +
-      `🐾 <b>Species:</b> <code>${targetSpecies === 'ALL' ? 'All Pokémon' : targetSpecies}</code>\n` +
+      `🐾 <b>Species:</b> <code>${speciesBadge}</code>\n` +
       `📡 <b>Alerts:</b> 🟢 Active & Ready\n\n` +
       `Whenever a matching Pokémon spawns anywhere in the world, the bot will immediately alert you with coordinates and despawn timer!`;
 
@@ -1344,6 +1568,68 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     return;
   }
 
+  // ── Standalone Pokémon Name Detection (Fuzzy Matching + Typo Auto-Correction) ──
+  if (!rawText.startsWith('/') && rawText.length <= 25) {
+    const matchedPoke = tryFuzzyMatchPokemon(rawText);
+    if (matchedPoke) {
+      const existing = await getRadarRule(chatId);
+      const targetSpecies = matchedPoke.name;
+      const targetAtk = existing?.target_atk ?? -1;
+      const targetDef = existing?.target_def ?? -1;
+      const targetSta = existing?.target_sta ?? -1;
+      const anyIv = existing?.any_iv ?? true;
+
+      await saveRadarRule(chatId, {
+        pokemon_name: targetSpecies,
+        target_atk: targetAtk,
+        target_def: targetDef,
+        target_sta: targetSta,
+        any_iv: anyIv,
+        username: username || '',
+        enabled: true,
+      });
+
+      const isHundo = targetAtk === 15 && targetDef === 15 && targetSta === 15;
+      const isNundo = targetAtk === 0 && targetDef === 0 && targetSta === 0;
+      const ivBadge = (anyIv || targetAtk === -1)
+        ? 'All IVs (Any)'
+        : isHundo
+        ? '💯 15 / 15 / 15 (Hundo)'
+        : isNundo
+        ? '0️⃣ 0 / 0 / 0 (Nundo)'
+        : `⚔️ ${targetAtk} / 🛡️ ${targetDef} / ❤️ ${targetSta}`;
+
+      const speciesBadge = targetSpecies === 'ALL'
+        ? 'All Pokémon'
+        : matchedPoke.corrected
+        ? `${targetSpecies} (auto-corrected from "${rawText}")`
+        : targetSpecies;
+
+      const confirmText =
+        `🐾 <b>Pokémon Target Set!</b>\n\n` +
+        `🐾 <b>Species:</b> <code>${speciesBadge}</code>\n` +
+        `📊 <b>Target IV:</b> <code>${ivBadge}</code>\n` +
+        `📡 <b>Alerts:</b> 🟢 Active & Ready\n\n` +
+        `<i>You can type an IV like <code>1/14/15</code> or <code>15/15/15</code> anytime to tune target IVs.</i>`;
+
+      const keyboard: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [
+            { text: '⚙️ Set Target IVs', callback_data: 'radar_prompt_iv' },
+            { text: '🧪 Send Test Ping', callback_data: 'radar_test_ping' },
+          ],
+          [
+            { text: '🎯 Radar Settings', callback_data: 'menu_radar' },
+            { text: '⬅️ Main Menu', callback_data: 'menu_main' },
+          ],
+        ],
+      };
+
+      await sendTelegramMessage(chatId, confirmText, { reply_markup: keyboard });
+      return;
+    }
+  }
+
   // ── /track <species> [atk/def/sta] ─────────────────────────────────────────
   if (rawText.startsWith('/track')) {
     const parts = rawText.split(/\s+/).slice(1);
@@ -1353,14 +1639,21 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
       return;
     }
 
-    const species = parts[0].toUpperCase() === 'ALL' ? 'ALL' : parts[0];
+    const speciesRaw = parts[0].toUpperCase() === 'ALL' ? 'ALL' : parts[0];
+    const species = speciesRaw === 'ALL' ? 'ALL' : fuzzyMatchPokemon(speciesRaw).name;
     let targetAtk = 15;
     let targetDef = 15;
     let targetSta = 15;
+    let anyIv = false;
 
     if (parts[1]) {
-      const ivStr = parts[1].trim();
-      if (ivStr === '100' || ivStr === 'hundo') {
+      const ivStr = parts[1].trim().toLowerCase();
+      if (ivStr === 'any' || ivStr === 'all' || ivStr === 'random') {
+        targetAtk = -1;
+        targetDef = -1;
+        targetSta = -1;
+        anyIv = true;
+      } else if (ivStr === '100' || ivStr === 'hundo') {
         targetAtk = 15;
         targetDef = 15;
         targetSta = 15;
@@ -1380,6 +1673,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
         targetAtk = existing.target_atk;
         targetDef = existing.target_def;
         targetSta = existing.target_sta;
+        anyIv = existing.any_iv ?? false;
       }
     }
 
@@ -1388,26 +1682,38 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
       target_atk: targetAtk,
       target_def: targetDef,
       target_sta: targetSta,
+      any_iv: anyIv,
       username: username || '',
       enabled: true,
     });
 
     const isHundo = targetAtk === 15 && targetDef === 15 && targetSta === 15;
     const isNundo = targetAtk === 0 && targetDef === 0 && targetSta === 0;
-    const ivBadge = isHundo ? '💯 15 / 15 / 15 (Hundo)' : isNundo ? '0️⃣ 0 / 0 / 0 (Nundo)' : `⚔️ ${targetAtk} / 🛡️ ${targetDef} / ❤️ ${targetSta}`;
+    const ivBadge = (anyIv || targetAtk === -1)
+      ? 'All IVs (Any)'
+      : isHundo
+      ? '💯 15 / 15 / 15 (Hundo)'
+      : isNundo
+      ? '0️⃣ 0 / 0 / 0 (Nundo)'
+      : `⚔️ ${targetAtk} / 🛡️ ${targetDef} / ❤️ ${targetSta}`;
 
     const confirmText =
       `✅ <b>Radar Alert Configured!</b>\n\n` +
-      `🐾 <b>Tracking Species:</b> <code>${species}</code>\n` +
+      `🐾 <b>Tracking Species:</b> <code>${species === 'ALL' ? 'All Pokémon' : species}</code>\n` +
       `📊 <b>Target IV:</b> <code>${ivBadge}</code>\n` +
       `🔔 <b>Status:</b> 🟢 Active\n\n` +
       `You will receive an instant private ping with coordinates and despawn timer when a match spawns!`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
-        [{ text: '⚙️ Tune Target IV (_/_/_)', callback_data: `radar_tune:${targetAtk}:${targetDef}:${targetSta}` }],
-        [{ text: '🧪 Test Alert Ping', callback_data: 'radar_test_ping' }],
-        [{ text: '🎯 Open Radar Dashboard', callback_data: 'menu_radar' }],
+        [
+          { text: '⚙️ Set Target IVs', callback_data: 'radar_prompt_iv' },
+          { text: '🧪 Test Alert Ping', callback_data: 'radar_test_ping' },
+        ],
+        [
+          { text: '🎯 Radar Settings', callback_data: 'menu_radar' },
+          { text: '⬅️ Main Menu', callback_data: 'menu_main' },
+        ],
       ],
     };
 
