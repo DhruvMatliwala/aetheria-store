@@ -1204,15 +1204,12 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
       `📦 <b>${plan.name} (~30 Days) — ₹${amountInr}</b>${discountMsg}\n` +
       `🔑 <b>UPI ID:</b> <code>${UPI_VPA}</code>\n` +
       `🔖 <b>Order ID:</b> <code>${orderId}</code>\n\n` +
-      `<b>⚡ How to complete your purchase:</b>\n` +
-      `1️⃣ Send <b>₹${amountInr}</b> via Google Pay, PhonePe, Paytm, or FamPay.\n` +
-      `2️⃣ <b>To fast-track your key instantly:</b> Send a screenshot of your <b>Transaction Details</b> (in Google Pay/FamPay, tap on the payment to view full details with the 12-digit UPI ID) or reply with the 12 digits directly here!\n\n` +
-      `<i>⏳ Bank SMS alerts usually arrive within 30–60s. Submitting your screenshot or 12-digit ID guarantees instant delivery even if your bank experiences network delays!</i>`;
+      `⚡ <b>Scan QR or pay ₹${amountInr}. Key is auto-delivered here within 1–2 minutes!</b>`;
 
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         [
-          { text: '📸 Submit Screenshot / 12-Digit ID', callback_data: `cb_prompt_utr_${orderId}` },
+          { text: "❓ Paid but didn't get key?", callback_data: `cb_prompt_utr_${orderId}` },
         ],
         [
           { text: '💬 Support', url: TELEGRAM_URL },
@@ -1231,16 +1228,14 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // ── Step 2A-2: User Tapped Submit Screenshot / 12-Digit ID ────────────────
+  // ── Step 2A-2: User Tapped Paid but didn't get key? ──────────────────────
   if (data.startsWith('cb_prompt_utr_')) {
     const orderId = data.replace('cb_prompt_utr_', '');
     const promptText =
-      `📸 <b>How to Fast-Track Your Order:</b>\n\n` +
-      `• <b>Google Pay:</b> Tap the completed payment in your chat/history ➔ Screenshot the page showing <b>UPI transaction ID</b> <i>(12 digits starting with 3...)</i>\n` +
-      `• <b>FamPay / FamApp:</b> Tap <b>"View Details"</b> on your receipt ➔ Screenshot the 12-digit UPI reference\n` +
-      `• <b>PhonePe:</b> Screenshot the receipt showing <b>UTR</b>\n` +
-      `• <b>Paytm:</b> Screenshot the receipt showing <b>UPI Ref No.</b>\n\n` +
-      `👉 <b>Simply drop that screenshot directly in this chat</b>, or type the 12 digits directly!\n\n` +
+      `⏳ <b>Awaiting Bank Confirmation...</b>\n` +
+      `Bank SMS alerts usually arrive within 1–2 minutes.\n\n` +
+      `💡 <b>If you paid and want your key right away without waiting:</b>\n` +
+      `Send a screenshot of your <b>Transaction Details</b> (in Google Pay/FamPay, tap on the payment to view full details with the 12-digit UPI ID) or reply with the 12 digits directly!\n\n` +
       `<i>🔖 Order ID: <code>${orderId}</code></i>`;
 
     const keyboard: InlineKeyboardMarkup = {
@@ -1504,7 +1499,7 @@ async function handleMyKeys(chatId: number, username?: string, messageId?: numbe
     const keyboard: InlineKeyboardMarkup = {
       inline_keyboard: [
         ...(pendingOrderId
-          ? [[{ text: '📸 Submit Screenshot / 12-Digit ID', callback_data: `cb_prompt_utr_${pendingOrderId}` }]]
+          ? [[{ text: "❓ Paid but didn't get key?", callback_data: `cb_prompt_utr_${pendingOrderId}` }]]
           : []),
         [
           { text: '🛒 Buy A Key', callback_data: 'cb_buy_1_month_1_device' },
@@ -1687,7 +1682,7 @@ async function handlePhotoMessage(message: NonNullable<TelegramUpdate['message']
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
-      [{ text: '📸 Submit Screenshot / 12-Digit ID', callback_data: `cb_prompt_utr_${orderId}` }],
+      [{ text: "❓ Paid but didn't get key?", callback_data: `cb_prompt_utr_${orderId}` }],
       [{ text: '👤 Check Order in My Keys', callback_data: 'cb_my_keys' }],
       [{ text: '💬 Contact Support', url: TELEGRAM_URL }],
     ],
@@ -1760,7 +1755,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
 
       const keyboard: InlineKeyboardMarkup = {
         inline_keyboard: [
-          [{ text: '📸 Submit Screenshot / 12-Digit ID', callback_data: `cb_prompt_utr_${orderId}` }],
+          [{ text: "❓ Paid but didn't get key?", callback_data: `cb_prompt_utr_${orderId}` }],
           [{ text: '👤 Check Order in My Keys', callback_data: 'cb_my_keys' }],
           [{ text: '💬 Support', url: TELEGRAM_URL }],
         ],
