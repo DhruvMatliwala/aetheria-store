@@ -110,7 +110,9 @@ async function callTelegramApi<T = any>(
 
     const data = await res.json();
     if (!data.ok) {
-      console.error(`[TelegramAPI:${method}] Error:`, data);
+      if (!data.description?.includes('message is not modified')) {
+        console.error(`[TelegramAPI:${method}] Error:`, data);
+      }
     }
     return data;
   } catch (err) {
@@ -173,7 +175,7 @@ export async function editTelegramMessage(
   options: EditMessageOptions = {},
   token?: string
 ) {
-  return callTelegramApi(
+  const res = await callTelegramApi(
     'editMessageText',
     {
       chat_id: chatId,
@@ -185,6 +187,13 @@ export async function editTelegramMessage(
     },
     token
   );
+
+  // If the message is already identical, treat it as success rather than an error
+  if (!res.ok && res.description?.includes('message is not modified')) {
+    return { ok: true, result: res.result, description: res.description };
+  }
+
+  return res;
 }
 
 /**

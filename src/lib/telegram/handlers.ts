@@ -244,11 +244,10 @@ export function getRadarIvTunerContent(atk: number, def: number, sta: number, po
   const isNundo = clampedAtk === 0 && clampedDef === 0 && clampedSta === 0;
 
   const text =
-    `🎯 <b>Custom IV Filter</b>\n` +
-    `🐾 Target: <b>${pokeName === 'ALL' ? 'All Pokémon' : pokeName}</b>\n\n` +
-    `Current Target: <b>⚔️ ${clampedAtk} / 🛡️ ${clampedDef} / ❤️ ${clampedSta}</b>\n` +
+    `🎯 <b>Target IV: ⚔️ ${clampedAtk} / 🛡️ ${clampedDef} / ❤️ ${clampedSta}</b>\n` +
+    `🐾 Target: <b>${pokeName === 'ALL' ? 'All Pokémon' : pokeName}</b>\n` +
     (isHundo ? `✨ <i>Universal 100% IV Hundo</i>\n` : isNundo ? `0️⃣ <i>Universal 0% IV Nundo</i>\n` : '') +
-    `\nTap <b>[ - ]</b> or <b>[ + ]</b> to dial your exact IV spread:`;
+    `\nUse <b>[ ➖ ]</b> and <b>[ ➕ ]</b> to adjust each stat:`;
 
   const aDown = Math.max(0, clampedAtk - 1);
   const aUp = Math.min(15, clampedAtk + 1);
@@ -260,35 +259,27 @@ export function getRadarIvTunerContent(atk: number, def: number, sta: number, po
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: `⚔️ ATK: ${clampedAtk}`, callback_data: 'noop' },
         { text: '➖', callback_data: `radar_tune:${aDown}:${clampedDef}:${clampedSta}` },
+        { text: `⚔️ ATK: ${clampedAtk}`, callback_data: 'noop' },
         { text: '➕', callback_data: `radar_tune:${aUp}:${clampedDef}:${clampedSta}` },
-        { text: '0', callback_data: `radar_tune:0:${clampedDef}:${clampedSta}` },
-        { text: '15', callback_data: `radar_tune:15:${clampedDef}:${clampedSta}` },
       ],
       [
-        { text: `🛡️ DEF: ${clampedDef}`, callback_data: 'noop' },
         { text: '➖', callback_data: `radar_tune:${clampedAtk}:${dDown}:${clampedSta}` },
+        { text: `🛡️ DEF: ${clampedDef}`, callback_data: 'noop' },
         { text: '➕', callback_data: `radar_tune:${clampedAtk}:${dUp}:${clampedSta}` },
-        { text: '0', callback_data: `radar_tune:${clampedAtk}:0:${clampedSta}` },
-        { text: '15', callback_data: `radar_tune:${clampedAtk}:15:${clampedSta}` },
       ],
       [
-        { text: `❤️ HP: ${clampedSta}`, callback_data: 'noop' },
         { text: '➖', callback_data: `radar_tune:${clampedAtk}:${clampedDef}:${sDown}` },
+        { text: `❤️ HP: ${clampedSta}`, callback_data: 'noop' },
         { text: '➕', callback_data: `radar_tune:${clampedAtk}:${clampedDef}:${sUp}` },
-        { text: '0', callback_data: `radar_tune:${clampedAtk}:${clampedDef}:0` },
-        { text: '15', callback_data: `radar_tune:${clampedAtk}:${clampedDef}:15` },
       ],
       [
-        { text: '💯 15/15/15 (Hundo)', callback_data: 'radar_tune:15:15:15' },
-        { text: '0️⃣ 0/0/0 (Nundo)', callback_data: 'radar_tune:0:0:0' },
+        { text: '💯 15/15/15', callback_data: 'radar_tune:15:15:15' },
+        { text: '0️⃣ 0/0/0', callback_data: 'radar_tune:0:0:0' },
       ],
       [
-        { text: '💾 Save Target & Alert Me', callback_data: `radar_save:${clampedAtk}:${clampedDef}:${clampedSta}` },
-      ],
-      [
-        { text: '⬅️ Back to Radar', callback_data: 'menu_radar' },
+        { text: '💾 Save Target', callback_data: `radar_save:${clampedAtk}:${clampedDef}:${clampedSta}` },
+        { text: '⬅️ Back', callback_data: 'menu_radar' },
       ],
     ],
   };
@@ -403,6 +394,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
       if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
     }
     await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     return;
@@ -414,12 +406,13 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
       if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
     }
     await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     return;
   }
 
-  // Interactive IV Tuner Form (_/_/_)
+  // Interactive IV Tuner Form (_/_/_) - Format 2 Minimal Stepper
   if (data.startsWith('radar_tune:')) {
     const parts = data.replace('radar_tune:', '').split(':');
     const atk = parseInt(parts[0] || '15', 10);
@@ -431,7 +424,9 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      // Always return on existing message to prevent duplicate message creation
       if (editRes.ok) return;
+      return;
     }
     await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     return;
@@ -458,6 +453,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
       if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
     }
     await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     return;
@@ -472,6 +468,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
       if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
     }
     await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     return;
@@ -499,6 +496,7 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, promptText, { reply_markup: keyboard });
       if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
     }
     await sendTelegramMessage(chatId, promptText, { reply_markup: keyboard });
     return;
