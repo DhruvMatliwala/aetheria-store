@@ -202,20 +202,21 @@ export function getFeaturesComparisonContent() {
     `⚡ <b>PGSharp Free vs Standard Edition</b>\n\n` +
     `<i>Why upgrading to Standard unlocks the true spoofing experience:</i>\n\n` +
     `❌ <b>FREE EDITION (Limited):</b>\n` +
-    `• <b>Normal Catch:</b> 15-second waiting animation every catch\n` +
+    `• <b>Normal Catch:</b> Must wait through full 15-second catch animations\n` +
     `• <b>Blind Catch:</b> Cannot see IV or stats until Pokémon is caught\n` +
-    `• <b>No Shiny Scanner:</b> Must manually tap every single Pokémon\n` +
-    `• <b>Manual Joystick:</b> Tiring finger dragging to walk\n` +
-    `• <b>Full Cutscenes:</b> Wastes time on raid intros & egg hatches\n` +
-    `• <b>Normal Throw:</b> Lower catch rate, Pokémon often flee\n\n` +
+    `• <b>No Shiny Scanner:</b> Must manually click every single spawn\n` +
+    `• <b>Manual Joystick:</b> Tiring finger dragging (no GPX auto-walk)\n` +
+    `• <b>Full Battles:</b> Must fight every Team Rocket battle manually\n` +
+    `• <b>Full Cutscenes:</b> Wastes time on raid intros & egg hatches\n\n` +
     `✅ <b>STANDARD EDITION (₹160 / Month):</b>\n` +
-    `• ⚡ <b>Quick Catch:</b> Catch in 1 second flat! (Skips animation)\n` +
-    `• 🎯 <b>100% IV Preview:</b> See exact ATK/DEF/STA & Level before throwing\n` +
+    `• ⚡ <b>Quick Catch:</b> Catch in 1 second flat! (Skips 15s animation)\n` +
+    `• 🎯 <b>Live IV Preview:</b> See exact 100% IV (15/15/15) before throwing\n` +
     `• ✨ <b>Block Non-Shiny:</b> Only shiny Pokémon trigger encounter!\n` +
-    `• 🚶 <b>Auto-Walk & GPX Routes:</b> Auto-hatch 100 eggs hands-free\n` +
-    `• ⏭️ <b>Skip Cutscenes:</b> Instantly skip raid, egg & evolution screens\n` +
-    `• 🎯 <b>100% Excellent Throw:</b> Max XP & highest catch rate guaranteed\n` +
-    `• 📍 <b>Spawn Booster:</b> Higher encounter velocity & radar filters\n\n` +
+    `• 🚶 <b>Auto-Walk & GPX Routes:</b> Auto-hatch 100 eggs 100% hands-free\n` +
+    `• 🥊 <b>Instant Beat Team Rocket:</b> Win Rocket battles in 1 second\n` +
+    `• ⏭️ <b>Skip Cutscenes:</b> Instantly skip raid, egg & evolution intros\n` +
+    `• 🐾 <b>Buddy Assistant:</b> Auto-feed, pet & play with your buddy\n` +
+    `• 🎯 <b>100% Excellent Curveball:</b> Guaranteed catch rate & max XP\n\n` +
     `👇 <b>Instant automated delivery right here in chat:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
@@ -268,7 +269,7 @@ export function getCooldownGuideContent() {
     `• Hatching eggs or evolving Pokémon\n` +
     `• Claiming research tasks & raids\n` +
     `• Trading or PVP trainer battles\n\n` +
-    `💡 <b>Pro-Tip:</b> With <b>PGSharp Standard (₹160)</b>, the in-game cooldown timer automatically displays on screen!`;
+    `💡 <b>Pro-Tip:</b> Shiny checking does <b>NOT</b> break cooldown! You can safely teleport, check wild spawns with <b>PGSharp Standard's Live IV & Shiny Preview</b>, and only catch once your cooldown timer reaches 0:00 without soft-bans!`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
