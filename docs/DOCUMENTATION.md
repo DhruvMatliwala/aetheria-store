@@ -141,9 +141,10 @@ To eliminate customer intimidation, hesitation, and text overload:
 
 ---
 
-## 9. Pokémon Radar, Live IV Sniper & Scanner Webhook Ingestion
+## 9. Verified Global Spoofing Hotspots, Live Events & Scanner Telemetry
 
-- **Direct Scanner Webhook (`/api/pokemon/spawns`)**: High-performance ingestion endpoint for raw scanner telemetry (Golbat, Poracle, MAD, RDM formats).
+- **100% Verified Global Spoofing Hotspots (`/hotspots`, `/coords`, `menu_hotspots`)**: Replaced synthetic/random math coordinates with 10 permanent, real-world verified premier spoofing hubs (Zaragoza Plaza del Pilar, Pier 39 SF, NYC Central Park / Times Square, Tokyo Shinjuku, Sydney Circular Quay, São Paulo Parque Ibirapuera, Taipei Da'an Park, Dubai Burj Khalifa, London Hyde Park, Chicago Navy Pier). Features 1-tap copyable coordinates (`<code>lat, lng</code>`), PokéStop density indicators, local timezones, PGSharp pro-tips, Google Maps links, and direct key upsell buttons.
+- **Direct Scanner Webhook (`/api/pokemon/spawns`)**: High-performance ingestion endpoint for verified raw external scanner telemetry (Golbat, Poracle, MAD, RDM formats).
 - **20-Minute De-duplication Cache**: Prevents repeat alerts for the same spawn ID.
 - **National Pokédex Database (1,025 Species) & Fuzzy Search**: Typo-tolerant Levenshtein search supporting natural queries (`Greyninja` ➔ `Greninja`, `Swampert 1/14/15`).
 - **Live Events Calendar (`/api/pokemon/events`)**: Real-time event and raid boss rotations accessible via `/events`.

@@ -326,15 +326,15 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_bullet("Privacy-Masked Order Vouches:", "Automated social proof posts (e.g. '30-Day PGSharp Key dispatched to dh***@gmail.com') with atomic idempotency locks.")
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 8. Pokémon Radar & Live Scanner Telemetry
+    # 8. Verified Global Spoofing Hotspots & Live Scanner Telemetry
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("8. Pokémon Radar & Live Scanner Telemetry")
+    add_h1("8. Verified Global Spoofing Hotspots & Live Scanner Telemetry")
     add_body(
-        "Integrated scanner webhook (/api/pokemon/spawns) processes raw scanner feeds (Golbat, Poracle, MAD, RDM) in real time:"
+        "Integrated spoofing directory and scanner webhook (/api/pokemon/spawns) provide 100% verified gameplay coordinates:"
     )
+    add_bullet("100% Verified Global Spoofing Hotspots:", "Replaced synthetic/random math coordinates with 10 permanent, real-world verified premier spoofing hubs (Zaragoza Plaza del Pilar, Pier 39 SF, NYC Times Square, Tokyo Shinjuku, Sydney Circular Quay, São Paulo, Taipei, Dubai, London, Chicago Navy Pier). Features 1-tap copyable coordinates, PokéStop density metrics, local timezones, PGSharp pro-tips, and Google Maps jump links.")
     add_bullet("20-Minute De-duplication Cache:", "In-memory cache prevents repeat alerts for the same spawn.")
     add_bullet("1,025 Species National Pokédex:", "Fuzzy typo-tolerant search (Levenshtein distance) supporting natural typing ('Greyninja' -> 'Greninja').")
-    add_bullet("Interactive Telegram Alerts:", "Dispatches despawn countdown, 1-tap copy coordinates, Google Maps jump link, and quick-catch PGSharp upsell.")
     add_bullet("Live Events Calendar (/api/pokemon/events):", "Fetches active 5-star raids, mega raids, and spotlight hours via /events command.")
 
     # ─────────────────────────────────────────────────────────────────────────

@@ -52,7 +52,11 @@ import {
 } from '@/lib/pokemon/events';
 import { saveRadarRule, getRadarRule, toggleRadarRule, updateRadarLastAlert } from '@/lib/firestore/radar';
 import { PokemonSpawn, RadarWatchlistRule } from '@/types/pokemon';
-import { generateRealisticHotspotSpawn } from '@/lib/pokemon/hotspots';
+import {
+  VERIFIED_HOTSPOTS,
+  getHotspotById,
+  SpoofingHotspot,
+} from '@/lib/pokemon/hotspots';
 import {
   fuzzyMatchPokemon,
   tryFuzzyMatchPokemon,
@@ -82,7 +86,7 @@ export function getPersistentKeyboard(): ReplyKeyboardMarkup {
     keyboard: [
       [
         { text: '🔑 PGSharp Store' },
-        { text: '🎯 Pokémon Radar' },
+        { text: '🌍 Spoofing Hotspots' },
       ],
       [
         { text: '📅 Live Events' },
@@ -133,8 +137,8 @@ export function getEventsInlineKeyboard(activeTab: 'overview' | 'raids' | 'commd
 function getPlanPickerContent(discountLabel?: string, firstName: string = 'Trainer') {
   const greeting = `👋 Welcome <b>${firstName}</b> to <b>Aetheria Hub</b>!`;
   const text = discountLabel
-    ? `${greeting}\n\n${discountLabel}\n\n⚡ <i>Fast automated delivery • Instant PGSharp keys • Live Pokémon Radar</i>\n\n👇 <b>Select a department below:</b>`
-    : `${greeting}\n\n⚡ <i>Fast automated delivery • Instant PGSharp keys • Live Pokémon Radar</i>\n\n👇 <b>Select a department below:</b>`;
+    ? `${greeting}\n\n${discountLabel}\n\n⚡ <i>Fast automated delivery • Instant PGSharp keys • Verified Spoofing Hotspots</i>\n\n👇 <b>Select a department below:</b>`
+    : `${greeting}\n\n⚡ <i>Fast automated delivery • Instant PGSharp keys • Verified Spoofing Hotspots</i>\n\n👇 <b>Select a department below:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
@@ -142,7 +146,7 @@ function getPlanPickerContent(discountLabel?: string, firstName: string = 'Train
         { text: '🔑 Buy PGSharp Keys', callback_data: 'menu_store' },
       ],
       [
-        { text: '🎯 Pokémon Radar & Sniper', callback_data: 'menu_radar' },
+        { text: '🌍 Spoofing Hotspots & Hubs', callback_data: 'menu_hotspots' },
       ],
       [
         { text: '📅 Events & Raids', callback_data: 'cb_events_overview' },
@@ -192,42 +196,42 @@ export function getStoreMenuContent(discountLabel?: string) {
 }
 
 /**
- * Pokémon Radar & Live IV Sniper Hub
+ * Global Spoofing Hotspots & Raid Hubs Hub
  */
-export async function getRadarMenuContent(chatId: number) {
-  const rule = await getRadarRule(chatId);
-  const statusIcon = rule?.enabled !== false ? '🟢 Active' : '⚪ Paused';
-  const targetSpecies = (!rule?.pokemon_name || rule.pokemon_name === 'ALL') ? 'All Pokémon' : rule.pokemon_name;
-  const isAnyIv = !rule || rule.any_iv || rule.target_atk === -1;
-  const targetAtk = rule?.target_atk ?? 15;
-  const targetDef = rule?.target_def ?? 15;
-  const targetSta = rule?.target_sta ?? 15;
-
-  const ivDisplay = isAnyIv
-    ? 'All IVs (Any)'
-    : rule?.is_hundo_only
-    ? '💯 15 / 15 / 15 (Hundo)'
-    : rule?.is_nundo_only
-    ? '0️⃣ 0 / 0 / 0 (Nundo)'
-    : `⚔️ ${targetAtk} / 🛡️ ${targetDef} / ❤️ ${targetSta}`;
-
+export function getHotspotsMenuContent() {
   const text =
-    `🎯 <b>Pokémon Radar & Live IV Sniper</b>\n\n` +
-    `📡 <b>Status:</b> ${statusIcon}\n` +
-    `🐾 <b>Tracking:</b> <code>${targetSpecies}</code>\n` +
-    `📊 <b>Target IV:</b> <code>${ivDisplay}</code>\n\n` +
-    `👇 <b>Tap an option or type directly in chat:</b>`;
+    `🌍 <b>Global Spoofing Hotspots & Raid Hubs</b>\n\n` +
+    `⚡ <i>100% verified, permanent coordinates. Lured 24/7, max PokéStop density & instant 20-player raid lobbies.</i>\n\n` +
+    `🔥 <b>Top Highlights:</b>\n` +
+    `• <b>Zaragoza & Pier 39:</b> #1 for XP & Stardust farming (endless quad-lured stops).\n` +
+    `• <b>NYC Times Square:</b> 5-Star & Mega Raids fill to 20 players in seconds.\n` +
+    `• <b>Sydney & Tokyo:</b> Earliest timezones to catch event Pokémon hours early.\n\n` +
+    `👇 <b>Tap any hotspot below to get copyable coordinates & pro-tips:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '🐾 Select Pokémon', callback_data: 'radar_poke_menu' },
+        { text: '🇪🇸 Zaragoza (Max XP Lures)', callback_data: 'hotspot_zaragoza' },
+        { text: '🇺🇸 Pier 39 SF (Water/Lures)', callback_data: 'hotspot_pier39' },
       ],
       [
-        { text: '⚙️ Set IVs', callback_data: 'radar_prompt_iv' },
+        { text: '🇺🇸 NYC (20-Player Raids)', callback_data: 'hotspot_central_park' },
+        { text: '🇯🇵 Tokyo (Early Events)', callback_data: 'hotspot_tokyo_shinjuku' },
       ],
       [
-        { text: '📡 Scan Now', callback_data: 'radar_scan_now' },
+        { text: '🇦🇺 Sydney (1st in World)', callback_data: 'hotspot_sydney' },
+        { text: '🇧🇷 São Paulo (Ibirapuera)', callback_data: 'hotspot_sao_paulo' },
+      ],
+      [
+        { text: '🇹🇼 Taipei (Da\'an Park)', callback_data: 'hotspot_taipei' },
+        { text: '🇦🇪 Dubai (Regional Hub)', callback_data: 'hotspot_dubai' },
+      ],
+      [
+        { text: '🇬🇧 London (Hyde Park)', callback_data: 'hotspot_london' },
+        { text: '🇺🇸 Chicago (Navy Pier)', callback_data: 'hotspot_chicago' },
+      ],
+      [
+        { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
       ],
       [
         { text: '⬅️ Back to Main Menu', callback_data: 'menu_main' },
@@ -236,6 +240,83 @@ export async function getRadarMenuContent(chatId: number) {
   };
 
   return { text, keyboard };
+}
+
+/**
+ * Detailed Hotspot Card with 1-Tap Copyable Coordinates
+ */
+export function getHotspotDetailContent(hotspotId: string) {
+  const spot = getHotspotById(hotspotId) || VERIFIED_HOTSPOTS[0];
+  const coordStr = `${spot.lat.toFixed(6)}, ${spot.lng.toFixed(6)}`;
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lng}`;
+
+  const text =
+    `${spot.countryFlag} <b>${spot.name}</b>\n` +
+    `🏛️ <b>Landmark:</b> ${spot.landmark}\n` +
+    `🏷️ <b>Category:</b> ${spot.categoryLabel}\n\n` +
+    `📍 <b>Coordinates (Tap to Copy):</b>\n` +
+    `<code>${coordStr}</code>\n` +
+    `<i>(Tap coords above to copy & paste into PGSharp Teleport)</i>\n\n` +
+    `📊 <b>PokéStop Density:</b> ${spot.pokestopDensity}\n` +
+    `🎯 <b>Best For:</b> ${spot.bestFor}\n` +
+    `🕒 <b>Local Timezone:</b> ${spot.timezone}\n\n` +
+    `💡 <b>PGSharp Pro-Tip:</b>\n` +
+    `${spot.proTip}\n\n` +
+    `─────────────────────────────\n` +
+    `⚡ <b>Want instant Quick Catch & Auto-Walk here?</b>\n` +
+    `Get your PGSharp Standard key for ₹160 (Instant Automated Delivery):`;
+
+  const keyboard: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [
+        { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
+      ],
+      [
+        { text: '🗺️ View on Google Maps', url: mapsUrl },
+        { text: '🔄 Other Hotspots', callback_data: 'menu_hotspots' },
+      ],
+      [
+        { text: '⬅️ Back to Main Menu', callback_data: 'menu_main' },
+      ],
+    ],
+  };
+
+  return { text, keyboard };
+}
+
+/**
+ * Search / lookup helper for city and hotspot aliases
+ */
+export function findHotspotByQuery(query: string): SpoofingHotspot | undefined {
+  const clean = query.toLowerCase().trim().replace(/[^\w\s]/g, '');
+  if (!clean || clean.length < 2) return undefined;
+
+  // Specific aliases & shortcuts
+  if (clean === 'sf' || clean === 'pier 39' || clean === 'pier39' || clean === 'san francisco') return getHotspotById('pier39');
+  if (clean === 'nyc' || clean === 'new york' || clean === 'new york city' || clean === 'times square' || clean === 'central park') return getHotspotById('central_park');
+  if (clean === 'spain' || clean === 'zaragoza' || clean === 'pilar') return getHotspotById('zaragoza');
+  if (clean === 'tokyo' || clean === 'japan' || clean === 'shinjuku' || clean === 'shibuya') return getHotspotById('tokyo_shinjuku');
+  if (clean === 'sydney' || clean === 'australia' || clean === 'circular quay') return getHotspotById('sydney');
+  if (clean === 'brazil' || clean === 'sao paulo' || clean === 'ibirapuera') return getHotspotById('sao_paulo');
+  if (clean === 'taiwan' || clean === 'taipei' || clean === 'daan') return getHotspotById('taipei');
+  if (clean === 'dubai' || clean === 'uae' || clean === 'burj khalifa') return getHotspotById('dubai');
+  if (clean === 'london' || clean === 'uk' || clean === 'hyde park') return getHotspotById('london');
+  if (clean === 'chicago' || clean === 'navy pier') return getHotspotById('chicago');
+
+  return VERIFIED_HOTSPOTS.find(
+    (h) =>
+      h.id.toLowerCase() === clean ||
+      h.city.toLowerCase().includes(clean) ||
+      h.name.toLowerCase().includes(clean) ||
+      h.landmark.toLowerCase().includes(clean)
+  );
+}
+
+/**
+ * Pokémon Radar / Hotspots Hub (Backward-compatible wrapper)
+ */
+export async function getRadarMenuContent(chatId?: number) {
+  return getHotspotsMenuContent();
 }
 
 /**
@@ -564,15 +645,14 @@ export async function sendPokemonSpawnAlert(chatId: number, spawn: PokemonSpawn)
 }
 
 /**
- * Dispatches an immediate first live spawn alert matching a subscriber's newly set target
+ * Dispatches verified global hotspots to subscriber
  */
-export async function dispatchFirstLiveSpawnAlert(chatId: number, rule: RadarWatchlistRule) {
+export async function dispatchFirstLiveSpawnAlert(chatId: number, rule?: any) {
   try {
-    const spawn = generateRealisticHotspotSpawn(rule);
-    await sendPokemonSpawnAlert(chatId, spawn);
-    await updateRadarLastAlert(chatId);
+    const { text, keyboard } = getHotspotsMenuContent();
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
   } catch (err) {
-    console.error(`[Radar] Failed to dispatch first alert to ${chatId}:`, err);
+    console.error(`[Hotspots] Failed to dispatch hotspots to ${chatId}:`, err);
   }
 }
 
@@ -658,9 +738,22 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // ── Pokémon Radar & Sniper Sub-Menu ──────────────────────────────────────
-  if (data === 'menu_radar') {
-    const { text, keyboard } = await getRadarMenuContent(chatId);
+  // ── Spoofing Hotspots & Hubs Sub-Menu ────────────────────────────────────
+  if (data === 'menu_hotspots' || data === 'menu_radar') {
+    const { text, keyboard } = getHotspotsMenuContent();
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
+    return;
+  }
+
+  // Hotspot detail view (e.g. hotspot_zaragoza, hotspot_pier39)
+  if (data.startsWith('hotspot_')) {
+    const hotspotId = data.replace('hotspot_', '');
+    const { text, keyboard } = getHotspotDetailContent(hotspotId);
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
       if (editRes.ok) return;
@@ -904,20 +997,14 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
 
   // Scan Now / Instant Hotspot Ping
   if (data === 'radar_scan_now' || data === 'radar_test_ping') {
-    await answerTelegramCallbackQuery(query.id, '📡 Scanning spoofing hotspots for matches...', false);
-    const rule = await getRadarRule(chatId);
-    const effectiveRule: RadarWatchlistRule = rule || {
-      chat_id: chatId,
-      username: query.from.username || '',
-      pokemon_name: 'ALL',
-      target_atk: -1,
-      target_def: -1,
-      target_sta: -1,
-      any_iv: true,
-      enabled: true,
-      created_at: new Date().toISOString(),
-    };
-    await dispatchFirstLiveSpawnAlert(chatId, effectiveRule);
+    await answerTelegramCallbackQuery(query.id, '🌍 Loading 100% verified hotspots...', false);
+    const { text, keyboard } = getHotspotsMenuContent();
+    if (messageId) {
+      const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
+      if (editRes.ok) return;
+      await deleteTelegramMessage(chatId, messageId);
+    }
+    await sendTelegramMessage(chatId, text, { reply_markup: keyboard });
     return;
   }
 
@@ -1710,8 +1797,26 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     return;
   }
 
-  if (rawText === '🎯 Pokémon Radar' || rawText.startsWith('/radar')) {
-    const { text, keyboard } = await getRadarMenuContent(chatId);
+  if (
+    rawText === '🌍 Spoofing Hotspots' ||
+    rawText === '🎯 Pokémon Radar' ||
+    rawText.startsWith('/hotspots') ||
+    rawText.startsWith('/hotspot') ||
+    rawText.startsWith('/coords') ||
+    rawText.startsWith('/coord') ||
+    rawText.startsWith('/radar')
+  ) {
+    const { text, keyboard } = getHotspotsMenuContent();
+    await sendTelegramMessage(chatId, text, {
+      reply_markup: keyboard,
+    });
+    return;
+  }
+
+  // ── Direct Hotspot / City Query (e.g. "zaragoza", "pier 39", "sydney", "tokyo", "nyc") ──
+  const matchedHotspot = findHotspotByQuery(rawText);
+  if (matchedHotspot) {
+    const { text, keyboard } = getHotspotDetailContent(matchedHotspot.id);
     await sendTelegramMessage(chatId, text, {
       reply_markup: keyboard,
     });
