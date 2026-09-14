@@ -326,16 +326,17 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_bullet("Privacy-Masked Order Vouches:", "Automated social proof posts (e.g. '30-Day PGSharp Key dispatched to dh***@gmail.com') with atomic idempotency locks.")
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 8. Verified Global Spoofing Hotspots & Live Scanner Telemetry
+    # 8. Sales Conversion Assets, Cooldown Guide & Live Events
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("8. Verified Global Spoofing Hotspots & Live Scanner Telemetry")
+    add_h1("8. Sales Conversion Assets, Cooldown Guide & Live Events")
     add_body(
-        "Integrated spoofing directory and scanner webhook (/api/pokemon/spawns) provide 100% verified gameplay coordinates:"
+        "Direct sales enablement tooling and ban-prevention utility for the Telegram bot:"
     )
-    add_bullet("100% Verified Global Spoofing Hotspots:", "Replaced synthetic/random math coordinates with 10 permanent, real-world verified premier spoofing hubs (Zaragoza Plaza del Pilar, Pier 39 SF, NYC Times Square, Tokyo Shinjuku, Sydney Circular Quay, São Paulo, Taipei, Dubai, London, Chicago Navy Pier). Features 1-tap copyable coordinates, PokéStop density metrics, local timezones, PGSharp pro-tips, and Google Maps jump links.")
+    add_bullet("Free vs Standard Comparison Engine:", "High-converting sales comparison matrix detailing the limitations of PGSharp Free (15-second animations, blind catches without stats, no shiny scanner, manual joystick fatigue) vs the advantages of PGSharp Standard (1-second Quick Catch, 100% IV preview, block non-shiny encounters, hands-free GPX auto-walk, instant skip cutscenes, 100% excellent throws).")
+    add_bullet("Anti-Ban Cooldown & Safety Guide:", "Comprehensive reference guide with distance cooldown chart (1 km to 1,350+ km global max of 120 mins), explicit breakdown of cooldown-triggering actions (balls, berries, gym battles, spins) versus safe actions (teleporting, IV inspection, egg hatching, trading).")
+    add_bullet("Live Events Calendar (/api/pokemon/events):", "Fetches active 5-star raids, mega raids, and spotlight hours via /events command.")
     add_bullet("20-Minute De-duplication Cache:", "In-memory cache prevents repeat alerts for the same spawn.")
     add_bullet("1,025 Species National Pokédex:", "Fuzzy typo-tolerant search (Levenshtein distance) supporting natural typing ('Greyninja' -> 'Greninja').")
-    add_bullet("Live Events Calendar (/api/pokemon/events):", "Fetches active 5-star raids, mega raids, and spotlight hours via /events command.")
 
     # ─────────────────────────────────────────────────────────────────────────
     # 9. Admin Command Center & Vercel Storage Optimization

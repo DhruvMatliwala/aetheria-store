@@ -53,11 +53,6 @@ import {
 import { saveRadarRule, getRadarRule, toggleRadarRule, updateRadarLastAlert } from '@/lib/firestore/radar';
 import { PokemonSpawn, RadarWatchlistRule } from '@/types/pokemon';
 import {
-  VERIFIED_HOTSPOTS,
-  getHotspotById,
-  SpoofingHotspot,
-} from '@/lib/pokemon/hotspots';
-import {
   fuzzyMatchPokemon,
   tryFuzzyMatchPokemon,
   TOP_SNIPED_POKEMON,
@@ -86,18 +81,21 @@ export function getPersistentKeyboard(): ReplyKeyboardMarkup {
     keyboard: [
       [
         { text: '🔑 PGSharp Store' },
-        { text: '🌍 Spoofing Hotspots' },
+        { text: '⚡ Free vs Standard' },
       ],
       [
         { text: '📅 Live Events' },
-        { text: '👥 Refer & Earn' },
+        { text: '⏱️ Cooldown Guide' },
       ],
       [
         { text: '📦 Live Stock' },
         { text: '👤 My Keys' },
       ],
       [
+        { text: '👥 Refer & Earn' },
         { text: '📢 Proofs Channel' },
+      ],
+      [
         { text: '🌐 Open Web Store', web_app: { url: STORE_URL } },
       ],
     ],
@@ -137,8 +135,8 @@ export function getEventsInlineKeyboard(activeTab: 'overview' | 'raids' | 'commd
 function getPlanPickerContent(discountLabel?: string, firstName: string = 'Trainer') {
   const greeting = `👋 Welcome <b>${firstName}</b> to <b>Aetheria Hub</b>!`;
   const text = discountLabel
-    ? `${greeting}\n\n${discountLabel}\n\n⚡ <i>Fast automated delivery • Instant PGSharp keys • Verified Spoofing Hotspots</i>\n\n👇 <b>Select a department below:</b>`
-    : `${greeting}\n\n⚡ <i>Fast automated delivery • Instant PGSharp keys • Verified Spoofing Hotspots</i>\n\n👇 <b>Select a department below:</b>`;
+    ? `${greeting}\n\n${discountLabel}\n\n⚡ <i>Fast automated delivery • Instant PGSharp Standard keys</i>\n\n👇 <b>Select an option below:</b>`
+    : `${greeting}\n\n⚡ <i>Fast automated delivery • Instant PGSharp Standard keys</i>\n\n👇 <b>Select an option below:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
@@ -146,13 +144,14 @@ function getPlanPickerContent(discountLabel?: string, firstName: string = 'Train
         { text: '🔑 Buy PGSharp Keys', callback_data: 'menu_store' },
       ],
       [
-        { text: '🌍 Spoofing Hotspots & Hubs', callback_data: 'menu_hotspots' },
+        { text: '⚡ Free vs Standard Features', callback_data: 'cb_features' },
       ],
       [
+        { text: '⏱️ Cooldown & Safety Guide', callback_data: 'cb_cooldown' },
         { text: '📅 Events & Raids', callback_data: 'cb_events_overview' },
-        { text: '👥 Refer & Earn', callback_data: 'cb_refer_earn' },
       ],
       [
+        { text: '👥 Refer & Earn', callback_data: 'cb_refer_earn' },
         { text: '📢 Live Proofs Channel', url: TELEGRAM_CHANNEL_URL },
       ],
     ],
@@ -196,44 +195,41 @@ export function getStoreMenuContent(discountLabel?: string) {
 }
 
 /**
- * Global Spoofing Hotspots & Raid Hubs Hub
+ * PGSharp Free vs Standard Comparison Card (High-Converting Sales Asset)
  */
-export function getHotspotsMenuContent() {
+export function getFeaturesComparisonContent() {
   const text =
-    `🌍 <b>Global Spoofing Hotspots & Raid Hubs</b>\n\n` +
-    `⚡ <i>100% verified, permanent coordinates. Lured 24/7, max PokéStop density & instant 20-player raid lobbies.</i>\n\n` +
-    `🔥 <b>Top Highlights:</b>\n` +
-    `• <b>Zaragoza & Pier 39:</b> #1 for XP & Stardust farming (endless quad-lured stops).\n` +
-    `• <b>NYC Times Square:</b> 5-Star & Mega Raids fill to 20 players in seconds.\n` +
-    `• <b>Sydney & Tokyo:</b> Earliest timezones to catch event Pokémon hours early.\n\n` +
-    `👇 <b>Tap any hotspot below to get copyable coordinates & pro-tips:</b>`;
+    `⚡ <b>PGSharp Free vs Standard Edition</b>\n\n` +
+    `<i>Why upgrading to Standard unlocks the true spoofing experience:</i>\n\n` +
+    `❌ <b>FREE EDITION (Limited):</b>\n` +
+    `• <b>Normal Catch:</b> 15-second waiting animation every catch\n` +
+    `• <b>Blind Catch:</b> Cannot see IV or stats until Pokémon is caught\n` +
+    `• <b>No Shiny Scanner:</b> Must manually tap every single Pokémon\n` +
+    `• <b>Manual Joystick:</b> Tiring finger dragging to walk\n` +
+    `• <b>Full Cutscenes:</b> Wastes time on raid intros & egg hatches\n` +
+    `• <b>Normal Throw:</b> Lower catch rate, Pokémon often flee\n\n` +
+    `✅ <b>STANDARD EDITION (₹160 / Month):</b>\n` +
+    `• ⚡ <b>Quick Catch:</b> Catch in 1 second flat! (Skips animation)\n` +
+    `• 🎯 <b>100% IV Preview:</b> See exact ATK/DEF/STA & Level before throwing\n` +
+    `• ✨ <b>Block Non-Shiny:</b> Only shiny Pokémon trigger encounter!\n` +
+    `• 🚶 <b>Auto-Walk & GPX Routes:</b> Auto-hatch 100 eggs hands-free\n` +
+    `• ⏭️ <b>Skip Cutscenes:</b> Instantly skip raid, egg & evolution screens\n` +
+    `• 🎯 <b>100% Excellent Throw:</b> Max XP & highest catch rate guaranteed\n` +
+    `• 📍 <b>Spawn Booster:</b> Higher encounter velocity & radar filters\n\n` +
+    `👇 <b>Instant automated delivery right here in chat:</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '🇪🇸 Zaragoza (Max XP Lures)', callback_data: 'hotspot_zaragoza' },
-        { text: '🇺🇸 Pier 39 SF (Water/Lures)', callback_data: 'hotspot_pier39' },
+        { text: '📱 Buy 1 Device (₹160)', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '🔋 Buy 2 Devices (₹300)', callback_data: 'cb_buy_1_month_2_device' },
       ],
       [
-        { text: '🇺🇸 NYC (20-Player Raids)', callback_data: 'hotspot_central_park' },
-        { text: '🇯🇵 Tokyo (Early Events)', callback_data: 'hotspot_tokyo_shinjuku' },
+        { text: '⏱️ Cooldown & Safety Guide', callback_data: 'cb_cooldown' },
+        { text: '📦 Live Stock', callback_data: 'cb_stock' },
       ],
       [
-        { text: '🇦🇺 Sydney (1st in World)', callback_data: 'hotspot_sydney' },
-        { text: '🇧🇷 São Paulo (Ibirapuera)', callback_data: 'hotspot_sao_paulo' },
-      ],
-      [
-        { text: '🇹🇼 Taipei (Da\'an Park)', callback_data: 'hotspot_taipei' },
-        { text: '🇦🇪 Dubai (Regional Hub)', callback_data: 'hotspot_dubai' },
-      ],
-      [
-        { text: '🇬🇧 London (Hyde Park)', callback_data: 'hotspot_london' },
-        { text: '🇺🇸 Chicago (Navy Pier)', callback_data: 'hotspot_chicago' },
-      ],
-      [
-        { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
-      ],
-      [
+        { text: '📢 Proofs Channel', url: TELEGRAM_CHANNEL_URL },
         { text: '⬅️ Back to Main Menu', callback_data: 'menu_main' },
       ],
     ],
@@ -243,28 +239,36 @@ export function getHotspotsMenuContent() {
 }
 
 /**
- * Detailed Hotspot Card with 1-Tap Copyable Coordinates
+ * Teleport Cooldown & Anti-Ban Safety Guide
  */
-export function getHotspotDetailContent(hotspotId: string) {
-  const spot = getHotspotById(hotspotId) || VERIFIED_HOTSPOTS[0];
-  const coordStr = `${spot.lat.toFixed(6)}, ${spot.lng.toFixed(6)}`;
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lng}`;
-
+export function getCooldownGuideContent() {
   const text =
-    `${spot.countryFlag} <b>${spot.name}</b>\n` +
-    `🏛️ <b>Landmark:</b> ${spot.landmark}\n` +
-    `🏷️ <b>Category:</b> ${spot.categoryLabel}\n\n` +
-    `📍 <b>Coordinates (Tap to Copy):</b>\n` +
-    `<code>${coordStr}</code>\n` +
-    `<i>(Tap coords above to copy & paste into PGSharp Teleport)</i>\n\n` +
-    `📊 <b>PokéStop Density:</b> ${spot.pokestopDensity}\n` +
-    `🎯 <b>Best For:</b> ${spot.bestFor}\n` +
-    `🕒 <b>Local Timezone:</b> ${spot.timezone}\n\n` +
-    `💡 <b>PGSharp Pro-Tip:</b>\n` +
-    `${spot.proTip}\n\n` +
-    `─────────────────────────────\n` +
-    `⚡ <b>Want instant Quick Catch & Auto-Walk here?</b>\n` +
-    `Get your PGSharp Standard key for ₹160 (Instant Automated Delivery):`;
+    `⏱️ <b>PGSharp Cooldown & Safety Guide</b>\n\n` +
+    `<i>To prevent soft-bans, wait for cooldown before catching or spinning after teleporting:</i>\n\n` +
+    `📊 <b>Cooldown Distance Chart:</b>\n` +
+    `• <b>1 km:</b> 30 seconds\n` +
+    `• <b>5 km:</b> 2 minutes\n` +
+    `• <b>10 km:</b> 6 minutes\n` +
+    `• <b>25 km:</b> 11 minutes\n` +
+    `• <b>50 km:</b> 20 minutes\n` +
+    `• <b>100 km:</b> 30 minutes\n` +
+    `• <b>250 km:</b> 45 minutes\n` +
+    `• <b>500 km:</b> 60 minutes\n` +
+    `• <b>1,000 km:</b> 90 minutes\n` +
+    `• <b>1,350+ km (Global):</b> 120 minutes (Max 2h)\n\n` +
+    `⚠️ <b>Actions that TRIGGER Cooldown:</b>\n` +
+    `• Throwing a Pokéball (or berry) at a wild Pokémon\n` +
+    `• Spinning a PokéStop or Gym photo disc\n` +
+    `• Dropping a Pokémon into a Gym\n` +
+    `• Feeding a berry to a Gym defender\n` +
+    `• Battling in a Gym\n\n` +
+    `✅ <b>SAFE Actions (DO NOT trigger cooldown):</b>\n` +
+    `• Teleporting anywhere across the globe\n` +
+    `• Encountering a Pokémon (checking IV / shiny)\n` +
+    `• Hatching eggs or evolving Pokémon\n` +
+    `• Claiming research tasks & raids\n` +
+    `• Trading or PVP trainer battles\n\n` +
+    `💡 <b>Pro-Tip:</b> With <b>PGSharp Standard (₹160)</b>, the in-game cooldown timer automatically displays on screen!`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
@@ -272,11 +276,8 @@ export function getHotspotDetailContent(hotspotId: string) {
         { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
       ],
       [
-        { text: '🗺️ View on Google Maps', url: mapsUrl },
-        { text: '🔄 Other Hotspots', callback_data: 'menu_hotspots' },
-      ],
-      [
-        { text: '⬅️ Back to Main Menu', callback_data: 'menu_main' },
+        { text: '⚡ Free vs Standard Features', callback_data: 'cb_features' },
+        { text: '⬅️ Main Menu', callback_data: 'menu_main' },
       ],
     ],
   };
@@ -285,38 +286,14 @@ export function getHotspotDetailContent(hotspotId: string) {
 }
 
 /**
- * Search / lookup helper for city and hotspot aliases
- */
-export function findHotspotByQuery(query: string): SpoofingHotspot | undefined {
-  const clean = query.toLowerCase().trim().replace(/[^\w\s]/g, '');
-  if (!clean || clean.length < 2) return undefined;
-
-  // Specific aliases & shortcuts
-  if (clean === 'sf' || clean === 'pier 39' || clean === 'pier39' || clean === 'san francisco') return getHotspotById('pier39');
-  if (clean === 'nyc' || clean === 'new york' || clean === 'new york city' || clean === 'times square' || clean === 'central park') return getHotspotById('central_park');
-  if (clean === 'spain' || clean === 'zaragoza' || clean === 'pilar') return getHotspotById('zaragoza');
-  if (clean === 'tokyo' || clean === 'japan' || clean === 'shinjuku' || clean === 'shibuya') return getHotspotById('tokyo_shinjuku');
-  if (clean === 'sydney' || clean === 'australia' || clean === 'circular quay') return getHotspotById('sydney');
-  if (clean === 'brazil' || clean === 'sao paulo' || clean === 'ibirapuera') return getHotspotById('sao_paulo');
-  if (clean === 'taiwan' || clean === 'taipei' || clean === 'daan') return getHotspotById('taipei');
-  if (clean === 'dubai' || clean === 'uae' || clean === 'burj khalifa') return getHotspotById('dubai');
-  if (clean === 'london' || clean === 'uk' || clean === 'hyde park') return getHotspotById('london');
-  if (clean === 'chicago' || clean === 'navy pier') return getHotspotById('chicago');
-
-  return VERIFIED_HOTSPOTS.find(
-    (h) =>
-      h.id.toLowerCase() === clean ||
-      h.city.toLowerCase().includes(clean) ||
-      h.name.toLowerCase().includes(clean) ||
-      h.landmark.toLowerCase().includes(clean)
-  );
-}
-
-/**
- * Pokémon Radar / Hotspots Hub (Backward-compatible wrapper)
+ * Backward compatibility alias
  */
 export async function getRadarMenuContent(chatId?: number) {
-  return getHotspotsMenuContent();
+  return getFeaturesComparisonContent();
+}
+
+export function getHotspotsMenuContent() {
+  return getFeaturesComparisonContent();
 }
 
 /**
@@ -738,9 +715,9 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // ── Spoofing Hotspots & Hubs Sub-Menu ────────────────────────────────────
-  if (data === 'menu_hotspots' || data === 'menu_radar') {
-    const { text, keyboard } = getHotspotsMenuContent();
+  // ── Free vs Standard Features Sub-Menu ──────────────────────────────────
+  if (data === 'cb_features' || data === 'menu_hotspots' || data === 'menu_radar') {
+    const { text, keyboard } = getFeaturesComparisonContent();
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
       if (editRes.ok) return;
@@ -750,10 +727,9 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // Hotspot detail view (e.g. hotspot_zaragoza, hotspot_pier39)
-  if (data.startsWith('hotspot_')) {
-    const hotspotId = data.replace('hotspot_', '');
-    const { text, keyboard } = getHotspotDetailContent(hotspotId);
+  // ── Cooldown & Safety Rules Sub-Menu ────────────────────────────────────
+  if (data === 'cb_cooldown') {
+    const { text, keyboard } = getCooldownGuideContent();
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
       if (editRes.ok) return;
@@ -995,10 +971,10 @@ async function handleCallbackQuery(query: NonNullable<TelegramUpdate['callback_q
     return;
   }
 
-  // Scan Now / Instant Hotspot Ping
+  // Legacy Radar Scan Now Callback
   if (data === 'radar_scan_now' || data === 'radar_test_ping') {
-    await answerTelegramCallbackQuery(query.id, '🌍 Loading 100% verified hotspots...', false);
-    const { text, keyboard } = getHotspotsMenuContent();
+    await answerTelegramCallbackQuery(query.id, '⚡ Explore PGSharp Standard features below!', false);
+    const { text, keyboard } = getFeaturesComparisonContent();
     if (messageId) {
       const editRes = await editTelegramMessage(chatId, messageId, text, { reply_markup: keyboard });
       if (editRes.ok) return;
@@ -1797,26 +1773,30 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     return;
   }
 
+  // ── Free vs Standard Feature Comparison ──────────────────────────────────
   if (
-    rawText === '🌍 Spoofing Hotspots' ||
-    rawText === '🎯 Pokémon Radar' ||
+    rawText === '⚡ Free vs Standard' ||
+    rawText.startsWith('/features') ||
+    rawText.startsWith('/compare') ||
     rawText.startsWith('/hotspots') ||
-    rawText.startsWith('/hotspot') ||
     rawText.startsWith('/coords') ||
-    rawText.startsWith('/coord') ||
     rawText.startsWith('/radar')
   ) {
-    const { text, keyboard } = getHotspotsMenuContent();
+    const { text, keyboard } = getFeaturesComparisonContent();
     await sendTelegramMessage(chatId, text, {
       reply_markup: keyboard,
     });
     return;
   }
 
-  // ── Direct Hotspot / City Query (e.g. "zaragoza", "pier 39", "sydney", "tokyo", "nyc") ──
-  const matchedHotspot = findHotspotByQuery(rawText);
-  if (matchedHotspot) {
-    const { text, keyboard } = getHotspotDetailContent(matchedHotspot.id);
+  // ── Cooldown & Safety Rules Guide ────────────────────────────────────────
+  if (
+    rawText === '⏱️ Cooldown Guide' ||
+    rawText.startsWith('/cooldown') ||
+    rawText.startsWith('/safety') ||
+    rawText.startsWith('/softban')
+  ) {
+    const { text, keyboard } = getCooldownGuideContent();
     await sendTelegramMessage(chatId, text, {
       reply_markup: keyboard,
     });

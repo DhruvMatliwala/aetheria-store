@@ -141,11 +141,11 @@ To eliminate customer intimidation, hesitation, and text overload:
 
 ---
 
-## 9. Verified Global Spoofing Hotspots, Live Events & Scanner Telemetry
+## 9. Sales Conversion Assets, Cooldown Guide & Live Events
 
-- **100% Verified Global Spoofing Hotspots (`/hotspots`, `/coords`, `menu_hotspots`)**: Replaced synthetic/random math coordinates with 10 permanent, real-world verified premier spoofing hubs (Zaragoza Plaza del Pilar, Pier 39 SF, NYC Central Park / Times Square, Tokyo Shinjuku, Sydney Circular Quay, São Paulo Parque Ibirapuera, Taipei Da'an Park, Dubai Burj Khalifa, London Hyde Park, Chicago Navy Pier). Features 1-tap copyable coordinates (`<code>lat, lng</code>`), PokéStop density indicators, local timezones, PGSharp pro-tips, Google Maps links, and direct key upsell buttons.
-- **Direct Scanner Webhook (`/api/pokemon/spawns`)**: High-performance ingestion endpoint for verified raw external scanner telemetry (Golbat, Poracle, MAD, RDM formats).
-- **20-Minute De-duplication Cache**: Prevents repeat alerts for the same spawn ID.
+- **Free vs Standard Comparison Engine (`/features`, `/compare`)**: High-converting sales comparison detailing the limitations of PGSharp Free (15-second catch animations, blind catches without stats, no shiny scanner, manual joystick fatigue) vs the advantages of PGSharp Standard (1-second Quick Catch, 100% IV encounter preview, block non-shiny encounters, hands-free GPX auto-walk, instant skip cutscenes, guaranteed 100% excellent throws).
+- **Anti-Ban Cooldown & Safety Guide (`/cooldown`, `/safety`)**: Comprehensive reference guide with distance cooldown chart (1 km to 1,350+ km global max of 120 mins), explicit breakdown of cooldown-triggering actions (balls, berries, gym battles, spins) versus safe actions (teleporting, IV inspection, egg hatching, trading).
+- **Direct Scanner Webhook (`/api/pokemon/spawns`)**: High-performance ingestion endpoint for raw scanner telemetry (Golbat, Poracle, MAD, RDM formats) with 20-minute in-memory de-duplication cache.
 - **National Pokédex Database (1,025 Species) & Fuzzy Search**: Typo-tolerant Levenshtein search supporting natural queries (`Greyninja` ➔ `Greninja`, `Swampert 1/14/15`).
 - **Live Events Calendar (`/api/pokemon/events`)**: Real-time event and raid boss rotations accessible via `/events`.
 
