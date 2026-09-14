@@ -179,7 +179,7 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     set_table_borders(tbl_meta, color="CBD5E1", sz="4", val="single")
     meta_cells = tbl_meta.rows[0].cells
     meta_headers = [
-        "Version: 2.1.0 Prod",
+        "Version: 2.5.0 Prod",
         "Framework: Next.js 14 App Router",
         "Security: AES-256-GCM Vault",
         "Updated: September 2026",
@@ -200,43 +200,40 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     doc.add_paragraph().paragraph_format.space_after = Pt(6)
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 1. Executive Summary & System Overview
+    # 1. Executive Summary & System Architecture
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("1. Executive Summary & System Overview")
+    add_h1("1. Executive Summary & System Architecture")
     add_body(
-        "AETHERIA is an institutional-grade, high-performance digital storefront engineered specifically for official "
-        "PGSharp Standard Edition license key distribution. It merges luxury dark-mode aesthetics (Obsidian Glassmorphism, "
-        "Neon Cyan & Emerald accoutrements) with an interactive 550vh image-sequence scrollytelling runway, dual-rail automated "
-        "checkout, zero-fee direct payment allocation, cryptographic key vault security, an automated Telegram retention ecosystem, "
-        "and a zero-latency customer fulfillment portal."
+        "AETHERIA is an institutional-grade, high-performance digital commerce platform engineered specifically for official "
+        "PGSharp Standard Edition (~30 Days) license key distribution. It merges luxury dark-mode aesthetics (Obsidian Glassmorphism, "
+        "Neon Cyber Cyan & Emerald accoutrements) with an interactive 550vh image-sequence scrollytelling runway, clean whole-rupee "
+        "UPI settlement, direct Gmail SMTP delivery, autonomous Telegram bot transactions, and AES-256-GCM key encryption."
     )
     add_bullet("Core Brand Proposition:", "Institutional-grade reliability, instantaneous automated key dispatch (< 10 seconds), zero ban risk advisory, and 1-on-1 VIP concierge support on Discord, Telegram, and Reddit.")
-    add_bullet("Technology Stack:", "Next.js 14 App Router, TypeScript, Tailwind CSS, GSAP 3 (ScrollTrigger), HTML5 Canvas Particle Engine, Firebase Firestore / Admin SDK, Native Direct UPI with Dynamic Unique Paise Offset, Bank SMS Auto-Bridge Webhook, PayPal v2 & Direct Rails, and Resend Email API.")
-    add_bullet("Multi-Device Inventory Engine:", "Universal 3-device slot allocation architecture, dynamically satisfying 1-Device and 2-Device storefront demand with zero license slot waste.")
+    add_bullet("Technology Stack:", "Next.js 14 App Router, TypeScript, Tailwind CSS, GSAP 3 (ScrollTrigger), HTML5 Canvas Particle Engine, Firebase Firestore / Admin SDK, Clean Whole-Rupee UPI Rails, Bank SMS Auto-Bridge Webhook, PayPal v2 & Direct Rails, Nodemailer (Direct Gmail SMTP), and Telegram Bot API.")
+    add_bullet("Multi-Channel Reach:", "Web Storefront (aetheria-store.vercel.app), Admin Command Center (/admin), Telegram Shop Bot (@AetheriaStoreOfficialBot), Telegram Proof Channel (@AetheriaStoreOfficial), and Discord Real-Time Buyer Radar.")
 
     # ─────────────────────────────────────────────────────────────────────────
     # 2. Official Pricing Architecture & Device Slot Matrix
     # ─────────────────────────────────────────────────────────────────────────
     add_h1("2. Official Pricing Architecture & Device Slot Matrix")
     add_body(
-        "To maximize conversion while remaining highly competitive across domestic Indian (INR) and international (USD) markets, "
-        "AETHERIA implements a standardized, hyper-calibrated pricing structure. Prices are centrally defined in src/lib/constants.ts "
-        "and dynamically cascade across storefront cards, modal checkout, PayPal links, automated Telegram bot messages, and SEO schema."
+        "Pricing is centrally defined in src/lib/constants.ts and dynamically cascades across storefront cards, modal checkouts, "
+        "PayPal payment links, automated Telegram bot messages, and SEO schemas. Strikethrough pricing reinforces high perceived value."
     )
 
     tbl_pricing = doc.add_table(rows=1, cols=6)
     pricing_widths = [Inches(1.2), Inches(0.9), Inches(1.0), Inches(1.0), Inches(1.1), Inches(1.3)]
-    pricing_headers = ["Plan Tier", "Device Slots", "Standard Price (INR)", "Standard Price (USD)", "Discounted (INR)", "Discounted (USD)"]
+    pricing_headers = ["Plan Tier", "Device Capacity", "Standard Price (INR)", "Standard Price (USD)", "Referral Price (INR)", "Referral Price (USD)"]
     pricing_rows = [
-        ["1 Device Plan", "1 Android Device", "₹130 (13,000 paise)", "$1.79 (179 cents)", "₹100 (₹30 OFF)", "$1.49 ($0.30 OFF)"],
-        ["2 Devices Plan (Popular)", "2 Android Devices", "₹250 (25,000 paise)", "$3.50 (350 cents)", "₹220 (₹30 OFF)", "$3.00 ($0.50 OFF)"],
+        ["Standard Tier", "1 Android Device", "₹160 (Fixed Whole)", "$2.00 (Fixed USD)", "₹130 (₹30 OFF)", "$1.70 ($0.30 OFF)"],
+        ["Duo Tier (Best Value)", "2 Android Devices", "₹300 (was ₹320)", "$3.60 (was $4.00)", "₹270 (₹30 OFF)", "$3.10 ($0.50 OFF)"],
     ]
     format_table(tbl_pricing, pricing_widths, pricing_headers, pricing_rows)
 
     add_body(
-        "Strikethrough Reference Values: The 2 Devices Plan displays a strikethrough original price of ₹260 (2x ₹130) in INR and $3.58 "
-        "(2x $1.79) in USD, visually underscoring a 'BEST VALUE' volume discount. Storefront pricing is strictly limited to 1-Device and "
-        "2-Device consumer tiers; 3-device bulk orders are fulfilled behind the scenes through the atomic key allocation engine."
+        "Approximate Duration (~30 Days): To accommodate slight upstream Patreon key variances (rare 28-29 day cycles), "
+        "all public copy explicitly denotes '~30 Days', preventing disputes while maintaining customer satisfaction."
     )
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -244,210 +241,163 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     # ─────────────────────────────────────────────────────────────────────────
     add_h1("3. Patreon 3-Device Key Slot Allocation Engine")
     add_body(
-        "A critical engineering breakthrough in AETHERIA is the transition of the underlying inventory layer from 2-device keys "
-        "to official 3-device Patreon Standard Edition keys (source: 'patreon_3slot'). A single physical Patreon key authorizes up to 3 "
-        "concurrent Android devices. Rather than forcing customers to buy 3-device plans, AETHERIA maintains a virtual slot bin-packing "
-        "engine that slices each physical key into 1-Device and 2-Device customer orders."
+        "AETHERIA operates on official 3-device Patreon Standard Edition keys (source: 'patreon_3slot'). A single physical key "
+        "authorizes up to 3 concurrent Android devices. A virtual slot bin-packing engine partitions physical keys across customer orders:"
     )
-
-    add_h2("3.1 In-Memory ASC Bin-Packing Algorithm")
-    add_body(
-        "Implemented in src/lib/services/keyAllocator.ts via allocateKeySlot(), the allocation engine queries all non-exhausted candidate keys "
-        "from Firestore and sorts them in ascending order of remaining slots (candidates.sort((a, b) => a.remainingSlots - b.remainingSlots))."
-    )
-    add_bullet("Tightest Fit Priority:", "By sorting ascending, the algorithm prioritizes partially filled keys before touching untouched keys. For example, a key with exactly 1 slot remaining is immediately prioritized for incoming 1-Device orders, closing out the key to 'full' status.")
-    add_bullet("Case A: 2-Device Order First:", "When an order for 2 Devices arrives, it is allocated to a fresh 3-slot key (or a partially used key with >= 2 slots). The key's remaining slots decrement to 1 (status: 'partially_used'). The next 1-Device order immediately consumes that final remaining slot, closing the key at 3/3 utilized.")
-    add_bullet("Case B: Three 1-Device Orders:", "Three distinct 1-Device orders consecutively consume slots 1, 2, and 3 on the same key. The key transitions available -> partially_used -> full with 100% capacity utilization.")
-    add_bullet("Zero Slot Wastage Guarantee:", "Mathematical combinations (1+1+1=3 and 2+1=3) ensure that zero device slots are ever stranded or orphaned.")
-
-    add_h2("3.2 Atomic Firestore Transaction Guarantees")
-    add_body(
-        "All slot allocations are executed inside an isolated db.runTransaction() atomic block. During high-concurrency traffic surges "
-        "(such as Community Day or Raid Hour restocks), simultaneous orders cannot double-allocate the same slot. If two buyers attempt "
-        "to claim the final slot of a key simultaneously, Firestore's optimistic concurrency control retries the second transaction "
-        "against the next eligible candidate key seamlessly."
-    )
-
-    add_h2("3.3 Usable Slots & Stock Calculation")
-    add_bullet("Total Usable Slots:", "Calculated via (available_3slot_keys * 3) + sum(partially_used_remaining_slots).")
-    add_bullet("1-Device Stock Count:", "Exactly equals Total Usable Slots.")
-    add_bullet("2-Device Stock Count:", "Calculated via Math.floor(Total Usable Slots / 2), accounting for pairs of available slots.")
+    add_bullet("1 Device Plan (1 Slot):", "Consumes 1 slot. Prioritizes partially-filled active keys (e.g. 1/3 or 2/3 filled) to maximize inventory density, leaving remaining slots available for future buyers.")
+    add_bullet("2 Devices Plan (2 Slots):", "Consumes 2 slots. Selects keys with >= 2 available slots, packing them without waste.")
+    add_bullet("Dedicated Private Key (3 Slots):", "Pulls a 100% virgin untouched key (0/3 used) and immediately locks it as status: 'full'. Guarantees zero strangers can ever share the key.")
+    add_bullet("Atomic Concurrency Lock:", "Firestore transactions run inside db.runTransaction with strict read-before-write validation, preventing double-allocation race conditions during high-traffic drops.")
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 4. Direct Native UPI Payment Flow & Zero-Fee Dynamic Paise Offset
+    # 4. Payment Rails & Whole-Rupee Verification Engine
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("4. Direct Native UPI Payment Flow & Zero-Fee Dynamic Paise Offset")
+    add_h1("4. Payment Rails & Whole-Rupee Verification Engine")
+    add_h2("4.1 Clean Whole-Rupee Architecture")
     add_body(
-        "Traditional payment aggregators (e.g. Razorpay, Cashfree) impose 2–3% + GST gateway fees, chargebacks, rolling reserves, and "
-        "frequent KYC suspensions. Furthermore, forcing users to manually copy and paste 12-digit UTR numbers leads to a 40%+ cart abandonment rate. "
-        "AETHERIA completely bypasses third-party gateways with its native Direct UPI engine."
+        "Eradication of Decimal Paise: Fractional paise amounts (.14, .28) were completely eliminated. Customers pay exact whole "
+        "rupees (₹160 or ₹300), preventing bank app rejections (Google Pay, PhonePe, Paytm, SBI) and simplifying manual entry."
     )
+    add_bullet("Smart-Routing UPI VPAs:", "dhruvmatliwala123@oksbi (Primary), dhruvmatliwala123@okicici, dhruvmatliwala123@okaxis, dhruvmatliwala123@okhdfcbank.")
 
-    add_h2("4.1 Dynamic Unique Paise Offset Allocation (allocateUniquePaise)")
-    add_body(
-        "When a buyer initiates checkout on the 1-Device (₹130) or 2-Devices (₹250) plan, the server calls allocateUniquePaise() in "
-        "src/lib/payments/paiseAllocator.ts. The engine temporarily reserves an exclusive fractional paise offset for 15 minutes:"
-    )
-    add_bullet("Collision Prevention:", "For example, Customer A paying ₹130 is assigned ₹130.14, while Customer B is assigned ₹130.38. The exact decimal amount is rendered directly into the dynamic UPI QR code and deep-link intent string.")
-    add_bullet("1-Tap Payment Flow:", "Scanning the QR code with GPay, PhonePe, Paytm, CRED, or BHIM automatically populates the exact amount down to the paise. The customer simply enters their UPI PIN and completes the payment.")
+    add_h2("4.2 24/7 Automated Bank SMS Bridge (/api/webhooks/upi)")
+    add_bullet("Incoming SMS Ingestion:", "Listens for bank credit alerts forwarded by Android SMS Forwarder apps.")
+    add_bullet("Anti-Fraud Guard:", "Rejects and flags payloads originating from personal 10-digit mobile numbers.")
+    add_bullet("Security & OTP Filter:", "Strictly drops sensitive authentication OTPs and 2FA messages to maintain complete banking privacy.")
+    add_bullet("Instant Dual Matching:", "Matches either via the 12-digit banking UTR / UPI transaction ID or whole-rupee FIFO order matching.")
 
-    add_h2("4.2 Automated Bank SMS Bridge (/api/webhooks/upi)")
-    add_body(
-        "An automated Android forwarder app installed on the recipient business device forwards incoming bank SMS alerts (HDFC, SBI, ICICI, Kotak, Paytm Payments Bank) "
-        "to the /api/webhooks/upi webhook endpoint via an encrypted JSON payload."
-    )
-    add_bullet("High-Precision Regex Parsing:", "bankSmsParser.ts strips alphanumeric noise and extracts: (1) Exact Credit Amount with paise, (2) 12-digit UTR transaction reference, and (3) Bank timestamp.")
-    add_bullet("Instant Match & Auto-Fulfillment:", "The webhook queries Firestore for pending orders with matching paise amount within the 15-minute reservation window. Upon a match, it immediately triggers allocateKeySlot(), updates order status to 'completed', and reveals the key on the buyer's screen in under 2 seconds!")
-
-    add_h2("4.3 Discord 1-Click Cryptographic Approval Subsystem")
-    add_body(
-        "If a customer manually enters a UTR reference before bank SMS processing, the system posts an interactive rich embed to a private "
-        "Discord administrative channel. The embed features cryptographic 1-click action buttons ('Approve' and 'Reject') signed with an HMAC-SHA256 "
-        "token. The admin clicks 'Approve' inside Discord, instantly fulfilling the order without logging into the web dashboard."
-    )
+    add_h2("4.3 International PayPal Direct Rail")
+    add_body("Direct integration (/api/checkout/paypal & /api/checkout/paypal/capture) with automated transaction capture and key reveal.")
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 5. International PayPal Direct Rail
+    # 5. Direct Key Dispatch (Manual Allocation System)
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("5. International PayPal Direct Rail")
+    add_h1("5. Direct Key Dispatch (Manual Allocation System)")
     add_body(
-        "For global trainers outside India, AETHERIA provides a friction-free international payment flow in USD via /api/checkout/paypal."
+        "Direct Key Dispatch in /admin empowers administrators to fulfill off-platform sales (e.g. Telegram/Discord DMs, cash/direct UPI):"
     )
-    add_bullet("Pre-filled Direct Payment Links:", "Generates a clean PayPal.me payment URL pre-filled with the exact plan price: e.g. https://www.paypal.me/MatliwalaYogesh/1.79USD for 1 Device ($1.79) or /3.50USD for 2 Devices ($3.50).")
-    add_bullet("Transaction ID Verification:", "Upon completing payment on PayPal, the buyer enters their alphanumeric PayPal Transaction ID. The endpoint validates uniqueness, creates the order in USD, allocates the key slot, and delivers the key immediately.")
-    add_bullet("Native PayPal SDK Integration:", "Additionally supports native in-modal PayPal JS SDK checkout (/api/checkout/paypal/capture) with automatic capture and real-time webhook listeners (/api/webhooks/paypal).")
+    add_bullet("Inventory Reservation:", "Instantly reserves 1, 2, or 3 slots atomically in Firestore, preventing website buyers from receiving the same slot.")
+    add_bullet("Record Keeping:", "Stores recipient handle (@sleekfx3, email) and admin notes in the order ledger for auditability.")
+    add_bullet("Instant Fulfillment Screen:", "Decrypts and displays the license key code and customer fulfillment link with 1-click 'Copy' buttons so the admin can paste them directly into customer DMs.")
+    add_bullet("Telegram /givekey Command:", "Superadmin (ID: 741838315) can dispatch keys directly via mobile using /givekey 1 @customer.")
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 6. Telegram Bot Subsystem & Automated Retention Engine
+    # 6. Direct Gmail SMTP Delivery & Automated Restock Waitlist
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("6. Telegram Bot Subsystem & Automated Retention Engine")
+    add_h1("6. Direct Gmail SMTP Delivery & Automated Restock Waitlist")
+    add_h2("6.1 Direct Gmail SMTP Integration (Nodemailer)")
     add_body(
-        "AETHERIA features a fully automated Telegram Bot (@sleekfx3 / Telegram Webhook) built on src/lib/telegram/handlers.ts. "
-        "It acts as a 24/7 autonomous sales representative, order lookup vault, customer retention system, and community broadcaster."
+        "To bypass third-party transactional email sandbox restrictions (e.g. Resend's onboarding@resend.dev limit of only emailing the account owner) "
+        "without requiring a custom domain, AETHERIA integrates authenticated Gmail SMTP via Nodemailer:"
     )
+    add_bullet("Zero Domain Overhead:", "Authenticated via Google 16-character App Password (GMAIL_USER & GMAIL_APP_PASSWORD). Sends directly from dhruvmatliwala336@gmail.com to any customer email (Gmail, Yahoo, Outlook, etc.).")
+    add_bullet("Storefront Display Name:", "Emails display 'Aetheria Store' as the sender title in inboxes, with customer replies routing directly to the admin's Gmail.")
+    add_bullet("Unified Dispatcher (resend.ts):", "Prioritizes Gmail SMTP; automatically falls back to Resend API if Gmail credentials are absent.")
+    add_bullet("Customer Email Types:", "Powers License Key Delivery, 48-Hour Expiry Reminders, and Automated Restock Waitlist Alerts.")
 
-    add_h2("6.1 Interactive Customer Bot Menu & Key Lookup")
-    add_bullet("Self-Service Key Recovery (/keys):", "Buyers can type /keys or click 'My Keys' to retrieve all active PGSharp license keys, remaining days, and binding instructions associated with their Telegram account or email.")
-    add_bullet("Instant Buy Flow (/buy):", "Displays interactive inline buttons for 1 Device (₹130 / $1.79) and 2 Devices (₹250 / $3.50) with direct payment links and instant QR rendering.")
-
-    add_h2("6.2 Automated 28-Day Expiry Reminder Engine (/api/cron/expiry-reminders)")
+    add_h2("6.2 Automated Restock Waitlist Notification System")
     add_body(
-        "Customer retention is automated via a scheduled daily cron job configured in Vercel (vercel.json) executing at 09:00 UTC daily:"
+        "When a plan is sold out, storefront visitors can enter their email on the Restock Notification modal. Stored in the 'restock_requests' collection:"
     )
-    add_bullet("Target Window Scan:", "Scans Firestore collection 'orders' for active orders where expires_at falls within the next 48 hours (day 28 of 30).")
-    add_bullet("Automated Telegram DM Dispatch:", "Dispatches a personalized, rich HTML reminder message directly to the customer's Telegram chat ID: '⏳ Your PGSharp License Expires in 48 Hours!'")
-    add_bullet("1-Click Renewal Coupon (RENEW30):", "Includes an exclusive pre-applied promo code offering ₹30 / $0.30 OFF renewal pricing (₹100 / $1.49 for 1 Device, ₹220 / $3.00 for 2 Devices), maximizing repeat lifetime value (LTV).")
-    add_bullet("Dual-Rail Delivery:", "Simultaneously sends a responsive HTML renewal reminder email via Resend to the customer's registered email address.")
+    add_bullet("Automated Key Upload Trigger:", "When keys are uploaded in /admin, the server automatically queries pending waitlist requests for that plan and dispatches branded restock alert emails in the background.")
+    add_bullet("One-Click Admin Blast Button:", "WaitlistWidget in /admin features an interactive '[ 📧 Notify All Waiting (X) ]' button with confirmation dialog and live progress feedback, backed by POST /api/admin/waitlist/notify.")
+    add_bullet("Automatic De-duplication:", "Successfully notified recipients are immediately cleared from Firestore to prevent duplicate or spam emails.")
 
-    add_h2("6.3 Automated Restock Announcements (src/lib/telegram/proofs.ts)")
+    # ─────────────────────────────────────────────────────────────────────────
+    # 7. Telegram Bot Engine & Progressive Disclosure UPI Flow
+    # ─────────────────────────────────────────────────────────────────────────
+    add_h1("7. Telegram Bot Engine & Progressive Disclosure UPI Flow")
+    add_h2("7.1 Minimal 4-Line QR Screen & Delivery Expectation")
     add_body(
-        "Whenever an administrator ingests fresh keys via /api/admin/keys, the system automatically triggers postRestockAnnouncement(). "
-        "It formats an eye-catching announcement with current stock counts, pricing (₹130 / $1.79 & ₹250 / $3.50), and 1-tap buy buttons, "
-        "broadcasting it to connected public Telegram channels and VIP groups instantaneously."
+        "To eliminate text fatigue, hesitation, and customer intimidation during Telegram checkouts, the initial QR payment card was streamlined to 4 lines:"
     )
+    add_bullet("Clean Card Copy:", "📦 PGSharp Standard (~30 Days) — ₹160 | 🔑 UPI ID: dhruvmatliwala123@oksbi | 🔖 Order ID: ord_tg_xxxx | ⚡ Scan QR or pay ₹160. Key is auto-delivered here within 1–2 minutes!")
+    add_bullet("Primary Action Button:", "[ ❓ Paid but didn't get key? ] — cleanly conceals technical instructions until requested.")
+    add_bullet("Progressive Disclosure Fallback:", "Tapping reveals comforting guidance: '⏳ Awaiting Bank Confirmation... Bank SMS alerts usually arrive within 1–2 minutes. 💡 If you paid and want your key right away without waiting: Send a screenshot of your Transaction Details (in Google Pay/FamPay, tap on the payment to view full details with the 12-digit UPI ID) or reply with the 12 digits directly!'")
+    add_bullet("Transaction Details vs UTR:", "Replaced obscure banking jargon ('UTR') with clear visual directions: tap the payment to view Transaction Details / 12-digit UPI ID.")
 
-    add_h2("6.4 Viral Referral Subsystem (src/lib/telegram/referrals.ts)")
+    add_h2("7.2 Viral Referral & Reward Engine ('Refer & Earn')")
+    add_bullet("Deep Tracking Links:", "Generates unique links (https://t.me/AetheriaStoreOfficialBot?start=ref_<chatId>) with real-time conversion stats.")
+    add_bullet("Automated Friend Discount:", "Referred friends automatically receive ₹30 OFF on their first purchase without entering any promo code.")
+    add_bullet("Reward Coupon Issuance:", "Upon friend purchase verification, referrer receives a single-use ₹30 coupon (REF30_XXXXXX) stackable on future renewals.")
+
+    add_h2("7.3 Public Telegram Proof Channel (@AetheriaStoreOfficial)")
+    add_bullet("Restock Announcements:", "Flash restock alerts with direct bot checkout links.")
+    add_bullet("Privacy-Masked Order Vouches:", "Automated social proof posts (e.g. '30-Day PGSharp Key dispatched to dh***@gmail.com') with atomic idempotency locks.")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # 8. Pokémon Radar & Live Scanner Telemetry
+    # ─────────────────────────────────────────────────────────────────────────
+    add_h1("8. Pokémon Radar & Live Scanner Telemetry")
     add_body(
-        "To drive zero-CAC viral growth, every customer receives a unique referral code (e.g. REF30_ABC123):"
+        "Integrated scanner webhook (/api/pokemon/spawns) processes raw scanner feeds (Golbat, Poracle, MAD, RDM) in real time:"
     )
-    add_bullet("Referee Benefit:", "New buyers entering the referral link receive an instant ₹30 / $0.30–$0.50 discount (₹130 -> ₹100, $1.79 -> $1.49 for 1 Device; ₹250 -> ₹220, $3.50 -> $3.00 for 2 Devices).")
-    add_bullet("Referrer Rewards:", "Referrals are tracked in the Firestore 'referrals' collection, accumulating credits toward free 30-day PGSharp keys for top promoters.")
-
-    add_h2("6.5 Live Pokémon GO Events & Raid Calendar (/api/pokemon/events)")
-    add_body(
-        "Integrated in src/lib/pokemon/events.ts, the bot fetches real-time Pokémon GO event calendars (Active 5-Star Raids, Mega Raids, "
-        "Max Battles, Spotlight Hours, and Community Days). Inside the Telegram bot, users type /events to inspect active raid bosses, "
-        "complete with recommended spoofer coordinates and an embedded 'Get PGSharp Key' CTA."
-    )
+    add_bullet("20-Minute De-duplication Cache:", "In-memory cache prevents repeat alerts for the same spawn.")
+    add_bullet("1,025 Species National Pokédex:", "Fuzzy typo-tolerant search (Levenshtein distance) supporting natural typing ('Greyninja' -> 'Greninja').")
+    add_bullet("Interactive Telegram Alerts:", "Dispatches despawn countdown, 1-tap copy coordinates, Google Maps jump link, and quick-catch PGSharp upsell.")
+    add_bullet("Live Events Calendar (/api/pokemon/events):", "Fetches active 5-star raids, mega raids, and spotlight hours via /events command.")
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 7. Multi-Theme Architecture & Cinematic Scrollytelling Engine
+    # 9. Admin Command Center & Vercel Storage Optimization
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("7. Multi-Theme Architecture & Cinematic Scrollytelling Engine")
-    add_body(
-        "AETHERIA features a multi-theme engine configured centrally in src/config/theme.ts, supporting 3 fully isolated storefront experiences:"
-    )
-    add_bullet("Aetheria Obsidian (Active Default):", "High-res frame scrollytelling engine optimized for mobile devices and budget hardware. Extracts paused frames from scenes, delivering 0% GPU video decoding load, 0ms lag, and instantaneous load times.")
-    add_bullet("Aetheria Motion (Backup 1):", "1440p live video scrollytelling runway designed for high-performance desktop displays with dual-player video cross-fading.")
-    add_bullet("Aetheria Nexus (Backup 2):", "Classic modular cyber e-commerce grid with vertical layout for traditional direct buyers.")
-    add_bullet("Instant URL Theme Preview:", "Administrators and users can preview any theme in real-time by appending '?theme=obsidian', '?theme=motion', or '?theme=nexus' to the storefront URL.")
-
-    add_h2("7.1 3-Scene Cinematic Runway Breakdown")
-    tbl_scenes = doc.add_table(rows=1, cols=4)
-    scenes_widths = [Inches(1.2), Inches(1.5), Inches(2.2), Inches(1.6)]
-    scenes_headers = ["Scene / Scroll Range", "Theme & Asset", "Headline & Narrative", "Key Features & CTAs"]
-    scenes_rows = [
-        ["Scene 1 (0% – 28%)", "Mewtwo Cryo-Awakening (/images/scenes/scene1.webp)", "BREAK EVERY LIMIT. Official 30-day PGSharp Standard Edition licenses.", "Fast Key Delivery, 30-Day License, 'Buy License Key →'"],
-        ["Scene 2 (28% – 62%)", "Shibuya Crossing & Pikachu (/images/scenes/scene2.webp)", "ROAM ANYWHERE. Precision PGSharp GPS joystick and route patrol.", "Dual Obsidian Pricing Cards: ₹130 ($1.79) & ₹250 ($3.50)"],
-        ["Scene 3 (62% – 100%)", "Ash-Greninja Stadium Showdown (/images/scenes/scene3.webp)", "MASTER EVERY RAID. Live 100% IV scanner feed and raid radar.", "Trust Vault Guarantee, 7 Interactive FAQs, Discord & Reddit Support"],
-    ]
-    format_table(tbl_scenes, scenes_widths, scenes_headers, scenes_rows)
-
-    add_h2("7.2 Full-Screen Brand Preloader & Spatial Audio")
-    add_bullet("3-Phase GSAP Preloader (Preloader.tsx):", "Phase 1: Glowing frosted Delta emblem scales in. Phase 2: Staggered character reveal of 'AETHERIA' with cyber pulse line. Phase 3: Shutter pulls upward to reveal Scene 1. Uses sessionStorage to ensure single-run per user session.")
-    add_bullet("Ambient Spatial Audio (AmbientAudioContext.tsx):", "Global audio singleton loads /audio/ambient.mp3 capped strictly at 25% volume ceiling with smooth 300ms cross-fading ramps.")
+    add_h1("9. Admin Command Center & Vercel Storage Optimization")
+    add_bullet("Ghost Admin Camouflage:", "Unauthorized visits to /admin yield an authentic 404 error page. Accessible via secret bookmark (?key=SECRET) or triple-clicking the 404 badge.")
+    add_bullet("Anti-Brute-Force Rate Limiting:", "Locks client IP after 5 failed passcode attempts for 15 minutes.")
+    add_bullet("Live Firestore Coupon Engine:", "Interactive CRUD for promotional coupons with 1-click permanent deletion.")
+    add_bullet("Vercel Deployment Storage Optimization:", "Automated cleanup script (cleanup_deployments.js) purges historical builds via Vercel REST API, reducing storage from 16.91 GB to ~0.65 GB (well under the 10 GB free ceiling).")
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 8. High-Performance Engineering & Profiling
+    # 10. Complete Production Route Architecture Map
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("8. High-Performance Engineering & Profiling")
-    add_body("The storefront has undergone extensive profiling across Chrome DevTools, WebPageTest, and mobile throttles:")
-    add_bullet("React Reconciliation Guard:", "handleScrollProgress uses strict equality checks (prev !== newIdx ? newIdx : prev), eliminating hundreds of redundant React reconciliation passes during rapid scrolling.")
-    add_bullet("GSAP Overwrite & Pin Safeguards:", "Configured with overwrite: 'auto', clearProps: 'transform', anticipatePin: 1, and invalidateOnRefresh: true, preventing transform collisions.")
-    add_bullet("Canvas Visibility Throttling:", "AmbientMistParticles.tsx listens to document.visibilitychange, halting animation loops when the tab is hidden, reducing CPU/GPU usage to 0%.")
-    add_bullet("Edge Caching on API Routes:", "/api/stock returns Cache-Control: public, s-maxage=10, stale-while-revalidate=30 for sub-5ms stock availability responses.")
-    add_bullet("Static Asset Immutability:", "next.config.mjs serves all media assets with Cache-Control: public, max-age=31536000, immutable.")
-
-    # ─────────────────────────────────────────────────────────────────────────
-    # 9. Complete Production Route & API Architecture Map
-    # ─────────────────────────────────────────────────────────────────────────
-    add_h1("9. Complete Production Route & API Architecture Map")
-    add_body("The application features 28 optimized production routes and endpoints:")
+    add_h1("10. Complete Production Route Architecture Map")
+    add_body("Overview of all verified production routes across the web storefront and backend API:")
 
     tbl_routes = doc.add_table(rows=1, cols=3)
-    routes_widths = [Inches(2.0), Inches(1.3), Inches(3.2)]
+    routes_widths = [Inches(2.1), Inches(1.3), Inches(3.1)]
     routes_headers = ["Route / Endpoint", "Rendering Mode", "Purpose & Functionality"]
     routes_rows = [
         ["/", "Static / Client", "Main 3-Scene Cinematic Storefront, Scrollytelling Runway, Preloader & HUD"],
         ["/order-success/[orderId]", "Dynamic SSR", "Holographic Encrypted Key Vault, Confetti Burst & 4-Step Activation Guide"],
         ["/admin", "Static / Client", "Admin Command Center: Key Ingestion, Slot Tier Analytics & Waitlist Manager"],
-        ["/contact", "Static", "Direct Concierge Contact, Discord, Reddit & Telegram Channels"],
-        ["/terms, /privacy, /refund", "Static", "Legal Compliance, Terms of Service, Privacy Policy & Refund Guarantees"],
+        ["/contact, /terms, /refund", "Static", "Legal Compliance, Terms of Service, Privacy Policy & Concierge Support"],
         ["/api/stock", "Dynamic API (Edge Cached)", "Real-time Tier Stock, Usable Slots & Active Inventory Counts (s-maxage=10)"],
         ["/api/stock/[planId]", "Dynamic API", "Individual Plan Stock Availability Query"],
-        ["/api/checkout/upi", "Dynamic API", "Dynamic Unique Paise Offset Allocation (e.g. ₹130.14) & QR Code Generation"],
-        ["/api/checkout/upi/verify", "Dynamic API", "Direct UPI UTR Submission & Verification"],
-        ["/api/webhooks/upi", "Dynamic API", "Bank SMS Auto-Bridge Webhook: Regex parses paise + UTR for <2s auto-fulfillment"],
-        ["/api/checkout/paypal", "Dynamic API", "PayPal.me Pre-filled Direct URL Generator ($1.79 / $3.50) & Internal Order Creation"],
+        ["/api/checkout/upi", "Dynamic API", "Clean Whole-Rupee Payment Intent & Native Dynamic QR Code Generation"],
+        ["/api/checkout/upi/verify", "Dynamic API", "Direct UPI 12-Digit Transaction ID Submission & Verification"],
+        ["/api/webhooks/upi", "Dynamic API", "Bank SMS Auto-Bridge Webhook: Parses credit alerts for <2s auto-fulfillment"],
+        ["/api/checkout/paypal", "Dynamic API", "PayPal.me Pre-filled Direct URL Generator ($2.00 / $3.60) & Order Creation"],
         ["/api/checkout/paypal/capture", "Dynamic API", "PayPal JS SDK Order Capture & Instant Key Allocation"],
         ["/api/checkout/paypal/verify", "Dynamic API", "PayPal Direct Transaction ID Verification & Key Reveal"],
         ["/api/webhooks/paypal", "Dynamic API", "PayPal IPN Asynchronous Webhook Verification"],
         ["/api/coupons/validate", "Dynamic API", "Real-Time Coupon Validation (Fixed Rupee & Percentage Discounts)"],
-        ["/api/cron/expiry-reminders", "Dynamic API (Cron)", "Daily 09:00 UTC Retention Cron: Scans Day 28 keys, dispatches DMs & RENEW30 coupon"],
+        ["/api/admin/coupons", "Dynamic API", "Live Admin Coupon CRUD with Instant Permanent Deletion"],
+        ["/api/cron/expiry-reminders", "Dynamic API (Cron)", "Daily Retention Cron: Scans Day 28 keys, dispatches DMs & renewal links"],
         ["/api/pokemon/events", "Dynamic API", "Live Pokémon GO Raids, Max Battles & Spotlight Hours Calendar Feed"],
-        ["/api/telegram/webhook", "Dynamic API", "Telegram Bot Webhook: Handles /start, /buy, /keys, /referral, /events"],
+        ["/api/pokemon/spawns", "Dynamic API", "Live Pokémon Scanner Webhook Ingestion & Alert Dispatch"],
+        ["/api/telegram/webhook", "Dynamic API", "Telegram Bot Webhook: Handles /start, /buy, /keys, /ref, /givekey, Radar"],
         ["/api/telegram/setup", "Dynamic API", "Automated Telegram Webhook Registration & Command Menu Setup"],
         ["/api/restock-notify", "Dynamic API", "Customer Restock Notification Waitlist Ingestion"],
-        ["/api/admin/keys", "Dynamic API", "Secure Batch Key Ingestion with 3-Slot Patreon Tagging & Restock Announcements"],
+        ["/api/admin/waitlist/notify", "Dynamic API", "Dispatches Restock Alert Emails to Waiting Customers via Gmail SMTP"],
+        ["/api/admin/keys", "Dynamic API", "Batch Key Ingestion with 3-Slot Tagging, Channel Broadcast & Waitlist Alert"],
+        ["/api/admin/keys/dispatch", "Dynamic API", "Manual 1, 2, or 3-Slot Direct Customer Key Dispatch"],
         ["/api/admin/stats", "Dynamic API", "Administrative Inventory Metrics, Revenue Totals & Slot Analytics"],
         ["/api/admin/orders/approve", "Dynamic API", "Manual Order Approval with Atomic Slot Allocation & Email Dispatch"],
         ["/api/admin/orders/reject", "Dynamic API", "Manual Order Rejection & Reason Logging"],
         ["/api/admin/orders/quick-approve", "Dynamic API", "Discord 1-Click Quick Approval Action Endpoint"],
         ["/api/admin/orders/quick-reject", "Dynamic API", "Discord 1-Click Quick Rejection Action Endpoint"],
-        ["/api/admin/radar/scan", "Dynamic API", "Automated Lead Radar: Scans Discord & Reddit for PGSharp Buyers"],
         ["/api/reviews", "Dynamic API", "Verified Customer Reviews Ingestion & Aggregate Rating Feed"],
     ]
     format_table(tbl_routes, routes_widths, routes_headers, routes_rows)
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 10. Operational Runbook & CI/CD Deployment Guide
+    # 11. Operational Runbook & CI/CD Deployment Guide
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("10. Operational Runbook & CI/CD Deployment Guide")
+    add_h1("11. Operational Runbook & CI/CD Deployment Guide")
     add_body("Instructions for running, maintaining, and deploying AETHERIA in production:")
-    add_bullet("Environment Configuration (.env.local):", "Ensure all required environment keys are set: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, KEY_ENCRYPTION_SECRET (32-byte hex string), NEXT_PUBLIC_APP_URL, TELEGRAM_BOT_TOKEN, TELEGRAM_CHANNEL_ID, DISCORD_WEBHOOK_URL, RESEND_API_KEY, and PAYPAL credentials.")
+    add_bullet("Environment Configuration (.env.local):", "Configure all required keys: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, KEY_ENCRYPTION_SECRET, GMAIL_USER, GMAIL_APP_PASSWORD, RESEND_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_PROOF_CHANNEL, and ADMIN_API_SECRET.")
     add_bullet("Local Development Server:", "Execute 'npm run dev' to launch on http://localhost:3000.")
-    add_bullet("Production Verification Build:", "Execute 'npm run build' — triggers Next.js compiler, validates TypeScript types (npx tsc --noEmit), and statically optimizes all 28 routes.")
-    add_bullet("Automated Vercel Deployment:", "Pushing commits to branch 'main' automatically triggers Vercel's production CI/CD pipeline, building and deploying to https://aetheria-store.vercel.app with zero downtime.")
+    add_bullet("Production Verification Build:", "Execute 'npm run build' — verifies compilation and TypeScript validity across all routes.")
+    add_bullet("Automated Vercel Deployment:", "Pushing commits to branch 'main' automatically triggers Vercel CI/CD pipeline, deploying to https://aetheria-store.vercel.app with zero downtime.")
 
     doc.save(output_path)
     print(f"Documentation saved successfully to: {output_path}")
