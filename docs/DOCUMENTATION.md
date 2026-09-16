@@ -23,6 +23,7 @@ AETHERIA operates across multiple synchronous channels:
 4. **Telegram Official Channel (`@AetheriaStoreOfficial`)**: Real-time restock announcements, clean pricing cards, feature comparisons, and official updates.
 5. **Telegram Dedicated Vouches Channel (`@AetheriaStoreVouches`)**: Authentic customer delivery screenshots, UPI/PayPal receipts, Discord trade confirmations, and in-game PGSharp activation proofs kept in a dedicated channel to maintain a clean main community.
 6. **Discord Real-Time Buyer Radar (`discord-key-notifier`)**: Standalone gateway microservice monitoring 23 Discord servers in real time, routing high-intent buyer alerts directly to the owner's Telegram.
+7. **YouTube Live Comment Radar (`youtube-key-notifier`)**: Standalone comment crawler microservice monitoring target creator channels and viral Shorts in real time, routing high-intent buyer leads directly to the owner's Telegram.
 
 ---
 
@@ -104,9 +105,22 @@ A dedicated standalone Node.js microservice located in `/discord-key-notifier`:
 
 ---
 
-## 7. Telegram Bot & Channel Announcement Architecture
+## 7. YouTube Live Comment Radar (`youtube-key-notifier`)
 
-### 7.1 Minimal 4-Line QR Screen & Progressive Disclosure
+A dedicated standalone Node.js microservice located in `/youtube-key-notifier`:
+- **Automated Channel & Shorts Discovery**: Ingests uploads from target Pokemon GO / PGSharp channels via zero-quota public RSS feeds, eliminating the need to manually hunt through thousands of Shorts.
+- **Auto-Aging & Watchlist Pruning**: Automatically monitors new uploads for 7 days during their peak viewer engagement window, then auto-prunes them to keep the active pool fresh.
+- **Custom Pinned Watchlist**: Allows pinning specific evergreen viral videos or tutorials indefinitely via `custom_videos.json`.
+- **English & Hinglish Intent Matching**: Detects 36 buyer intent signals (`pgsharp key`, `price`, `cost`, `kitne ka`, `kaise milegi`, `kahan se lu`, `kaise buy kare`, `key chahiye`) with word-boundary regex to prevent false positives.
+- **Instant Telegram Mobile Alerts**: Sends clean alerts to the owner's Telegram with commenter name, video title, comment text excerpt, and direct 1-tap jump link to open and reply on YouTube.
+- **Zero-Emoji Compliance**: Fully conforms to the strict clean text and zero-emoji formatting rules.
+- **Local Health Dashboard**: Built-in HTTP dashboard at `http://localhost:3001` reporting uptime, active watchlist, total comments scanned, and leads caught.
+
+---
+
+## 8. Telegram Bot & Channel Announcement Architecture
+
+### 8.1 Minimal 4-Line QR Screen & Progressive Disclosure
 To eliminate customer intimidation, hesitation, and text overload:
 - **Clean 4-Line Layout**:
   ```text
@@ -127,12 +141,12 @@ To eliminate customer intimidation, hesitation, and text overload:
   ```
 - **Tap-Payment Guidance**: Educates customers to tap their completed payment in Google Pay / FamPay to find the 12-digit **UPI transaction ID** rather than confusing banking terms like "UTR".
 
-### 7.2 Viral Telegram Referral & Reward Engine ("Refer & Earn")
+### 8.2 Viral Telegram Referral & Reward Engine ("Refer & Earn")
 - **Deep Tracking Links**: Unique referral links (`https://t.me/AetheriaStoreOfficialBot?start=ref_<chatId>`) with real-time conversion stats.
 - **Automated Friend Discount (Zero Coupon Required)**: Friends joining via referral automatically receive **₹30 OFF** on their first purchase (Standard: **₹130**; Duo: **₹270**).
 - **Reward Coupon Issuance**: When the friend completes an order, the referrer automatically receives a single-use ₹30 coupon (`REF30_XXXXXX`) redeemable on future renewals.
 
-### 7.3 Community Announcements & Dedicated Vouches Architecture
+### 8.3 Community Announcements & Dedicated Vouches Architecture
 - **Automated Restock Flash Alerts**: Whenever fresh keys are uploaded to the vault via `/admin`, `broadcastRestockAlert` automatically announces the restock in `@AetheriaStoreOfficial` with a direct 1-tap purchase button (`⚡ KEYS ARE BACK IN STOCK!`).
 - **Clean Main Channel Policy**: Automated bot purchase messages (`ORDER COMPLETED dispatched to...`) were decommissioned to keep the main channel sleek and free from repetitive notification spam.
 - **Dedicated Vouches Channel (`@AetheriaStoreVouches`)**: Authentic customer proof screenshots (UPI transfers, PayPal receipts, Discord chat confirmations, and in-game PGSharp activation screens) are published in a separate vouches channel with key details properly redacted, establishing unshakeable social proof without cluttering announcements.
