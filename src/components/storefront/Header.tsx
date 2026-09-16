@@ -9,6 +9,7 @@ import { useAmbientAudio } from '@/context/AmbientAudioContext';
 import { CustomerVaultModal } from '@/components/vault/CustomerVaultModal';
 import { getClientAuth } from '@/lib/firebase/client';
 import { User, onAuthStateChanged } from 'firebase/auth';
+import { ENABLE_DIRECT_DISPATCH_MODAL } from '@/lib/constants';
 
 const NAV_LINKS = [
   { label: 'AWAKEN', href: '#hero' },
@@ -111,17 +112,19 @@ export function Header() {
               })}
             </div>
 
-            {/* My Keys Customer Vault Button (Desktop visible, on Mobile moved to 3-line drawer) */}
-            <button
-              type="button"
-              onClick={() => setVaultOpen(true)}
-              className="hidden sm:inline-flex rounded-full bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white px-3.5 sm:px-4 py-1.5 text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] items-center gap-1.5 active:scale-95 whitespace-nowrap ml-1 group"
-              title="View your purchased license keys"
-            >
-              <Key size={13} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
-              <span>My Keys</span>
-              {user && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>}
-            </button>
+            {/* My Keys Customer Vault Button (Desktop visible only when automated checkout mode is active) */}
+            {!ENABLE_DIRECT_DISPATCH_MODAL && (
+              <button
+                type="button"
+                onClick={() => setVaultOpen(true)}
+                className="hidden sm:inline-flex rounded-full bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-400 text-cyan-300 hover:text-white px-3.5 sm:px-4 py-1.5 text-xs font-mono font-semibold transition-all duration-200 shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] items-center gap-1.5 active:scale-95 whitespace-nowrap ml-1 group"
+                title="View your purchased license keys"
+              >
+                <Key size={13} className="text-cyan-400 group-hover:rotate-12 transition-transform" />
+                <span>My Keys</span>
+                {user && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>}
+              </button>
+            )}
 
             {/* Buy Key CTA Pill Button (Always visible on all screen sizes) */}
             <a
@@ -195,19 +198,21 @@ export function Header() {
         {/* Mobile Drawer */}
         {mobileOpen && (
           <div className="absolute top-14 right-4 w-60 p-4 rounded-3xl bg-neutral-950/95 backdrop-blur-2xl border border-white/15 shadow-2xl pointer-events-auto animate-fade-in-up md:hidden">
-            {/* Primary Mobile Action: Customer Vault / My Keys */}
-            <button
-              type="button"
-              onClick={() => {
-                setVaultOpen(true);
-                setMobileOpen(false);
-              }}
-              className="w-full text-center py-2.5 mb-3 rounded-2xl bg-cyan-950/70 border border-cyan-500/50 text-cyan-300 font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.25)] active:scale-95"
-            >
-              <Key size={14} className="text-cyan-400" />
-              <span>Customer Vault (My Keys)</span>
-              {user && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>}
-            </button>
+            {/* Primary Mobile Action: Customer Vault / My Keys (Visible only when automated checkout mode is active) */}
+            {!ENABLE_DIRECT_DISPATCH_MODAL && (
+              <button
+                type="button"
+                onClick={() => {
+                  setVaultOpen(true);
+                  setMobileOpen(false);
+                }}
+                className="w-full text-center py-2.5 mb-3 rounded-2xl bg-cyan-950/70 border border-cyan-500/50 text-cyan-300 font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.25)] active:scale-95"
+              >
+                <Key size={14} className="text-cyan-400" />
+                <span>Customer Vault (My Keys)</span>
+                {user && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>}
+              </button>
+            )}
 
             <div className="space-y-1 border-t border-white/10 pt-2">
               {NAV_LINKS.map((link) => (
