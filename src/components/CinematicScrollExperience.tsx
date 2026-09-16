@@ -756,11 +756,15 @@ export function CinematicScrollExperience({
                       <div className="pt-1.5 border-t border-white/10 flex flex-col gap-0.5 sm:gap-1 text-[9px] sm:text-[11px] text-neutral-300/90 font-display">
                         <div className="flex items-center gap-1">
                           <span className="text-cyan-400 font-bold">✓</span>
-                          <span className="truncate">30-Day PGSharp VIP</span>
+                          <span className="truncate">
+                            {plan.device_slots === 2
+                              ? '1 Month Standard Key (2 Devices)'
+                              : '1 Month Standard Key'}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1">
                           <span className="text-cyan-400 font-bold">✓</span>
-                          <span className="truncate">Teleport & Auto-Walk</span>
+                          <span className="truncate">100% Replacement Warranty</span>
                         </div>
                       </div>
                     </div>
@@ -941,7 +945,7 @@ export function CinematicScrollExperience({
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Shield size={13} className="text-emerald-400 shrink-0" />
-                  <span className="truncate">30-Day PGSharp VIP</span>
+                  <span className="truncate">100% Replacement Warranty</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Check size={13} className="text-cyan-400 shrink-0" />
