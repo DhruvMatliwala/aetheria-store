@@ -20,8 +20,9 @@ AETHERIA operates across multiple synchronous channels:
 1. **Web Storefront**: Luxury dark-mode experience featuring a 550vh GSAP scrollytelling visual runway, ambient spatial audio, and an instant key delivery modal.
 2. **Admin Command Center (`/admin`)**: Protected dashboard for inventory metrics, direct key dispatch, bulk key ingestion, waitlist blast notifications, order approvals, and automated renewal triggers.
 3. **Telegram Bot Engine (`@AetheriaStoreOfficialBot`)**: Autonomous conversational bot supporting multi-tier checkout, clean 4-line UPI QR cards with progressive disclosure fallback, automated key delivery in DMs, and viral referral tracking (`/ref`).
-4. **Telegram Proof Channel (`@AetheriaStoreOfficial`)**: Real-time restock broadcasting and privacy-masked order verification proofs.
-5. **Discord Real-Time Buyer Radar (`discord-key-notifier`)**: Standalone gateway microservice monitoring 23 Discord servers in real time, routing high-intent buyer alerts directly to the owner's Telegram.
+4. **Telegram Official Channel (`@AetheriaStoreOfficial`)**: Real-time restock announcements, clean pricing cards, feature comparisons, and official updates.
+5. **Telegram Dedicated Vouches Channel (`@AetheriaStoreVouches`)**: Authentic customer delivery screenshots, UPI/PayPal receipts, Discord trade confirmations, and in-game PGSharp activation proofs kept in a dedicated channel to maintain a clean main community.
+6. **Discord Real-Time Buyer Radar (`discord-key-notifier`)**: Standalone gateway microservice monitoring 23 Discord servers in real time, routing high-intent buyer alerts directly to the owner's Telegram.
 
 ---
 
@@ -59,6 +60,11 @@ The vault uploader in `/admin` provides configurable slot allocation policies ba
 ### 3.3 International PayPal Direct Rail
 - Direct PayPal.me integration (`/api/checkout/paypal` and `/api/checkout/paypal/capture`).
 - Instant automated transaction capture and key dispatch.
+
+### 3.4 Direct Owner Dispatch Modal (`ENABLE_DIRECT_DISPATCH_MODAL`)
+- **Direct Human Connection**: Provides a 1-tap modal connecting buyers directly to the owner on Telegram (`@sleekfx3`), Discord (`@sleekfx3`), or Reddit (`u/dhruv_emperor`), completely eliminating trust friction.
+- **Dynamic Pre-Filled Order Text**: Automatically pre-fills the message with the selected tier and price: `Hey Dhruv, I want to buy a PGSharp Standard key for [1 Device / 2 Devices] (30 Days). I will pay with: UPI / PayPal. Please share payment details.`
+- **Zero-Loss Reversible Toggle**: Controlled via `ENABLE_DIRECT_DISPATCH_MODAL` in `constants.ts`. Setting to `false` instantly restores the automated UPI QR code and PayPal checkout modals without losing any underlying logic.
 
 ---
 
@@ -126,9 +132,10 @@ To eliminate customer intimidation, hesitation, and text overload:
 - **Automated Friend Discount (Zero Coupon Required)**: Friends joining via referral automatically receive **₹30 OFF** on their first purchase (Standard: **₹130**; Duo: **₹270**).
 - **Reward Coupon Issuance**: When the friend completes an order, the referrer automatically receives a single-use ₹30 coupon (`REF30_XXXXXX`) redeemable on future renewals.
 
-### 7.3 Public Proof Channel (`@AetheriaStoreOfficial`)
-- **Restock Alerts**: Flash restock alerts whenever keys are uploaded to the vault.
-- **Privacy-Masked Vouches**: Live order proofs (e.g. `📦 30-Day PGSharp Key dispatched to dh***@gmail.com`) with atomic idempotency locks (`proof_broadcasted: true`).
+### 7.3 Community Announcements & Dedicated Vouches Architecture
+- **Automated Restock Flash Alerts**: Whenever fresh keys are uploaded to the vault via `/admin`, `broadcastRestockAlert` automatically announces the restock in `@AetheriaStoreOfficial` with a direct 1-tap purchase button (`⚡ KEYS ARE BACK IN STOCK!`).
+- **Clean Main Channel Policy**: Automated bot purchase messages (`ORDER COMPLETED dispatched to...`) were decommissioned to keep the main channel sleek and free from repetitive notification spam.
+- **Dedicated Vouches Channel (`@AetheriaStoreVouches`)**: Authentic customer proof screenshots (UPI transfers, PayPal receipts, Discord chat confirmations, and in-game PGSharp activation screens) are published in a separate vouches channel with key details properly redacted, establishing unshakeable social proof without cluttering announcements.
 
 ---
 

@@ -66,6 +66,13 @@ export const TELEGRAM_PROOF_CHANNEL =
   process.env.TELEGRAM_PROOF_CHANNEL || '@AetheriaStoreOfficial';
 export const TELEGRAM_CHANNEL_URL =
   process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL_URL || 'https://t.me/AetheriaStoreOfficial';
+export const TELEGRAM_VOUCHES_URL =
+  process.env.NEXT_PUBLIC_TELEGRAM_VOUCHES_URL || 'https://t.me/AetheriaVouches';
+
+// Direct Owner Dispatch Modal Mode
+// When true: Storefront "Buy Key" triggers direct Telegram / Discord / Reddit contact modal.
+// Set to false: Instantly restores automated online UPI / PayPal checkout modal.
+export const ENABLE_DIRECT_DISPATCH_MODAL = true;
 
 export interface SmartRoute {
   id: string;

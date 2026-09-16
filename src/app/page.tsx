@@ -12,8 +12,9 @@ import {
   StoreThemeId,
 } from '@/themes';
 import { CheckoutModal } from '@/components/storefront/CheckoutModal';
+import { DirectOrderModal } from '@/components/storefront/DirectOrderModal';
 import { RestockNotifyModal } from '@/components/storefront/RestockNotifyModal';
-import { PLANS } from '@/lib/constants';
+import { PLANS, ENABLE_DIRECT_DISPATCH_MODAL } from '@/lib/constants';
 import { Plan } from '@/types/plan';
 
 function StorefrontContent({
@@ -212,15 +213,26 @@ export default function HomePage() {
         />
       </Suspense>
 
-      {/* Checkout Modal (100% existing UPI/PayPal & key allocation logic) */}
-      <CheckoutModal
-        isOpen={isCheckoutModalOpen}
-        onClose={() => {
-          setIsCheckoutModalOpen(false);
-          setSelectedPlan(null);
-        }}
-        plan={selectedPlan}
-      />
+      {/* Order Modal: Direct Owner Contact Mode (Telegram/Discord/Reddit) or Automated Checkout Mode */}
+      {ENABLE_DIRECT_DISPATCH_MODAL ? (
+        <DirectOrderModal
+          isOpen={isCheckoutModalOpen}
+          onClose={() => {
+            setIsCheckoutModalOpen(false);
+            setSelectedPlan(null);
+          }}
+          plan={selectedPlan}
+        />
+      ) : (
+        <CheckoutModal
+          isOpen={isCheckoutModalOpen}
+          onClose={() => {
+            setIsCheckoutModalOpen(false);
+            setSelectedPlan(null);
+          }}
+          plan={selectedPlan}
+        />
+      )}
 
       {/* Restock Notification Modal */}
       <RestockNotifyModal

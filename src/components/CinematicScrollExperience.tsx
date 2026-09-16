@@ -20,7 +20,14 @@ import {
 } from 'lucide-react';
 import { Plan } from '@/types/plan';
 import { Review } from '@/types/review';
-import { PLANS, DISCORD_URL, REDDIT_URL, TELEGRAM_URL, CINEMATIC_MEDIA_MODE } from '@/lib/constants';
+import {
+  PLANS,
+  DISCORD_URL,
+  REDDIT_URL,
+  TELEGRAM_URL,
+  CINEMATIC_MEDIA_MODE,
+  ENABLE_DIRECT_DISPATCH_MODAL,
+} from '@/lib/constants';
 import { triggerParticleBurst } from '@/components/interactive/ParticleBurst';
 import { AmbientMistParticles } from '@/components/interactive/AmbientMistParticles';
 import { cn } from '@/lib/utils';
@@ -739,7 +746,7 @@ export function CinematicScrollExperience({
                       </div>
 
                       <div className="text-[9px] sm:text-xs font-display">
-                        {isOutOfStock ? (
+                        {!ENABLE_DIRECT_DISPATCH_MODAL && isOutOfStock ? (
                           <span className="text-red-400 font-medium">● Sold Out</span>
                         ) : (
                           <span className="text-emerald-400 font-medium">● Fast Digital Delivery</span>
@@ -759,7 +766,7 @@ export function CinematicScrollExperience({
                     </div>
 
                     {/* Action Button */}
-                    {isOutOfStock ? (
+                    {!ENABLE_DIRECT_DISPATCH_MODAL && isOutOfStock ? (
                       isWaitlisted ? (
                         <button
                           type="button"

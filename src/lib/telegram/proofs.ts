@@ -1,10 +1,7 @@
 import { sendTelegramMessage } from '@/lib/telegram/bot';
-import { getAdminFirestore } from '@/lib/firebase/admin';
 import {
   TELEGRAM_PROOF_CHANNEL,
   TELEGRAM_BOT_USERNAME,
-  PLAN_MAP,
-  PLANS,
 } from '@/lib/constants';
 
 export interface OrderProofPayload {
@@ -18,93 +15,12 @@ export interface OrderProofPayload {
 }
 
 /**
- * Anonymizes email or username for public vouch broadcast:
- * - "dhruvmatliwala@gmail.com" -> "dh***@gmail.com"
- * - "dhruv_emperor" -> "@dh***"
+ * Automated order completion broadcast to the Telegram channel has been removed
+ * to keep the channel clean. Customer vouches and screenshots are handled separately.
  */
-function anonymizeIdentity(email?: string, username?: string): string {
-  if (username && username.trim()) {
-    const clean = username.replace(/^@/, '').trim();
-    const isPhone = /^\+?[0-9\s-]{7,}$/.test(clean);
-    if (!isPhone) {
-      if (clean.length <= 2) return `@${clean}*`;
-      return `@${clean.slice(0, 2)}***`;
-    }
-  }
-  if (email && email.includes('@') && !email.includes('@telegram.user')) {
-    const [name, domain] = email.split('@');
-    const maskedName = name.length <= 2 ? `${name}*` : `${name.slice(0, 2)}***`;
-    return `${maskedName}@${domain}`;
-  }
-  return 'Verified Trainer 🎮';
-}
-
-
-/**
- * Broadcasts an authentic, high-converting "Order Fulfilled / Vouch" message
- * to the official public Telegram proofs channel (@AetheriaStoreOfficial).
- */
-export async function broadcastOrderProof(payload: OrderProofPayload): Promise<boolean> {
-  const channelTarget = TELEGRAM_PROOF_CHANNEL?.trim();
-  if (!channelTarget) {
-    return false;
-  }
-
-  // Atomically guard against duplicate proof broadcasts for the same order
-  if (payload.orderId && !payload.orderId.startsWith('test_')) {
-    try {
-      const db = getAdminFirestore();
-      const orderRef = db.collection('orders').doc(payload.orderId);
-      const isDuplicate = await db.runTransaction(async (txn) => {
-        const snap = await txn.get(orderRef);
-        if (snap.exists && snap.data()?.proof_broadcasted) {
-          return true;
-        }
-        txn.set(orderRef, { proof_broadcasted: true }, { merge: true });
-        return false;
-      });
-
-      if (isDuplicate) {
-        console.log(`[proofs] Skipped duplicate proof broadcast for Order #${payload.orderId}`);
-        return false;
-      }
-    } catch (dbErr) {
-      console.warn('[proofs] Idempotency lock check warning:', dbErr);
-    }
-  }
-
-  try {
-    const plan = PLAN_MAP[payload.planType] || PLANS[0];
-    const planDesc = plan.device_slots === 2 ? '30-Day PGSharp Key (2 Devices)' : '30-Day PGSharp Key';
-
-    const maskedUser = anonymizeIdentity(
-      payload.customerEmail,
-      payload.customerUsername
-    );
-
-    const proofText =
-      `✅ <b>ORDER COMPLETED</b>\n\n` +
-      `📦 <b>${planDesc}</b> dispatched to <b>${maskedUser}</b>\n` +
-      `🛡️ Key verified and activated successfully.`;
-
-    await sendTelegramMessage(channelTarget, proofText, {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: '⚡ Order via Bot',
-              url: `https://t.me/${TELEGRAM_BOT_USERNAME}?start=channel_proof`,
-            },
-          ],
-        ],
-      },
-    });
-
-    return true;
-  } catch (error) {
-    console.error('Failed to broadcast order proof to Telegram:', error);
-    return false;
-  }
+export async function broadcastOrderProof(_payload: OrderProofPayload): Promise<boolean> {
+  // Disabled as requested: no automatic message is sent to the channel on key purchases
+  return false;
 }
 
 /**

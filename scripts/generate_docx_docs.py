@@ -159,7 +159,8 @@ def create_document():
     add_bullet("Web Storefront: ", "Cyberpunk luxury dark-mode experience featuring a 550vh GSAP scrollytelling visual runway, ambient spatial audio, and an instant client-side key delivery modal.")
     add_bullet("Admin Command Center (/admin): ", "Encrypted portal for live vault monitoring, direct key dispatch, bulk license ingestion, order proof management, and automated expiry reminders.")
     add_bullet("Telegram Bot Engine (@AetheriaStoreOfficialBot): ", "Autonomous multi-device purchasing bot supporting instant UPI/PayPal checkouts, key delivery in DMs, and an integrated viral referral reward program.")
-    add_bullet("Telegram Proof Channel (@AetheriaStoreOfficial): ", "Real-time automated restock announcements and privacy-masked order verification proofs.")
+    add_bullet("Telegram Official Channel (@AetheriaStoreOfficial): ", "Real-time automated restock announcements, clean pricing cards, guides, and official store updates.")
+    add_bullet("Telegram Dedicated Vouches Channel (@AetheriaStoreVouches): ", "Authentic customer delivery proofs, UPI/PayPal receipts, Discord trade confirmations, and in-game PGSharp activation screenshots kept in a dedicated channel to preserve main channel cleanliness.")
     add_bullet("Discord Lead Notifier (discord-key-notifier): ", "Dedicated gateway microservice monitoring 23 Discord servers in real time, routing high-intent buyer alerts directly to the owner's Telegram.")
 
     # ── 2. Pricing & Plan Structure ───────────────────────────────────────────
@@ -209,15 +210,14 @@ def create_document():
     add_bullet("Regex Keyword Matching: ", "Detects high-intent keywords ('key', 'buy key', 'pgsharp key', 'wtb', 'need key') and instantly formats rich alerts.")
     add_bullet("Telegram Mobile Alerts: ", "Pushes real-time alerts to the owner's Telegram with user details, matched message snippets, and 1-click 'Open in Discord' jump buttons.")
 
-    # ── 7. Telegram Bot & Channel Announcement Architecture ───────────────────
-    add_h1("7. Telegram Bot & Automated Proof Broadcasting")
-    add_body("The public Telegram infrastructure (@AetheriaStoreOfficial and @AetheriaStoreOfficialBot) features automated community broadcast hooks:")
-    add_bullet("Streamlined Restock Flash Alerts: ", "Whenever keys are uploaded, broadcastRestockAlert posts a punchy, high-urgency announcement: '⚡ KEYS ARE BACK IN STOCK! 📦 Fresh 30-Day keys just loaded into the vault. Grab yours before this batch runs out! 🚀'")
-    add_bullet("Intentional Price-Free Copy: ", "Pricing figures were intentionally eliminated from announcement posts. This eliminates message clutter, avoids repetitive price spam (since prices are prominently pinned in the channel and website), and ensures restock alerts never become outdated if store pricing evolves.")
+    # ── 7. Telegram Bot, Restock Alerts & Dedicated Vouches Architecture ──────
+    add_h1("7. Telegram Bot, Restock Alerts & Dedicated Vouches Architecture")
+    add_body("The public Telegram infrastructure operates with a clean separation between high-level community announcements and verified transaction proofs:")
+    add_bullet("Streamlined Restock Flash Alerts: ", "Whenever keys are uploaded, broadcastRestockAlert posts a punchy, high-urgency announcement in @AetheriaStoreOfficial: '⚡ KEYS ARE BACK IN STOCK! 📦 Fresh 30-Day keys just loaded into the vault. Grab yours before this batch runs out! 🚀'")
+    add_bullet("Intentional Price-Free Copy: ", "Pricing figures were intentionally eliminated from restock alert posts to prevent clutter and ensure announcements never become outdated if store pricing evolves.")
     add_bullet("1-Tap Conversion CTA: ", "Includes an interactive inline button linking directly to 'https://t.me/AetheriaStoreOfficialBot?start=restock', taking customers straight into checkout with 0 friction.")
-    add_bullet("Streamlined Order Completed Proofs: ", "Real-time purchase proofs are automatically dispatched upon payment capture to @AetheriaStoreOfficial with zero receipt clutter: '✅ ORDER COMPLETED 📦 30-Day PGSharp Key dispatched to dh***@gmail.com (or @sl*** for bot buyers) 🛡️ Key verified and activated successfully.' Includes a direct '⚡ Order via Bot' inline button.")
-    add_bullet("Dual Storefront Channel Synchronization: ", "Both Telegram bot purchases and website purchases (automated Bank SMS Bridge UPI, website UTR verification, PayPal Express capture, and PayPal IPN direct matching) are unified and trigger live social proofs in the channel automatically.")
-    add_bullet("Atomic Channel Proof Idempotency Guard: ", "Proof broadcasts are locked using an atomic Firestore transaction ('proof_broadcasted: true'). Even during duplicate SMS forwards or multiple UTR submissions, each order is guaranteed to broadcast to the channel exactly once.")
+    add_bullet("Clean Main Channel Policy: ", "Automated 'ORDER COMPLETED' bot messages upon key purchase were decommissioned from the main channel to eliminate spam and keep announcements pristine.")
+    add_bullet("Dedicated Customer Vouches Channel (@AetheriaStoreVouches): ", "Real customer proof screenshots (UPI bank transactions, PayPal payments, Discord customer chats, and in-game PGSharp 'Settings / Deactivate' activation screens) are curated in a dedicated channel with sensitive license keys and personal data redacted.")
 
     add_h2("7.1 Viral Telegram Referral & Reward Engine ('Refer & Earn')")
     add_body("The bot features a self-sustaining viral growth loop designed for zero checkout friction:")
@@ -246,8 +246,16 @@ def create_document():
     add_bullet("Live Firestore Coupon Engine & Deletion: ", "Completely eliminated static mock data and hardcoded coupon fallbacks (VIPDHRUV, DISCORDMEMBER). Built a real-time Firestore synchronization engine with an interactive [ Delete ] button, live creation modal, and empty-state notifications.")
     add_bullet("Streamlined Tab Layout: ", "Dashboard, Inventory & Stock, Direct Dispatch, Bulk Key Uploader, Orders & Deliveries, 24/7 UPI Bridge, Coupons (Live Firestore CRUD & Deletion), Waitlist & Demand, and Buyer Reviews.")
 
-    # ── 9. Complete Route & API Architecture Map ──────────────────────────────
-    add_h1("9. Complete Route & API Architecture Map")
+    # ── 9. Sales Conversion Assets, In-Bot Guides & Safe Play ────────────────
+    add_h1("9. Sales Conversion Assets, In-Bot Guides & Safe Play")
+    add_body("To address buyer skepticism, educate novice spoofers, and drive direct sales inside Telegram:")
+    add_bullet("Free vs Standard Comparison Engine (/features, /compare): ", "High-converting sales comparison detailing the limitations of PGSharp Free (15-second catch animations, blind catches without stats, no shiny scanner, manual joystick fatigue) vs the advantages of PGSharp Standard (1-second Quick Catch, 100% IV encounter preview, block non-shiny encounters, hands-free GPX auto-walk, instant skip cutscenes, guaranteed 100% excellent throws).")
+    add_bullet("Anti-Ban Cooldown & Safety Guide (/cooldown, /safety): ", "Comprehensive reference guide with distance cooldown chart (1 km to 1,350+ km global max of 120 mins), explicit breakdown of cooldown-triggering actions (balls, berries, gym battles, spins) versus safe actions (teleporting, IV inspection, egg hatching, trading).")
+    add_bullet("PGSharp Feature Tier Accuracy: ", "Clarifies that while the cooldown timer overlay is built-in free in PGSharp, the actual gameplay automation features (Quick Catch, shiny scanner, auto-feed, skip cutscenes) strictly require an active Standard license key.")
+    add_bullet("Live Pokémon GO Events (/events): ", "Real-time event and raid boss rotations pulled live from official community feeds.")
+
+    # ── 10. Complete Route & API Architecture Map ─────────────────────────────
+    add_h1("10. Complete Route & API Architecture Map")
     add_body("Summary of all 18 active production routes and API endpoints:")
 
     route_table = doc.add_table(rows=1, cols=3)
@@ -279,8 +287,8 @@ def create_document():
 
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
-    # ── 10. Security & Cryptographic Specifications ───────────────────────────
-    add_h1("10. Security & Cryptographic Specifications")
+    # ── 11. Security & Cryptographic Specifications ───────────────────────────
+    add_h1("11. Security & Cryptographic Specifications")
     add_body("Institutional-grade data protection standards enforced across all transactions:")
     add_bullet("AES-256-GCM Encryption: ", "All raw license keys stored in Firestore collection 'keys' are encrypted at rest using unique 12-byte IVs and 16-byte authentication tags.")
     add_bullet("Zero Sensitive Data Retention: ", "The SMS Bridge explicitly drops all incoming OTPs and login codes, storing only validated bank credit references.")
