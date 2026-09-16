@@ -24,7 +24,7 @@ export function DirectOrderModal({ isOpen, onClose, plan }: DirectOrderModalProp
   const priceInr = isDuo ? '₹300' : '₹160';
   const priceUsd = isDuo ? '$3.60 USD' : '$2.00 USD';
 
-  const orderText = `Hey Dhruv, I want to buy a PGSharp Standard key for ${devicesLabel} (30 Days). I will pay with: UPI (${priceInr}) / PayPal (${priceUsd}). Please share payment details.`;
+  const orderText = `Hey Dhruv, I want to buy a PGSharp Standard key for ${devicesLabel}.`;
 
   // Pre-filled dynamic links
   const telegramTarget = `https://t.me/sleekfx3?text=${encodeURIComponent(orderText)}`;
