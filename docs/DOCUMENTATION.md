@@ -1,4 +1,4 @@
-# 📜 AETHERIA — Complete Technical & Engineering Manual
+# AETHERIA — Complete Technical & Engineering Manual
 
 This document provides an exhaustive, in-depth architectural breakdown of the **AETHERIA / PGSharp Storefront** web platform and multi-channel ecosystem.
 
@@ -64,9 +64,12 @@ The vault uploader in `/admin` provides configurable slot allocation policies ba
 - Instant automated transaction capture and key dispatch.
 
 ### 3.4 Direct Owner Dispatch Modal (`ENABLE_DIRECT_DISPATCH_MODAL`)
-- **Direct Human Connection**: Provides a 1-tap modal connecting buyers directly to the owner on Telegram (`@sleekfx3`), Discord (`@sleekfx3`), or Reddit (`u/dhruv_emperor`), completely eliminating trust friction.
-- **Dynamic Pre-Filled Order Text**: Automatically pre-fills the message with the selected tier and price: `Hey Dhruv, I want to buy a PGSharp Standard key for [1 Device / 2 Devices] (30 Days). I will pay with: UPI / PayPal. Please share payment details.`
-- **Zero-Loss Reversible Toggle**: Controlled via `ENABLE_DIRECT_DISPATCH_MODAL` in `constants.ts`. Setting to `false` instantly restores the automated UPI QR code and PayPal checkout modals without losing any underlying logic.
+- **Direct Human Connection**: Provides a clean 1-tap modal connecting buyers directly to the owner on Telegram (`@sleekfx3`), Discord (`dhruv_emperor` / ID `503233296134832149`), or Reddit (`u/dhruv_emperor`), completely eliminating trust friction.
+- **Natural One-Line Pre-Filled Order Text**: Automatically pre-fills natural conversational text:
+  - 1 Device: `Hey Dhruv, I want to buy a PGSharp Standard key for 1 Device.`
+  - 2 Devices: `Hey Dhruv, I want to buy a PGSharp Standard key for 2 Devices.`
+- **Zero-Loss Reversible Toggle**: Controlled via `ENABLE_DIRECT_DISPATCH_MODAL` in `src/lib/constants.ts`. Setting to `false` instantly restores the automated UPI QR code and PayPal checkout modals without losing any underlying logic.
+- **Focused Navigation**: The "My Keys" customer vault header button is automatically hidden while direct modal mode is enabled to keep the interface streamlined.
 
 ---
 
@@ -83,15 +86,14 @@ Allows the administrator to fulfill private off-platform sales directly in Teleg
 ## 5. Email Delivery & Automated Restock Waitlist Subsystem
 
 ### 5.1 Direct Gmail SMTP Delivery (Nodemailer)
-- **Zero Custom Domain Requirement**: Uses authenticated Gmail SMTP via `nodemailer` using a 16-character Google App Password (`GMAIL_USER` and `GMAIL_APP_PASSWORD`).
-- **Universal Reach**: Sends directly from `dhruvmatliwala336@gmail.com` to any customer email address (Gmail, Yahoo, Outlook, etc.) without sandbox limitations.
-- **Branded Sender Display**: Customers see **Aetheria Store** as the sender name in their inbox, and any customer replies go directly to the administrator's personal Gmail.
-- **Unified Dispatcher (`resend.ts`)**: Automatically prioritizes Gmail SMTP, falling back to Resend API if Gmail credentials are absent. Powers License Key Delivery, 48-Hour Expiry Reminders, and Restock Waitlist Notifications.
+- Direct delivery via Gmail SMTP (`service: 'gmail'`) authenticated through the owner's Gmail account (`dhruvmatliwala336@gmail.com`).
+- Eliminates custom domain verification barriers and delivers reliably to all customer domains.
+- Powers automated restock notices, license deliveries, and 48-hour expiration reminders.
 
 ### 5.2 Automated Restock Waitlist Notification System
 - **Captures Demand**: Visitors enter their email on the storefront waitlist modal when keys are sold out, saved in `restock_requests`.
-- **Automatic Upload Dispatch (`/api/admin/keys`)**: When new keys are added, the server queries pending waitlist subscribers for that plan and automatically sends them a branded restock email (*"⚡ PGSharp Keys Are Back in Stock!"*) with direct order links.
-- **One-Click Admin Blast Button (`/api/admin/waitlist/notify`)**: The Waitlist & Demand tab in `/admin` includes an interactive **`[ 📧 Notify All Waiting (X) ]`** button with confirmation prompts and live progress metrics.
+- **Automatic Upload Dispatch (`/api/admin/keys`)**: When new keys are added, the server queries pending waitlist subscribers for that plan and automatically sends them a branded restock email (*"PGSharp Keys Are Back in Stock!"*) with direct order links.
+- **One-Click Admin Blast Button (`/api/admin/waitlist/notify`)**: The Waitlist & Demand tab in `/admin` includes an interactive **`[ Notify All Waiting (X) ]`** button with confirmation prompts and live progress metrics.
 - **De-duplication**: Notified subscribers are automatically removed from the database to prevent duplicate emails.
 
 ---
@@ -108,26 +110,35 @@ A dedicated standalone Node.js microservice located in `/discord-key-notifier`:
 
 ## 7. YouTube Live Comment Radar (`youtube-key-notifier`)
 
-A dedicated standalone Node.js microservice located in `/youtube-key-notifier`:
+A dedicated standalone Node.js microservice running 24/7 on the cloud (`https://youtube-key-notifier.onrender.com`):
 - **Automated Channel & Shorts Discovery**: Ingests uploads from target Pokemon GO / PGSharp channels via zero-quota public RSS feeds, eliminating the need to manually hunt through thousands of Shorts.
 - **Auto-Aging & Watchlist Pruning**: Automatically monitors new uploads for 7 days during their peak viewer engagement window, then auto-prunes them to keep the active pool fresh.
-- **Custom Pinned Watchlist**: Allows pinning specific evergreen viral videos or tutorials indefinitely via `custom_videos.json`.
-- **English & Hinglish Intent Matching**: Detects 36 buyer intent signals (`pgsharp key`, `price`, `cost`, `kitne ka`, `kaise milegi`, `kahan se lu`, `kaise buy kare`, `key chahiye`) with word-boundary regex to prevent false positives.
-- **Instant Telegram Mobile Alerts**: Sends clean alerts to the owner's Telegram with commenter name, video title, comment text excerpt, and direct 1-tap jump link to open and reply on YouTube.
-- **Zero-Emoji Compliance**: Fully conforms to the strict clean text and zero-emoji formatting rules.
-- **Local Health Dashboard**: Built-in HTTP dashboard at `http://localhost:3001` reporting uptime, active watchlist, total comments scanned, and leads caught.
+- **Refined Buyer Intent Filter (33 Keywords)**: Detects high-intent English and Hinglish phrases (`pgsharp key`, `standard key`, `buy key`, `kitne ka`, `kaise milegi`, `kahan se lu`, `kaise buy kare`, `key chahiye`) with word-boundary regex. Generic non-key terms (`price`, `cost`, `how much`) were purged to prevent false alerts.
+- **Self-Comment Filter**: Automatically detects and ignores comments posted by `@dhruv_emperor` and `Aetheria Store`.
+- **Strict Timestamp Cut-Off**: Only comments and replies posted after **16-Sep-2026 5:36:00 PM IST** (`2026-09-16T12:06:00Z`) trigger alerts. All older comments are ignored.
+- **Instant Telegram Mobile Alerts**: Sends clean alerts to the owner's Telegram (`741838315`) with commenter name, video title, comment text excerpt, and direct 1-tap jump link to open and reply on YouTube.
+- **24/7 Cloud Engine**: Deployed to Render with UptimeRobot 5-minute HTTP ping to guarantee perpetual uptime with zero local PC dependency.
 
 ---
 
 ## 8. Telegram Live Group Radar (`telegram-key-notifier`)
 
-A dedicated standalone Node.js microservice located in `/telegram-key-notifier`:
-- **Direct MTProto Client Connection**: Utilizes GramJS MTProto client to passively listen across 9 joined Indian Pokemon GO and PGSharp trading groups and channels (`targets.json`).
+A dedicated standalone Node.js microservice running 24/7 on the cloud (`https://telegram-key-notifier.onrender.com`):
+- **Direct MTProto Client Connection**: Utilizes GramJS MTProto client authenticated via secure session string to passively listen in real time across 9 joined Indian Pokemon GO and PGSharp trading groups:
+  1. `PoGoGuideYT12` (PoGoGuide YT)
+  2. `INDIANPOGO` (Indian Pokemon go Community)
+  3. `UnofficialCreators` (Unofficial Creator)
+  4. `Pokeprince79` (Poke Prince)
+  5. `memberpgsharp` (Pgsharp Keys)
+  6. `free_pgsharp_keys_old` (POKEMON GO TRAINER'S)
+  7. `pgsharpkeyfree1` (Pokemon Go Official)
+  8. `Lakshya0712345` (Pgsharp free keys Chat)
+  9. `membersofpgsharpkeys` (Pgsharp chat group for key)
 - **Strict Timestamp Cut-Off**: Only messages posted after **17-Sep-2026 10:53:00 PM IST** (`2026-09-17T17:23:00Z`) are evaluated. All historical messages are ignored.
-- **English & Hinglish Intent Matching**: Monitors for 33 high-intent buyer phrases (`key`, `pgsharp key`, `standard key`, `buy key`, `kitne ka`, `kaise milegi`, `kahan se lu`, `kaise buy kare`, `key chahiye`) with word-boundary regex.
-- **Self-Sender Exclusion**: Automatically detects and ignores messages sent by the owner (`@sleekfx3`) to avoid false-positive self-notifications.
+- **33 High-Intent Buyer Keywords**: Word-boundary regex matching for English and Hinglish buyer signals (`key`, `pgsharp key`, `standard key`, `buy key`, `kitne ka`, `kaise milegi`, `kahan se lu`, `kaise buy kare`, `key chahiye`).
+- **Self-Sender Exclusion**: Automatically detects and ignores messages sent by the owner (`@sleekfx3` / ID `741838315`).
 - **Zero-Emoji Mobile Alerts**: Immediately pushes formatted alert cards to the owner's Telegram with group title, commenter name/username, exact message snippet, and a 1-tap direct jump link (`https://t.me/{chat}/{messageId}`).
-- **Local Health Dashboard**: Built-in HTTP dashboard at `http://localhost:3002` reporting MTProto connection status, monitored targets count, keywords count, and total leads detected.
+- **24/7 Cloud Engine**: Deployed to Render with UptimeRobot 5-minute keep-awake ping to guarantee perpetual uptime.
 
 ---
 
@@ -137,19 +148,19 @@ A dedicated standalone Node.js microservice located in `/telegram-key-notifier`:
 To eliminate customer intimidation, hesitation, and text overload:
 - **Clean 4-Line Layout**:
   ```text
-  📦 PGSharp Standard (~30 Days) — ₹160
-  🔑 UPI ID: dhruvmatliwala123@oksbi
-  🔖 Order ID: ord_tg_xxxx
+  PGSharp Standard (~30 Days) — ₹160
+  UPI ID: dhruvmatliwala123@oksbi
+  Order ID: ord_tg_xxxx
 
-  ⚡ Scan QR or pay ₹160. Key is auto-delivered here within 1–2 minutes!
+  Scan QR or pay ₹160. Key is auto-delivered here within 1–2 minutes!
   ```
-- **Primary Fallback Button**: `[ ❓ Paid but didn't get key? ]`
+- **Primary Fallback Button**: `[ Paid but didn't get key? ]`
 - **Progressive Disclosure on Demand**: Clicking the button reveals comforting guidance without technical jargon:
   ```text
-  ⏳ Awaiting Bank Confirmation...
+  Awaiting Bank Confirmation...
   Bank SMS alerts usually arrive within 1–2 minutes.
 
-  💡 If you paid and want your key right away without waiting:
+  If you paid and want your key right away without waiting:
   Send a screenshot of your Transaction Details (in Google Pay/FamPay, tap on the payment to view full details with the 12-digit UPI ID) or reply with the 12 digits directly!
   ```
 - **Tap-Payment Guidance**: Educates customers to tap their completed payment in Google Pay / FamPay to find the 12-digit **UPI transaction ID** rather than confusing banking terms like "UTR".
@@ -162,7 +173,7 @@ To eliminate customer intimidation, hesitation, and text overload:
 - **Anti-Fraud Protections**: Device and IP fingerprinting, strict chat ID deduplication, and self-referral blocks.
 
 ### 9.3 Community Announcements & Dedicated Vouches Architecture
-- **Automated Restock Flash Alerts**: Whenever fresh keys are uploaded to the vault via `/admin`, `broadcastRestockAlert` automatically announces the restock in `@AetheriaStoreOfficial` with a direct 1-tap purchase button (`⚡ KEYS ARE BACK IN STOCK!`).
+- **Automated Restock Flash Alerts**: Whenever fresh keys are uploaded to the vault via `/admin`, `broadcastRestockAlert` automatically announces the restock in `@AetheriaStoreOfficial` with a direct 1-tap purchase button (`KEYS ARE BACK IN STOCK!`).
 - **Clean Main Channel Policy**: Automated bot purchase messages (`ORDER COMPLETED dispatched to...`) were decommissioned to keep the main channel sleek and free from repetitive notification spam.
 - **Dedicated Vouches Channel (`@AetheriaStoreVouches`)**: Authentic customer proof screenshots (UPI transfers, PayPal receipts, Discord chat confirmations, and in-game PGSharp activation screens) are published in a separate vouches channel with key details properly redacted, establishing unshakeable social proof without cluttering announcements.
 
@@ -180,17 +191,17 @@ To eliminate customer intimidation, hesitation, and text overload:
 
 ---
 
-## 9. Sales Conversion Assets, Cooldown Guide & Live Events
+## 11. Sales Conversion Assets, Cooldown Guide & Live Events
 
 - **Free vs Standard Comparison Engine (`/features`, `/compare`)**: High-converting sales comparison detailing the limitations of PGSharp Free (15-second catch animations, blind catches without stats, no shiny scanner, manual joystick fatigue) vs the advantages of PGSharp Standard (1-second Quick Catch, 100% IV encounter preview, block non-shiny encounters, hands-free GPX auto-walk, instant skip cutscenes, guaranteed 100% excellent throws).
 - **Anti-Ban Cooldown & Safety Guide (`/cooldown`, `/safety`)**: Comprehensive reference guide with distance cooldown chart (1 km to 1,350+ km global max of 120 mins), explicit breakdown of cooldown-triggering actions (balls, berries, gym battles, spins) versus safe actions (teleporting, IV inspection, egg hatching, trading).
 - **Direct Scanner Webhook (`/api/pokemon/spawns`)**: High-performance ingestion endpoint for raw scanner telemetry (Golbat, Poracle, MAD, RDM formats) with 20-minute in-memory de-duplication cache.
-- **National Pokédex Database (1,025 Species) & Fuzzy Search**: Typo-tolerant Levenshtein search supporting natural queries (`Greyninja` ➔ `Greninja`, `Swampert 1/14/15`).
+- **National Pokédex Database (1,025 Species) & Fuzzy Search**: Typo-tolerant Levenshtein search supporting natural queries (`Greyninja` -> `Greninja`, `Swampert 1/14/15`).
 - **Live Events Calendar (`/api/pokemon/events`)**: Real-time event and raid boss rotations accessible via `/events`.
 
 ---
 
-## 10. Production Route Summary
+## 12. Production Route Summary
 
 | Route Path | Method | Type | Core Functionality |
 |---|---|---|---|
