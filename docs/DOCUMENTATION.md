@@ -142,9 +142,25 @@ A dedicated standalone Node.js microservice running 24/7 on the cloud (`https://
 
 ---
 
-## 9. Telegram Bot & Channel Announcement Architecture
+## 9. Reddit Real-Time Lead Radar (F5Bot & Telegram Bridge)
 
-### 9.1 Minimal 4-Line QR Screen & Progressive Disclosure
+A dedicated continuous surveillance pipeline monitoring Reddit communities (including `r/PoGoAndroidSpoofing`, `r/PokemonGoSpoofing`, and related forums):
+- **Continuous Subreddit & Comment Ingestion**: Powered by F5Bot's background ingestion pipeline to bypass Reddit's API restrictions and datacenter rate-limit blocking.
+- **5 High-Intent Buyer Monitors**:
+  1. `pgsharp key` (Matches all direct key requests, buying threads, and sharing queries)
+  2. `standard key` (Matches users specifically seeking the paid Standard edition)
+  3. `buy pgsharp` (Matches high-intent purchase inquiries and card bypass questions)
+  4. `pgsharp payment` (Detects customers experiencing card declines on the official site)
+  5. `pgsharp license` (Catches license renewals, questions, and expiration help)
+- **Zero-False-Positive Filtering**: Configured with strict "Whole words only" matching and restricted strictly to Reddit domains to prevent non-gaming or tech news false positives.
+- **Isolated Secondary Gmail Architecture**: Utilizes an isolated alert email address disconnected from personal inboxes, ensuring complete personal data security and privacy.
+- **Instant Telegram Push Routing (`@GmailBot`)**: Integrated with Telegram's official `@GmailBot` bridge. Alert emails trigger instantaneous mobile push notifications in Telegram containing the post title, excerpt, and 1-tap direct link to reply or send a private chat.
+
+---
+
+## 10. Telegram Bot & Channel Announcement Architecture
+
+### 10.1 Minimal 4-Line QR Screen & Progressive Disclosure
 To eliminate customer intimidation, hesitation, and text overload:
 - **Clean 4-Line Layout**:
   ```text
@@ -165,21 +181,21 @@ To eliminate customer intimidation, hesitation, and text overload:
   ```
 - **Tap-Payment Guidance**: Educates customers to tap their completed payment in Google Pay / FamPay to find the 12-digit **UPI transaction ID** rather than confusing banking terms like "UTR".
 
-### 9.2 Viral Telegram Referral & Reward Engine ("Refer & Earn")
+### 10.2 Viral Telegram Referral & Reward Engine ("Refer & Earn")
 - **Deep Tracking Links**: Unique referral links (`https://t.me/AetheriaStoreOfficialBot?start=ref_<chatId>`) with real-time conversion stats.
 - **Automated Friend Discount (Zero Coupon Required)**: Friends joining via referral automatically receive **₹30 OFF** on their first purchase (Standard: **₹130**; Duo: **₹270**).
 - **Reward Coupon Issuance**: When the friend completes an order, the referrer automatically receives a single-use ₹30 coupon (`REF30_XXXXXX`) redeemable on future renewals.
 - **Milestone Rewards**: Scaled milestone rewards (3 invites = 50% Off, 5 invites = 1 Free Standard Key for 30 Days).
 - **Anti-Fraud Protections**: Device and IP fingerprinting, strict chat ID deduplication, and self-referral blocks.
 
-### 9.3 Community Announcements & Dedicated Vouches Architecture
+### 10.3 Community Announcements & Dedicated Vouches Architecture
 - **Automated Restock Flash Alerts**: Whenever fresh keys are uploaded to the vault via `/admin`, `broadcastRestockAlert` automatically announces the restock in `@AetheriaStoreOfficial` with a direct 1-tap purchase button (`KEYS ARE BACK IN STOCK!`).
 - **Clean Main Channel Policy**: Automated bot purchase messages (`ORDER COMPLETED dispatched to...`) were decommissioned to keep the main channel sleek and free from repetitive notification spam.
 - **Dedicated Vouches Channel (`@AetheriaStoreVouches`)**: Authentic customer proof screenshots (UPI transfers, PayPal receipts, Discord chat confirmations, and in-game PGSharp activation screens) are published in a separate vouches channel with key details properly redacted, establishing unshakeable social proof without cluttering announcements.
 
 ---
 
-## 10. Admin Command Center & Vercel Storage Optimization
+## 11. Admin Command Center & Vercel Storage Optimization
 - **Unified Inventory Dashboard (`/admin`)**: Real-time stats on available keys, low-stock threshold alerts, pending orders, and restock waitlist count.
 - **Manual Key Allocation System**: Dedicated UI tab to directly allocate standard or duo keys to custom customer identifiers (Discord, Telegram, Reddit, Email) without website payment friction.
 - **Automated Waitlist Blast**: One-click and auto-on-upload restock alerts emailed to all waiting customers via direct Gmail SMTP.
@@ -191,7 +207,7 @@ To eliminate customer intimidation, hesitation, and text overload:
 
 ---
 
-## 11. Sales Conversion Assets, Cooldown Guide & Live Events
+## 12. Sales Conversion Assets, Cooldown Guide & Live Events
 
 - **Free vs Standard Comparison Engine (`/features`, `/compare`)**: High-converting sales comparison detailing the limitations of PGSharp Free (15-second catch animations, blind catches without stats, no shiny scanner, manual joystick fatigue) vs the advantages of PGSharp Standard (1-second Quick Catch, 100% IV encounter preview, block non-shiny encounters, hands-free GPX auto-walk, instant skip cutscenes, guaranteed 100% excellent throws).
 - **Anti-Ban Cooldown & Safety Guide (`/cooldown`, `/safety`)**: Comprehensive reference guide with distance cooldown chart (1 km to 1,350+ km global max of 120 mins), explicit breakdown of cooldown-triggering actions (balls, berries, gym battles, spins) versus safe actions (teleporting, IV inspection, egg hatching, trading).
@@ -201,7 +217,7 @@ To eliminate customer intimidation, hesitation, and text overload:
 
 ---
 
-## 12. Production Route Summary
+## 13. Production Route Summary
 
 | Route Path | Method | Type | Core Functionality |
 |---|---|---|---|
