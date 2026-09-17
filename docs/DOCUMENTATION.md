@@ -24,6 +24,7 @@ AETHERIA operates across multiple synchronous channels:
 5. **Telegram Dedicated Vouches Channel (`@AetheriaStoreVouches`)**: Authentic customer delivery screenshots, UPI/PayPal receipts, Discord trade confirmations, and in-game PGSharp activation proofs kept in a dedicated channel to maintain a clean main community.
 6. **Discord Real-Time Buyer Radar (`discord-key-notifier`)**: Standalone gateway microservice monitoring 23 Discord servers in real time, routing high-intent buyer alerts directly to the owner's Telegram.
 7. **YouTube Live Comment Radar (`youtube-key-notifier`)**: Standalone comment crawler microservice monitoring target creator channels and viral Shorts in real time, routing high-intent buyer leads directly to the owner's Telegram.
+8. **Telegram Live Group Radar (`telegram-key-notifier`)**: Standalone MTProto listener microservice monitoring 9 high-traffic Indian Pokemon GO and PGSharp trading groups in real time, routing high-intent buyer leads directly to the owner's Telegram.
 
 ---
 
@@ -118,9 +119,21 @@ A dedicated standalone Node.js microservice located in `/youtube-key-notifier`:
 
 ---
 
-## 8. Telegram Bot & Channel Announcement Architecture
+## 8. Telegram Live Group Radar (`telegram-key-notifier`)
 
-### 8.1 Minimal 4-Line QR Screen & Progressive Disclosure
+A dedicated standalone Node.js microservice located in `/telegram-key-notifier`:
+- **Direct MTProto Client Connection**: Utilizes GramJS MTProto client to passively listen across 9 joined Indian Pokemon GO and PGSharp trading groups and channels (`targets.json`).
+- **Strict Timestamp Cut-Off**: Only messages posted after **17-Sep-2026 10:53:00 PM IST** (`2026-09-17T17:23:00Z`) are evaluated. All historical messages are ignored.
+- **English & Hinglish Intent Matching**: Monitors for 33 high-intent buyer phrases (`key`, `pgsharp key`, `standard key`, `buy key`, `kitne ka`, `kaise milegi`, `kahan se lu`, `kaise buy kare`, `key chahiye`) with word-boundary regex.
+- **Self-Sender Exclusion**: Automatically detects and ignores messages sent by the owner (`@sleekfx3`) to avoid false-positive self-notifications.
+- **Zero-Emoji Mobile Alerts**: Immediately pushes formatted alert cards to the owner's Telegram with group title, commenter name/username, exact message snippet, and a 1-tap direct jump link (`https://t.me/{chat}/{messageId}`).
+- **Local Health Dashboard**: Built-in HTTP dashboard at `http://localhost:3002` reporting MTProto connection status, monitored targets count, keywords count, and total leads detected.
+
+---
+
+## 9. Telegram Bot & Channel Announcement Architecture
+
+### 9.1 Minimal 4-Line QR Screen & Progressive Disclosure
 To eliminate customer intimidation, hesitation, and text overload:
 - **Clean 4-Line Layout**:
   ```text
@@ -141,20 +154,25 @@ To eliminate customer intimidation, hesitation, and text overload:
   ```
 - **Tap-Payment Guidance**: Educates customers to tap their completed payment in Google Pay / FamPay to find the 12-digit **UPI transaction ID** rather than confusing banking terms like "UTR".
 
-### 8.2 Viral Telegram Referral & Reward Engine ("Refer & Earn")
+### 9.2 Viral Telegram Referral & Reward Engine ("Refer & Earn")
 - **Deep Tracking Links**: Unique referral links (`https://t.me/AetheriaStoreOfficialBot?start=ref_<chatId>`) with real-time conversion stats.
 - **Automated Friend Discount (Zero Coupon Required)**: Friends joining via referral automatically receive **₹30 OFF** on their first purchase (Standard: **₹130**; Duo: **₹270**).
 - **Reward Coupon Issuance**: When the friend completes an order, the referrer automatically receives a single-use ₹30 coupon (`REF30_XXXXXX`) redeemable on future renewals.
+- **Milestone Rewards**: Scaled milestone rewards (3 invites = 50% Off, 5 invites = 1 Free Standard Key for 30 Days).
+- **Anti-Fraud Protections**: Device and IP fingerprinting, strict chat ID deduplication, and self-referral blocks.
 
-### 8.3 Community Announcements & Dedicated Vouches Architecture
+### 9.3 Community Announcements & Dedicated Vouches Architecture
 - **Automated Restock Flash Alerts**: Whenever fresh keys are uploaded to the vault via `/admin`, `broadcastRestockAlert` automatically announces the restock in `@AetheriaStoreOfficial` with a direct 1-tap purchase button (`⚡ KEYS ARE BACK IN STOCK!`).
 - **Clean Main Channel Policy**: Automated bot purchase messages (`ORDER COMPLETED dispatched to...`) were decommissioned to keep the main channel sleek and free from repetitive notification spam.
 - **Dedicated Vouches Channel (`@AetheriaStoreVouches`)**: Authentic customer proof screenshots (UPI transfers, PayPal receipts, Discord chat confirmations, and in-game PGSharp activation screens) are published in a separate vouches channel with key details properly redacted, establishing unshakeable social proof without cluttering announcements.
 
 ---
 
-## 8. Admin Command Center & Vercel Storage Optimization
-
+## 10. Admin Command Center & Vercel Storage Optimization
+- **Unified Inventory Dashboard (`/admin`)**: Real-time stats on available keys, low-stock threshold alerts, pending orders, and restock waitlist count.
+- **Manual Key Allocation System**: Dedicated UI tab to directly allocate standard or duo keys to custom customer identifiers (Discord, Telegram, Reddit, Email) without website payment friction.
+- **Automated Waitlist Blast**: One-click and auto-on-upload restock alerts emailed to all waiting customers via direct Gmail SMTP.
+- **Storage Optimization**: Firestore indexing and bounded document queries to minimize database read/write costs.
 - **Ghost Admin Camouflage**: Direct visits to `/admin` without authorization display an authentic `404 - Page Not Found`. Accessible only via secret bookmark (`/admin?key=YOUR_SECRET_KEY`) or triple-clicking the 404 badge.
 - **Anti-Brute-Force Rate Limiting**: Client IP locked after 5 failed passcode attempts for 15 minutes.
 - **Live Firestore Coupon Engine**: Interactive CRUD for promotional coupons with 1-click permanent deletion.
