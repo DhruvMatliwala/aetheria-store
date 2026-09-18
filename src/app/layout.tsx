@@ -141,6 +141,9 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  verification: {
+    google: 'googlec8c6c8ae927a0074',
+  },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
