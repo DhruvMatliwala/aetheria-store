@@ -255,4 +255,38 @@ To eliminate customer intimidation, hesitation, and text overload:
 
 ---
 
+## 14. Discord 1-Click Interactive Order Ticket Bot
+
+- **Gateway WebSocket Architecture**: Standalone persistent WebSocket gateway connection (`wss://gateway.discord.gg/?v=10&encoding=json`) hosted 24/7 on Render within `telegram-key-notifier`.
+- **Interactive Ticket Component**: Message `1550381786234626081` in `#pricing-and-keys` (`1550381744509685901`) features an interactive green `[ Open Order Ticket ]` button (`custom_id: open_order_ticket`).
+- **Private Room Provisioning**: Tapping the button dynamically creates a private channel `#ticket-<username>` hidden from `@everyone` with explicit read/write permission overwrites granted solely to the buyer, Dhruv (`503233296134832149` / `@dhruv_emperor`), and the bot.
+- **Direct Mutual Visibility**: Both Dhruv and the buyer see each other's verified profiles, avatar, and direct chat within the ticket room, ensuring trust and personal relationship.
+- **Instant Mobile Alert**: Dispatches an immediate Telegram alert to Dhruv (`741838315`) with a 1-tap jump link to open Discord directly to the customer's room.
+- **Auto-Cleanup**: Ticket room contains an interactive `[ Close Ticket ]` button (`custom_id: close_ticket`) which deletes the private room after 3 seconds upon completion.
+
+---
+
+## 15. Customer Renewal CRM & Day-27 Proactive Alerts
+
+- **30-Day Key Lifecycle Management**: Automated persistence in `sales.json` tracking customer name, contact handle, plan type, platform, purchase timestamp, 30-day expiration, and Day-27 reminder trigger.
+- **Proactive Renewal Radar**: Background cron runs every 30 minutes. When a customer reaches Day 27 (3 days remaining), it dispatches an actionable Telegram alert to Dhruv with customer details, days left, and renewal action prompt.
+- **Web CRM Dashboard (`/crm`)**: High-performance dark-mode web dashboard accessible at `https://telegram-key-notifier.onrender.com/crm`. Allows logging new customer sales, viewing days remaining badges (active, due, expired), 1-click `Renew +30D` extensions, and real-time search.
+- **RESTful CRM API**:
+  - `GET /api/sales`: Active licenses, days remaining, and reminder flags.
+  - `POST /api/sales`: Log new customer sale with auto-calculated Day-27 reminder.
+  - `POST /api/renew`: Extend existing customer license by 30 days.
+  - `POST /api/delete`: Remove or archive customer record.
+
+---
+
+## 16. Google SEO & Search Console Indexing
+
+- **Search Console Site Verification**: Double-layer verification using both the static file `https://aetheria-store.vercel.app/googlec8c6c8ae927a0074.html` and the metadata verification tag `<meta name="google-site-verification" content="googlec8c6c8ae927a0074" />` in `src/app/layout.tsx`.
+- **Dynamic XML Sitemap (`/sitemap.xml`)**: Canonical route listing with daily crawl frequency for root storefront and monthly indexing for legal compliance pages.
+- **Crawler Directives (`/robots.txt`)**: Allows global indexing while protecting `/admin` and `/api/` endpoints.
+- **Structured Schema.org JSON-LD**: Rich snippets for `OnlineStore` and `Product` (PGSharp Standard Key 1-Device and Duo 2-Devices) enabling Google rich product results, pricing in INR/USD, and verified ratings.
+
+---
+
 *AETHERIA Systems • Complete Technical Manual • Updated September 2026*
+
