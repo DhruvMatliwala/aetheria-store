@@ -138,6 +138,7 @@ A dedicated standalone Node.js microservice running 24/7 on the cloud (`https://
 - **33 High-Intent Buyer Keywords**: Word-boundary regex matching for English and Hinglish buyer signals (`key`, `pgsharp key`, `standard key`, `buy key`, `kitne ka`, `kaise milegi`, `kahan se lu`, `kaise buy kare`, `key chahiye`).
 - **Self-Sender Exclusion**: Automatically detects and ignores messages sent by the owner (`@sleekfx3` / ID `741838315`).
 - **Zero-Emoji Mobile Alerts**: Immediately pushes formatted alert cards to the owner's Telegram with group title, commenter name/username, exact message snippet, and a 1-tap direct jump link (`https://t.me/{chat}/{messageId}`).
+- **Automated Discord Vouch Mirroring**: Continuously monitors the owner's Telegram vouches channel (`@AetheriaStoreVouches`). Whenever a new vouch with customer screenshot proof is posted in Telegram, the microservice automatically downloads the media, cleans the caption (stripping promotional footers and emojis), and instantly mirrors it directly into the Discord `#vouches` channel via the Discord bot API.
 - **24/7 Cloud Engine**: Deployed to Render with UptimeRobot 5-minute keep-awake ping to guarantee perpetual uptime.
 
 ---
