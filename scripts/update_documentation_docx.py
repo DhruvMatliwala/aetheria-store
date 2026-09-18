@@ -449,6 +449,11 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_bullet("Streamlined 8-Column Table Design:", "Consolidates redundant columns into 8 high-density columns: Customer & Contact (combined name + handle), Plan, Amount / Profit (selling price + net profit badge), Platform, Source Account Email, Expiry / Days Left (timeline + pending days), Status, and Actions.")
     add_bullet("Persistent Tab State & Smart Switching:", "Active tab state is saved to localStorage (crm_active_tab) and restored on page refresh. Contextual actions such as clicking quick-filter cards or account badges automatically navigate to the Customer Licenses view and apply filters synchronously.")
 
+    add_h2("11.8 Fault-Tolerant Modal Architecture & Safe Quick Presets")
+    add_bullet("Synchronized Modal DOM & State Handlers:", "Aligns id='sale-expiry-date' across modal HTML, applyPresetDate('sale', 30), and updateReminderBanner('sale') with multi-tier fallback lookups (prefix + '-expiry-date' and expiry-date).")
+    add_bullet("Protective Isolation Handlers:", "Wraps pre-fill calculations, email datalist populators, and profit previews in defensive try/catch execution blocks, guaranteeing the '+ Log New Sale' modal displays reliably across all browser engines.")
+    add_bullet("Intuitive Backdrop Dismissal:", "Global click listeners dismiss active popup dialogs (#sale-modal, #edit-modal, #renew-modal) when clicking outside the dialog card.")
+
     # ─────────────────────────────────────────────────────────────────────────
     # 12. Google Cloud Firestore Persistent CRM Storage Bridge
     # ─────────────────────────────────────────────────────────────────────────
@@ -474,8 +479,10 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_bullet("Self-Closing Architecture:", "Interactive '[ Close Ticket ]' button allows either party to close and delete the ticket channel upon transaction completion.")
 
     add_h2("13.2 Cross-Platform Vouches Mirroring Engine")
-    add_bullet("Autonomous Telegram-to-Discord Forwarding:", "Monitors approved proof screenshots posted in Telegram channel @AetheriaStoreVouches.")
-    add_bullet("Rich Discord Embeds:", "Automatically forwards customer receipts, bank confirmations, and activation screenshots into Discord channel #vouches (1550381748506988584) with styled embeds.")
+    add_bullet("Dual-Engine Auto-Sync Architecture:", "Combines an active Telegram MTProto WebSocket event listener with a 60-second background polling catch-up worker to ensure zero dropped vouches even during mobile-client posting or network reconnections.")
+    add_bullet("Robust Multi-Candidate Entity Resolution:", "Dynamically checks @AetheriaVouches, @AetheriaStoreVouches, and active dialog titles to resolve channel ID 4497586435 reliably under all environment configurations.")
+    add_bullet("Automated Media Download & Sanitization:", "Downloads customer activation screenshots, strips promotional footers, hashtags, and emojis, and reformats captions into clean verification text.")
+    add_bullet("Rich Discord Image Forwarding:", "Dispatches multipart form data to Discord channel #vouches (1550381748506988584) displaying customer proofs directly in Discord.")
 
     add_h2("13.3 Ultra-Clean Streamlined Channel Architecture")
     add_bullet("Decluttered Channel Hierarchy:", "Removed all noisy and unnecessary channels (#clips-and-highlights, #cooldown-guide, and #100iv) to center 100% of community focus on key purchasing, instant ticket fulfillment, customer vouches, and genuine community interaction.")

@@ -311,6 +311,11 @@ A dedicated, standalone customer lifecycle and license retention dashboard hoste
 - **Streamlined 8-Column Table Design**: Consolidates redundant table data into 8 high-density columns: Customer & Contact (name + contact handle), Plan, Amount / Profit (selling price + net profit badge), Platform, Source Account Email, Expiry / Days Left (exact date, days left badge, and sold date), Status (active, due, expired pill), and Actions (Edit, Renew, Remove).
 - **Persistent Session Tab Memory**: Tab selection is saved to `localStorage` (`crm_active_tab`) so the dashboard re-opens to the user's preferred view upon page reload. Contextual actions (such as clicking quick-filter stat cards or email badges) automatically navigate to the Customer Licenses view and apply filters synchronously.
 
+### 14.8 Fault-Tolerant Modal Architecture & Safe Quick Presets
+- **Synchronized Modal DOM & State Handlers**: Aligns `id="sale-expiry-date"` across the modal HTML, `applyPresetDate('sale', 30)`, and `updateReminderBanner('sale')` with multi-tier fallback lookups (`prefix + '-expiry-date'` and `expiry-date`).
+- **Protective Isolation Handlers**: Wraps pre-fill calculations, email datalist populators, and profit previews in defensive `try/catch` execution blocks, guaranteeing the `+ Log New Sale` modal displays reliably across all browser engines.
+- **Intuitive Backdrop Dismissal**: Global click listeners dismiss active popup dialogs (`#sale-modal`, `#edit-modal`, `#renew-modal`) when clicking outside the dialog card.
+
 ---
 
 ## 15. Google Cloud Firestore Persistent CRM Storage Bridge
@@ -334,8 +339,10 @@ To guarantee zero data loss on Render's ephemeral container filesystem, the CRM 
 - **Self-Closing Architecture**: Interactive `[ Close Ticket ]` button allows either party to close and delete the ticket channel upon transaction completion.
 
 ### 16.2 Cross-Platform Vouches Mirroring Engine
-- **Autonomous Telegram-to-Discord Forwarding**: Monitors approved proof screenshots posted in Telegram channel `@AetheriaStoreVouches`.
-- **Rich Discord Embeds**: Automatically forwards customer receipts, bank confirmations, and activation screenshots into Discord channel `#vouches` (`1550381748506988584`) with styled embeds.
+- **Dual-Engine Auto-Sync Architecture**: Combines an active Telegram MTProto WebSocket event listener with a 60-second background polling catch-up worker to ensure zero dropped vouches even during mobile-client posting or network reconnections.
+- **Robust Multi-Candidate Entity Resolution**: Dynamically checks `@AetheriaVouches`, `@AetheriaStoreVouches`, and active dialog titles to resolve channel ID `4497586435` reliably under all environment configurations.
+- **Automated Media Download & Sanitization**: Downloads customer activation screenshots, strips promotional footers, hashtags, and emojis, and reformats captions into clean verification text.
+- **Rich Discord Image Forwarding**: Dispatches multipart form data to Discord channel `#vouches` (`1550381748506988584`) displaying customer proofs directly in Discord.
 
 ### 16.3 Ultra-Clean Streamlined Channel Architecture
 - **Decluttered Channel Hierarchy**: Removed all noisy and unnecessary channels (`#clips-and-highlights`, `#cooldown-guide`, and `#100iv`) to focus 100% of member attention on key purchasing, instant ticket fulfillment, customer vouches, and genuine community interaction.
