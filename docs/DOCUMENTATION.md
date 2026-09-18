@@ -323,11 +323,11 @@ To guarantee zero data loss on Render's ephemeral container filesystem, the CRM 
 
 ---
 
-## 16. Discord Interactive Order Ticket Bot & Vouches Synchronization
+## 16. Discord Interactive Order Ticket Bot & Community Hub
 
 ### 16.1 Persistent Gateway WebSocket Ticket Bot
 - **Gateway Architecture**: Persistent WebSocket connection (`gateway.discord.gg v10`) running 24/7 on Render within `telegram-key-notifier`.
-- **Interactive Button Component**: Message `1550381786234626081` in `#pricing-and-keys` (`1550381744509685901`) features an interactive green `[ Open Order Ticket ]` button.
+- **Interactive Button Component**: Message `1550381786234626081` in `#pgsharp-keys` (`1550381744509685901`) features an interactive green `[ Open Order Ticket ]` button.
 - **Private Mutual Ticket Rooms**: Dynamically provisions private channel `#ticket-<username>` hidden from `@everyone` with explicit read/write permission overwrites for the buyer, Dhruv (`503233296134832149` / `@dhruv_emperor`), and the bot.
 - **Profile Transparency & Trust**: Both the customer and owner see each other's verified profiles, avatar, and direct chat within the room, completely resolving off-platform trust friction.
 - **Instant Telegram Mobile Jump Alert**: Dispatches an immediate Telegram alert to Dhruv (`741838315`) with an inline button URL opening Discord directly into the ticket room.
@@ -336,6 +336,16 @@ To guarantee zero data loss on Render's ephemeral container filesystem, the CRM 
 ### 16.2 Cross-Platform Vouches Mirroring Engine
 - **Autonomous Telegram-to-Discord Forwarding**: Monitors approved proof screenshots posted in Telegram channel `@AetheriaStoreVouches`.
 - **Rich Discord Embeds**: Automatically forwards customer receipts, bank confirmations, and activation screenshots into Discord channel `#vouches` (`1550381748506988584`) with styled embeds.
+
+### 16.3 Streamlined Channel Architecture & 100iv Coordinate Hub
+- **Decluttered Channel Hierarchy**: Removed noisy, unused channels (`#clips-and-highlights`, `#cooldown-guide`) to focus attention on core customer purchasing, key fulfillment, and game utility.
+- **Short & Intuitive Channel Naming**: Replaced lengthy titles with concise, industry-standard identifiers:
+  - `#welcome-and-rules` renamed to `#welcome` (`1550381740563107840`)
+  - `#pricing-and-keys` renamed to `#pgsharp-keys` (`1550381744509685901`)
+  - `#events-calendar` renamed to `#events` (`1550381765099786263`)
+  - `#flex-catches` renamed to `#flex` (`1550381769759522886`)
+  - `#hundo-coords` renamed to `#100iv` (`1550381760771264593`)
+- **100IV Coordinate Hub Architecture**: The dedicated `#100iv` channel provides a streamlined, mobile-friendly destination for verified 100% IV Pokemon coordinates featuring 1-tap raw coordinates on top, despawn countdowns, IV statistics (15/15/15), CP, level, and regional tags (compatible with Discord Announcement Channel Following from official scanner networks such as PoGoHub / SPS Mapping Ditto 1.1).
 
 ---
 

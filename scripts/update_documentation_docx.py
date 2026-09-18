@@ -467,7 +467,7 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_h1("13. Discord Interactive Order Ticket Bot & Vouches Synchronization")
     add_h2("13.1 Persistent Gateway WebSocket Ticket Bot")
     add_bullet("Gateway Architecture:", "Persistent WebSocket connection (gateway.discord.gg v10) running 24/7 on Render within telegram-key-notifier.")
-    add_bullet("Interactive Button Component:", "Message 1550381786234626081 in #pricing-and-keys (1550381744509685901) features an interactive green '[ Open Order Ticket ]' button.")
+    add_bullet("Interactive Button Component:", "Message 1550381786234626081 in #pgsharp-keys (1550381744509685901) features an interactive green '[ Open Order Ticket ]' button.")
     add_bullet("Private Mutual Ticket Rooms:", "Dynamically provisions private channel #ticket-<username> hidden from @everyone with explicit read/write permission overwrites for the buyer, Dhruv (503233296134832149 / @dhruv_emperor), and the bot.")
     add_bullet("Profile Transparency & Trust:", "Both the customer and owner see each other's verified profiles, avatar, and direct chat within the room, completely resolving off-platform trust friction.")
     add_bullet("Instant Telegram Mobile Jump Alert:", "Dispatches an immediate Telegram alert to Dhruv (741838315) with an inline button URL opening Discord directly into the ticket room.")
@@ -476,6 +476,11 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_h2("13.2 Cross-Platform Vouches Mirroring Engine")
     add_bullet("Autonomous Telegram-to-Discord Forwarding:", "Monitors approved proof screenshots posted in Telegram channel @AetheriaStoreVouches.")
     add_bullet("Rich Discord Embeds:", "Automatically forwards customer receipts, bank confirmations, and activation screenshots into Discord channel #vouches (1550381748506988584) with styled embeds.")
+
+    add_h2("13.3 Streamlined Channel Architecture & 100iv Coordinate Hub")
+    add_bullet("Decluttered Channel Hierarchy:", "Removed noisy and unused channels (#clips-and-highlights, #cooldown-guide) to center community focus on key purchasing, instant fulfillment, and game utility.")
+    add_bullet("Short & Intuitive Channel Naming:", "Replaced lengthy titles with industry-standard short identifiers: #welcome-and-rules to #welcome, #pricing-and-keys to #pgsharp-keys, #events-calendar to #events, #flex-catches to #flex, and #hundo-coords to #100iv.")
+    add_bullet("100IV Coordinate Hub Architecture:", "The dedicated #100iv channel provides a streamlined, mobile-friendly hub for verified 100% IV Pokemon coordinates featuring 1-tap raw coordinates, despawn countdowns, IV breakdown (15/15/15), CP, level, and regional tags.")
 
     # ─────────────────────────────────────────────────────────────────────────
     # 14. Google Search Console Verification & SEO Optimization
