@@ -305,6 +305,14 @@ A dedicated, standalone customer lifecycle and license retention dashboard hoste
 - **1-Click Bookmark URL Authentication**: Visiting `/crm?auth=PASSCODE` instantly authenticates the browser, saves credentials, and strips the secret from the address bar for effortless 1-click access.
 - **API Endpoint Security Shield**: All backend endpoints (`/api/sales`, `/api/sales/update`, `/api/renew`, `/api/delete`) enforce token validation and reject unauthenticated requests with HTTP 401 Unauthorized.
 
+### 14.7 3-Tab Executive Architecture & Streamlined Table Columns
+- **3-Tab Separation Architecture**: Replaced the previously stacked, lengthy single-page layout with three dedicated, distraction-free views:
+  1. **Customer Licenses Tab**: Operational view housing daily license statistics (Active, Due <=3d, Expired), quick search and filtering controls, and the streamlined customer renewal table.
+  2. **Profit & Financial Tracker Tab**: Dedicated financial intelligence view featuring 5 KPI cards (Tracked Sales, Total Revenue, Patreon Cost, Net Profit, and Margin %), Device Tier margin comparison (1 Device Rs 160 vs Rs 67 cost, 2 Devices Rs 300 vs Rs 133 cost, 3 Devices Rs 400 vs Rs 200 cost), and dynamic acquisition channel performance breakdowns (Discord, Telegram, Reddit).
+  3. **Sourced Email Accounts Tab**: Inventory management view detailing all 11+ Patreon Google accounts, interactive load pills with color indicators (normal, medium: 3 keys, heavy: >=4 keys), and comprehensive account load cards displaying provisioned customer names and 1-click email isolation filter buttons.
+- **Streamlined 8-Column Table Design**: Consolidated redundant data into 8 compact columns: Customer & Contact (name + handle), Plan (device tier), Amount / Profit (selling price + net profit badge), Platform (acquisition badge), Source Account Email (Patreon address + 1-click filter), Expiry / Days Left (exact date, days left badge, and sold date), Status (active, due, expired pill), and Actions (Edit, Renew, Remove).
+- **Persistent Tab State & Smart Contextual Switching**: Tab selection is saved to `localStorage` (`crm_active_tab`) so the dashboard re-opens to the user's last view upon page reloads. Contextual actions (such as clicking quick-filter stat cards or email badges) automatically switch the active view to "Customer Licenses" and apply filters synchronously.
+
 ---
 
 ## 15. Google Cloud Firestore Persistent CRM Storage Bridge

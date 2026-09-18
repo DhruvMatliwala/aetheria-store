@@ -443,6 +443,11 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_bullet("1-Click Bookmark URL Authentication:", "Visiting /crm?auth=PASSCODE instantly authenticates the browser, saves credentials, and strips the secret from the address bar for effortless 1-click access.")
     add_bullet("API Endpoint Security Shield:", "All backend endpoints (/api/sales, /api/sales/update, /api/renew, /api/delete) enforce token validation and reject unauthenticated requests with HTTP 401 Unauthorized.")
 
+    add_h2("11.7 3-Tab Executive Architecture & Streamlined Table Columns")
+    add_bullet("3-Tab Separation Architecture:", "Replaced the previously stacked, lengthy single-page layout with three dedicated, distraction-free views: Customer Licenses Tab (daily operations, search, filters, renewal table), Profit & Financial Tracker Tab (5 KPI cards, tier margins, platform performance), and Sourced Email Accounts Tab (Patreon account loads, distribution pills, load cards).")
+    add_bullet("Streamlined 8-Column Table Design:", "Consolidated redundant columns into 8 high-density columns: Customer & Contact (combined name + handle), Plan, Amount / Profit (selling price + net profit badge), Platform, Source Account Email, Expiry / Days Left (timeline + pending days), Status, and Actions.")
+    add_bullet("Persistent Tab State & Smart Switching:", "Active tab state is saved to localStorage (crm_active_tab) and restored on page refresh. Contextual actions such as clicking quick-filter cards or account badges automatically switch to the Customer Licenses tab and apply filters synchronously.")
+
     # ─────────────────────────────────────────────────────────────────────────
     # 12. Google Cloud Firestore Persistent CRM Storage Bridge
     # ─────────────────────────────────────────────────────────────────────────
