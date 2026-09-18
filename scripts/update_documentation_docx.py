@@ -386,11 +386,13 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
         ["/api/admin/orders/reject", "Dynamic API", "Manual Order Rejection & Reason Logging"],
         ["/api/admin/orders/quick-approve", "Dynamic API", "Discord 1-Click Quick Approval Action Endpoint"],
         ["/api/admin/crm/sales", "Dynamic API (Firestore)", "Google Cloud Firestore Persistence Bridge for CRM Sales Records (CRUD & Bulk Sync)"],
-        ["/crm", "Static / Client HTML", "Customer Renewal CRM Dashboard: Real-time Multi-Platform License Management"],
-        ["/api/sales", "Dynamic API (Node)", "CRM Sales Retrieval API with Pending Days Ordering"],
-        ["/api/sales/update", "Dynamic API (Node)", "CRM Record Update Endpoint for Customer, Plan, Email, and Expiry Edits"],
-        ["/api/renew", "Dynamic API (Node)", "Interactive Key Renewal Endpoint: Updates Devices, Source Email, and Expiry"],
-        ["/api/delete", "Dynamic API (Node)", "Permanent CRM Record Deletion & Cloud Archival Endpoint"],
+        ["/crm", "Protected HTML", "Customer Renewal CRM Dashboard: Gated by Master Passcode Lock Screen"],
+        ["/api/crm/login", "Dynamic API (Node)", "CRM Master Passcode Authentication & 1-Year Session Cookie Dispenser"],
+        ["/api/crm/logout", "Dynamic API (Node)", "CRM Session Invalidation & Cookie Revocation Endpoint"],
+        ["/api/sales", "Protected API (Node)", "CRM Sales Retrieval API with Pending Days Ordering (Requires Auth Token)"],
+        ["/api/sales/update", "Protected API (Node)", "CRM Record Update Endpoint for Customer, Plan, Email, and Expiry Edits"],
+        ["/api/renew", "Protected API (Node)", "Interactive Key Renewal Endpoint: Updates Devices, Source Email, and Expiry"],
+        ["/api/delete", "Protected API (Node)", "Permanent CRM Record Deletion & Cloud Archival Endpoint"],
         ["/googlec8c6c8ae927a0074.html", "Static HTML", "Google Search Console Site Ownership Verification Protocol"],
         ["/sitemap.xml", "Dynamic XML", "Dynamic SEO Sitemap Feed for Google Search Console Indexing"],
         ["/robots.txt", "Dynamic Text", "Crawler Access Directives & Sitemap Declarations"],
@@ -433,6 +435,13 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_bullet("1-Click Pricing & Discount Presets:", "Modal controls include [ Standard Price ], [ -30 Referral ], and custom amount inputs with live real-time net profit and margin calculation banners.")
     add_bullet("Top Financial Analytics Card:", "Dedicated dashboard banner above the CRM table tracking Total Revenue, Patreon Inventory Costs, Net Profit, and Overall Margin across all tracked sales.")
     add_bullet("Historical Baseline Isolation:", "All pre-existing 30 records entered prior to launch are flagged as untracked legacy records, preserving their reminder schedules while keeping the new profit ledger 100% accurate.")
+
+    add_h2("11.6 CRM Security Lock & Persistent Master Passcode Gate")
+    add_bullet("Restricted Obsidian Lock Screen:", "Unauthenticated visitors navigating to /crm are blocked by a secure dark-mode login gate that prevents unauthorized viewing or extraction of customer names, emails, contact handles, and profit data.")
+    add_bullet("High-Entropy Master Passcode:", "Protected via high-entropy 28-character security passcode (Aeth$9xK!7mP_2vQ-8zL4.dY~2026), with fallback validation against ADMIN_API_SECRET.")
+    add_bullet("1-Year Persistent Browser Session:", "Authenticating sets a 1-year SameSite cookie and synchronizes with localStorage, allowing seamless access across device restarts without needing to re-type the passcode every time.")
+    add_bullet("1-Click Bookmark URL Authentication:", "Visiting /crm?auth=PASSCODE instantly authenticates the browser, saves credentials, and strips the secret from the address bar for effortless 1-click access.")
+    add_bullet("API Endpoint Security Shield:", "All backend endpoints (/api/sales, /api/sales/update, /api/renew, /api/delete) enforce token validation and reject unauthenticated requests with HTTP 401 Unauthorized.")
 
     # ─────────────────────────────────────────────────────────────────────────
     # 12. Google Cloud Firestore Persistent CRM Storage Bridge

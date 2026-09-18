@@ -253,8 +253,10 @@ To eliminate customer intimidation, hesitation, and text overload:
 | `/api/telegram/setup` | POST | Dynamic | Automated Telegram Webhook Registration & Command Menu Setup |
 | `/api/reviews` | GET/POST | Dynamic | Verified Customer Reviews Ingestion & Aggregate Rating Feed |
 | `/api/admin/crm/sales` | GET/POST/PUT/DELETE | Dynamic | Google Cloud Firestore Persistence Bridge for CRM Sales Records |
-| `/crm` | GET | Client HTML | Customer Renewal CRM Dashboard: Real-time Multi-Platform License Management |
-| `/api/sales` | GET | Dynamic | CRM Sales Retrieval API with Pending Days Ordering |
+| `/crm` | GET | Protected HTML | Customer Renewal CRM Dashboard: Gated by Master Passcode Lock Screen |
+| `/api/crm/login` | POST | Dynamic | CRM Master Passcode Authentication & 1-Year Session Cookie Dispenser |
+| `/api/crm/logout` | POST | Dynamic | CRM Session Invalidation & Cookie Revocation Endpoint |
+| `/api/sales` | GET | Dynamic | CRM Sales Retrieval API with Pending Days Ordering (Requires Auth Token) |
 | `/api/sales/update` | POST | Dynamic | CRM Record Update Endpoint for Customer, Plan, Email, and Expiry Edits |
 | `/api/renew` | POST | Dynamic | Interactive Key Renewal Endpoint: Updates Devices, Source Email, and Expiry |
 | `/api/delete` | POST | Dynamic | Permanent CRM Record Deletion & Cloud Archival Endpoint |
@@ -295,6 +297,13 @@ A dedicated, standalone customer lifecycle and license retention dashboard hoste
 - **1-Click Pricing & Discount Presets**: Modal controls include [ Standard Price ], [ -30 Referral ], and custom amount inputs with live real-time net profit and margin calculation banners.
 - **Top Financial Analytics Card**: Dedicated dashboard banner above the CRM table tracking Total Revenue, Patreon Inventory Costs, Net Profit, and Overall Margin across all tracked sales.
 - **Historical Baseline Isolation**: All pre-existing records entered prior to launch are flagged as untracked legacy records, preserving their reminder schedules while keeping the new profit ledger 100% accurate.
+
+### 14.6 CRM Security Lock & Persistent Master Passcode Gate
+- **Restricted Obsidian Lock Screen**: Unauthenticated visitors navigating to `/crm` are blocked by a secure dark-mode login gate that prevents unauthorized viewing or extraction of customer names, emails, contact handles, and profit data.
+- **High-Entropy Master Passcode**: Protected via high-entropy 28-character security passcode (`Aeth$9xK!7mP_2vQ-8zL4.dY~2026`), with fallback validation against `ADMIN_API_SECRET`.
+- **1-Year Persistent Browser Session**: Authenticating sets a 1-year SameSite cookie and synchronizes with localStorage, allowing seamless access across device restarts without needing to re-type the passcode every time.
+- **1-Click Bookmark URL Authentication**: Visiting `/crm?auth=PASSCODE` instantly authenticates the browser, saves credentials, and strips the secret from the address bar for effortless 1-click access.
+- **API Endpoint Security Shield**: All backend endpoints (`/api/sales`, `/api/sales/update`, `/api/renew`, `/api/delete`) enforce token validation and reject unauthenticated requests with HTTP 401 Unauthorized.
 
 ---
 
