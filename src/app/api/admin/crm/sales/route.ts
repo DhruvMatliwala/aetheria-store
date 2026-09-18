@@ -52,6 +52,11 @@ export async function POST(request: NextRequest) {
       reminderAt: String(body.reminderAt || new Date().toISOString()),
       reminded: Boolean(body.reminded),
       status: body.status || 'active',
+      amountPaid: typeof body.amountPaid === 'number' ? body.amountPaid : undefined,
+      cost: typeof body.cost === 'number' ? body.cost : undefined,
+      profit: typeof body.profit === 'number' ? body.profit : undefined,
+      discountType: body.discountType || undefined,
+      trackProfit: body.trackProfit === true,
     };
 
     const saved = await saveCrmSale(sale);

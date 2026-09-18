@@ -289,6 +289,13 @@ A dedicated, standalone customer lifecycle and license retention dashboard hoste
 - **3-Day Advance Retention Radar**: A background cron scans active customer licenses every 30 minutes. Exactly 3 days before expiration (Day 27 on 30-day keys), an automated notification is dispatched to Dhruv's Telegram (ID: 741838315).
 - **Actionable Notification Payload**: Alert message provides customer name, contact handle, plan, source account email, exact expiry date, and days remaining with direct renewal prompts.
 
+### 14.5 Slot-Proportional Profit & Revenue Engine
+- **Slot-Proportional Cost Architecture**: Calculates profit based on Patreon's flat Rs 200 cost for a 3-device key (Rs 67 per slot). 1 Device costs Rs 67 (Profit: +Rs 93 / +Rs 63 ref), 2 Devices costs Rs 133 (Profit: +Rs 167 / +Rs 137 ref), and 3 Devices costs Rs 200 (Profit: +Rs 200 / +Rs 170 ref).
+- **3-Device Plan Support (Rs 400)**: Added full 3-Device key plan to Log Sale, Edit, and Renew modals alongside 1 Device (Standard - Rs 160) and 2 Devices (Duo - Rs 300).
+- **1-Click Pricing & Discount Presets**: Modal controls include [ Standard Price ], [ -30 Referral ], and custom amount inputs with live real-time net profit and margin calculation banners.
+- **Top Financial Analytics Card**: Dedicated dashboard banner above the CRM table tracking Total Revenue, Patreon Inventory Costs, Net Profit, and Overall Margin across all tracked sales.
+- **Historical Baseline Isolation**: All pre-existing records entered prior to launch are flagged as untracked legacy records, preserving their reminder schedules while keeping the new profit ledger 100% accurate.
+
 ---
 
 ## 15. Google Cloud Firestore Persistent CRM Storage Bridge

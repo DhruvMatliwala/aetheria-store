@@ -13,6 +13,11 @@ export interface CrmSale {
   reminded: boolean;
   status: 'active' | 'renewed' | 'expired';
   updatedAt?: string;
+  amountPaid?: number;
+  cost?: number;
+  profit?: number;
+  discountType?: string;
+  trackProfit?: boolean;
 }
 
 const CRM_SALES_COLLECTION = 'crm_sales';
@@ -41,6 +46,11 @@ export async function getAllCrmSales(): Promise<CrmSale[]> {
         reminded: Boolean(data.reminded),
         status: (data.status as any) || 'active',
         updatedAt: data.updatedAt,
+        amountPaid: typeof data.amountPaid === 'number' ? data.amountPaid : undefined,
+        cost: typeof data.cost === 'number' ? data.cost : undefined,
+        profit: typeof data.profit === 'number' ? data.profit : undefined,
+        discountType: data.discountType || undefined,
+        trackProfit: data.trackProfit === true,
       };
     });
   } catch (err: any) {
