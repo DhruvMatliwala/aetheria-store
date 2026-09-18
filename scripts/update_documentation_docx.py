@@ -477,10 +477,9 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_bullet("Autonomous Telegram-to-Discord Forwarding:", "Monitors approved proof screenshots posted in Telegram channel @AetheriaStoreVouches.")
     add_bullet("Rich Discord Embeds:", "Automatically forwards customer receipts, bank confirmations, and activation screenshots into Discord channel #vouches (1550381748506988584) with styled embeds.")
 
-    add_h2("13.3 Streamlined Channel Architecture & 100iv Coordinate Hub")
-    add_bullet("Decluttered Channel Hierarchy:", "Removed noisy and unused channels (#clips-and-highlights, #cooldown-guide) to center community focus on key purchasing, instant fulfillment, and game utility.")
-    add_bullet("Short & Intuitive Channel Naming:", "Replaced lengthy titles with industry-standard short identifiers: #welcome-and-rules to #welcome, #pricing-and-keys to #pgsharp-keys, #events-calendar to #events, #flex-catches to #flex, and #hundo-coords to #100iv.")
-    add_bullet("100IV Coordinate Hub Architecture:", "The dedicated #100iv channel provides a streamlined, mobile-friendly hub for verified 100% IV Pokemon coordinates featuring 1-tap raw coordinates, despawn countdowns, IV breakdown (15/15/15), CP, level, and regional tags.")
+    add_h2("13.3 Ultra-Clean Streamlined Channel Architecture")
+    add_bullet("Decluttered Channel Hierarchy:", "Removed all noisy and unnecessary channels (#clips-and-highlights, #cooldown-guide, and #100iv) to center 100% of community focus on key purchasing, instant ticket fulfillment, customer vouches, and genuine community interaction.")
+    add_bullet("Dedicated 2-Category Executive Layout:", "INFORMATION category (#welcome, #pgsharp-keys, #vouches) and COMMUNITY category (#general, #events, #flex, #support-help).")
 
     # ─────────────────────────────────────────────────────────────────────────
     # 14. Google Search Console Verification & SEO Optimization

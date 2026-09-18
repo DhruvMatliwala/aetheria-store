@@ -337,15 +337,18 @@ To guarantee zero data loss on Render's ephemeral container filesystem, the CRM 
 - **Autonomous Telegram-to-Discord Forwarding**: Monitors approved proof screenshots posted in Telegram channel `@AetheriaStoreVouches`.
 - **Rich Discord Embeds**: Automatically forwards customer receipts, bank confirmations, and activation screenshots into Discord channel `#vouches` (`1550381748506988584`) with styled embeds.
 
-### 16.3 Streamlined Channel Architecture & 100iv Coordinate Hub
-- **Decluttered Channel Hierarchy**: Removed noisy, unused channels (`#clips-and-highlights`, `#cooldown-guide`) to focus attention on core customer purchasing, key fulfillment, and game utility.
-- **Short & Intuitive Channel Naming**: Replaced lengthy titles with concise, industry-standard identifiers:
-  - `#welcome-and-rules` renamed to `#welcome` (`1550381740563107840`)
-  - `#pricing-and-keys` renamed to `#pgsharp-keys` (`1550381744509685901`)
-  - `#events-calendar` renamed to `#events` (`1550381765099786263`)
-  - `#flex-catches` renamed to `#flex` (`1550381769759522886`)
-  - `#hundo-coords` renamed to `#100iv` (`1550381760771264593`)
-- **100IV Coordinate Hub Architecture**: The dedicated `#100iv` channel provides a streamlined, mobile-friendly destination for verified 100% IV Pokemon coordinates featuring 1-tap raw coordinates on top, despawn countdowns, IV statistics (15/15/15), CP, level, and regional tags (compatible with Discord Announcement Channel Following from official scanner networks such as PoGoHub / SPS Mapping Ditto 1.1).
+### 16.3 Ultra-Clean Streamlined Channel Architecture
+- **Decluttered Channel Hierarchy**: Removed all noisy and unnecessary channels (`#clips-and-highlights`, `#cooldown-guide`, and `#100iv`) to focus 100% of member attention on key purchasing, instant ticket fulfillment, customer vouches, and genuine community interaction.
+- **Dedicated 2-Category Executive Layout**:
+  - **INFORMATION Category**:
+    - `#welcome` (`1550381740563107840`): Official community rules, navigation links, and owner contact.
+    - `#pgsharp-keys` (`1550381744509685901`): Transparent pricing (1 Device Rs 160, Duo Rs 300, Full Key Rs 400) and the interactive `[ Open Order Ticket ]` button.
+    - `#vouches` (`1550381748506988584`): Automated live proof screenshot feed synced directly from `@AetheriaStoreVouches`.
+  - **COMMUNITY Category**:
+    - `#general` (`1544078072687362121`): Friendly Pokemon GO discussion and general spoofing chat.
+    - `#events` (`1550381765099786263`): Event countdowns, Spotlight Hours, Raid hours, and Community Day alerts.
+    - `#flex` (`1550381769759522886`): Customer catch showcases and rare shiny trophy room.
+    - `#support-help` (`1550381773710561301`): Key activation troubleshooting and direct assistance.
 
 ---
 
