@@ -300,7 +300,7 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
         "When a plan is sold out, storefront visitors can enter their email on the Restock Notification modal. Stored in the 'restock_requests' collection:"
     )
     add_bullet("Automated Key Upload Trigger:", "When keys are uploaded in /admin, the server automatically queries pending waitlist requests for that plan and dispatches branded restock alert emails in the background.")
-    add_bullet("One-Click Admin Blast Button:", "WaitlistWidget in /admin features an interactive '[ 📧 Notify All Waiting (X) ]' button with confirmation dialog and live progress feedback, backed by POST /api/admin/waitlist/notify.")
+    add_bullet("One-Click Admin Blast Button:", "WaitlistWidget in /admin features an interactive '[ Notify All Waiting (X) ]' button with confirmation dialog and live progress feedback, backed by POST /api/admin/waitlist/notify.")
     add_bullet("Automatic De-duplication:", "Successfully notified recipients are immediately cleared from Firestore to prevent duplicate or spam emails.")
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -311,9 +311,9 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_body(
         "To eliminate text fatigue, hesitation, and customer intimidation during Telegram checkouts, the initial QR payment card was streamlined to 4 lines:"
     )
-    add_bullet("Clean Card Copy:", "📦 PGSharp Standard (~30 Days) — ₹160 | 🔑 UPI ID: dhruvmatliwala123@oksbi | 🔖 Order ID: ord_tg_xxxx | ⚡ Scan QR or pay ₹160. Key is auto-delivered here within 1–2 minutes!")
-    add_bullet("Primary Action Button:", "[ ❓ Paid but didn't get key? ] — cleanly conceals technical instructions until requested.")
-    add_bullet("Progressive Disclosure Fallback:", "Tapping reveals comforting guidance: '⏳ Awaiting Bank Confirmation... Bank SMS alerts usually arrive within 1–2 minutes. 💡 If you paid and want your key right away without waiting: Send a screenshot of your Transaction Details (in Google Pay/FamPay, tap on the payment to view full details with the 12-digit UPI ID) or reply with the 12 digits directly!'")
+    add_bullet("Clean Card Copy:", "PGSharp Standard (~30 Days) — ₹160 | UPI ID: dhruvmatliwala123@oksbi | Order ID: ord_tg_xxxx | Scan QR or pay ₹160. Key is auto-delivered here within 1–2 minutes!")
+    add_bullet("Primary Action Button:", "[ Paid but didn't get key? ] — cleanly conceals technical instructions until requested.")
+    add_bullet("Progressive Disclosure Fallback:", "Tapping reveals comforting guidance: 'Awaiting Bank Confirmation... Bank SMS alerts usually arrive within 1–2 minutes. If you paid and want your key right away without waiting: Send a screenshot of your Transaction Details (in Google Pay/FamPay, tap on the payment to view full details with the 12-digit UPI ID) or reply with the 12 digits directly!'")
     add_bullet("Transaction Details vs UTR:", "Replaced obscure banking jargon ('UTR') with clear visual directions: tap the payment to view Transaction Details / 12-digit UPI ID.")
 
     add_h2("7.2 Viral Referral & Reward Engine ('Refer & Earn')")
@@ -336,7 +336,7 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_bullet("Anti-Ban Cooldown & Safety Guide:", "Comprehensive reference guide with distance cooldown chart (1 km to 1,350+ km global max of 120 mins), explicit breakdown of cooldown-triggering actions (balls, berries, gym battles, spins) versus safe actions (teleporting, IV inspection, egg hatching, trading).")
     add_bullet("Live Events Calendar (/api/pokemon/events):", "Fetches active 5-star raids, mega raids, and spotlight hours via /events command.")
     add_bullet("20-Minute De-duplication Cache:", "In-memory cache prevents repeat alerts for the same spawn.")
-    add_bullet("1,025 Species National Pokédex:", "Fuzzy typo-tolerant search (Levenshtein distance) supporting natural typing ('Greyninja' -> 'Greninja').")
+    add_bullet("1,025 Species National Pokedex:", "Fuzzy typo-tolerant search (Levenshtein distance) supporting natural typing ('Greyninja' -> 'Greninja').")
 
     # ─────────────────────────────────────────────────────────────────────────
     # 9. Admin Command Center & Vercel Storage Optimization
@@ -385,20 +385,95 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
         ["/api/admin/orders/approve", "Dynamic API", "Manual Order Approval with Atomic Slot Allocation & Email Dispatch"],
         ["/api/admin/orders/reject", "Dynamic API", "Manual Order Rejection & Reason Logging"],
         ["/api/admin/orders/quick-approve", "Dynamic API", "Discord 1-Click Quick Approval Action Endpoint"],
-        ["/api/admin/orders/quick-reject", "Dynamic API", "Discord 1-Click Quick Rejection Action Endpoint"],
+        ["/api/admin/crm/sales", "Dynamic API (Firestore)", "Google Cloud Firestore Persistence Bridge for CRM Sales Records (CRUD & Bulk Sync)"],
+        ["/crm", "Static / Client HTML", "Customer Renewal CRM Dashboard: Real-time Multi-Platform License Management"],
+        ["/api/sales", "Dynamic API (Node)", "CRM Sales Retrieval API with Pending Days Ordering"],
+        ["/api/sales/update", "Dynamic API (Node)", "CRM Record Update Endpoint for Customer, Plan, Email, and Expiry Edits"],
+        ["/api/renew", "Dynamic API (Node)", "Interactive Key Renewal Endpoint: Updates Devices, Source Email, and Expiry"],
+        ["/api/delete", "Dynamic API (Node)", "Permanent CRM Record Deletion & Cloud Archival Endpoint"],
+        ["/googlec8c6c8ae927a0074.html", "Static HTML", "Google Search Console Site Ownership Verification Protocol"],
+        ["/sitemap.xml", "Dynamic XML", "Dynamic SEO Sitemap Feed for Google Search Console Indexing"],
+        ["/robots.txt", "Dynamic Text", "Crawler Access Directives & Sitemap Declarations"],
         ["/api/reviews", "Dynamic API", "Verified Customer Reviews Ingestion & Aggregate Rating Feed"],
     ]
     format_table(tbl_routes, routes_widths, routes_headers, routes_rows)
 
     # ─────────────────────────────────────────────────────────────────────────
-    # 11. Operational Runbook & CI/CD Deployment Guide
+    # 11. Customer Renewal & Expiration CRM Engine (/crm)
     # ─────────────────────────────────────────────────────────────────────────
-    add_h1("11. Operational Runbook & CI/CD Deployment Guide")
+    add_h1("11. Customer Renewal & Expiration CRM Engine (/crm)")
+    add_body(
+        "A dedicated, standalone customer lifecycle and license retention dashboard hosted on Render within telegram-key-notifier "
+        "(https://telegram-key-notifier.onrender.com/crm), providing complete visibility over all customer keys across platforms:"
+    )
+    add_h2("11.1 Multi-Account Source Email Tracking & Key Distribution")
+    add_bullet("Source Email Inventory Tracking:", "Tracks which of the owner's 11+ PGSharp/Patreon Google accounts holds each customer key, preventing overselling or slot confusion across distributed keys.")
+    add_bullet("Real-Time Distribution Overview Bar:", "Positioned above the table, an interactive distribution card displays key load per email account with color-coded load badges (e.g. dhruvmatliwala336+5@gmail.com: 4 keys).")
+    add_bullet("1-Click Email Isolation:", "Clicking any email pill or table email badge immediately filters the entire table to show only keys provisioned under that specific account.")
+    add_bullet("Source Email Filter Dropdown:", "Filter dropdown in the controls bar displays dynamic key count metrics alongside account addresses.")
+
+    add_h2("11.2 Pending Days Dynamic Ordering & Clustered Grouping")
+    add_bullet("Pending Days Ordering (Default View):", "Automatically orders licenses by pending days remaining (Lowest First / Expiring Soonest) so the owner immediately spots expiring keys at the top of the interface.")
+    add_bullet("Group Same Emails Together:", "Sort mode that clusters all customer rows sharing the identical source email address consecutively, sub-sorted internally by fewest pending days remaining.")
+    add_bullet("Interactive Column Header Sorting:", "Clicking the 'Expiry / Days Left' column header toggles between ascending (fewest days left first) and descending sort orders with visual indicators.")
+
+    add_h2("11.3 Interactive Renewal Modal Engine")
+    add_bullet("Contextual Pre-filling:", "Clicking 'Renew' on any row launches a dedicated modal pre-populated with customer name, current device plan, platform, source email, and contact handle.")
+    add_bullet("Flexible Account Reassignment:", "Allows updating the source email account during renewal, enabling smooth migration to accounts with available slots.")
+    add_bullet("Device Plan Flexibility:", "Easily switches or upgrades customer tiers between 1 Device (Standard - Rs 160) and 2 Devices (Duo - Rs 300).")
+    add_bullet("Custom Date Presets & Manual Calendar:", "Provides 1-click extension buttons (+30D, +25D, +20D, +15D, +10D, +7D, Today + 30D) or a manual calendar picker with live renewal and reminder preview calculation.")
+
+    add_h2("11.4 Automated Day-27 Proactive Telegram Reminders")
+    add_bullet("3-Day Advance Retention Radar:", "A background cron scans active customer licenses every 30 minutes. Exactly 3 days before expiration (Day 27 on 30-day keys), an automated notification is dispatched to Dhruv's Telegram (ID: 741838315).")
+    add_bullet("Actionable Notification Payload:", "Alert message provides customer name, contact handle, plan, source account email, exact expiry date, and days remaining with direct renewal prompts.")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # 12. Google Cloud Firestore Persistent CRM Storage Bridge
+    # ─────────────────────────────────────────────────────────────────────────
+    add_h1("12. Google Cloud Firestore Persistent CRM Storage Bridge")
+    add_body(
+        "To guarantee zero data loss on Render's ephemeral container filesystem, the CRM is wired directly to Google Cloud Firestore (pgsharp-4587b):"
+    )
+    add_bullet("Container Rebuild Immunity:", "Because Docker containers reset on redeployments, local sales.json storage is automatically backed by Firestore collection 'crm_sales', ensuring no customer record is ever lost on git pushes or server restarts.")
+    add_bullet("Dedicated REST API Bridge (/api/admin/crm/sales):", "High-performance endpoint in the Next.js storefront backend handling GET, POST, PUT, and DELETE operations against Firestore.")
+    add_bullet("Cryptographic API Secret Authorization:", "Secured via constant-time SHA-256 header authentication (x-admin-secret) matching ADMIN_API_SECRET.")
+    add_bullet("Bi-directional Startup Hydration:", "On container boot, initCrmDatabase queries Firestore and populates memory and local disk. When sales are entered or renewed, updates are synchronously applied locally and pushed asynchronously to Firestore.")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # 13. Discord Interactive Order Ticket Bot & Vouches Synchronization
+    # ─────────────────────────────────────────────────────────────────────────
+    add_h1("13. Discord Interactive Order Ticket Bot & Vouches Synchronization")
+    add_h2("13.1 Persistent Gateway WebSocket Ticket Bot")
+    add_bullet("Gateway Architecture:", "Persistent WebSocket connection (gateway.discord.gg v10) running 24/7 on Render within telegram-key-notifier.")
+    add_bullet("Interactive Button Component:", "Message 1550381786234626081 in #pricing-and-keys (1550381744509685901) features an interactive green '[ Open Order Ticket ]' button.")
+    add_bullet("Private Mutual Ticket Rooms:", "Dynamically provisions private channel #ticket-<username> hidden from @everyone with explicit read/write permission overwrites for the buyer, Dhruv (503233296134832149 / @dhruv_emperor), and the bot.")
+    add_bullet("Profile Transparency & Trust:", "Both the customer and owner see each other's verified profiles, avatar, and direct chat within the room, completely resolving off-platform trust friction.")
+    add_bullet("Instant Telegram Mobile Jump Alert:", "Dispatches an immediate Telegram alert to Dhruv (741838315) with an inline button URL opening Discord directly into the ticket room.")
+    add_bullet("Self-Closing Architecture:", "Interactive '[ Close Ticket ]' button allows either party to close and delete the ticket channel upon transaction completion.")
+
+    add_h2("13.2 Cross-Platform Vouches Mirroring Engine")
+    add_bullet("Autonomous Telegram-to-Discord Forwarding:", "Monitors approved proof screenshots posted in Telegram channel @AetheriaStoreVouches.")
+    add_bullet("Rich Discord Embeds:", "Automatically forwards customer receipts, bank confirmations, and activation screenshots into Discord channel #vouches (1550381748506988584) with styled embeds.")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # 14. Google Search Console Verification & SEO Optimization
+    # ─────────────────────────────────────────────────────────────────────────
+    add_h1("14. Google Search Console Verification & SEO Optimization")
+    add_bullet("Dual-Layer Ownership Verification:", "Verified via static HTML verification file (/googlec8c6c8ae927a0074.html) and layout metadata tag (<meta name='google-site-verification' content='googlec8c6c8ae927a0074' />).")
+    add_bullet("Dynamic XML Sitemap (/sitemap.xml):", "Generates dynamic URL index with daily crawl frequency for root storefront and monthly indexing for legal compliance routes.")
+    add_bullet("Crawler Directives (/robots.txt):", "Allows global indexing for public storefront routes while disallowing sensitive /admin and /api endpoints.")
+    add_bullet("Rich Structured Schema JSON-LD:", "Embeds Schema.org OnlineStore and Product schemas with localized INR and USD pricing, stock availability, and verified customer review aggregates.")
+
+    # ─────────────────────────────────────────────────────────────────────────
+    # 15. Operational Runbook & CI/CD Deployment Guide
+    # ─────────────────────────────────────────────────────────────────────────
+    add_h1("15. Operational Runbook & CI/CD Deployment Guide")
     add_body("Instructions for running, maintaining, and deploying AETHERIA in production:")
     add_bullet("Environment Configuration (.env.local):", "Configure all required keys: FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, KEY_ENCRYPTION_SECRET, GMAIL_USER, GMAIL_APP_PASSWORD, RESEND_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_PROOF_CHANNEL, and ADMIN_API_SECRET.")
     add_bullet("Local Development Server:", "Execute 'npm run dev' to launch on http://localhost:3000.")
     add_bullet("Production Verification Build:", "Execute 'npm run build' — verifies compilation and TypeScript validity across all routes.")
     add_bullet("Automated Vercel Deployment:", "Pushing commits to branch 'main' automatically triggers Vercel CI/CD pipeline, deploying to https://aetheria-store.vercel.app with zero downtime.")
+    add_bullet("Automated Render Deployment:", "Pushing commits to branch 'main' in telegram-key-notifier automatically triggers Render container build and deployment with automatic Firestore synchronization.")
 
     doc.save(output_path)
     print(f"Documentation saved successfully to: {output_path}")

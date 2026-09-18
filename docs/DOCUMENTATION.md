@@ -213,7 +213,7 @@ To eliminate customer intimidation, hesitation, and text overload:
 - **Free vs Standard Comparison Engine (`/features`, `/compare`)**: High-converting sales comparison detailing the limitations of PGSharp Free (15-second catch animations, blind catches without stats, no shiny scanner, manual joystick fatigue) vs the advantages of PGSharp Standard (1-second Quick Catch, 100% IV encounter preview, block non-shiny encounters, hands-free GPX auto-walk, instant skip cutscenes, guaranteed 100% excellent throws).
 - **Anti-Ban Cooldown & Safety Guide (`/cooldown`, `/safety`)**: Comprehensive reference guide with distance cooldown chart (1 km to 1,350+ km global max of 120 mins), explicit breakdown of cooldown-triggering actions (balls, berries, gym battles, spins) versus safe actions (teleporting, IV inspection, egg hatching, trading).
 - **Direct Scanner Webhook (`/api/pokemon/spawns`)**: High-performance ingestion endpoint for raw scanner telemetry (Golbat, Poracle, MAD, RDM formats) with 20-minute in-memory de-duplication cache.
-- **National Pokédex Database (1,025 Species) & Fuzzy Search**: Typo-tolerant Levenshtein search supporting natural queries (`Greyninja` -> `Greninja`, `Swampert 1/14/15`).
+- **National Pokedex Database (1,025 Species) & Fuzzy Search**: Typo-tolerant Levenshtein search supporting natural queries (`Greyninja` -> `Greninja`, `Swampert 1/14/15`).
 - **Live Events Calendar (`/api/pokemon/events`)**: Real-time event and raid boss rotations accessible via `/events`.
 
 ---
@@ -252,39 +252,88 @@ To eliminate customer intimidation, hesitation, and text overload:
 | `/api/telegram/webhook` | POST | Dynamic | Telegram Bot Handler (Checkout, Proofs, Referrals, /givekey, Radar) |
 | `/api/telegram/setup` | POST | Dynamic | Automated Telegram Webhook Registration & Command Menu Setup |
 | `/api/reviews` | GET/POST | Dynamic | Verified Customer Reviews Ingestion & Aggregate Rating Feed |
+| `/api/admin/crm/sales` | GET/POST/PUT/DELETE | Dynamic | Google Cloud Firestore Persistence Bridge for CRM Sales Records |
+| `/crm` | GET | Client HTML | Customer Renewal CRM Dashboard: Real-time Multi-Platform License Management |
+| `/api/sales` | GET | Dynamic | CRM Sales Retrieval API with Pending Days Ordering |
+| `/api/sales/update` | POST | Dynamic | CRM Record Update Endpoint for Customer, Plan, Email, and Expiry Edits |
+| `/api/renew` | POST | Dynamic | Interactive Key Renewal Endpoint: Updates Devices, Source Email, and Expiry |
+| `/api/delete` | POST | Dynamic | Permanent CRM Record Deletion & Cloud Archival Endpoint |
+| `/googlec8c6c8ae927a0074.html` | GET | Static | Google Search Console Site Ownership Verification Protocol |
+| `/sitemap.xml` | GET | Dynamic | Dynamic SEO Sitemap Feed for Google Search Console Indexing |
+| `/robots.txt` | GET | Dynamic | Crawler Access Directives & Sitemap Declarations |
 
 ---
 
-## 14. Discord 1-Click Interactive Order Ticket Bot
+## 14. Customer Renewal & Expiration CRM Engine (`/crm`)
 
-- **Gateway WebSocket Architecture**: Standalone persistent WebSocket gateway connection (`wss://gateway.discord.gg/?v=10&encoding=json`) hosted 24/7 on Render within `telegram-key-notifier`.
-- **Interactive Ticket Component**: Message `1550381786234626081` in `#pricing-and-keys` (`1550381744509685901`) features an interactive green `[ Open Order Ticket ]` button (`custom_id: open_order_ticket`).
-- **Private Room Provisioning**: Tapping the button dynamically creates a private channel `#ticket-<username>` hidden from `@everyone` with explicit read/write permission overwrites granted solely to the buyer, Dhruv (`503233296134832149` / `@dhruv_emperor`), and the bot.
-- **Direct Mutual Visibility**: Both Dhruv and the buyer see each other's verified profiles, avatar, and direct chat within the ticket room, ensuring trust and personal relationship.
-- **Instant Mobile Alert**: Dispatches an immediate Telegram alert to Dhruv (`741838315`) with a 1-tap jump link to open Discord directly to the customer's room.
-- **Auto-Cleanup**: Ticket room contains an interactive `[ Close Ticket ]` button (`custom_id: close_ticket`) which deletes the private room after 3 seconds upon completion.
+A dedicated, standalone customer lifecycle and license retention dashboard hosted on Render within `telegram-key-notifier` (`https://telegram-key-notifier.onrender.com/crm`), providing complete visibility over all customer keys across platforms:
+
+### 14.1 Multi-Account Source Email Tracking & Key Distribution
+- **Source Email Inventory Tracking**: Tracks which of the owner's 11+ PGSharp/Patreon Google accounts holds each customer key, preventing overselling or slot confusion across distributed keys.
+- **Real-Time Distribution Overview Bar**: Positioned above the table, an interactive distribution card displays key load per email account with color-coded load badges (e.g. `dhruvmatliwala336+5@gmail.com: 4 keys`).
+- **1-Click Email Isolation**: Clicking any email pill or table email badge immediately filters the entire table to show only keys provisioned under that specific account.
+- **Source Email Filter Dropdown**: Filter dropdown in the controls bar displays dynamic key count metrics alongside account addresses.
+
+### 14.2 Pending Days Dynamic Ordering & Clustered Grouping
+- **Pending Days Ordering (Default View)**: Automatically orders licenses by pending days remaining (Lowest First / Expiring Soonest) so the owner immediately spots expiring keys at the top of the interface.
+- **Group Same Emails Together**: Sort mode that clusters all customer rows sharing the identical source email address consecutively, sub-sorted internally by fewest pending days remaining.
+- **Interactive Column Header Sorting**: Clicking the 'Expiry / Days Left' column header toggles between ascending (fewest days left first) and descending sort orders with visual indicators.
+
+### 14.3 Interactive Renewal Modal Engine
+- **Contextual Pre-filling**: Clicking 'Renew' on any row launches a dedicated modal pre-populated with customer name, current device plan, platform, source email, and contact handle.
+- **Flexible Account Reassignment**: Allows updating the source email account during renewal, enabling smooth migration to accounts with available slots.
+- **Device Plan Flexibility**: Easily switches or upgrades customer tiers between 1 Device (Standard - Rs 160) and 2 Devices (Duo - Rs 300).
+- **Custom Date Presets & Manual Calendar**: Provides 1-click extension buttons (+30D, +25D, +20D, +15D, +10D, +7D, Today + 30D) or a manual calendar picker with live renewal and reminder preview calculation.
+
+### 14.4 Automated Day-27 Proactive Telegram Reminders
+- **3-Day Advance Retention Radar**: A background cron scans active customer licenses every 30 minutes. Exactly 3 days before expiration (Day 27 on 30-day keys), an automated notification is dispatched to Dhruv's Telegram (ID: 741838315).
+- **Actionable Notification Payload**: Alert message provides customer name, contact handle, plan, source account email, exact expiry date, and days remaining with direct renewal prompts.
 
 ---
 
-## 15. Customer Renewal CRM & Day-27 Proactive Alerts
+## 15. Google Cloud Firestore Persistent CRM Storage Bridge
 
-- **30-Day Key Lifecycle Management**: Automated persistence in `sales.json` tracking customer name, contact handle, plan type, platform, purchase timestamp, 30-day expiration, and Day-27 reminder trigger.
-- **Proactive Renewal Radar**: Background cron runs every 30 minutes. When a customer reaches Day 27 (3 days remaining), it dispatches an actionable Telegram alert to Dhruv with customer details, days left, and renewal action prompt.
-- **Web CRM Dashboard (`/crm`)**: High-performance dark-mode web dashboard accessible at `https://telegram-key-notifier.onrender.com/crm`. Allows logging new customer sales, viewing days remaining badges (active, due, expired), 1-click `Renew +30D` extensions, and real-time search.
-- **RESTful CRM API**:
-  - `GET /api/sales`: Active licenses, days remaining, and reminder flags.
-  - `POST /api/sales`: Log new customer sale with auto-calculated Day-27 reminder.
-  - `POST /api/renew`: Extend existing customer license by 30 days.
-  - `POST /api/delete`: Remove or archive customer record.
+To guarantee zero data loss on Render's ephemeral container filesystem, the CRM is wired directly to Google Cloud Firestore (`pgsharp-4587b`):
+- **Container Rebuild Immunity**: Because Docker containers reset on redeployments, local `sales.json` storage is automatically backed by Firestore collection `crm_sales`, ensuring no customer record is ever lost on git pushes or server restarts.
+- **Dedicated REST API Bridge (`/api/admin/crm/sales`)**: High-performance endpoint in the Next.js storefront backend handling GET, POST, PUT, and DELETE operations against Firestore.
+- **Cryptographic API Secret Authorization**: Secured via constant-time SHA-256 header authentication (`x-admin-secret`) matching `ADMIN_API_SECRET`.
+- **Bi-directional Startup Hydration**: On container boot, `initCrmDatabase` queries Firestore and populates memory and local disk. When sales are entered or renewed, updates are synchronously applied locally and pushed asynchronously to Firestore.
 
 ---
 
-## 16. Google SEO & Search Console Indexing
+## 16. Discord Interactive Order Ticket Bot & Vouches Synchronization
 
-- **Search Console Site Verification**: Double-layer verification using both the static file `https://aetheria-store.vercel.app/googlec8c6c8ae927a0074.html` and the metadata verification tag `<meta name="google-site-verification" content="googlec8c6c8ae927a0074" />` in `src/app/layout.tsx`.
-- **Dynamic XML Sitemap (`/sitemap.xml`)**: Canonical route listing with daily crawl frequency for root storefront and monthly indexing for legal compliance pages.
-- **Crawler Directives (`/robots.txt`)**: Allows global indexing while protecting `/admin` and `/api/` endpoints.
-- **Structured Schema.org JSON-LD**: Rich snippets for `OnlineStore` and `Product` (PGSharp Standard Key 1-Device and Duo 2-Devices) enabling Google rich product results, pricing in INR/USD, and verified ratings.
+### 16.1 Persistent Gateway WebSocket Ticket Bot
+- **Gateway Architecture**: Persistent WebSocket connection (`gateway.discord.gg v10`) running 24/7 on Render within `telegram-key-notifier`.
+- **Interactive Button Component**: Message `1550381786234626081` in `#pricing-and-keys` (`1550381744509685901`) features an interactive green `[ Open Order Ticket ]` button.
+- **Private Mutual Ticket Rooms**: Dynamically provisions private channel `#ticket-<username>` hidden from `@everyone` with explicit read/write permission overwrites for the buyer, Dhruv (`503233296134832149` / `@dhruv_emperor`), and the bot.
+- **Profile Transparency & Trust**: Both the customer and owner see each other's verified profiles, avatar, and direct chat within the room, completely resolving off-platform trust friction.
+- **Instant Telegram Mobile Jump Alert**: Dispatches an immediate Telegram alert to Dhruv (`741838315`) with an inline button URL opening Discord directly into the ticket room.
+- **Self-Closing Architecture**: Interactive `[ Close Ticket ]` button allows either party to close and delete the ticket channel upon transaction completion.
+
+### 16.2 Cross-Platform Vouches Mirroring Engine
+- **Autonomous Telegram-to-Discord Forwarding**: Monitors approved proof screenshots posted in Telegram channel `@AetheriaStoreVouches`.
+- **Rich Discord Embeds**: Automatically forwards customer receipts, bank confirmations, and activation screenshots into Discord channel `#vouches` (`1550381748506988584`) with styled embeds.
+
+---
+
+## 17. Google Search Console Verification & SEO Optimization
+
+- **Dual-Layer Ownership Verification**: Verified via static HTML verification file (`/googlec8c6c8ae927a0074.html`) and layout metadata tag (`<meta name="google-site-verification" content="googlec8c6c8ae927a0074" />`).
+- **Dynamic XML Sitemap (`/sitemap.xml`)**: Generates dynamic URL index with daily crawl frequency for root storefront and monthly indexing for legal compliance routes.
+- **Crawler Directives (`/robots.txt`)**: Allows global indexing for public storefront routes while disallowing sensitive `/admin` and `/api` endpoints.
+- **Rich Structured Schema JSON-LD**: Embeds Schema.org OnlineStore and Product schemas with localized INR and USD pricing, stock availability, and verified customer review aggregates.
+
+---
+
+## 18. Operational Runbook & CI/CD Deployment Guide
+
+Instructions for running, maintaining, and deploying AETHERIA in production:
+- **Environment Configuration (`.env.local`)**: Configure all required keys: `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`, `KEY_ENCRYPTION_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `RESEND_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_PROOF_CHANNEL`, and `ADMIN_API_SECRET`.
+- **Local Development Server**: Execute `npm run dev` to launch on `http://localhost:3000`.
+- **Production Verification Build**: Execute `npm run build` — verifies compilation and TypeScript validity across all routes.
+- **Automated Vercel Deployment**: Pushing commits to branch `main` automatically triggers Vercel CI/CD pipeline, deploying to `https://aetheria-store.vercel.app` with zero downtime.
+- **Automated Render Deployment**: Pushing commits to branch `main` in `telegram-key-notifier` automatically triggers Render container build and deployment with automatic Firestore synchronization.
 
 ---
 
