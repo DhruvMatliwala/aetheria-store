@@ -350,6 +350,14 @@ To guarantee zero data loss on Render's ephemeral container filesystem, the CRM 
     - `#flex` (`1550381769759522886`): Customer catch showcases and rare shiny trophy room.
     - `#support-help` (`1550381773710561301`): Key activation troubleshooting and direct assistance.
 
+### 16.4 Automated Discord Event Infographics Publisher
+- **Native 24/7 Background Engine**: Hosted within the `telegram-key-notifier` service on Render, polling open ScrapedDuck/LeekDuck feeds every 4 hours.
+- **High-Resolution Event Banners**: Embeds official LeekDuck CDN infographics, event banners, and poster graphics directly in Discord channel `#events` (`1550381765099786263`).
+- **Dynamic Local Timezone Countdowns**: Renders Discord timestamp format `<t:TIMESTAMP:F>` and `<t:TIMESTAMP:R>` to calculate start and end times dynamically in each user's local timezone.
+- **Rich Structured Fields**: Parses and displays featured Pokemon, shiny availability flags, active multipliers (e.g. 2x Catch Stardust, extra Raid passes), and raid bosses.
+- **Deduplication & Channel History Audit**: Reads recent channel messages on startup combined with local JSON tracking (`posted_events.json`) to prevent duplicate posts across server restarts.
+- **Organic Store Traffic Conversion**: Includes branded Aetheria Store footers guiding interested event participants directly to `#pgsharp-keys`.
+
 ---
 
 ## 17. Google Search Console Verification & SEO Optimization

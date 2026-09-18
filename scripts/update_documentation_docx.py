@@ -481,6 +481,14 @@ def build_documentation_docx(output_path="f:/Pgsharp/docs/Documentation.docx"):
     add_bullet("Decluttered Channel Hierarchy:", "Removed all noisy and unnecessary channels (#clips-and-highlights, #cooldown-guide, and #100iv) to center 100% of community focus on key purchasing, instant ticket fulfillment, customer vouches, and genuine community interaction.")
     add_bullet("Dedicated 2-Category Executive Layout:", "INFORMATION category (#welcome, #pgsharp-keys, #vouches) and COMMUNITY category (#general, #events, #flex, #support-help).")
 
+    add_h2("13.4 Automated Discord Event Infographics Publisher")
+    add_bullet("Native 24/7 Background Engine:", "Hosted within the telegram-key-notifier service on Render, polling open ScrapedDuck/LeekDuck feeds every 4 hours.")
+    add_bullet("High-Resolution Event Banners:", "Embeds official LeekDuck CDN infographics, event banners, and poster graphics directly in Discord channel #events (1550381765099786263).")
+    add_bullet("Dynamic Local Timezone Countdowns:", "Renders Discord timestamp format <t:TIMESTAMP:F> and <t:TIMESTAMP:R> to calculate start and end times dynamically in each user's local timezone.")
+    add_bullet("Rich Structured Fields:", "Parses and displays featured Pokemon, shiny availability flags, active multipliers, and raid bosses.")
+    add_bullet("Deduplication & Channel History Audit:", "Reads recent channel messages on startup combined with local JSON tracking (posted_events.json) to prevent duplicate posts across server restarts.")
+    add_bullet("Organic Store Traffic Conversion:", "Includes branded Aetheria Store footers guiding interested event participants directly to #pgsharp-keys.")
+
     # ─────────────────────────────────────────────────────────────────────────
     # 14. Google Search Console Verification & SEO Optimization
     # ─────────────────────────────────────────────────────────────────────────
