@@ -8,7 +8,7 @@ This document preserves the complete architectural context, active configuration
 
 ### A. Next.js Web Storefront (`f:\Pgsharp`)
 - **Framework**: Next.js 14 (App Router), TypeScript, Tailwind CSS, Lucide icons.
-- **Production URL**: https://aetheria-store.vercel.app (Custom domain: https://pgsharp.in)
+- **Production URL**: https://aetheria-store.vercel.app
 - **Deployment**: Automated CI/CD via Vercel on git push to branch `main`.
 - **Database**: Google Cloud Firestore (`pgsharp-4587b`).
 - **Storage**: Key allocation, waitlist alerts, coupon validation, UPI/PayPal checkout.
