@@ -183,8 +183,8 @@ export async function processReferralReward(order: Order): Promise<boolean> {
     `🎟️ Coupon Code:\n` +
     `<code>${couponCode}</code>\n` +
     `<i>(Tap code above to copy to clipboard)</i>\n\n` +
-    `• <b>UPI Discount:</b> ₹30 OFF (₹160 ➔ ₹130 / ₹300 ➔ ₹270)\n` +
-    `• <b>PayPal Discount:</b> $0.30 / $0.60 OFF ($2.00 ➔ $1.70 / $3.60 ➔ $3.00)\n` +
+    `• <b>UPI Discount:</b> ₹30 OFF (₹199 ➔ ₹169 / ₹370 ➔ ₹340)\n` +
+    `• <b>PayPal Discount:</b> $0.40 / $0.50 OFF ($2.40 ➔ $2.00 / $4.50 ➔ $4.00)\n` +
     `• Single-use coupon — simply enter it in chat when buying your next key!\n\n` +
     `Keep inviting friends to earn more coupons! 🚀`;
 
@@ -206,25 +206,25 @@ export async function processReferralReward(order: Order): Promise<boolean> {
 }
 
 /**
- * Computes exact discounted prices (₹130 / $1.70 for 1 Device; ₹270 / $3.00 for 2 Devices)
+ * Computes exact discounted prices (₹169 / $2.00 for 1 Device; ₹340 / $4.00 for 2 Devices)
  */
 export function getDiscountedPricing(planId: string, hasDiscount: boolean) {
   const is2Device = planId.includes('2_device');
   if (hasDiscount) {
     return {
-      priceInrPaise: is2Device ? 27000 : 13000,
-      priceInrRupees: is2Device ? '270' : '130',
-      priceUsdCents: is2Device ? 300 : 170,
-      priceUsdDollars: is2Device ? '3.00' : '1.70',
+      priceInrPaise: is2Device ? 34000 : 16900,
+      priceInrRupees: is2Device ? '340' : '169',
+      priceUsdCents: is2Device ? 400 : 200,
+      priceUsdDollars: is2Device ? '4.00' : '2.00',
       savingsInr: '30',
-      savingsUsd: is2Device ? '0.60' : '0.30',
+      savingsUsd: is2Device ? '0.50' : '0.40',
     };
   }
   return {
-    priceInrPaise: is2Device ? 30000 : 16000,
-    priceInrRupees: is2Device ? '300' : '160',
-    priceUsdCents: is2Device ? 360 : 200,
-    priceUsdDollars: is2Device ? '3.60' : '2.00',
+    priceInrPaise: is2Device ? 37000 : 19900,
+    priceInrRupees: is2Device ? '370' : '199',
+    priceUsdCents: is2Device ? 450 : 240,
+    priceUsdDollars: is2Device ? '4.50' : '2.40',
     savingsInr: '0',
     savingsUsd: '0',
   };

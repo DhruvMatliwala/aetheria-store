@@ -14,7 +14,7 @@ export function SmsBridgeCard({ adminToken }: SmsBridgeCardProps) {
 
   // Simulator states
   const [sampleSms, setSampleSms] = useState(
-    'Dear SBI User, A/C ... credited by Rs 160.00 on 12Sep26 transfer from UPI/423819284719/Payment Ref No. 423819284719.'
+    'Dear SBI User, A/C ... credited by Rs 199.00 on 12Sep26 transfer from UPI/423819284719/Payment Ref No. 423819284719.'
   );
   const [simulating, setSimulating] = useState(false);
   const [simResult, setSimResult] = useState<any | null>(null);

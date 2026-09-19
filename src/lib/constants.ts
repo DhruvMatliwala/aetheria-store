@@ -10,8 +10,8 @@ export const PLANS: Plan[] = [
     id: '1_month_1_device',
     name: '1 Device',
     duration: '30 Days',
-    price_inr: 16000,   // ₹160 in paise
-    price_usd: 200,     // $2.00 in cents
+    price_inr: 19900,   // ₹199 in paise
+    price_usd: 240,     // $2.40 in cents
     device_slots: 1,
     features: [
       'Full PGSharp Standard Features',
@@ -27,10 +27,10 @@ export const PLANS: Plan[] = [
     id: '1_month_2_device',
     name: '2 Devices',
     duration: '30 Days',
-    price_inr: 30000,           // ₹300 in paise
-    price_usd: 360,             // $3.60 in cents
-    original_price_inr: 32000,  // ₹320 (2x ₹160) in paise
-    original_price_usd: 400,    // $4.00 (2x $2.00) in cents
+    price_inr: 37000,           // ₹370 in paise
+    price_usd: 450,             // $4.50 in cents
+    original_price_inr: 39800,  // ₹398 (2x ₹199) in paise
+    original_price_usd: 480,    // $4.80 (2x $2.40) in cents
     badge: 'Popular',
     discount_badge: 'BEST VALUE',
     device_slots: 2,

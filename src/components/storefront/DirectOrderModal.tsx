@@ -21,8 +21,8 @@ export function DirectOrderModal({ isOpen, onClose, plan }: DirectOrderModalProp
 
   const isDuo = plan.device_slots === 2;
   const devicesLabel = isDuo ? '2 Devices' : '1 Device';
-  const priceInr = isDuo ? '₹300' : '₹160';
-  const priceUsd = isDuo ? '$3.60 USD' : '$2.00 USD';
+  const priceInr = isDuo ? '₹370' : '₹199';
+  const priceUsd = isDuo ? '$4.50 USD' : '$2.40 USD';
 
   const orderText = `Hey Dhruv, I want to buy a PGSharp Standard key for ${devicesLabel}.`;
 

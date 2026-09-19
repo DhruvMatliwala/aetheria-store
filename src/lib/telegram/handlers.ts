@@ -173,10 +173,10 @@ export function getStoreMenuContent(discountLabel?: string) {
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '📱 1 Device (30 Days) — ₹160', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '📱 1 Device (30 Days) — ₹199', callback_data: 'cb_buy_1_month_1_device' },
       ],
       [
-        { text: '🔋 2 Devices (30 Days) — ₹300', callback_data: 'cb_buy_1_month_2_device' },
+        { text: '🔋 2 Devices (30 Days) — ₹370', callback_data: 'cb_buy_1_month_2_device' },
       ],
       [
         { text: '📦 Live Stock', callback_data: 'cb_stock' },
@@ -208,7 +208,7 @@ export function getFeaturesComparisonContent() {
     `• <b>Manual Joystick:</b> Tiring finger dragging (no GPX auto-walk)\n` +
     `• <b>Full Battles:</b> Must fight every Team Rocket battle manually\n` +
     `• <b>Full Cutscenes:</b> Wastes time on raid intros & egg hatches\n\n` +
-    `✅ <b>STANDARD EDITION (₹160 / Month):</b>\n` +
+    `✅ <b>STANDARD EDITION (₹199 / Month):</b>\n` +
     `• ⚡ <b>Quick Catch:</b> Catch in 1 second flat! (Skips 15s animation)\n` +
     `• 🎯 <b>Live IV Preview:</b> See exact 100% IV (15/15/15) before throwing\n` +
     `• ✨ <b>Block Non-Shiny:</b> Only shiny Pokémon trigger encounter!\n` +
@@ -222,8 +222,8 @@ export function getFeaturesComparisonContent() {
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '📱 Buy 1 Device (₹160)', callback_data: 'cb_buy_1_month_1_device' },
-        { text: '🔋 Buy 2 Devices (₹300)', callback_data: 'cb_buy_1_month_2_device' },
+        { text: '📱 Buy 1 Device (₹199)', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '🔋 Buy 2 Devices (₹370)', callback_data: 'cb_buy_1_month_2_device' },
       ],
       [
         { text: '⏱️ Cooldown & Safety Guide', callback_data: 'cb_cooldown' },
@@ -274,7 +274,7 @@ export function getCooldownGuideContent() {
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
-        { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '🔑 Buy PGSharp Key (₹199)', callback_data: 'cb_buy_1_month_1_device' },
       ],
       [
         { text: '⚡ Free vs Standard Features', callback_data: 'cb_features' },
@@ -603,13 +603,13 @@ export async function sendPokemonSpawnAlert(chatId: number, spawn: PokemonSpawn)
     `─────────────────────────────\n` +
     `🛡️ <b>Don't let it flee!</b>\n` +
     `100% Excellent Throw + Instant Quick Catch:\n` +
-    `👉 <b>Unlock PGSharp Standard (₹160)</b>`;
+    `👉 <b>Unlock PGSharp Standard (₹199)</b>`;
 
   const keyboard: InlineKeyboardMarkup = {
     inline_keyboard: [
       [
         { text: '📡 Scan Again', callback_data: 'radar_scan_now' },
-        { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
+        { text: '🔑 Buy PGSharp Key (₹199)', callback_data: 'cb_buy_1_month_1_device' },
       ],
       [
         { text: '⏸️ Pause Alerts', callback_data: 'radar_spawn_pause' },
@@ -1728,7 +1728,7 @@ async function handlePhotoMessage(message: NonNullable<TelegramUpdate['message']
     customerEmail: targetOrder.customer_email,
     customerPhone: username ? `@${username}` : `Telegram ID: ${chatId}`,
     planType: targetOrder.plan_type || '1_month_1_device',
-    amount: targetOrder.amount || 16000,
+    amount: targetOrder.amount || 19900,
     currency: targetOrder.currency || 'INR',
     gateway: 'upi_direct',
     transactionId: 'Screenshot Submitted',
@@ -1808,13 +1808,13 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
   const lowerText = rawText.toLowerCase().trim();
   const PAYMENT_INTENT_PHRASES = [
     'done', 'paid', 'payment done', 'i paid', 'i have paid', 'sent', 'money sent',
-    'ho gaya', 'maine pay kar diya', 'pay kar diya', 'payment sent', 'paid 160',
-    'paid 300', 'screenshot', 'check payment', 'verify payment', 'utr', 'ref no',
+    'ho gaya', 'maine pay kar diya', 'pay kar diya', 'payment sent', 'paid 199', 'paid 370',
+    'paid 160', 'paid 300', 'screenshot', 'check payment', 'verify payment', 'utr', 'ref no',
     'receipt', 'bill', 'already paid', 'paid already', 'amount sent'
   ];
   const isPaymentIntent =
     PAYMENT_INTENT_PHRASES.includes(lowerText) ||
-    /^(i\s+)?(paid|done|sent)(\s+(160|300|money|payment|upi|gpay|phonepe))?$/i.test(lowerText);
+    /^(i\s+)?(paid|done|sent)(\s+(199|370|160|300|money|payment|upi|gpay|phonepe))?$/i.test(lowerText);
 
   if (isPaymentIntent) {
     const db = getAdminFirestore();
@@ -1857,7 +1857,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
 
       const keyboard: InlineKeyboardMarkup = {
         inline_keyboard: [
-          [{ text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' }],
+          [{ text: '🔑 Buy PGSharp Key (₹199)', callback_data: 'cb_buy_1_month_1_device' }],
           [{ text: '💬 Contact Support', url: TELEGRAM_URL }],
         ],
       };
@@ -1917,7 +1917,7 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
           { text: '🎯 Radar Settings', callback_data: 'menu_radar' },
         ],
         [
-          { text: '🔑 Buy PGSharp Key (₹160)', callback_data: 'cb_buy_1_month_1_device' },
+          { text: '🔑 Buy PGSharp Key (₹199)', callback_data: 'cb_buy_1_month_1_device' },
           { text: '⬅️ Main Menu', callback_data: 'menu_main' },
         ],
       ],
@@ -2262,8 +2262,8 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
           discountBanner =
             `🎁 <b>SPECIAL REFERRAL DISCOUNT APPLIED!</b>\n` +
             `Your friend invited you to Aetheria Store. You get an exclusive discount on your first key:\n` +
-            `• 📱 <b>1 Device:</b> <s>₹160 / $2.00</s> ➔ <b>₹130 / $1.70</b>\n` +
-            `• 🔋 <b>2 Devices:</b> <s>₹300 / $3.60</s> ➔ <b>₹270 / $3.00</b>`;
+            `• 📱 <b>1 Device:</b> <s>₹199 / $2.40</s> ➔ <b>₹169 / $2.00</b>\n` +
+            `• 🔋 <b>2 Devices:</b> <s>₹370 / $4.50</s> ➔ <b>₹340 / $4.00</b>`;
         } else if (eligibility.reason === 'self_referral') {
           await sendTelegramMessage(
             chatId,
@@ -2325,12 +2325,12 @@ async function handleTextMessage(message: NonNullable<TelegramUpdate['message']>
     if (couponValidation.valid) {
       await setUserCoupon(chatId, candidateCode);
       const discountRs = Math.round((couponValidation.discountAmountInr || 1000) / 100);
-      const p1Inr = Math.max(0, 160 - discountRs);
-      const p2Inr = Math.max(0, 300 - discountRs);
+      const p1Inr = Math.max(0, 199 - discountRs);
+      const p2Inr = Math.max(0, 370 - discountRs);
       const discountText =
         `🎟️ <b>Promo Code "${candidateCode}" Applied!</b>\n\n` +
-        `• 📱 <b>1 Device:</b> <s>₹160</s> ➔ <b>₹${p1Inr}</b>\n` +
-        `• 🔋 <b>2 Devices:</b> <s>₹300</s> ➔ <b>₹${p2Inr}</b>\n\n` +
+        `• 📱 <b>1 Device:</b> <s>₹199</s> ➔ <b>₹${p1Inr}</b>\n` +
+        `• 🔋 <b>2 Devices:</b> <s>₹370</s> ➔ <b>₹${p2Inr}</b>\n\n` +
         `Choose your plan below:`;
       const { keyboard } = getPlanPickerContent();
       await sendTelegramMessage(chatId, discountText, { reply_markup: keyboard });

@@ -32,8 +32,8 @@ AETHERIA operates across multiple synchronous channels:
 
 | Tier Name | Device Capacity | Price (INR) | Price (USD) | Included Features |
 |---|---|---|---|---|
-| **Standard Tier** | 1 Android Device | **₹160** | **$2.00** | ~30 Days • Joystick, Teleport, 100% IV Checker, Quick Catch, Auto-Walk |
-| **Duo Tier (Best Value)** | 2 Android Devices | **₹300** *(was ₹320)* | **$3.60** *(was $4.00)* | ~30 Days • 2 Concurrent Device Slots, Priority Direct Support |
+| **Standard Tier** | 1 Android Device | **₹199** | **$2.40** | ~30 Days • Joystick, Teleport, 100% IV Checker, Quick Catch, Auto-Walk |
+| **Duo Tier (Best Value)** | 2 Android Devices | **₹370** *(was ₹398)* | **$4.50** *(was $4.80)* | ~30 Days • 2 Concurrent Device Slots, Priority Direct Support |
 
 ### 2.1 Key Allocation Policies & Dedicated Vault Control
 The vault uploader in `/admin` provides configurable slot allocation policies based on your inventory strategy:
@@ -46,7 +46,7 @@ The vault uploader in `/admin` provides configurable slot allocation policies ba
 ## 3. Payment Rails & Whole-Rupee Verification Engine
 
 ### 3.1 Clean Whole-Rupee Architecture
-- **Eradication of Fractional Paise**: Completely dropped the decimal paise model (`.14`, `.28`). Customers pay clean whole rupees (exact **₹160** or **₹300**), preventing bank payment filters (e.g. SBI, Google Pay, PhonePe, Paytm) from rejecting transactions.
+- **Eradication of Fractional Paise**: Completely dropped the decimal paise model (`.14`, `.28`). Customers pay clean whole rupees (exact **₹199** or **₹370**), preventing bank payment filters (e.g. SBI, Google Pay, PhonePe, Paytm) from rejecting transactions.
 - **Smart-Routing UPI VPAs**:
   - `dhruvmatliwala123@oksbi` (Primary)
   - `dhruvmatliwala123@okicici` (Fastest)
@@ -292,8 +292,8 @@ A dedicated, standalone customer lifecycle and license retention dashboard hoste
 - **Actionable Notification Payload**: Alert message provides customer name, contact handle, plan, source account email, exact expiry date, and days remaining with direct renewal prompts.
 
 ### 14.5 Slot-Proportional Profit & Revenue Engine
-- **Slot-Proportional Cost Architecture**: Calculates profit based on Patreon's flat Rs 200 cost for a 3-device key (Rs 67 per slot). 1 Device costs Rs 67 (Profit: +Rs 93 / +Rs 63 ref), 2 Devices costs Rs 133 (Profit: +Rs 167 / +Rs 137 ref), and 3 Devices costs Rs 200 (Profit: +Rs 200 / +Rs 170 ref).
-- **3-Device Plan Support (Rs 400)**: Added full 3-Device key plan to Log Sale, Edit, and Renew modals alongside 1 Device (Standard - Rs 160) and 2 Devices (Duo - Rs 300).
+- **Slot-Proportional Cost Architecture**: Calculates profit based on the official store's flat Rs 480 cost for a 3-device key ($5 USD, Rs 160 per slot). 1 Device costs Rs 160 (Profit: +Rs 39 / +Rs 9 ref), 2 Devices costs Rs 320 (Profit: +Rs 50 / +Rs 20 ref), and 3 Devices costs Rs 480 (Profit: +Rs 69 / +Rs 39 ref).
+- **3-Device Plan Support (Rs 549)**: Added full 3-Device key plan to Log Sale, Edit, and Renew modals alongside 1 Device (Standard - Rs 199) and 2 Devices (Duo - Rs 370).
 - **1-Click Pricing & Discount Presets**: Modal controls include [ Standard Price ], [ -30 Referral ], and custom amount inputs with live real-time net profit and margin calculation banners.
 - **Top Financial Analytics Card**: Dedicated dashboard banner above the CRM table tracking Total Revenue, Patreon Inventory Costs, Net Profit, and Overall Margin across all tracked sales.
 - **Historical Baseline Isolation**: All pre-existing records entered prior to launch are flagged as untracked legacy records, preserving their reminder schedules while keeping the new profit ledger 100% accurate.
@@ -349,7 +349,7 @@ To guarantee zero data loss on Render's ephemeral container filesystem, the CRM 
 - **Dedicated 2-Category Executive Layout**:
   - **INFORMATION Category**:
     - `#welcome` (`1550381740563107840`): Official community rules, navigation links, and owner contact.
-    - `#pgsharp-keys` (`1550381744509685901`): Transparent pricing (1 Device Rs 160, Duo Rs 300, Full Key Rs 400) and the interactive `[ Open Order Ticket ]` button.
+    - `#pgsharp-keys` (`1550381744509685901`): Transparent pricing (1 Device Rs 199, Duo Rs 370, Full Key Rs 549) and the interactive `[ Open Order Ticket ]` button.
     - `#vouches` (`1550381748506988584`): Automated live proof screenshot feed synced directly from `@AetheriaStoreVouches`.
   - **COMMUNITY Category**:
     - `#general` (`1544078072687362121`): Friendly Pokemon GO discussion and general spoofing chat.

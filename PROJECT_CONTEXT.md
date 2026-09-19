@@ -33,7 +33,7 @@ This document preserves the complete architectural context, active configuration
 
 ### Category: INFORMATION (`1550381711991382069`)
 - `#welcome` (`1550381740563107840`): Server rules, store guidelines, owner contact.
-- `#pgsharp-keys` (`1550381744509685901`): Pricing (1 Device Rs 160, 2 Devices Rs 300, 3 Devices Rs 400) + interactive green `[ Open Order Ticket ]` button (`1550381786234626081`).
+- `#pgsharp-keys` (`1550381744509685901`): Pricing (1 Device Rs 199, 2 Devices Rs 370, 3 Devices Rs 549) + interactive green `[ Open Order Ticket ]` button (`1550381786234626081`).
 - `#vouches` (`1550381748506988584`): Live automated customer vouches feed synced from `@AetheriaVouches`.
 
 ### Category: COMMUNITY (`1550381720363343922`)
@@ -55,11 +55,11 @@ This document preserves the complete architectural context, active configuration
 1. **STRICTLY ZERO EMOJIS**:
    - Under NO circumstances output emoji characters in chat responses, code comments, commit messages, documentation, or Discord embeds.
 2. **Pricing Structure**:
-   - 1 Device (Standard): Rs 160 (Cost: Rs 67, Profit: +Rs 93 / Referral: Rs 130, Profit: +Rs 63).
-   - 2 Devices (Duo): Rs 300 (Cost: Rs 133, Profit: +Rs 167 / Referral: Rs 270, Profit: +Rs 137).
-   - 3 Devices (Full Key): Rs 400 (Cost: Rs 200, Profit: +Rs 200 / Referral: Rs 370, Profit: +Rs 170).
-3. **Patreon Key Cost**:
-   - Patreon standard tier charges Rs 200 for a 3-device key (Rs 66.67 per slot).
+   - 1 Device (Standard): Rs 199 (Cost: Rs 160, Profit: +Rs 39 / Referral: Rs 169, Profit: +Rs 9).
+   - 2 Devices (Duo): Rs 370 (Cost: Rs 320, Profit: +Rs 50 / Referral: Rs 340, Profit: +Rs 20).
+   - 3 Devices (Full Key): Rs 549 (Cost: Rs 480, Profit: +Rs 69 / Referral: Rs 519, Profit: +Rs 39).
+3. **Official Store Key Cost**:
+   - Official PGSharp store charges $5.00 USD (~Rs 480 INR) for a 3-device key (Rs 160.00 per slot).
 4. **CRM Endpoints & Authentication**:
    - Master Passcode: `Aeth$9xK!7mP_2vQ-8zL4.dY~2026`
    - Direct 1-click bookmark URL: `/crm?auth=Aeth$9xK!7mP_2vQ-8zL4.dY~2026`
