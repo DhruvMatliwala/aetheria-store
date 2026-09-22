@@ -33,7 +33,7 @@ This document preserves the complete architectural context, active configuration
 
 ### Category: INFORMATION (`1550381711991382069`)
 - `#welcome` (`1550381740563107840`): Server rules, store guidelines, owner contact.
-- `#pgsharp-keys` (`1550381744509685901`): Pricing (1 Device Rs 199, 2 Devices Rs 370, 3 Devices Rs 549) + interactive green `[ Open Order Ticket ]` button (`1550381786234626081`).
+- `#pgsharp-keys` (`1550381744509685901`): Pricing (1 Device Rs 199 / $2.50, 2 Devices Rs 370 / $4.50) + interactive green `[ Open Order Ticket ]` button (`1550381786234626081`).
 - `#vouches` (`1550381748506988584`): Live automated customer vouches feed synced from `@AetheriaVouches`.
 
 ### Category: COMMUNITY (`1550381720363343922`)
