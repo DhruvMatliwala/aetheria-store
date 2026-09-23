@@ -13,16 +13,19 @@ This document preserves the complete architectural context, active configuration
 - **Database**: Google Cloud Firestore (`pgsharp-4587b`).
 - **Storage**: Key allocation, waitlist alerts, coupon validation, UPI/PayPal checkout.
 
-### B. Background Services Daemon (`f:\telegram-key-notifier`)
+### B. Unified All-in-One Background Services Daemon (`f:\telegram-key-notifier`)
 - **Runtime**: Node.js 18+ daemon running 24/7 on Render (`https://telegram-key-notifier.onrender.com`).
 - **Deployment**: Automated build on git push to branch `main`.
-- **Active Subsystems Running Simultaneously**:
+- **Architectural Consolidation**: Merged previous standalone `discord-key-notifier` and `youtube-key-notifier` into this single service, saving 1,440 instance hours/month and running 100% free perpetually within Render's 750 free hours limit.
+- **Active Subsystems Running Simultaneously (All-in-One Engine)**:
   1. **Telegram MTProto Lead Radar**: Monitors 9 Telegram target groups for spoofer buyer keywords and sends instant alerts to Dhruv (`741838315`).
-  2. **Discord 1-Click Ticket Bot**: Gateway WebSocket bot listening on `#pgsharp-keys` (`1550381744509685901`) with button `1550381786234626081` (`open_order_ticket`), provisioning private mutual channels `#ticket-<username>`.
-  3. **Dual-Engine Vouches Mirroring**: Monitors Telegram channel `@AetheriaVouches` (`4497586435`) via live WebSocket and 60-second polling catch-up worker, downloading screenshots, stripping promotional text, and posting to Discord `#vouches` (`1550381748506988584`).
-  4. **Automated Event Infographics Publisher**: Scrapes ScrapedDuck/LeekDuck feed every 4 hours, formats high-resolution poster embeds with dynamic local timestamps (`<t:TIMESTAMP:F>`), and posts to Discord `#events` (`1550381765099786263`).
-  5. **Automated Day-27 Renewal Radar**: Scans customer licenses every 30 minutes and dispatches proactive expiration alerts to Telegram 3 days in advance.
-  6. **Obsidian Renewal CRM Dashboard**: Full-featured web dashboard at `/crm`, secured by master passcode (`Aeth$9xK!7mP_2vQ-8zL4.dY~2026`) with dual tabs (Customer Licenses and Financial Profit Tracker), synchronized with Google Cloud Firestore (`crm_sales` collection).
+  2. **Discord Live Buyer Radar**: Connects to Discord Gateway as `zacianemperor#0` (`1147428406540128256`) and monitors 25 Discord servers for key lead keywords.
+  3. **YouTube Live Comment Radar**: Discovers and crawls comments/Shorts across top Indian channels and target search queries every 15s using YouTube Data API v3.
+  4. **Discord 1-Click Ticket Bot**: Gateway WebSocket bot listening on `#pgsharp-keys` (`1550381744509685901`) with button `1550381786234626081` (`open_order_ticket`), provisioning private mutual channels `#ticket-<username>`.
+  5. **Dual-Engine Vouches Mirroring**: Monitors Telegram channel `@AetheriaVouches` (`4497586435`) via live WebSocket and 60-second polling catch-up worker, downloading screenshots, stripping promotional text, and posting to Discord `#vouches` (`1550381748506988584`).
+  6. **Automated Event Infographics Publisher**: Scrapes ScrapedDuck/LeekDuck feed every 4 hours, formats high-resolution poster embeds with dynamic local timestamps (`<t:TIMESTAMP:F>`), and posts to Discord `#events` (`1550381765099786263`).
+  7. **Automated Day-27 Renewal Radar**: Scans customer licenses every 30 minutes and dispatches proactive expiration alerts to Telegram 3 days in advance.
+  8. **Obsidian Renewal CRM Dashboard**: Full-featured web dashboard at `/crm`, secured by master passcode (`Aeth$9xK!7mP_2vQ-8zL4.dY~2026`) with dual tabs (Customer Licenses and Financial Profit Tracker), synchronized with Google Cloud Firestore (`crm_sales` collection).
 
 ---
 
