@@ -26,6 +26,7 @@ This document preserves the complete architectural context, active configuration
   6. **Automated Event Infographics Publisher**: Scrapes ScrapedDuck/LeekDuck feed every 4 hours, formats high-resolution poster embeds with dynamic local timestamps (`<t:TIMESTAMP:F>`), and posts to Discord `#events` (`1550381765099786263`).
   7. **Automated Day-27 Renewal Radar**: Scans customer licenses every 30 minutes and dispatches proactive expiration alerts to Telegram 3 days in advance.
   8. **Obsidian Renewal CRM Dashboard**: Full-featured web dashboard at `/crm`, secured by master passcode (`Aeth$9xK!7mP_2vQ-8zL4.dY~2026`) with dual tabs (Customer Licenses and Financial Profit Tracker), synchronized with Google Cloud Firestore (`crm_sales` collection).
+  9. **Pokemon GO Strike & Ban-Wave Radar**: Scans Reddit communities (`r/PoGoAndroidSpoofing`, `r/PokemonGo`, `r/TheSilphRoad`) every 2.5 minutes with weighted NLP scoring (+3 incident, +1 inquiry, 0 speculation) and dispatches statistical spike advisories to Discord `#ban-radar` (`1552400796610470039`) and instant Telegram alerts to Dhruv (`741838315`).
 
 ---
 
@@ -41,6 +42,7 @@ This document preserves the complete architectural context, active configuration
 
 ### Category: COMMUNITY (`1550381720363343922`)
 - `#general` (`1544078072687362121`): Community chat and general Pokemon GO spoofing talk.
+- `#ban-radar` (`1552400796610470039`): Live automated Pokemon GO strike and ban-wave detection feed.
 - `#events` (`1550381765099786263`): Automated LeekDuck infographics, raid days, spotlight hours, and local countdowns.
 - `#flex` (`1550381769759522886`): Member catches and rare shiny trophy gallery.
 - `#support-help` (`1550381773710561301`): Troubleshooting and activation help.
