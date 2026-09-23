@@ -14,7 +14,7 @@ This document preserves the complete architectural context, active configuration
 - **Storage**: Key allocation, waitlist alerts, coupon validation, UPI/PayPal checkout.
 
 ### B. Unified All-in-One Background Services Daemon (`f:\telegram-key-notifier`)
-- **Runtime**: Node.js 18+ daemon running 24/7 on Render (`https://telegram-key-notifier.onrender.com`).
+- **Runtime**: Node.js 18+ daemon running 24/7 on Render (`https://telegram-key-notifier-4kly.onrender.com`).
 - **Deployment**: Automated build on git push to branch `main`.
 - **Architectural Consolidation**: Merged previous standalone `discord-key-notifier` and `youtube-key-notifier` into this single service, saving 1,440 instance hours/month and running 100% free perpetually within Render's 750 free hours limit.
 - **Active Subsystems Running Simultaneously (All-in-One Engine)**:
