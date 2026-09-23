@@ -18,7 +18,7 @@ This document preserves the complete architectural context, active configuration
 - **Deployment**: Automated build on git push to branch `main`.
 - **Architectural Consolidation**: Merged previous standalone `discord-key-notifier` and `youtube-key-notifier` into this single service, saving 1,440 instance hours/month and running 100% free perpetually within Render's 750 free hours limit.
 - **Active Subsystems Running Simultaneously (All-in-One Engine)**:
-  1. **Telegram MTProto Lead Radar**: Monitors 9 Telegram target groups for spoofer buyer keywords and sends instant alerts to Dhruv (`741838315`).
+  1. **Telegram MTProto Lead Radar**: Monitors 9 Telegram target groups for spoofer buyer keywords, automatically filters out automated group bots (@MissRose_bot, etc.) and moderation disclaimers/filter lists, and sends instant alerts to Dhruv (`741838315`).
   2. **Discord Live Buyer Radar**: Connects to Discord Gateway as `zacianemperor#0` (`1147428406540128256`) and monitors 25 Discord servers for key lead keywords.
   3. **YouTube Live Comment Radar**: Discovers and crawls comments/Shorts across top Indian channels and target search queries every 15s using YouTube Data API v3.
   4. **Discord 1-Click Ticket Bot**: Gateway WebSocket bot listening on `#pgsharp-keys` (`1550381744509685901`) with button `1550381786234626081` (`open_order_ticket`), provisioning private mutual channels `#ticket-<username>`.
