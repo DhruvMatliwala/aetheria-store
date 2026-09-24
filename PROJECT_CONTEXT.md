@@ -82,6 +82,11 @@ This document preserves the complete architectural context, active configuration
 - Discord Ticket Gateway: `f:\telegram-key-notifier\lib\discordTicketBot.js`
 - Sales CRM Core & Firestore Sync: `f:\telegram-key-notifier\lib\salesCrm.js`
 - CRM Web Interface: `f:\telegram-key-notifier\lib\crmDashboardHtml.js`
+- Bot & Mod Notice Filter Engine: `f:\telegram-key-notifier\lib\filter.js`
+- Ban Radar Master Orchestrator: `f:\telegram-key-notifier\lib\banRadar\index.js`
+- Ban Radar Classifier & Hinglish Parser: `f:\telegram-key-notifier\lib\banRadar\classifier.js`
+- Ban Radar Spike Engine & Deduplication: `f:\telegram-key-notifier\lib\banRadar\spikeEngine.js`
+- Ban Radar Multi-Channel Dispatcher: `f:\telegram-key-notifier\lib\banRadar\dispatcher.js`
 - Main Background Daemon: `f:\telegram-key-notifier\index.js`
 
 ---
