@@ -26,8 +26,10 @@ import {
   Star,
   Bell,
   Send,
+  Crosshair,
 } from 'lucide-react';
 import { KeyUploader } from '@/components/admin/KeyUploader';
+import { ShundoRadar } from '@/components/admin/ShundoRadar';
 import { ManualKeyDispatcher } from '@/components/admin/ManualKeyDispatcher';
 import { StockDashboard } from '@/components/admin/StockDashboard';
 import { WaitlistWidget } from '@/components/admin/WaitlistWidget';
@@ -73,7 +75,8 @@ type AdminTab =
   | 'UPI Bank Bridge'
   | 'Coupons'
   | 'Waitlist & Demand'
-  | 'Buyer Reviews';
+  | 'Buyer Reviews'
+  | 'Shundo Radar';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('Dashboard');
@@ -376,6 +379,13 @@ export default function AdminPage() {
         label: 'Buyer Reviews',
         mobileLabel: 'Reviews',
         icon: <Star size={17} />,
+      },
+      {
+        id: 'Shundo Radar',
+        label: 'Shundo Radar',
+        mobileLabel: 'Shundo',
+        icon: <Crosshair size={17} className="text-amber-400" />,
+        badge: 'Private',
       },
     ],
     [pendingOrders.length, totalAvailable, stats?.recentOrders?.length, waitlistCount]
@@ -1075,6 +1085,15 @@ export default function AdminPage() {
             {activeTab === 'Buyer Reviews' && (
               <div className="space-y-6">
                 <ReviewsManager adminToken={adminToken} />
+              </div>
+            )}
+
+            {/* ════════════════════════════════════════════════════════════════
+                VIEW 8: PRIVATE SHUNDO RADAR (CLASSIFIED)
+                ════════════════════════════════════════════════════════════════ */}
+            {activeTab === 'Shundo Radar' && (
+              <div className="space-y-6">
+                <ShundoRadar adminToken={adminToken} />
               </div>
             )}
 
